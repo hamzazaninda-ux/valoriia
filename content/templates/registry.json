@@ -1,0 +1,46 @@
+[
+  {
+    "id": "classic",
+    "name": "Classic Landing",
+    "description": "Traditional long-form landing page with hero, gallery, and dual forms",
+    "thumbnail": "https://placehold.co/400x300/f0fdf4/166534?text=Classic",
+    "isDefault": true,
+    "version": 1,
+    "author": "valoriia",
+    "category": "landing",
+    "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
+  },
+  {
+    "id": "modern",
+    "name": "Modern Landing",
+    "description": "Clean, spacious layout with hero, gallery, offers, FAQ, and WhatsApp CTA",
+    "thumbnail": "https://placehold.co/400x300/ecfdf5/059669?text=Modern",
+    "isDefault": false,
+    "version": 1,
+    "author": "valoriia",
+    "category": "landing",
+    "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
+  },
+  {
+    "id": "minimal",
+    "name": "Minimal Landing",
+    "description": "Lightweight, conversion-focused layout with essential sections only",
+    "thumbnail": "https://placehold.co/400x300/f9fafb/374151?text=Minimal",
+    "isDefault": false,
+    "version": 1,
+    "author": "valoriia",
+    "category": "landing",
+    "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
+  },
+  {
+    "id": "killers",
+    "name": "Killers Landing",
+    "description": "RTL conversion-optimized landing page — Sense Style with custom reviews, bullets and guarantees",
+    "thumbnail": "https://placehold.co/400x300/1a1a1a/c8a96e?text=Killers",
+    "isDefault": false,
+    "version": 1,
+    "author": "valoriia",
+    "category": "landing",
+    "supportedFeatures": ["hero", "carousel", "offers", "orderForm", "killers"]
+  }
+]

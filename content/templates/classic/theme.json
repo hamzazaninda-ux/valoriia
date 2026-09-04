@@ -1,0 +1,56 @@
+{
+  "id": "classic",
+  "name": "Classic Landing",
+  "baseTemplate": "classic",
+  "colors": {
+    "primary": "#10b713",
+    "cta": "#15f930",
+    "ctaHover": "#ea580c",
+    "accent": "#f59e0b",
+    "background": "#f9fafb",
+    "surface": "#ffffff",
+    "text": "#111827",
+    "textMuted": "#6b7280"
+  },
+  "sections": {
+    "hero": {
+      "showBadge": true,
+      "badgeText": "🔥 الأكثر مبيعاً في المغرب",
+      "showRating": true,
+      "showSalesCount": true,
+      "salesCountText": "+1000 عميل راضٍ"
+    },
+    "pricing": {
+      "ctaText": "اطلب الآن 🚀",
+      "stickyCtaText": "اطلب الآن",
+      "showOriginalPrice": true,
+      "showPopularBadge": true,
+      "showGuarantee": true,
+      "guaranteeText": "✅ ضمان 7 أيام أو استرجاع المبلغ",
+      "freeShippingBadgeText": "+ توصيل مجاني سريع"
+    },
+    "orderForm": {
+      "title": "📦 أكمل طلبك الآن",
+      "namePlaceholder": "الاسم الكامل",
+      "cityPlaceholder": "المدينة (مثال: الدار البيضاء)",
+      "phonePlaceholder": "06/07 xxxxxxxx",
+      "submitText": "✅ تأكيد الطلب",
+      "processingText": "جاري معالجة طلبك..."
+    },
+    "trustBadges": {
+      "showCOD": true,
+      "codText": "الدفع عند الاستلام",
+      "showFreeShipping": true,
+      "freeShippingText": "توصيل مجاني لجميع المدن",
+      "showWarranty": true,
+      "warrantyText": "ضمان 7 أيام",
+      "showFAQ": true,
+      "faqTitle": "الأسئلة الشائعة"
+    },
+    "advanced": {
+      "showStickyButton": true,
+      "borderRadius": "xl"
+    }
+  },
+  "updatedAt": "2026-07-23T23:50:12.450Z"
+}
