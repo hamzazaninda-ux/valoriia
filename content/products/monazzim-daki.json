@@ -1,0 +1,112 @@
+{
+  "id": "prod_1790890947662_sde57v",
+  "slug": "monazzim-daki",
+  "status": "draft",
+  "createdAt": "2026-10-01T21:42:29.775Z",
+  "updatedAt": "2026-10-01T21:42:29.775Z",
+  "template": "classic",
+  "published": {
+    "content": {
+      "heroImage": "https://placehold.co/800x800/faf9f6/022c22?text=Valoriia",
+      "title": "المنظم الذكي متعدد الاستعمال",
+      "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
+      "rating": 4.8,
+      "reviewCount": 127,
+      "gallery": [],
+      "faq": [
+        {
+          "question": "شنو كيجي مع المنظم؟",
+          "answer": "كيجي معاه رشاش فابور كهدية، والتوصيل سريع لجميع المدن المغربية."
+        },
+        {
+          "question": "كيفاش نخلص؟",
+          "answer": "الخلاص عند الاستلام — ما تخلص حتى توصلك السلعة وتشوفها بعينيك."
+        }
+      ],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "العرض الأساسي",
+          "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
+          "price": 149,
+          "originalPrice": 249,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "monazzim-daki",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "المنظم الذكي متعدد الاستعمال | Valoriia",
+      "metaDescription": "المنظم الذكي متعدد الاستعمال لترتيب المطبخ والحمام + رشاش فابور. التوصيل لجميع المدن المغربية والدفع عند الاستلام.",
+      "noindex": false
+    }
+  },
+  "draft": {
+    "content": {
+      "heroImage": "https://placehold.co/800x800/faf9f6/022c22?text=Valoriia",
+      "title": "المنظم الذكي متعدد الاستعمال",
+      "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
+      "rating": 4.8,
+      "reviewCount": 127,
+      "gallery": [],
+      "faq": [
+        {
+          "question": "شنو كيجي مع المنظم؟",
+          "answer": "كيجي معاه رشاش فابور كهدية، والتوصيل سريع لجميع المدن المغربية."
+        },
+        {
+          "question": "كيفاش نخلص؟",
+          "answer": "الخلاص عند الاستلام — ما تخلص حتى توصلك السلعة وتشوفها بعينيك."
+        }
+      ],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "العرض الأساسي",
+          "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
+          "price": 149,
+          "originalPrice": 249,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "monazzim-daki",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "المنظم الذكي متعدد الاستعمال | Valoriia",
+      "metaDescription": "المنظم الذكي متعدد الاستعمال لترتيب المطبخ والحمام + رشاش فابور. التوصيل لجميع المدن المغربية والدفع عند الاستلام.",
+      "noindex": false
+    }
+  },
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": [
+      {
+        "action": "created",
+        "timestamp": "2026-10-01T21:42:27.654Z"
+      }
+    ]
+  }
+}
