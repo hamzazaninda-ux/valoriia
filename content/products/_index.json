@@ -1,13 +1,1 @@
-[
-  {
-    "id": "prod_verify_1790868149866",
-    "slug": "verify-test-001",
-    "title": "Verify Test",
-    "subtitle": "test",
-    "heroImage": "",
-    "startingPrice": 1,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-01T15:22:36.494Z"
-  }
-]
+[]
