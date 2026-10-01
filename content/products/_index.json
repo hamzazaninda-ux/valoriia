@@ -1,5 +1,16 @@
 [
   {
+    "id": "prod_1790890982690_tyj0qm",
+    "slug": "kit-tandim",
+    "title": "طقم التنظيم المنزلي + هدية",
+    "subtitle": "ثلاث قطع أساسية لكل دار + الرشاش فابور",
+    "heroImage": "https://placehold.co/800x800/ecfdf5/065f46?text=Valoriia",
+    "startingPrice": 199,
+    "status": "published",
+    "template": "classic",
+    "updatedAt": "2026-10-01T21:43:11.219Z"
+  },
+  {
     "id": "prod_1790890965295_0dqn8q",
     "slug": "mimsahat-asyr",
     "title": "ممسحة العصر الذكية",
