@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "prod_1790890947662_sde57v",
+    "slug": "monazzim-daki",
+    "title": "المنظم الذكي متعدد الاستعمال",
+    "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
+    "heroImage": "https://placehold.co/800x800/faf9f6/022c22?text=Valoriia",
+    "startingPrice": 149,
+    "status": "draft",
+    "template": "classic",
+    "updatedAt": "2026-10-01T21:42:29.775Z"
+  }
+]
