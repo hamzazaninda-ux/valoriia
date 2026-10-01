@@ -3,8 +3,8 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-01T21:43:11.219Z",
-  "template": "classic",
+  "updatedAt": "2026-10-01T22:21:02.512Z",
+  "template": "stacked",
   "published": {
     "content": {
       "heroImage": "https://placehold.co/800x800/ecfdf5/065f46?text=Valoriia",
@@ -13,6 +13,15 @@
       "rating": 4.9,
       "reviewCount": 203,
       "gallery": [],
+      "carousel": [
+        {
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
+          "alt": "",
+          "title": "",
+          "bgGradient": "",
+          "badge": null
+        }
+      ],
       "faq": [
         {
           "question": "شنو فيه الطقم؟",
@@ -23,7 +32,33 @@
           "answer": "التوصيل سريع لجميع المدن المغربية، والخلاص عند الاستلام."
         }
       ],
-      "footerText": ""
+      "footerText": "",
+      "killers": {
+        "bullets": [
+          "",
+          "",
+          ""
+        ],
+        "featuredReview": {
+          "text": "",
+          "image": "",
+          "author": ""
+        },
+        "stories": [],
+        "gridReviews": [],
+        "benefits": [],
+        "usageSteps": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "footerCta": {
+          "text": "",
+          "image": ""
+        },
+        "guarantees": []
+      }
     },
     "pricing": {
       "currency": "MAD",
@@ -64,6 +99,10 @@
       {
         "action": "published",
         "timestamp": "2026-10-01T21:43:11.219Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-01T22:21:02.512Z"
       }
     ]
   }
