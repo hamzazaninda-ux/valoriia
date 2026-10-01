@@ -1,0 +1,112 @@
+{
+  "id": "prod_1790890965295_0dqn8q",
+  "slug": "mimsahat-asyr",
+  "status": "draft",
+  "createdAt": "2026-10-01T21:42:47.155Z",
+  "updatedAt": "2026-10-01T21:42:47.155Z",
+  "template": "classic",
+  "published": {
+    "content": {
+      "heroImage": "https://placehold.co/800x800/fdf6e3/92400e?text=Valoriia",
+      "title": "ممسحة العصر الذكية",
+      "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
+      "rating": 4.7,
+      "reviewCount": 89,
+      "gallery": [],
+      "faq": [
+        {
+          "question": "واش الممسحة كتعصر بوحدها؟",
+          "answer": "إيه، فيها نظام عصر ذاتي — ما تحتاج لا تعصر بيديك لا تقيس الماء."
+        },
+        {
+          "question": "كيفاش نخلص؟",
+          "answer": "الخلاص عند الاستلام — ما تخلص حتى توصلك السلعة."
+        }
+      ],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "العرض الأساسي",
+          "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
+          "price": 129,
+          "originalPrice": 199,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "mimsahat-asyr",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "ممسحة العصر الذكية | Valoriia",
+      "metaDescription": "ممسحة العصر الذكية بعصر ذاتي للتنظيف بلا عناء. التوصيل لجميع المدن المغربية والدفع عند الاستلام.",
+      "noindex": false
+    }
+  },
+  "draft": {
+    "content": {
+      "heroImage": "https://placehold.co/800x800/fdf6e3/92400e?text=Valoriia",
+      "title": "ممسحة العصر الذكية",
+      "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
+      "rating": 4.7,
+      "reviewCount": 89,
+      "gallery": [],
+      "faq": [
+        {
+          "question": "واش الممسحة كتعصر بوحدها؟",
+          "answer": "إيه، فيها نظام عصر ذاتي — ما تحتاج لا تعصر بيديك لا تقيس الماء."
+        },
+        {
+          "question": "كيفاش نخلص؟",
+          "answer": "الخلاص عند الاستلام — ما تخلص حتى توصلك السلعة."
+        }
+      ],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "العرض الأساسي",
+          "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
+          "price": 129,
+          "originalPrice": 199,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "mimsahat-asyr",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "ممسحة العصر الذكية | Valoriia",
+      "metaDescription": "ممسحة العصر الذكية بعصر ذاتي للتنظيف بلا عناء. التوصيل لجميع المدن المغربية والدفع عند الاستلام.",
+      "noindex": false
+    }
+  },
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": [
+      {
+        "action": "created",
+        "timestamp": "2026-10-01T21:42:45.295Z"
+      }
+    ]
+  }
+}
