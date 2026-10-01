@@ -1,5 +1,16 @@
 [
   {
+    "id": "prod_1790890965295_0dqn8q",
+    "slug": "mimsahat-asyr",
+    "title": "ممسحة العصر الذكية",
+    "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
+    "heroImage": "https://placehold.co/800x800/fdf6e3/92400e?text=Valoriia",
+    "startingPrice": 129,
+    "status": "published",
+    "template": "classic",
+    "updatedAt": "2026-10-01T21:42:52.587Z"
+  },
+  {
     "id": "prod_1790890947662_sde57v",
     "slug": "monazzim-daki",
     "title": "المنظم الذكي متعدد الاستعمال",
