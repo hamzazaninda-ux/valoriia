@@ -3,11 +3,11 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-01T22:21:02.512Z",
+  "updatedAt": "2026-10-01T22:34:54.580Z",
   "template": "stacked",
   "published": {
     "content": {
-      "heroImage": "https://placehold.co/800x800/ecfdf5/065f46?text=Valoriia",
+      "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
       "title": "طقم التنظيم المنزلي + هدية",
       "subtitle": "ثلاث قطع أساسية لكل دار + الرشاش فابور",
       "rating": 4.9,
@@ -103,6 +103,10 @@
       {
         "action": "published",
         "timestamp": "2026-10-01T22:21:02.512Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-01T22:34:54.580Z"
       }
     ]
   }
