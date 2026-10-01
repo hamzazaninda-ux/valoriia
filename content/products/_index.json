@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "prod_tmp_1790892236929",
+    "slug": "tmp-stacked-verify",
+    "title": "منتج تجريبي للقالب المرصوص",
+    "subtitle": "وصف تجريبي",
+    "heroImage": "https://placehold.co/900x1600/022c22/fbbf24?text=9x16",
+    "startingPrice": 99,
+    "status": "draft",
+    "template": "stacked",
+    "updatedAt": "2026-10-01T22:03:58.977Z"
+  }
+]
