@@ -42,5 +42,16 @@
     "author": "valoriia",
     "category": "landing",
     "supportedFeatures": ["hero", "carousel", "offers", "orderForm", "killers"]
+  },
+  {
+    "id": "stacked",
+    "name": "Stacked Images",
+    "description": "Full-width stacked images (first 9:16, rest natural ratio) with classic COD checkout — ideal for image-made sales pages",
+    "thumbnail": "https://placehold.co/400x300/022c22/fbbf24?text=Stacked",
+    "isDefault": false,
+    "version": 1,
+    "author": "valoriia",
+    "category": "landing",
+    "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
   }
 ]
