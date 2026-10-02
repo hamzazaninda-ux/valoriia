@@ -3,7 +3,7 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-01T22:34:54.580Z",
+  "updatedAt": "2026-10-02T15:32:23.504Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -67,10 +67,11 @@
           "id": 1,
           "title": "العرض الأساسي",
           "subtitle": "ثلاث قطع أساسية لكل دار + الرشاش فابور",
-          "price": 199,
+          "price": 229,
           "originalPrice": 299,
           "quantity": 1,
           "badge": "الأكثر طلباً",
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png",
           "isPopular": true
         }
       ]
@@ -107,6 +108,10 @@
       {
         "action": "published",
         "timestamp": "2026-10-01T22:34:54.580Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-02T15:32:23.504Z"
       }
     ]
   }
