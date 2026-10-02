@@ -259,7 +259,7 @@
 						<div class="grid grid-cols-1 gap-2.5">
 							{#each pricing.offers as offer}
 								<label
-									class="relative flex cursor-pointer items-center gap-3 rounded-xl border-2 bg-white p-3 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
+									class="relative flex cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -270,18 +270,18 @@
 										class="sr-only"
 									/>
 									{#if offer.image}
-										<span class="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
+										<span class="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
 											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
 										</span>
 									{:else}
-										<span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-neutral-100">
-											<svg class="h-6 w-6 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+										<span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+											<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 											</svg>
 										</span>
 									{/if}
 									<span class="min-w-0 flex-1 text-right">
-										<span class="block text-sm font-extrabold text-black">{offer.title}</span>
+										<span class="block text-[13px] font-extrabold text-black">{offer.title}</span>
 										{#if offer.subtitle}
 											<span class="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-neutral-500">
 												<svg class="h-3.5 w-3.5 shrink-0 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -290,15 +290,15 @@
 												<span class="truncate">{offer.subtitle}</span>
 											</span>
 										{/if}
-										<span class="mt-1.5 flex flex-wrap items-center gap-1.5">
+										<span class="mt-1 flex flex-wrap items-center gap-1">
 											{#if offer.badge}
-												<span class="rounded-md bg-orange-500 px-2 py-0.5 text-[10px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
+												<span class="rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
 											{/if}
-											<span class="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">توصيل مجاني</span>
+											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">توصيل مجاني</span>
 										</span>
 									</span>
 									<span class="shrink-0 text-left">
-										<span class="block text-base font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
+										<span class="block text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
 										{#if offer.originalPrice > offer.price}
 											<span class="mt-0.5 block text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
 										{/if}

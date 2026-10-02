@@ -1,19 +1,14 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { isValidMoroccanPhone } from '$lib/utils/phone';
 	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice } from '$lib/utils/format';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
-	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
-	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
-	import UpsellModal from '$lib/components/shared/UpsellModal.svelte';
-	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import Carousel from './Carousel.svelte';
 
-	let { product, settings, theme, others = [] }: TemplateProps = $props();
+	let { product, settings, theme }: TemplateProps = $props();
 
 	let t = $derived(theme || getDefaultTheme('classic'));
 
@@ -54,22 +49,6 @@
 
 	function scrollToForm() {
 		document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' });
-	}
-
-	const sheetsUrl = $derived(
-		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
-	);
-
-	function addSelectedToCart() {
-		cart.add({
-			slug: (product as any).slug || '',
-			title: content.title || 'منتج',
-			image: content.heroImage || content.gallery?.[0]?.src || content.carousel?.[0]?.image || '',
-			price: activeOffer.price || 0,
-			offerId: (activeOffer as ProductOffer).id ?? 0,
-			offerTitle: activeOffer.title || ''
-		});
-		cartUi.openDrawer();
 	}
 
 	onMount(() => {
@@ -205,7 +184,7 @@
 >
 {#snippet offerRow(offer: ProductOffer, radioName: string)}
 	<label
-		class="relative flex items-center gap-3 p-3 border rounded-2xl cursor-pointer transition-all duration-300 select-none active:scale-[0.98] {currentPackId === offer.id ? 'border-emerald-500 bg-emerald-50/40 ring-2 ring-emerald-500/20 shadow-md shadow-emerald-500/5' : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/30'}"
+		class="relative flex items-center gap-2.5 p-2.5 border rounded-xl cursor-pointer transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 bg-blue-50/40 ring-1 ring-blue-500/30 shadow-md shadow-blue-500/5' : 'border-gray-200 bg-white hover:border-gray-300'}"
 	>
 		<input
 			type="radio"
@@ -216,24 +195,30 @@
 			class="sr-only"
 		/>
 		{#if offer.image}
-			<span class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+			<span class="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
 				<img src={offer.image} alt="" class="h-full w-full object-cover" loading="lazy" />
+			</span>
+		{:else}
+			<span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+				<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4" />
+				</svg>
 			</span>
 		{/if}
 		<span class="min-w-0 flex-1 text-right">
-			<span class="block truncate text-sm font-extrabold text-black">{offer.title}</span>
+			<span class="block truncate text-[13px] font-extrabold text-black">{offer.title}</span>
 			{#if offer.subtitle}
 				<span class="mt-0.5 block truncate text-[11px] font-semibold text-muted-foreground">{offer.subtitle}</span>
 			{/if}
-			<span class="mt-1.5 flex flex-wrap items-center gap-1.5">
+			<span class="mt-1 flex flex-wrap items-center gap-1">
 				{#if offer.badge && t.sections.pricing.showPopularBadge}
-					<span class="rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
+					<span class="rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
 				{/if}
-				<span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700">{t.sections.pricing.freeShippingBadgeText}</span>
+				<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">توصيل مجاني</span>
 			</span>
 		</span>
 		<span class="flex shrink-0 flex-col items-end gap-0.5">
-			<span class="font-black transition-all duration-300 {offer.isPopular ? 'text-orange-500 text-[18px]' : 'text-emerald-600 text-base'}">{formatPrice(offer.price, settings.commerce.currencySymbol)}</span>
+			<span class="font-black transition-all duration-300 {offer.isPopular ? 'text-orange-500 text-base' : 'text-emerald-600 text-sm'}">{formatPrice(offer.price, settings.commerce.currencySymbol)}</span>
 			{#if offer.originalPrice > offer.price}
 				<span class="text-[11px] text-muted-foreground line-through font-semibold">{formatPrice(offer.originalPrice, settings.commerce.currencySymbol)}</span>
 				<span class="text-[10px] font-black text-amber-600">وفّر {formatPrice(offer.originalPrice - offer.price, settings.commerce.currencySymbol)}</span>
@@ -286,13 +271,13 @@
 		<p class="text-[11px] font-bold mt-1" style="color: var(--t-primary, #10b981);">{t.sections.pricing.freeShippingBadgeText}</p>
 		<button
 			type="button"
-			onclick={addSelectedToCart}
+			onclick={scrollToForm}
 			class="mt-4 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 border-white/25 bg-white/10 px-8 font-extrabold text-white backdrop-blur transition-all duration-300 hover:bg-white/20 active:scale-[0.98]"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
+				<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
 			</svg>
-			زيد للسلة
+			{t.sections.pricing.ctaText || 'اطلب الآن'}
 		</button>
 	</div>
 
@@ -619,7 +604,7 @@
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-background via-background to-transparent pointer-events-none" dir="rtl">
 			<button
-				onclick={addSelectedToCart}
+				onclick={scrollToForm}
 				style="background-color: var(--t-cta, #f97316);"
 				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
@@ -627,21 +612,4 @@
 			</button>
 		</div>
 	{/if}
-
-	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} />
-	<CheckoutModal
-		currency={settings.commerce.currencySymbol || 'درهم'}
-		sheetsUrl={sheetsUrl}
-		productTitle={content.title}
-		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
-		onDone={(order) => cartUi.beginUpsell(order)}
-	/>
-	<UpsellModal
-		order={cartUi.upsell!}
-		products={others}
-		currency={settings.commerce.currencySymbol || 'درهم'}
-		sheetsUrl={sheetsUrl}
-		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
-		onFinish={() => { window.location.href = '/thank-you'; }}
-	/>
 </div>
