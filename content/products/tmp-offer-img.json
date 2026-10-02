@@ -1,0 +1,96 @@
+{
+  "id": "prod_tmp_1790947995895",
+  "slug": "tmp-offer-img",
+  "status": "draft",
+  "createdAt": "2026-10-02T13:33:18.332Z",
+  "updatedAt": "2026-10-02T13:33:18.332Z",
+  "template": "stacked",
+  "published": {
+    "content": {
+      "heroImage": "https://placehold.co/900x1600/022c22/fbbf24?text=9x16",
+      "title": "تجربة صورة العرض",
+      "subtitle": "تجربة",
+      "rating": 5,
+      "reviewCount": 1,
+      "gallery": [],
+      "faq": [],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "عرض تجريبي",
+          "subtitle": "تجربة",
+          "price": 99,
+          "originalPrice": 149,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "image": "https://placehold.co/200x200/022c22/fbbf24?text=Offer",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "tmp-offer-img",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "تجربة",
+      "metaDescription": "تجربة صورة العرض",
+      "noindex": true
+    }
+  },
+  "draft": {
+    "content": {
+      "heroImage": "https://placehold.co/900x1600/022c22/fbbf24?text=9x16",
+      "title": "تجربة صورة العرض",
+      "subtitle": "تجربة",
+      "rating": 5,
+      "reviewCount": 1,
+      "gallery": [],
+      "faq": [],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "عرض تجريبي",
+          "subtitle": "تجربة",
+          "price": 99,
+          "originalPrice": 149,
+          "quantity": 1,
+          "badge": "الأكثر طلباً",
+          "image": "https://placehold.co/200x200/022c22/fbbf24?text=Offer",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "tmp-offer-img",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "تجربة",
+      "metaDescription": "تجربة صورة العرض",
+      "noindex": true
+    }
+  },
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": [
+      {
+        "action": "created",
+        "timestamp": "2026-10-02T13:33:15.885Z"
+      }
+    ]
+  }
+}
