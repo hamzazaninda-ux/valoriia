@@ -1,13 +1,15 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount } from 'svelte';
-	import { isValidMoroccanPhone } from '$lib/utils/phone';
-	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice } from '$lib/utils/format';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
+	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
+	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
+	import UpsellModal from '$lib/components/shared/UpsellModal.svelte';
+	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 
-	let { product, settings, theme }: TemplateProps = $props();
+	let { product, settings, theme, others = [] }: TemplateProps = $props();
 
 	let t = $derived(theme || getDefaultTheme('stacked'));
 
@@ -26,10 +28,10 @@
 		pricing.offers.find((o: ProductOffer) => o.id === currentPackId) || pricing.offers[0] || { title: '', price: 0, quantity: 1 }
 	);
 
-	// ── Stacked images ─────────────────────────────────────────────
+	// â”€â”€ Stacked images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 	// First image fills a 9:16 frame (all phones identical), the rest keep
 	// their natural ratio (1:1 stays 1:1). Upload slots = hero + gallery.
-	// Accepts images from EVERY admin image list (gallery → carousel → hero)
+	// Accepts images from EVERY admin image list (gallery â†’ carousel â†’ hero)
 	// so a product can never render imageless no matter which tab was used.
 	// Empty URLs are filtered out (never render a broken <img>).
 	let slides = $derived.by(() => {
@@ -46,29 +48,32 @@
 		}
 		return [];
 	});
-	// ──────────────────────────────────────────────────────────────
+	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-	let fullName = $state('');
-	let city = $state('');
-	let phoneNumber = $state('');
-	let errors = $state({ fullName: '', city: '', phoneNumber: '' });
-	let loading = $state(false);
-	let submitError = $state('');
-	let shouldShakePhone = $state(false);
 	let showStickyBtn = $state(true);
-	let hasSentLead = $state(false);
-	let abandonmentTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	const waNumber = $derived(
 		(order?.whatsappNumber || settings?.brand?.whatsappNumber || '').replace(/\D/g, '')
 	);
 
-	function scrollToForm() {
-		document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' });
+	const sheetsUrl = $derived(
+		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
+	);
+
+	function addSelectedToCart() {
+		cart.add({
+			slug: (product as any).slug || '',
+			title: content.title || 'منتج',
+			image: slides[0]?.src || '',
+			price: activeOffer.price || 0,
+			offerId: (activeOffer as ProductOffer).id ?? 0,
+			offerTitle: activeOffer.title || ''
+		});
+		cartUi.openDrawer();
 	}
 
 	function waOrderLink() {
-		const text = `السلام ${settings?.brand?.name || 'Valoriia'}، بغيت نطلب:\n• ${content.title} — ${activeOffer?.title || ''}\nالثمن: ${activeOffer?.price || 0} ${settings?.commerce?.currencySymbol || 'درهم'}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
+		const text = `Ø§Ù„Ø³Ù„Ø§Ù… ${settings?.brand?.name || 'Valoriia'}ØŒ Ø¨ØºÙŠØª Ù†Ø·Ù„Ø¨:\nâ€¢ ${content.title} â€” ${activeOffer?.title || ''}\nØ§Ù„Ø«Ù…Ù†: ${activeOffer?.price || 0} ${settings?.commerce?.currencySymbol || 'Ø¯Ø±Ù‡Ù…'}\nØ§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„: \nØ§Ù„Ù…Ø¯ÙŠÙ†Ø©: \nØ§Ù„Ù‡Ø§ØªÙ: `;
 		return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
 	}
 
@@ -105,95 +110,6 @@
 		};
 	});
 
-	$effect(() => {
-		const nameVal = fullName.trim();
-		const cityVal = city.trim();
-		const phoneVal = phoneNumber.trim();
-
-		if (abandonmentTimeout) {
-			clearTimeout(abandonmentTimeout);
-			abandonmentTimeout = null;
-		}
-
-		if (
-			nameVal.length >= 2 &&
-			cityVal.length >= 2 &&
-			phoneVal.length >= 8 &&
-			isValidMoroccanPhone(phoneVal) &&
-			!hasSentLead
-		) {
-			abandonmentTimeout = setTimeout(() => {
-				if (hasSentLead) return;
-				hasSentLead = true;
-			}, 15000);
-		}
-	});
-
-	function handleSubmit(e: Event) {
-		e.preventDefault();
-		errors = { fullName: '', city: '', phoneNumber: '' };
-		submitError = '';
-		shouldShakePhone = false;
-
-		const validation = validateOrderForm(fullName, city, phoneNumber);
-		if (validation.errors.fullName || validation.errors.city || validation.errors.phoneNumber) {
-			errors = validation.errors;
-			shouldShakePhone = validation.shouldShake;
-			return;
-		}
-
-		loading = true;
-
-		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-		const productSku = (product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL';
-		const productTitle = content.title || 'منتج';
-
-		const orderData = {
-			orderId,
-			fullName: fullName.trim(),
-			phoneNumber: phoneNumber.trim(),
-			address: city.trim(),
-			city: city.trim(),
-			offer: activeOffer?.title || '',
-			price: activeOffer?.price || 0,
-			quantity: activeOffer?.quantity || 1,
-			qte: activeOffer?.quantity || 1,
-			sku: productSku,
-			productTitle,
-			pageUrl: typeof window !== 'undefined' ? window.location.href : '',
-			date: new Date().toLocaleDateString('ar-MA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-			timestamp: new Date().toISOString()
-		};
-
-		if (typeof window !== 'undefined') {
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'Purchase', { value: orderData.price, currency: 'MAD', content_name: productTitle });
-			}
-			if ((window as any).ttq) {
-				(window as any).ttq.track('CompletePayment', { value: orderData.price, currency: 'MAD', content_name: productTitle });
-			}
-		}
-
-		const sheetsUrl = (order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim();
-
-		const saveAndRedirect = () => {
-			localStorage.setItem('latestOrder', JSON.stringify(orderData));
-			window.location.href = '/thank-you';
-		};
-
-		if (sheetsUrl) {
-			fetch(sheetsUrl, {
-				method: 'POST',
-				mode: 'no-cors',
-				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-				body: JSON.stringify(orderData)
-			})
-				.then(saveAndRedirect)
-				.catch(saveAndRedirect);
-		} else {
-			saveAndRedirect();
-		}
-	}
 </script>
 
 <div
@@ -203,10 +119,10 @@
 	<!-- Trust bar -->
 	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
 		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings.commerce.freeShippingText} • {settings.commerce.paymentMethod}</span>
+		<span>{settings.commerce.freeShippingText} â€¢ {settings.commerce.paymentMethod}</span>
 	</div>
 
-	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
+	<!-- â”€â”€ Stacked images: first fills 9:16, rest keep natural ratio â”€â”€ -->
 	{#if slides.length > 0}
 		<div class="w-full bg-black/5">
 			<img
@@ -231,8 +147,8 @@
 				<circle cx="42" cy="32" r="6" />
 				<path d="M25 72l18-18 12 12 10-10 30 30" stroke-linecap="round" stroke-linejoin="round" />
 			</svg>
-			<p class="font-bold text-emerald-950">بلاصة تصاور المنتج</p>
-			<p class="text-xs text-neutral-500 leading-relaxed">زيد الصورة اللولة (9:16) وباقي التصاور من معرض الصور في لوحة التحكم</p>
+			<p class="font-bold text-emerald-950">Ø¨Ù„Ø§ØµØ© ØªØµØ§ÙˆØ± Ø§Ù„Ù…Ù†ØªØ¬</p>
+			<p class="text-xs text-neutral-500 leading-relaxed">Ø²ÙŠØ¯ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ù„ÙˆÙ„Ø© (9:16) ÙˆØ¨Ø§Ù‚ÙŠ Ø§Ù„ØªØµØ§ÙˆØ± Ù…Ù† Ù…Ø¹Ø±Ø¶ Ø§Ù„ØµÙˆØ± ÙÙŠ Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…</p>
 		</div>
 	{/if}
 
@@ -245,15 +161,15 @@
 					{t.sections.orderForm.title}
 				</h2>
 				<p class="text-sm font-bold mt-2 px-2 leading-relaxed text-neutral-500">
-					عمّر الاستمارة وخلص ملي توصلك السلعة
+					Ø¹Ù…Ù‘Ø± Ø§Ù„Ø§Ø³ØªÙ…Ø§Ø±Ø© ÙˆØ®Ù„Øµ Ù…Ù„ÙŠ ØªÙˆØµÙ„Ùƒ Ø§Ù„Ø³Ù„Ø¹Ø©
 				</p>
 			</div>
 
 			<div class="px-4 pb-6">
-				<form onsubmit={handleSubmit} class="space-y-4">
+				<div class="space-y-4">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
-							اختر العرض المناسب لك:
+							Ø§Ø®ØªØ± Ø§Ù„Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨ Ù„Ùƒ:
 						</span>
 
 						<div class="grid grid-cols-1 gap-2.5">
@@ -294,7 +210,7 @@
 											{#if offer.badge}
 												<span class="rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
 											{/if}
-											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">توصيل مجاني</span>
+											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">ØªÙˆØµÙŠÙ„ Ù…Ø¬Ø§Ù†ÙŠ</span>
 										</span>
 									</span>
 									<span class="shrink-0 text-left">
@@ -308,115 +224,18 @@
 						</div>
 					</div>
 
-					<div class="space-y-1.5 text-right" dir="rtl">
-						<label for="st-fullName" class="block text-right font-extrabold text-sm text-black select-none pr-1">
-							الاسم الكامل <span class="font-bold text-red-500">*</span>
-						</label>
-						<div class="w-full flex items-center border border-gray-300 rounded-lg overflow-hidden h-12 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
-						<div class="w-12 self-stretch bg-neutral-200/70 flex items-center justify-center text-neutral-500 shrink-0">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-								</svg>
-							</div>
-							<input
-								id="st-fullName"
-								type="text"
-								placeholder={t.sections.orderForm.namePlaceholder}
-								bind:value={fullName}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
-							/>
-						</div>
-						{#if errors.fullName}
-							<p class="text-[11px] text-red-600 font-semibold text-right animate-pulse">{errors.fullName}</p>
-						{/if}
-					</div>
-
-					<div class="space-y-1.5 text-right" dir="rtl">
-						<label for="st-city" class="block text-right font-extrabold text-sm text-black select-none pr-1">
-							<span class="text-red-500 font-bold">*</span>
-							<span>المدينة / Ville</span>
-						</label>
-						<div class="w-full flex items-center border border-gray-300 rounded-lg overflow-hidden h-12 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
-						<div class="w-12 self-stretch bg-neutral-200/70 flex items-center justify-center text-neutral-500 shrink-0">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1 1 15 0Z" />
-								</svg>
-							</div>
-							<input
-								id="st-city"
-								type="text"
-								placeholder={t.sections.orderForm.cityPlaceholder}
-								bind:value={city}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
-							/>
-						</div>
-						{#if errors.city}
-							<p class="text-[11px] text-red-600 font-semibold text-right animate-pulse">{errors.city}</p>
-						{/if}
-					</div>
-
-					<div class="space-y-1.5 text-right" dir="rtl">
-						<label for="st-city" class="block text-right font-extrabold text-sm text-black select-none pr-1">
-							المدينة / Ville <span class="font-bold text-red-500">*</span>
-						</label>
-						<div class="w-full flex items-center border border-gray-300 rounded-lg overflow-hidden h-12 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
-							<div class="w-12 self-stretch bg-neutral-200/70 flex items-center justify-center text-neutral-500 shrink-0">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1 1 15 0Z" />
-								</svg>
-							</div>
-							<input
-								id="st-city"
-								type="text"
-								placeholder={t.sections.orderForm.cityPlaceholder}
-								bind:value={city}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
-							/>
-						</div>
-						{#if errors.city}
-							<p class="text-[11px] text-red-600 font-semibold text-right animate-pulse">{errors.city}</p>
-						{/if}
-					</div>
-
-					<div class="space-y-1.5 text-right" dir="rtl">
-						<label for="st-phone" class="block text-right font-extrabold text-sm text-black select-none pr-1">
-							<span>رقم الهاتف</span> <span class="font-bold text-red-500">*</span>
-						</label>
-						<div class="w-full flex items-center border rounded-lg overflow-hidden h-12 bg-white transition-all {errors.phoneNumber ? 'border-red-500' : 'border-gray-300 focus-within:ring-emerald-600 focus-within:border-emerald-600'} {shouldShakePhone ? 'animate-shake border-red-500 ring-2 ring-red-500/20' : ''}">
-						<div class="w-12 self-stretch bg-neutral-200/70 flex items-center justify-center text-neutral-500 shrink-0">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-								</svg>
-							</div>
-							<input
-								id="st-phone"
-								type="tel"
-								placeholder={t.sections.orderForm.phonePlaceholder}
-								bind:value={phoneNumber}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
-							/>
-						</div>
-						{#if errors.phoneNumber}
-							<p class="text-[11px] text-red-600 font-semibold text-right animate-pulse">{errors.phoneNumber}</p>
-						{/if}
-					</div>
+					<button
+						type="button"
+						onclick={addSelectedToCart}
+						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98]"
+					>
+						<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
+						</svg>
+						<span>Ø£Ø¶Ù Ø¥Ù„Ù‰ Ø§Ù„Ø³Ù„Ø© Â· {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+					</button>
 
 					<div class="pt-2 space-y-2.5">
-						<button
-							type="submit"
-							disabled={loading}
-							style="background-color: var(--t-cta, #15803d);"
-							class="w-full py-4 text-base font-extrabold text-white rounded-xl shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-300 relative overflow-hidden flex items-center justify-center gap-2 group cursor-pointer {!loading ? 'animate-pulse' : ''}"
-						>
-							{#if loading}
-								<div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-								<span>{t.sections.orderForm.processingText}</span>
-							{:else}
-								<span>{t.sections.orderForm.submitText}</span>
-							{/if}
-						</button>
 						<a
 							href={waOrderLink()}
 							target="_blank"
@@ -426,7 +245,7 @@
 							<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 								<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
 							</svg>
-							<span>اطلب عبر واتساب</span>
+							<span>Ø§Ø·Ù„Ø¨ Ø¹Ø¨Ø± ÙˆØ§ØªØ³Ø§Ø¨</span>
 						</a>
 					</div>
 
@@ -436,12 +255,7 @@
 						</p>
 					{/if}
 
-					{#if submitError}
-						<div class="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-right" dir="rtl">
-							<span class="text-sm font-bold text-red-700">{submitError}</span>
-						</div>
-					{/if}
-				</form>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -483,13 +297,13 @@
 	<div id="checkout-form-bottom"></div>
 
 	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4" dir="rtl">
-		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
+		<p>{content.footerText || `Â© ${new Date().getFullYear()} ${settings.brand.name}. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©.`}</p>
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" dir="rtl">
 			<button
-				onclick={scrollToForm}
+				onclick={addSelectedToCart}
 				style="background-color: var(--t-cta, #16a34a);"
 				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-2xl shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
@@ -497,4 +311,21 @@
 			</button>
 		</div>
 	{/if}
+
+	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
+	<CheckoutModal
+		currency={settings.commerce.currencySymbol || 'درهم'}
+		sheetsUrl={sheetsUrl}
+		productTitle={content.title}
+		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
+		onDone={(order) => cartUi.beginUpsell(order)}
+	/>
+	<UpsellModal
+		order={cartUi.upsell!}
+		products={others}
+		currency={settings.commerce.currencySymbol || 'درهم'}
+		sheetsUrl={sheetsUrl}
+		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
+		onFinish={() => { window.location.href = '/thank-you'; }}
+	/>
 </div>

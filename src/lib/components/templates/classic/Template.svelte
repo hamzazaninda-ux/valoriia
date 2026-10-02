@@ -4,11 +4,15 @@
 	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice } from '$lib/utils/format';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
+	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
+	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
+	import UpsellModal from '$lib/components/shared/UpsellModal.svelte';
+	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import Carousel from './Carousel.svelte';
 
-	let { product, settings, theme }: TemplateProps = $props();
+	let { product, settings, theme, others = [] }: TemplateProps = $props();
 
 	let t = $derived(theme || getDefaultTheme('classic'));
 
@@ -49,6 +53,22 @@
 
 	function scrollToForm() {
 		document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' });
+	}
+
+	const sheetsUrl = $derived(
+		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
+	);
+
+	function addSelectedToCart() {
+		cart.add({
+			slug: (product as any).slug || '',
+			title: content.title || 'منتج',
+			image: content.heroImage || content.gallery?.[0]?.src || content.carousel?.[0]?.image || '',
+			price: activeOffer.price || 0,
+			offerId: (activeOffer as ProductOffer).id ?? 0,
+			offerTitle: activeOffer.title || ''
+		});
+		cartUi.openDrawer();
 	}
 
 	onMount(() => {
@@ -271,7 +291,7 @@
 		<p class="text-[11px] font-bold mt-1" style="color: var(--t-primary, #10b981);">{t.sections.pricing.freeShippingBadgeText}</p>
 		<button
 			type="button"
-			onclick={scrollToForm}
+			onclick={addSelectedToCart}
 			class="mt-4 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 border-white/25 bg-white/10 px-8 font-extrabold text-white backdrop-blur transition-all duration-300 hover:bg-white/20 active:scale-[0.98]"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -604,7 +624,7 @@
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-background via-background to-transparent pointer-events-none" dir="rtl">
 			<button
-				onclick={scrollToForm}
+				onclick={addSelectedToCart}
 				style="background-color: var(--t-cta, #f97316);"
 				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
@@ -612,4 +632,21 @@
 			</button>
 		</div>
 	{/if}
+
+	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={content.heroImage || ''} />
+	<CheckoutModal
+		currency={settings.commerce.currencySymbol || 'درهم'}
+		sheetsUrl={sheetsUrl}
+		productTitle={content.title}
+		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
+		onDone={(order) => cartUi.beginUpsell(order)}
+	/>
+	<UpsellModal
+		order={cartUi.upsell!}
+		products={others}
+		currency={settings.commerce.currencySymbol || 'درهم'}
+		sheetsUrl={sheetsUrl}
+		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
+		onFinish={() => { window.location.href = '/thank-you'; }}
+	/>
 </div>

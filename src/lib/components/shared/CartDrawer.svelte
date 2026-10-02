@@ -9,18 +9,42 @@
 		startingPrice?: number;
 	}
 
+	export interface DrawerOffer {
+		id: number;
+		title: string;
+		subtitle?: string;
+		price: number;
+		originalPrice?: number;
+		badge?: string | null;
+		image?: string;
+	}
+
 	let {
 		others = [],
 		currency = 'درهم',
-		salesText = ''
+		salesText = '',
+		offers = [],
+		currentSlug = '',
+		currentTitle = '',
+		currentImage = ''
 	}: {
 		others?: CrossSell[];
 		currency?: string;
 		salesText?: string;
+		offers?: DrawerOffer[];
+		currentSlug?: string;
+		currentTitle?: string;
+		currentImage?: string;
 	} = $props();
 
 	const crossSells = $derived(
 		others.filter((p) => !cart.lines.some((l) => l.slug === p.slug)).slice(0, 3)
+	);
+
+	const moreOffers = $derived(
+		(offers || []).filter(
+			(o) => currentSlug && !cart.lines.some((l) => l.slug === currentSlug && l.offerId === o.id)
+		)
 	);
 
 	function addCrossSell(p: CrossSell) {
@@ -31,6 +55,17 @@
 			price: p.startingPrice || 0,
 			offerId: 0,
 			offerTitle: 'العرض الأساسي'
+		});
+	}
+
+	function addOffer(o: DrawerOffer) {
+		cart.add({
+			slug: currentSlug,
+			title: currentTitle,
+			image: currentImage,
+			price: o.price,
+			offerId: o.id,
+			offerTitle: o.title
 		});
 	}
 </script>
@@ -94,6 +129,31 @@
 							</span>
 						</div>
 					{/each}
+
+					{#if moreOffers.length > 0}
+						<div class="rounded-2xl border border-amber-200 bg-amber-50/60 p-3">
+							<p class="px-1 pb-2 text-sm font-extrabold text-neutral-800">
+								زيد عرض آخر بنفس التوصيل
+							</p>
+							<div class="space-y-2">
+								{#each moreOffers as o}
+									<div class="flex items-center gap-3 rounded-xl border border-amber-200/70 bg-white p-2.5">
+										<span class="min-w-0 flex-1 text-right">
+											<span class="block truncate text-[13px] font-extrabold text-neutral-800">{o.title}</span>
+											<span class="mt-0.5 block text-xs font-black text-emerald-700">{o.price} {currency}</span>
+										</span>
+										<button
+											type="button"
+											onclick={() => addOffer(o)}
+											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
+										>
+											+ أضف
+										</button>
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
 
 					{#if crossSells.length > 0}
 						<div class="pt-1">
