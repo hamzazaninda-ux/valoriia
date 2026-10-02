@@ -1,13 +1,1 @@
-[
-  {
-    "id": "prod_tmp_1790947995895",
-    "slug": "tmp-offer-img",
-    "title": "تجربة صورة العرض",
-    "subtitle": "تجربة",
-    "heroImage": "https://placehold.co/900x1600/022c22/fbbf24?text=9x16",
-    "startingPrice": 99,
-    "status": "draft",
-    "template": "stacked",
-    "updatedAt": "2026-10-02T13:33:18.332Z"
-  }
-]
+[]
