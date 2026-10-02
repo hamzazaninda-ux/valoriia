@@ -73,7 +73,7 @@
 	}
 
 	function waOrderLink() {
-		const text = `Ø§Ù„Ø³Ù„Ø§Ù… ${settings?.brand?.name || 'Valoriia'}ØŒ Ø¨ØºÙŠØª Ù†Ø·Ù„Ø¨:\nâ€¢ ${content.title} â€” ${activeOffer?.title || ''}\nØ§Ù„Ø«Ù…Ù†: ${activeOffer?.price || 0} ${settings?.commerce?.currencySymbol || 'Ø¯Ø±Ù‡Ù…'}\nØ§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„: \nØ§Ù„Ù…Ø¯ÙŠÙ†Ø©: \nØ§Ù„Ù‡Ø§ØªÙ: `;
+		const text = `السلام ${settings?.brand?.name || 'Valoriia'}، بغيت نطلب:\n• ${content.title} — ${activeOffer?.title || ''}\nالثمن: ${activeOffer?.price || 0} ${settings?.commerce?.currencySymbol || 'درهم'}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
 		return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
 	}
 
@@ -119,7 +119,7 @@
 	<!-- Trust bar -->
 	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
 		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings.commerce.freeShippingText} â€¢ {settings.commerce.paymentMethod}</span>
+		<span>{settings.commerce.freeShippingText} • {settings.commerce.paymentMethod}</span>
 	</div>
 
 	<!-- â”€â”€ Stacked images: first fills 9:16, rest keep natural ratio â”€â”€ -->
@@ -147,8 +147,8 @@
 				<circle cx="42" cy="32" r="6" />
 				<path d="M25 72l18-18 12 12 10-10 30 30" stroke-linecap="round" stroke-linejoin="round" />
 			</svg>
-			<p class="font-bold text-emerald-950">Ø¨Ù„Ø§ØµØ© ØªØµØ§ÙˆØ± Ø§Ù„Ù…Ù†ØªØ¬</p>
-			<p class="text-xs text-neutral-500 leading-relaxed">Ø²ÙŠØ¯ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ù„ÙˆÙ„Ø© (9:16) ÙˆØ¨Ø§Ù‚ÙŠ Ø§Ù„ØªØµØ§ÙˆØ± Ù…Ù† Ù…Ø¹Ø±Ø¶ Ø§Ù„ØµÙˆØ± ÙÙŠ Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ…</p>
+			<p class="font-bold text-emerald-950">بلاصة تصاور المنتج</p>
+			<p class="text-xs text-neutral-500 leading-relaxed">زيد الصورة اللولة (9:16) وباقي التصاور من معرض الصور في لوحة التحكم</p>
 		</div>
 	{/if}
 
@@ -161,7 +161,7 @@
 					{t.sections.orderForm.title}
 				</h2>
 				<p class="text-sm font-bold mt-2 px-2 leading-relaxed text-neutral-500">
-					Ø¹Ù…Ù‘Ø± Ø§Ù„Ø§Ø³ØªÙ…Ø§Ø±Ø© ÙˆØ®Ù„Øµ Ù…Ù„ÙŠ ØªÙˆØµÙ„Ùƒ Ø§Ù„Ø³Ù„Ø¹Ø©
+					عمّر الاستمارة وخلص ملي توصلك السلعة
 				</p>
 			</div>
 
@@ -169,7 +169,7 @@
 				<div class="space-y-4">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
-							Ø§Ø®ØªØ± Ø§Ù„Ø¹Ø±Ø¶ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨ Ù„Ùƒ:
+							اختر العرض المناسب لك:
 						</span>
 
 						<div class="grid grid-cols-1 gap-2.5">
@@ -210,7 +210,7 @@
 											{#if offer.badge}
 												<span class="rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
 											{/if}
-											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">ØªÙˆØµÙŠÙ„ Ù…Ø¬Ø§Ù†ÙŠ</span>
+											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">توصيل مجاني</span>
 										</span>
 									</span>
 									<span class="shrink-0 text-left">
@@ -232,7 +232,7 @@
 						<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
 						</svg>
-						<span>Ø£Ø¶Ù Ø¥Ù„Ù‰ Ø§Ù„Ø³Ù„Ø© Â· {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+						<span>أضف إلى السلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
 					</button>
 
 					<div class="pt-2 space-y-2.5">
@@ -245,7 +245,7 @@
 							<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 								<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
 							</svg>
-							<span>Ø§Ø·Ù„Ø¨ Ø¹Ø¨Ø± ÙˆØ§ØªØ³Ø§Ø¨</span>
+							<span>اطلب عبر واتساب</span>
 						</a>
 					</div>
 
@@ -297,7 +297,7 @@
 	<div id="checkout-form-bottom"></div>
 
 	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4" dir="rtl">
-		<p>{content.footerText || `Â© ${new Date().getFullYear()} ${settings.brand.name}. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©.`}</p>
+		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
