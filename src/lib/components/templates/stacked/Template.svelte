@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { isValidMoroccanPhone } from '$lib/utils/phone';
-	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice } from '$lib/utils/format';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
@@ -53,7 +52,6 @@
 	// ──────────────────────────────────────────────────────────────
 
 	let fullName = $state('');
-	let city = $state('');
 	let phoneNumber = $state('');
 	let errors = $state({ fullName: '', city: '', phoneNumber: '' });
 	let loading = $state(false);
@@ -127,7 +125,6 @@
 
 	$effect(() => {
 		const nameVal = fullName.trim();
-		const cityVal = city.trim();
 		const phoneVal = phoneNumber.trim();
 
 		if (abandonmentTimeout) {
@@ -137,7 +134,6 @@
 
 		if (
 			nameVal.length >= 2 &&
-			cityVal.length >= 3 &&
 			phoneVal.length >= 8 &&
 			isValidMoroccanPhone(phoneVal) &&
 			!hasSentLead
@@ -155,10 +151,14 @@
 		submitError = '';
 		shouldShakePhone = false;
 
-		const validation = validateOrderForm(fullName, city, phoneNumber);
-		if (validation.errors.fullName || validation.errors.city || validation.errors.phoneNumber) {
-			errors = validation.errors;
-			shouldShakePhone = validation.shouldShake;
+		// Stacked checkout asks for name + phone only (city is confirmed on the call)
+		if (fullName.trim().length < 2) {
+			errors.fullName = 'المرجو إدخال الاسم الكامل';
+			return;
+		}
+		if (!isValidMoroccanPhone(phoneNumber.trim())) {
+			errors.phoneNumber = 'المرجو إدخال رقم هاتف مغربي صحيح';
+			shouldShakePhone = true;
 			return;
 		}
 
@@ -172,8 +172,8 @@
 			orderId,
 			fullName: fullName.trim(),
 			phoneNumber: phoneNumber.trim(),
-			address: city.trim(),
-			city: city.trim(),
+			address: '',
+			city: '',
 			offer: activeOffer?.title || '',
 			price: activeOffer?.price || 0,
 			quantity: activeOffer?.quantity || 1,
@@ -276,11 +276,10 @@
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-2.5">
+						<div class="grid grid-cols-1 gap-3">
 							{#each pricing.offers as offer}
-								{@const saveAmount = offer.originalPrice - offer.price}
 								<label
-									class="relative flex items-center gap-3 p-3 border rounded-2xl cursor-pointer transition-all duration-300 select-none active:scale-[0.98] {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-600/20 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}"
+									class="relative block cursor-pointer overflow-hidden rounded-3xl border-2 bg-white transition-all duration-300 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-600 shadow-lg shadow-emerald-600/10' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -291,50 +290,49 @@
 										class="sr-only"
 									/>
 									{#if offer.image}
-										<span class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
-											<img src={offer.image} alt="" class="h-full w-full object-cover" loading="lazy" />
+										<span class="block h-48 w-full overflow-hidden bg-neutral-100">
+											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
 										</span>
 									{/if}
-									<span class="min-w-0 flex-1 text-right">
-										<span class="block truncate text-sm font-extrabold text-black">{offer.title}</span>
-										{#if offer.subtitle}
-											<span class="mt-0.5 block truncate text-[11px] font-semibold text-neutral-500">{offer.subtitle}</span>
-										{/if}
-										<span class="mt-1.5 flex flex-wrap items-center gap-1.5">
+									<span class="block p-4">
+										<span class="flex items-start justify-between gap-3">
+											<span class="min-w-0 flex-1 text-right">
+												<span class="block text-base font-extrabold leading-snug text-black">{offer.title}</span>
+												{#if offer.subtitle}
+													<span class="mt-1 block text-xs leading-relaxed text-neutral-500">{offer.subtitle}</span>
+												{/if}
+											</span>
 											{#if offer.badge}
-												<span class="rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
+												<span class="shrink-0 rounded-full bg-emerald-600 px-2.5 py-1 text-[10px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
 											{/if}
-											<span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[9px] font-extrabold text-emerald-700">{t.sections.pricing.freeShippingBadgeText}</span>
 										</span>
-									</span>
-									<span class="flex shrink-0 flex-col items-end gap-0.5">
-										<span class="text-lg font-black text-emerald-700">{formatPrice(offer.price, settings.commerce.currencySymbol)}</span>
-										{#if offer.originalPrice > offer.price}
-											<span class="text-[11px] font-semibold text-neutral-400 line-through">{formatPrice(offer.originalPrice, settings.commerce.currencySymbol)}</span>
-											<span class="text-[10px] font-black text-amber-600">وفّر {formatPrice(saveAmount, settings.commerce.currencySymbol)}</span>
-										{/if}
+										<span class="mt-3 flex items-center justify-between gap-2 border-t border-dashed border-neutral-200 pt-3">
+											<span class="text-right">
+												<span class="block text-2xl font-black text-emerald-700">{formatPrice(offer.price, settings.commerce.currencySymbol)}</span>
+												{#if offer.originalPrice > offer.price}
+													<span class="mt-0.5 flex items-center gap-1.5">
+														<span class="text-xs font-semibold text-neutral-400 line-through">{formatPrice(offer.originalPrice, settings.commerce.currencySymbol)}</span>
+														<span class="rounded-md bg-rose-600 px-1.5 py-0.5 text-[10px] font-black text-white">-{Math.round((1 - offer.price / offer.originalPrice) * 100)}%</span>
+													</span>
+												{/if}
+											</span>
+											<span class={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all duration-300 ${currentPackId === offer.id ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-neutral-300 bg-white text-transparent'}`}>
+												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3.5" stroke="currentColor" class="h-4 w-4">
+													<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+												</svg>
+											</span>
+										</span>
 									</span>
 								</label>
 							{/each}
 						</div>
 					</div>
 
-					<button
-						type="button"
-						onclick={addSelectedToCart}
-						class="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed py-3.5 text-sm font-extrabold transition-all active:scale-[0.98]"
-						style="border-color: var(--t-primary, #047857); color: var(--t-primary, #047857);"
-					>
-						<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
-						</svg>
-						زيد العرض المختار للسلة
-					</button>
 					<div class="space-y-1.5 text-right" dir="rtl">
 						<label for="st-fullName" class="block text-right font-extrabold text-sm text-black select-none pr-1">
 							الاسم الكامل
 						</label>
-						<div class="w-full flex items-center border border-gray-300 rounded-xl overflow-hidden h-12 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
+						<div class="w-full flex items-center border border-gray-300 rounded-2xl overflow-hidden h-14 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
 							<div class="w-12 h-full bg-neutral-100 flex items-center justify-center text-gray-700 shrink-0">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -346,7 +344,7 @@
 								type="text"
 								placeholder={t.sections.orderForm.namePlaceholder}
 								bind:value={fullName}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
+								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-[15px] font-medium placeholder-gray-400 border-0"
 							/>
 						</div>
 						{#if errors.fullName}
@@ -355,37 +353,11 @@
 					</div>
 
 					<div class="space-y-1.5 text-right" dir="rtl">
-						<label for="st-city" class="block text-right font-extrabold text-sm text-black select-none pr-1">
-							<span class="text-red-500 font-bold">*</span>
-							<span>المدينة / Ville</span>
-						</label>
-						<div class="w-full flex items-center border border-gray-300 rounded-xl overflow-hidden h-12 bg-white focus-within:ring-1 focus-within:ring-emerald-600 focus-within:border-emerald-600 transition-all">
-							<div class="w-12 h-full bg-neutral-100 flex items-center justify-center text-gray-700 shrink-0">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25a7.5 7.5 0 1 1 15 0Z" />
-								</svg>
-							</div>
-							<div class="h-full w-[1px] bg-gray-300"></div>
-							<input
-								id="st-city"
-								type="text"
-								placeholder={t.sections.orderForm.cityPlaceholder}
-								bind:value={city}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
-							/>
-						</div>
-						{#if errors.city}
-							<p class="text-[11px] text-red-600 font-semibold text-right animate-pulse">{errors.city}</p>
-						{/if}
-					</div>
-
-					<div class="space-y-1.5 text-right" dir="rtl">
 						<label for="st-phone" class="block text-right font-extrabold text-sm text-black select-none pr-1">
 							<span class="text-red-500 font-bold">*</span>
 							<span>رقم الهاتف</span>
 						</label>
-						<div class="w-full flex items-center border rounded-xl overflow-hidden h-12 bg-white transition-all {errors.phoneNumber ? 'border-red-500' : 'border-gray-300 focus-within:ring-emerald-600 focus-within:border-emerald-600'} {shouldShakePhone ? 'animate-shake border-red-500 ring-2 ring-red-500/20' : ''}">
+						<div class="w-full flex items-center border rounded-2xl overflow-hidden h-14 bg-white transition-all {errors.phoneNumber ? 'border-red-500' : 'border-gray-300 focus-within:ring-emerald-600 focus-within:border-emerald-600'} {shouldShakePhone ? 'animate-shake border-red-500 ring-2 ring-red-500/20' : ''}">
 							<div class="w-12 h-full bg-neutral-100 flex items-center justify-center text-gray-700 shrink-0">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
@@ -397,7 +369,7 @@
 								type="tel"
 								placeholder={t.sections.orderForm.phonePlaceholder}
 								bind:value={phoneNumber}
-								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-sm font-medium placeholder-gray-400 border-0"
+								class="flex-1 h-full px-3 text-right bg-transparent text-black outline-none text-[15px] font-medium placeholder-gray-400 border-0"
 							/>
 						</div>
 						{#if errors.phoneNumber}
