@@ -300,7 +300,7 @@
 	</header>
 
 	<!-- 3. Hero: short photo banner (uploaded from settings) with overlay copy -->
-	<section class="mx-auto max-w-5xl px-4 pt-6 md:pt-10">
+	<section class="mx-auto max-w-5xl px-4 pt-3 md:pt-10">
 		{#if brand.heroImage}
 			<div class="relative -mx-4 overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] md:mx-0 md:rounded-3xl">
 				<div class="aspect-[16/10] w-full md:aspect-auto md:min-h-[540px]">
@@ -314,18 +314,11 @@
 				<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" aria-hidden="true"></div>
 				<div class="absolute inset-x-0 bottom-0 p-5 pb-6 md:p-12">
 					<div class="mx-auto max-w-2xl space-y-3 text-center md:space-y-4">
-						<span
-							class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-black/40 px-3.5 py-1.5 text-xs font-bold text-amber-300 backdrop-blur"
-						>
-							عرض الافتتاح — الرشاش فابور
-						</span>
 						<h1 class="font-display text-[26px] font-bold leading-[1.5] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
-							نظّم دارك، وخلي التنظيف ساهل
+							رتّب دارك بلا عناء
 						</h1>
-						<p class="mx-auto max-w-md text-[13px] leading-loose text-white/85 md:text-base">
-							المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
-							<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
-							والخلاص ملي توصلك السلعة.
+						<p class="mx-auto max-w-md text-[13px] leading-relaxed text-white/85 md:text-base">
+							منتجات التنظيم والنظافة المنزلية — التوصيل لجميع المدن والخلاص ملي توصلك السلعة.
 						</p>
 						<div class="flex flex-col gap-2.5 pt-1 sm:flex-row sm:justify-center">
 							<a
@@ -345,20 +338,13 @@
 				</div>
 			</div>
 		{:else}
-			<div class="rounded-3xl border border-neutral-200 bg-white p-7 text-center shadow-sm md:p-12">
-				<div class="mx-auto max-w-xl space-y-4">
-					<span
-						class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-xs font-bold text-amber-800"
-					>
-						عرض الافتتاح — الرشاش فابور
-					</span>
-					<h1 class="font-display text-3xl font-bold leading-[1.5] text-neutral-900 md:text-5xl md:leading-[1.4]">
-						نظّم دارك، وخلي التنظيف ساهل
+			<div class="rounded-3xl border border-neutral-200 bg-white p-5 text-center shadow-sm md:p-12">
+				<div class="mx-auto max-w-xl space-y-3">
+					<h1 class="font-display text-2xl font-bold leading-[1.5] text-neutral-900 md:text-5xl md:leading-[1.4]">
+						رتّب دارك بلا عناء
 					</h1>
-					<p class="text-sm leading-loose text-neutral-500 md:text-base">
-						المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
-						<strong class="text-amber-700">الرشاش فابور</strong>. التوصيل لجميع المدن
-						والخلاص ملي توصلك السلعة.
+					<p class="text-[13px] leading-relaxed text-neutral-500 md:text-base">
+						منتجات التنظيم والنظافة المنزلية — التوصيل لجميع المدن والخلاص ملي توصلك السلعة.
 					</p>
 					<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center">
 						<a
@@ -400,7 +386,7 @@
 	</section>
 
 	<!-- 4. Collections -->
-	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-12">
+	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-8">
 		{@render sectionTitle('تسوّق حسب المجموعة', 'اختار القسم اللي كيهمّك ودخل شوف المنتجات')}
 		<div class="mt-7 grid grid-cols-3 gap-3 sm:gap-6">
 			{#each catalog.slice(0, 3) as s}
