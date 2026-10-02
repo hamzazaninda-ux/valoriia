@@ -111,9 +111,8 @@
 								</span>
 								<span class="min-w-0 flex-1">
 									<span class="block truncate text-[13px] font-bold text-neutral-800">{line.title}</span>
-									<span class="block text-[11px] text-neutral-400">الكمية: {line.qty}</span>
 								</span>
-								<span class="shrink-0 text-[13px] font-black text-neutral-800">{line.qty * line.price} {currency}</span>
+								<span class="shrink-0 text-[13px] font-black text-neutral-800">{line.price} {currency}</span>
 							</div>
 						{/each}
 					</div>

@@ -29,10 +29,13 @@ function load(): CartLine[] {
 	try {
 		const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 		if (!Array.isArray(raw)) return [];
-		return raw.filter(
-			(l) =>
-				l && typeof l.slug === 'string' && typeof l.title === 'string' && Number(l.price) >= 0
-		);
+		// No quantities in this store: every line counts once.
+		return raw
+			.filter(
+				(l) =>
+					l && typeof l.slug === 'string' && typeof l.title === 'string' && Number(l.price) >= 0
+			)
+			.map((l) => ({ ...l, qty: 1 }));
 	} catch {
 		return [];
 	}
@@ -64,27 +67,10 @@ export const cart = {
 	get subtotal() {
 		return lines.reduce((a, l) => a + l.qty * l.price, 0);
 	},
-	add(entry: Omit<CartLine, 'key' | 'qty'>, qty = 1) {
+	add(entry: Omit<CartLine, 'key' | 'qty'>) {
 		const key = `${entry.slug}#${entry.offerId}`;
-		const found = lines.find((l) => l.key === key);
-		if (found) {
-			found.qty += qty;
-			lines = [...lines];
-		} else {
-			lines = [...lines, { ...entry, key, qty }];
-		}
-		persist();
-	},
-	setQty(key: string, qty: number) {
-		if (qty <= 0) {
-			lines = lines.filter((l) => l.key !== key);
-		} else {
-			const found = lines.find((l) => l.key === key);
-			if (found) {
-				found.qty = qty;
-				lines = [...lines];
-			}
-		}
+		if (lines.some((l) => l.key === key)) return;
+		lines = [...lines, { ...entry, key, qty: 1 }];
 		persist();
 	},
 	remove(key: string) {

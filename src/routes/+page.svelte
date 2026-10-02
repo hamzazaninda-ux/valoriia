@@ -119,9 +119,9 @@
 	});
 
 	const bySlug = $derived(Object.fromEntries(catalog.map((s) => [s.slug || s.title, s])));
-	const cartCount = $derived(Object.values(cart).reduce((a, b) => a + b, 0));
+	const cartCount = $derived(Object.keys(cart).length);
 	const cartTotal = $derived(
-		Object.entries(cart).reduce((sum, [k, q]) => sum + (bySlug[k]?.price || 0) * q, 0)
+		Object.keys(cart).reduce((sum, k) => sum + (bySlug[k]?.price || 0), 0)
 	);
 
 	function keyOf(s: Slot) {
@@ -129,20 +129,16 @@
 	}
 	function addToCart(s: Slot) {
 		const k = keyOf(s);
-		cart[k] = (cart[k] || 0) + 1;
+		if (!(k in cart)) cart[k] = 1;
 		drawerOpen = true;
 	}
-	function setQty(k: string, q: number) {
-		if (q <= 0) {
-			const { [k]: _, ...rest } = cart;
-			cart = rest;
-		} else {
-			cart[k] = q;
-		}
+	function removeItem(k: string) {
+		const { [k]: _, ...rest } = cart;
+		cart = rest;
 	}
 	function orderViaWhatsApp() {
-		const lines = Object.entries(cart).map(
-			([k, q]) => `• ${bySlug[k]?.title || k} × ${q}`
+		const lines = Object.keys(cart).map(
+			(k) => `• ${bySlug[k]?.title || k}`
 		);
 		const text = `السلام، بغيت نطلب من Valoriia:\n${lines.join('\n')}\nالمجموع التقريبي: ${cartTotal} ${cur}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
 		window.open(`${waBase}?text=${encodeURIComponent(text)}`, '_blank');
@@ -804,27 +800,37 @@
 					</div>
 				{:else}
 					<div class="flex-1 space-y-3 overflow-y-auto p-4">
-						{#each Object.entries(cart) as [k, q]}
+						{#each Object.keys(cart) as k}
 							{@const item = bySlug[k]}
 							{#if item}
-								<div class="flex items-center gap-3 rounded-2xl border border-neutral-200/60 p-3">
-									<div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
+								<div class="rounded-2xl border border-neutral-200/60 p-3">
+									<div class="flex items-start justify-between gap-2">
+										<p class="min-w-0 flex-1 truncate text-sm font-bold text-neutral-800">{item.title}</p>
+										<button
+											type="button"
+											onclick={() => removeItem(k)}
+											class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-red-50 hover:text-red-500"
+											aria-label="حيد من السلة"
+										>
+											<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+												<path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916" />
+											</svg>
+										</button>
+									</div>
+									<span class="mt-2 block h-24 w-full overflow-hidden rounded-xl bg-neutral-100">
 										{#if item.image}
 											<img src={item.image} alt={item.title} class="h-full w-full object-cover" />
 										{:else}
-											<svg class="h-6 w-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-											</svg>
+											<span class="flex h-full w-full items-center justify-center">
+												<svg class="h-6 w-6 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+													<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+												</svg>
+											</span>
 										{/if}
-									</div>
-									<div class="min-w-0 flex-1">
-										<p class="truncate text-sm font-bold text-neutral-800">{item.title}</p>
-										<p class="text-xs font-black text-neutral-900">{item.price} {cur}</p>
-									</div>
-									<div class="flex items-center gap-1.5">
-										<button type="button" onclick={() => setQty(k, q - 1)} class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 active:scale-95" aria-label="نقص الكمية">−</button>
-										<span class="w-5 text-center text-sm font-bold">{q}</span>
-										<button type="button" onclick={() => setQty(k, q + 1)} class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 active:scale-95" aria-label="زيد الكمية">+</button>
+									</span>
+									<div class="mt-2 flex items-center justify-between gap-2">
+										<span class="truncate text-[11px] font-semibold text-neutral-400">التوصيل مجاني</span>
+										<span class="shrink-0 text-sm font-black text-neutral-900">{item.price} {cur}</span>
 									</div>
 								</div>
 							{/if}

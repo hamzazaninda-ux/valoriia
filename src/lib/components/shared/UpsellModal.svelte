@@ -33,6 +33,7 @@
 	let left = $state(seconds);
 	let accepting = $state<string | null>(null);
 	let done = $state(false);
+	let expired = $state(false);
 
 	function priceOf(p: UpsellProduct) {
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
@@ -82,11 +83,14 @@
 	}
 
 	onMount(() => {
+		// Countdown is display-only: it NEVER navigates by itself.
+		// The customer leaves only via an explicit action (accept / skip / continue).
 		const timer = setInterval(() => {
 			left -= 1;
 			if (left <= 0) {
 				clearInterval(timer);
-				finish();
+				left = 0;
+				expired = true;
 			}
 		}, 1000);
 		return () => clearInterval(timer);
@@ -150,13 +154,23 @@
 			</div>
 
 			<div class="border-t border-neutral-100 p-4">
-				<button
-					type="button"
-					onclick={finish}
-					class="w-full py-2.5 text-center text-sm font-bold text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-600"
-				>
-					لا شكراً، كمل لصفحة الشكر
-				</button>
+				{#if expired}
+					<button
+						type="button"
+						onclick={finish}
+						class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-emerald-950 font-bold text-white transition-transform hover:scale-[1.01] active:scale-[0.98]"
+					>
+						انتهى وقت العرض — أكمل لصفحة الشكر
+					</button>
+				{:else}
+					<button
+						type="button"
+						onclick={finish}
+						class="w-full py-2.5 text-center text-sm font-bold text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-600"
+					>
+						لا شكراً، كمل لصفحة الشكر
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
