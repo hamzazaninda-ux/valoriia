@@ -4,8 +4,8 @@
   "baseTemplate": "stacked",
   "colors": {
     "primary": "#047857",
-    "cta": "#16a34a",
-    "ctaHover": "#15803d",
+    "cta": "#15803d",
+    "ctaHover": "#166534",
     "accent": "#f59e0b",
     "background": "#faf9f6",
     "surface": "#ffffff",
