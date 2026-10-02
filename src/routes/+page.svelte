@@ -299,111 +299,112 @@
 		{/if}
 	</header>
 
-	<!-- 3. Hero -->
+	<!-- 3. Hero: full-bleed photo (uploaded from settings) with overlay copy -->
 	<section class="mx-auto max-w-5xl px-4 pt-6 md:pt-10">
-		<div
-			class="relative overflow-hidden rounded-3xl bg-emerald-950 text-white shadow-[0_20px_60px_-20px_rgba(2,44,34,0.5)]"
-		>
-			<div
-				class="pointer-events-none absolute inset-0 opacity-[0.15]"
-				style="background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0); background-size: 22px 22px;"
-				aria-hidden="true"
-			></div>
-			<div
-				class="pointer-events-none absolute -top-24 -start-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
-				aria-hidden="true"
-			></div>
-
-			<div class="relative grid items-center gap-8 p-7 md:grid-cols-2 md:p-12">
-				<div class="space-y-5 text-center md:text-start">
-					<span
-						class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1.5 text-xs font-bold text-amber-300"
-					>
-						<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
-							<path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
-						</svg>
-						عرض الافتتاح — الرشاش فابور
-					</span>
-					<h1 class="font-display text-3xl font-bold leading-[1.5] md:text-5xl md:leading-[1.4]">
-						نظّم دارك، وخلي التنظيف ساهل
-					</h1>
-					<p class="mx-auto max-w-md text-sm leading-loose text-emerald-100/80 md:mx-0 md:text-base">
-						المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
-						<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
-						والخلاص ملي توصلك السلعة.
-					</p>
-					<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center md:justify-start">
-						<a
-							href="#bestsellers"
-							class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-emerald-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
-						>
-							تسوّق دابا
-						</a>
-						<a
-							href="#offer"
-							class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-7 font-bold text-white transition-all duration-300 hover:bg-white/10 active:scale-[0.98]"
-						>
-							شوف العرض
-						</a>
-					</div>
-					<div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 text-xs text-emerald-100/70 md:justify-start">
-						<span class="inline-flex items-center gap-1.5">
-							<svg class="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
-							خلص ملي توصلك
-						</span>
-						<span class="inline-flex items-center gap-1.5">
-							<svg class="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-							</svg>
-							توصيل لجميع المدن
-						</span>
-						<span class="inline-flex items-center gap-1.5">
-							<svg class="h-4 w-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-							</svg>
-							+1000 زبون راضٍ
-						</span>
-					</div>
-				</div>
-
-				<div class="relative mx-auto w-full max-w-sm">
-					<div
-						class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-bl from-emerald-900 to-emerald-950 p-6"
-					>
-						<svg viewBox="0 0 300 260" class="h-auto w-full" role="img" aria-label="المنظم الذكي مع الرشاش">
-							<ellipse cx="150" cy="232" rx="110" ry="14" fill="#ffffff" opacity="0.08" />
-							<rect x="70" y="90" width="110" height="140" rx="14" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0.9" />
-							<rect x="70" y="90" width="110" height="34" rx="14" fill="#fbbf24" opacity="0.15" />
-							<line x1="70" y1="124" x2="180" y2="124" stroke="#fbbf24" stroke-width="2" opacity="0.5" />
-							<line x1="70" y1="158" x2="180" y2="158" stroke="#fbbf24" stroke-width="2" opacity="0.5" />
-							<line x1="70" y1="192" x2="180" y2="192" stroke="#fbbf24" stroke-width="2" opacity="0.5" />
-							<rect x="196" y="130" width="44" height="100" rx="10" fill="none" stroke="#a7f3d0" stroke-width="3" opacity="0.9" />
-							<rect x="204" y="112" width="28" height="18" rx="5" fill="none" stroke="#a7f3d0" stroke-width="3" opacity="0.9" />
-							<line x1="232" y1="118" x2="252" y2="112" stroke="#a7f3d0" stroke-width="3" stroke-linecap="round" />
-							<circle cx="258" cy="110" r="3" fill="#a7f3d0" opacity="0.9" />
-							<circle cx="266" cy="104" r="2.2" fill="#a7f3d0" opacity="0.6" />
-							<circle cx="250" cy="100" r="2.2" fill="#a7f3d0" opacity="0.6" />
-							<path d="M52 60 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#fbbf24" opacity="0.85" />
-							<path d="M248 52 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#a7f3d0" opacity="0.85" />
-							<circle cx="96" cy="52" r="2.5" fill="#ffffff" opacity="0.5" />
-							<circle cx="212" cy="210" r="2.5" fill="#ffffff" opacity="0.5" />
-						</svg>
+		{#if brand.heroImage}
+			<div class="relative -mx-4 overflow-hidden shadow-[0_20px_60px_-20px_rgba(2,44,34,0.5)] md:mx-0 md:rounded-3xl">
+				<img
+					src={brand.heroImage}
+					alt={brand.name}
+					class="absolute inset-0 h-full w-full object-cover"
+					loading="eager"
+				/>
+				<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" aria-hidden="true"></div>
+				<div class="relative flex min-h-[480px] flex-col justify-end p-6 pb-8 md:min-h-[540px] md:p-12">
+					<div class="space-y-4 text-center md:text-start">
 						<span
-							class="absolute end-4 top-4 rounded-full bg-rose-600 px-3 py-1.5 text-xs font-black text-white shadow-lg"
+							class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-black/40 px-3.5 py-1.5 text-xs font-bold text-amber-300 backdrop-blur"
 						>
-							تخفيض حتى 40%
+							عرض الافتتاح — الرشاش فابور
 						</span>
-						<span
-							class="absolute start-4 bottom-4 rounded-full border border-amber-300/40 bg-emerald-950/80 px-3 py-1.5 text-xs font-bold text-amber-300 backdrop-blur"
-						>
-							الرشاش فابور
-						</span>
+						<h1 class="font-display text-3xl font-bold leading-[1.5] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
+							نظّم دارك، وخلي التنظيف ساهل
+						</h1>
+						<p class="mx-auto max-w-md text-sm leading-loose text-white/85 md:mx-0 md:text-base">
+							المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
+							<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
+							والخلاص ملي توصلك السلعة.
+						</p>
+						<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center md:justify-start">
+							<a
+								href="#bestsellers"
+								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-emerald-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
+							>
+								تسوّق دابا
+							</a>
+							<a
+								href="#offer"
+								class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-7 font-bold text-white backdrop-blur transition-all duration-300 hover:bg-white/20 active:scale-[0.98]"
+							>
+								شوف العرض
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>
+		{:else}
+			<div class="relative overflow-hidden rounded-3xl bg-emerald-950 text-white shadow-[0_20px_60px_-20px_rgba(2,44,34,0.5)]">
+				<div
+					class="pointer-events-none absolute inset-0 opacity-[0.15]"
+					style="background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0); background-size: 22px 22px;"
+					aria-hidden="true"
+				></div>
+				<div
+					class="pointer-events-none absolute -top-24 -start-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
+					aria-hidden="true"
+				></div>
+				<div class="relative p-7 text-center md:p-12 md:text-start">
+					<div class="mx-auto max-w-xl space-y-4 md:mx-0">
+						<span
+							class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1.5 text-xs font-bold text-amber-300"
+						>
+							عرض الافتتاح — الرشاش فابور
+						</span>
+						<h1 class="font-display text-3xl font-bold leading-[1.5] md:text-5xl md:leading-[1.4]">
+							نظّم دارك، وخلي التنظيف ساهل
+						</h1>
+						<p class="text-sm leading-loose text-emerald-100/80 md:text-base">
+							المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
+							<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
+							والخلاص ملي توصلك السلعة.
+						</p>
+						<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center md:justify-start">
+							<a
+								href="#bestsellers"
+								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-emerald-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
+							>
+								تسوّق دابا
+							</a>
+							<a
+								href="#offer"
+								class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-7 font-bold text-white transition-all duration-300 hover:bg-white/10 active:scale-[0.98]"
+							>
+								شوف العرض
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+		<div class="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-neutral-600">
+			<span class="inline-flex items-center gap-1.5">
+				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+				</svg>
+				خلص ملي توصلك
+			</span>
+			<span class="inline-flex items-center gap-1.5">
+				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+				</svg>
+				توصيل لجميع المدن
+			</span>
+			<span class="inline-flex items-center gap-1.5">
+				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+				</svg>
+				+1000 زبون راضٍ
+			</span>
 		</div>
 	</section>
 

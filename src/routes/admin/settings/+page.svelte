@@ -403,6 +403,28 @@ function doOptions(e) {
 				/>
 			</div>
 		</div>
+
+		<div class="flex flex-col sm:flex-row gap-3 items-stretch pt-1">
+			<div class="shrink-0 w-full sm:w-40 aspect-video rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+				{#if settings.brand.heroImage}
+					<img src={settings.brand.heroImage} alt="صورة الواجهة" class="w-full h-full object-cover" />
+				{:else}
+					<span class="text-gray-400 text-xs text-center px-2">بلاصة صورة الواجهة الرئيسية</span>
+				{/if}
+			</div>
+			<div class="flex-1">
+				<label class="block text-sm font-medium text-gray-700 mb-1">صورة الواجهة الرئيسية (Hero — كتبان فوق الموقع)</label>
+				<input
+					type="text"
+					bind:value={settings.brand.heroImage}
+					onblur={validateField}
+					dir="ltr"
+					class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm font-mono focus:ring-2 focus:ring-emerald-500 {validationErrors['brand.heroImage'] ? 'border-red-500' : ''}"
+					placeholder="https://..."
+				/>
+				<p class="mt-1 text-[11px] text-gray-400">من الأفضل مقاس عريض (مثال: 1600×900). خليها خاوية إلا بغيتي الواجهة بلا صورة.</p>
+			</div>
+		</div>
 	</div>
 
 	<!-- 4. Commerce Settings -->

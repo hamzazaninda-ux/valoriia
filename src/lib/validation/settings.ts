@@ -17,6 +17,7 @@ export const BrandSettingsSchema = z.object({
   tagline: PlainTextSchema.max(200, 'Tagline must be 200 characters or less'),
   logo: HttpUrlSchema,
   favicon: UrlOrPathSchema,
+  heroImage: UrlOrPathSchema.optional().default(''),
   whatsappNumber: PhoneNumberSchema,
   supportHours: NonEmptyPlainTextSchema.max(50, 'Support hours must be 50 characters or less')
 }).strict();

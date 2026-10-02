@@ -3,6 +3,7 @@ export interface BrandSettings {
   tagline: string;
   logo: string;
   favicon: string;
+  heroImage: string;
   whatsappNumber: string;
   supportHours: string;
 }
