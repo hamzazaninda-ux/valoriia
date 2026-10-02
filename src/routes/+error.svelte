@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>خطأ - Alpha Vital</title>
+	<title>خطأ - Valoriia</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

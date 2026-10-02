@@ -47,6 +47,7 @@ export interface ProductPricing {
     originalPrice: number;
     quantity: number;
     badge: string | null;
+    image?: string;
     isPopular: boolean;
   }>;
 }

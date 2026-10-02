@@ -1,9 +1,9 @@
 ---
 name: premium-frontend-design
-description: Guidelines and instructions for creating state-of-the-art, custom mobile-first front-end designs for the Alpha Vital project, avoiding generic 'vibe-coded' AI templates.
+description: Guidelines and instructions for creating state-of-the-art, custom mobile-first front-end designs for the Valoriia project, avoiding generic 'vibe-coded' AI templates.
 ---
 
-# Premium Frontend Design Skill (Alpha Vital)
+# Premium Frontend Design Skill (Valoriia)
 
 Use these guidelines to create state-of-the-art, mobile-first, and highly polished front-end designs for the Alpha Vital project. These instructions ensure the application does not look like a generic "vibe-coded" AI template.
 

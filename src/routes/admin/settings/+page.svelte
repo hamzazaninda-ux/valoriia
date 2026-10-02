@@ -173,7 +173,7 @@ function doOptions(e) {
 </script>
 
 <svelte:head>
-	<title>الإعدادات العامة - Alpha Vital Admin</title>
+	<title>الإعدادات العامة - Valoriia Admin</title>
 </svelte:head>
 
 <div class="space-y-6">

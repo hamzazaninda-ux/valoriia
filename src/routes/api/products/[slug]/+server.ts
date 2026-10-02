@@ -43,6 +43,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
     await createProduct(result.data);
     return json({ success: true, slug: result.data.slug });
   } catch (err) {
+    console.error(`[products POST] createProduct failed for "${result.data.slug}":`, err);
     return json({ error: 'Failed to create product' }, { status: 500 });
   }
 };

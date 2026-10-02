@@ -1,9 +1,10 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { env } from '$env/dynamic/private';
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 function getSessionSecret(): string {
-	const secret = process.env.SESSION_SECRET;
+	const secret = env.SESSION_SECRET;
 	if (!secret) {
 		throw new Error('SESSION_SECRET is required');
 	}

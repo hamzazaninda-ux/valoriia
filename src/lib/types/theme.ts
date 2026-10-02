@@ -159,6 +159,16 @@ export function getDefaultTheme(templateId: string = 'classic'): TemplateTheme {
       text: '#f5f0e8',
       textMuted: '#a09880',
     },
+    stacked: {
+      primary: '#047857',
+      cta: '#16a34a',
+      ctaHover: '#15803d',
+      accent: '#f59e0b',
+      background: '#faf9f6',
+      surface: '#ffffff',
+      text: '#1c1917',
+      textMuted: '#78716c',
+    },
   };
 
   const namesByTemplate: Record<string, string> = {
@@ -166,6 +176,7 @@ export function getDefaultTheme(templateId: string = 'classic'): TemplateTheme {
     modern: 'Modern Landing',
     minimal: 'Minimal Landing',
     killers: 'Killers Landing',
+    stacked: 'Stacked Images',
   };
 
   return {

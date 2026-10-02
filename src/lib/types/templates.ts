@@ -23,6 +23,7 @@ export interface ProductOffer {
   originalPrice: number;
   quantity: number;
   badge: string | null;
+  image?: string;
   isPopular: boolean;
 }
 
@@ -78,4 +79,12 @@ export interface TemplateProps {
     };
   };
   theme?: TemplateTheme | null;
+  /** Other published products (cross-sell / post-purchase upsell). */
+  others?: Array<{
+    slug: string;
+    title: string;
+    subtitle?: string;
+    heroImage?: string;
+    startingPrice?: number;
+  }>;
 }

@@ -225,7 +225,7 @@
 
 	<!-- Footer -->
 	<footer class="bg-muted/40 py-6 text-center text-xs text-muted-foreground border-t border-border/20 px-4">
-		<p>© {new Date().getFullYear()} ألفا فيتال (Alpha Vital). جميع الحقوق محفوظة.</p>
+		<p>© {new Date().getFullYear()} Valoriia. جميع الحقوق محفوظة.</p>
 	</footer>
 
 </div>

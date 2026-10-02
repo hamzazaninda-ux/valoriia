@@ -1,15 +1,15 @@
 import { Octokit } from 'octokit';
+import { env } from '$env/dynamic/private';
 
-// Set via Vercel/local env vars. Empty fallback on purpose: never fall back
-// to the previous owner's repository.
-const GITHUB_OWNER = process.env.GITHUB_OWNER || '';
-const GITHUB_REPO = process.env.GITHUB_REPO || '';
-
+// NOTE: read env lazily (inside functions, never at module top level).
+// Module-level snapshots can evaluate before SvelteKit finishes loading
+// .env.local in dev, leaving stale empty values. Owner/repo intentionally
+// have NO fallback to the previous owner's repository.
 let octokit: Octokit | null = null;
 
 function getOctokit(): Octokit {
   if (!octokit) {
-    const token = process.env.GITHUB_TOKEN;
+    const token = env.GITHUB_TOKEN;
     if (!token) throw new Error('GITHUB_TOKEN environment variable is required');
     octokit = new Octokit({ auth: token });
   }
@@ -92,7 +92,7 @@ async function listLocalFiles(path: string): Promise<string[]> {
 }
 
 export async function gitReadFile(branch: string, path: string): Promise<string> {
-  if (!process.env.GITHUB_TOKEN) {
+  if (!env.GITHUB_TOKEN) {
     try {
       return await readLocalFile(path);
     } catch {
@@ -104,8 +104,8 @@ export async function gitReadFile(branch: string, path: string): Promise<string>
     return await withRetry(async () => {
       const ok = getOctokit();
       const { data } = await ok.rest.repos.getContent({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         path,
         ref: branch
       });
@@ -136,8 +136,8 @@ export async function gitWriteFile(
     let sha: string | undefined;
     try {
       const { data } = await ok.rest.repos.getContent({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         path,
         ref: branch
       });
@@ -149,8 +149,8 @@ export async function gitWriteFile(
     }
 
     await ok.rest.repos.createOrUpdateFileContents({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: env.GITHUB_OWNER,
+      repo: env.GITHUB_REPO,
       path,
       message,
       content: Buffer.from(content, 'utf8').toString('base64'),
@@ -164,22 +164,22 @@ export async function gitEnsureBranch(branch: string, sourceBranch = 'main'): Pr
   return withRetry(async () => {
     const ok = getOctokit();
     try {
-      await ok.rest.git.getRef({ owner: GITHUB_OWNER, repo: GITHUB_REPO, ref: `heads/${branch}` });
+      await ok.rest.git.getRef({ owner: env.GITHUB_OWNER, repo: env.GITHUB_REPO, ref: `heads/${branch}` });
       return;
     } catch (error) {
       if ((error as { status?: number }).status !== 404) throw error;
     }
 
     const { data: source } = await ok.rest.git.getRef({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: env.GITHUB_OWNER,
+      repo: env.GITHUB_REPO,
       ref: `heads/${sourceBranch}`
     });
 
     try {
       await ok.rest.git.createRef({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         ref: `refs/heads/${branch}`,
         sha: source.object.sha
       });
@@ -200,8 +200,8 @@ export async function gitDeleteFile(
     let data;
     try {
       ({ data } = await ok.rest.repos.getContent({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         path,
         ref: branch
       }));
@@ -212,8 +212,8 @@ export async function gitDeleteFile(
 
     if ('sha' in data) {
       await ok.rest.repos.deleteFile({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         path,
         message,
         sha: data.sha,
@@ -226,7 +226,7 @@ export async function gitDeleteFile(
 }
 
 export async function gitListFiles(branch: string, path: string): Promise<string[]> {
-  if (!process.env.GITHUB_TOKEN) {
+  if (!env.GITHUB_TOKEN) {
     try {
       return await listLocalFiles(path);
     } catch {
@@ -238,8 +238,8 @@ export async function gitListFiles(branch: string, path: string): Promise<string
     return await withRetry(async () => {
       const ok = getOctokit();
       const { data } = await ok.rest.repos.getContent({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
+        owner: env.GITHUB_OWNER,
+        repo: env.GITHUB_REPO,
         path,
         ref: branch
       });

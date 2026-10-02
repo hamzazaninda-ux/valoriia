@@ -26,7 +26,7 @@
 </div>
 
 <div class="preview-container">
-	<Template product={data.product} settings={data.settings} theme={data.theme} />
+	<Template product={data.product} settings={data.settings} theme={data.theme} others={data.others} />
 </div>
 
 <style>

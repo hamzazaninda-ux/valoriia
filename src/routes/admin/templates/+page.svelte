@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<title>القوالب — Alpha Vital CMS</title>
+	<title>القوالب — Valoriia CMS</title>
 </svelte:head>
 
 <div class="space-y-8">

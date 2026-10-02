@@ -29,6 +29,7 @@ export const OfferSchema = z.object({
   originalPrice: PositiveNumberSchema,
   quantity: z.number().int().min(1, 'Quantity must be at least 1'),
   badge: PlainTextSchema.max(50, 'Badge must be 50 characters or less').nullable(),
+  image: UrlOrPathSchema.optional().default(''),
   isPopular: z.boolean()
 });
 

@@ -244,6 +244,7 @@
 				originalPrice: 1,
 				quantity: 1,
 				badge: null,
+				image: '',
 				isPopular: false
 			}
 		];
@@ -838,6 +839,24 @@
 										bind:value={offer.badge}
 										class="w-full px-3 py-2 border rounded-md text-sm"
 										placeholder="الأكثر طلباً 🔥"
+									/>
+								</div>
+							</div>
+							<div class="flex flex-col sm:flex-row gap-3 items-stretch">
+								<div class="shrink-0 w-20 h-20 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+									{#if offer.image}
+										<img src={offer.image} alt="صورة العرض" class="w-full h-full object-cover" />
+									{:else}
+										<span class="text-gray-400 text-xl">🖼️</span>
+									{/if}
+								</div>
+								<div class="flex-1">
+									<label class="block text-sm text-gray-600 mb-1">صورة العرض (تظهر بجانب العرض في صفحة المنتج)</label>
+									<input
+										type="text"
+										bind:value={offer.image}
+										class="w-full px-3 py-2 border rounded-md text-sm font-mono"
+										placeholder="https://..."
 									/>
 								</div>
 							</div>

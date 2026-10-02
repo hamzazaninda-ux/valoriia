@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import bcrypt from 'bcryptjs';
+import { env } from '$env/dynamic/private';
 import { createSession, sessionCookieOptions } from '$lib/server/auth';
 
 // =============================================================================
@@ -169,7 +170,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     return response;
   }
 
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminPasswordHash = env.ADMIN_PASSWORD_HASH;
 
   if (!adminPasswordHash) {
     return json({ error: 'Admin password not configured' }, { status: 500 });

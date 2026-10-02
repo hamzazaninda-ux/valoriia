@@ -1,7 +1,26 @@
 import { gitReadFile, gitWriteFile, gitDeleteFile, gitEnsureBranch, gitListFiles } from './git';
-import type { Product, ProductIndex } from '$lib/types/product';
+import type { Product, ProductContent, ProductIndex } from '$lib/types/product';
 
 const CONTENT_PATH = 'content/products';
+
+// =============================================================================
+// Hero Image Backfill Guard
+// =============================================================================
+// Every template, the homepage cards, and publish validation all depend on
+// content.heroImage. The admin editor manages several image lists (carousel,
+// gallery), and it is easy to add images without flagging one as "main".
+// To make a missing hero image impossible, any write path backfills it from
+// the first available carousel/gallery image. Runs on save/create so all
+// templates and cards behave identically without per-template fallbacks.
+// =============================================================================
+function backfillHeroImage(content: ProductContent | undefined | null): void {
+  if (!content) return;
+  if (content.heroImage && content.heroImage.trim()) return;
+  const fromCarousel = content.carousel?.find((s) => s.image && s.image.trim())?.image;
+  const fromGallery = content.gallery?.find((g) => g.src && g.src.trim())?.src;
+  if (fromCarousel) content.heroImage = fromCarousel.trim();
+  else if (fromGallery) content.heroImage = fromGallery.trim();
+}
 
 // =============================================================================
 // Slug Safety Guard
@@ -105,6 +124,7 @@ export async function saveProductDraft(product: Product): Promise<void> {
   await gitEnsureBranch('draft');
   product.updatedAt = new Date().toISOString();
   product.draft = product.draft || product.published;
+  backfillHeroImage(product.draft?.content);
 
   await gitWriteFile(
     'draft',
@@ -127,8 +147,13 @@ export async function createProduct(product: Product): Promise<void> {
     updatedAt: now,
     status: 'draft',
     // Set draft = published so the admin has an editable copy immediately.
-    draft: product.published
+    // Cloned (not referenced) so later normalization never mutates the caller's object.
+    draft: structuredClone(product.published)
   };
+  backfillHeroImage(storedProduct.published?.content);
+  backfillHeroImage(storedProduct.draft?.content);
+  backfillHeroImage(storedProduct.published?.content);
+  backfillHeroImage(storedProduct.draft?.content);
 
   await gitWriteFile(
     'draft',

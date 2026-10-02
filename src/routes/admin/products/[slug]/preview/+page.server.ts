@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { readProduct, readProductDraft } from '$lib/content/products';
+import { listProducts, readProduct, readProductDraft } from '$lib/content/products';
 import { readSettingsForAdmin } from '$lib/content/settings';
 import { readTemplateThemeDraft } from '$lib/content/templateTheme';
 
@@ -16,10 +16,28 @@ export const load: PageServerLoad = async ({ params }) => {
   const settings = await readSettingsForAdmin();
   const theme = await readTemplateThemeDraft(product.template || 'classic');
 
+  let others: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
+  try {
+    const all = await listProducts();
+    others = all
+      .filter((p) => p.status === 'published' && p.slug !== product.slug)
+      .slice(0, 4)
+      .map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        subtitle: p.subtitle,
+        heroImage: p.heroImage,
+        startingPrice: p.startingPrice
+      }));
+  } catch {
+    others = [];
+  }
+
   return {
     product,
     settings,
     theme,
+    others,
     isDraft: !!draft
   };
 };

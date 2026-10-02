@@ -36,6 +36,10 @@
   
   /* Add animations for pulsing order CTA button */
   --animate-pulse-slow: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  /* Valoriia storefront type system (Arabic-first) */
+  --font-display: 'El Messiri', 'Cairo', sans-serif;
+  --font-body: 'Tajawal', 'Cairo', sans-serif;
 }
 
 @layer base {
@@ -92,8 +96,45 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'El Messiri', 'Cairo', 'Tajawal', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Tajawal', 'Cairo', 'El Messiri', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+/* Storefront marquee (announcement + trust strips) */
+@keyframes store-marquee {
+	from { transform: translateX(0); }
+	to { transform: translateX(50%); }
+}
+
+.animate-store-marquee {
+	animation: store-marquee 28s linear infinite;
+}
+
+.animate-store-marquee-fast {
+	animation: store-marquee 20s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animate-store-marquee,
+	.animate-store-marquee-fast {
+		animation: none;
+	}
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+/* Hide scrollbars on horizontal scroll rows */
+.scrollbar-none::-webkit-scrollbar {
+	display: none;
+}
+.scrollbar-none {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 @keyframes shake {

@@ -14,4 +14,4 @@
 	{/if}
 </svelte:head>
 
-<Template product={data.product} settings={data.settings} theme={data.theme} />
+<Template product={data.product} settings={data.settings} theme={data.theme} others={data.others} />

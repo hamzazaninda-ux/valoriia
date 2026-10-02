@@ -16,6 +16,14 @@
 	let pricing = $derived(version.pricing);
 	let order = $derived(version.order);
 
+	// First available image across all admin image lists (never a broken hero)
+	let heroSrc = $derived(
+		content.heroImage?.trim() ||
+			content.gallery?.find((g) => g.src && g.src.trim())?.src ||
+			content.carousel?.find((c) => c.image && c.image.trim())?.image ||
+			''
+	);
+
 	let selectedPack = $state<number | null>(null);
 
 	const currentPackId = $derived(
@@ -189,12 +197,14 @@
 				</div>
 
 				<div class="order-1 lg:order-2">
-					<img
-						src={content.heroImage}
+					{#if heroSrc}
+						<img
+							src={heroSrc}
 						alt={content.title}
 						class="w-full max-w-md mx-auto lg:max-w-none rounded-2xl shadow-2xl"
 						loading="eager"
 					/>
+					{/if}
 				</div>
 			</div>
 		</div>
