@@ -3,13 +3,13 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-02T15:32:23.504Z",
+  "updatedAt": "2026-10-02T15:47:10.938Z",
   "template": "stacked",
   "published": {
     "content": {
       "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
       "title": "طقم التنظيم المنزلي + هدية",
-      "subtitle": "ثلاث قطع أساسية لكل دار + الرشاش فابور",
+      "subtitle": "",
       "rating": 4.9,
       "reviewCount": 203,
       "gallery": [],
@@ -66,7 +66,7 @@
         {
           "id": 1,
           "title": "العرض الأساسي",
-          "subtitle": "ثلاث قطع أساسية لكل دار + الرشاش فابور",
+          "subtitle": "",
           "price": 229,
           "originalPrice": 299,
           "quantity": 1,
@@ -112,6 +112,10 @@
       {
         "action": "published",
         "timestamp": "2026-10-02T15:32:23.504Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-02T15:47:10.938Z"
       }
     ]
   }
