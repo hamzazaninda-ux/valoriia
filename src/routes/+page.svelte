@@ -192,7 +192,7 @@
 	</div>
 {/snippet}
 
-<div id="top" class="min-h-screen bg-[#faf9f6] font-body text-neutral-800 pb-[88px] md:pb-0" dir="rtl">
+<div id="top" class="min-h-screen bg-white font-body text-neutral-800 pb-[88px] md:pb-0" dir="rtl">
 	<!-- 1. Announcement marquee -->
 	<div class="overflow-hidden bg-neutral-950 py-2 text-white" aria-hidden="true">
 		<div class="animate-store-marquee flex w-max items-center gap-8 pe-8">
@@ -221,7 +221,7 @@
 						type="search"
 						bind:value={query}
 						placeholder="قلّب على منتج…"
-						class="h-10 w-36 rounded-xl border border-neutral-200 bg-neutral-50 px-3 text-sm outline-none transition-all placeholder:text-neutral-400 focus:w-44 focus:border-emerald-500 sm:w-48"
+						class="h-10 w-36 rounded-xl border border-neutral-200 bg-neutral-50 px-3 text-sm outline-none transition-all placeholder:text-neutral-400 focus:w-44 focus:border-neutral-400 sm:w-48"
 					/>
 				{/if}
 				<button
@@ -255,8 +255,8 @@
 			</div>
 
 			<a href="#top" class="absolute left-1/2 flex -translate-x-1/2 items-center gap-2" aria-label={brand.name}>
-				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-950 font-display text-lg font-bold text-amber-400">ف</span>
-				<span class="font-display text-xl font-bold text-emerald-950">{brand.name}</span>
+				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-950 font-display text-lg font-bold text-amber-400">ف</span>
+				<span class="font-display text-xl font-bold text-neutral-950">{brand.name}</span>
 			</a>
 
 			<div class="flex items-center">
@@ -275,11 +275,11 @@
 
 		<nav class="hidden border-t border-neutral-100 md:block" aria-label="التنقل الرئيسي">
 			<div class="mx-auto flex max-w-5xl items-center justify-center gap-8 px-4 py-2.5 text-sm font-semibold text-neutral-600">
-				<a href="#top" class="transition-colors hover:text-emerald-700">الرئيسية</a>
-				<a href="#collections" class="transition-colors hover:text-emerald-700">المجموعات</a>
-				<a href="#bestsellers" class="transition-colors hover:text-emerald-700">الأكثر مبيعاً</a>
-				<a href="#why" class="transition-colors hover:text-emerald-700">علاش حنا</a>
-				<a href="#contact" class="transition-colors hover:text-emerald-700">اتصل بنا</a>
+				<a href="#top" class="transition-colors hover:text-neutral-900">الرئيسية</a>
+				<a href="#collections" class="transition-colors hover:text-neutral-900">المجموعات</a>
+				<a href="#bestsellers" class="transition-colors hover:text-neutral-900">الأكثر مبيعاً</a>
+				<a href="#why" class="transition-colors hover:text-neutral-900">علاش حنا</a>
+				<a href="#contact" class="transition-colors hover:text-neutral-900">اتصل بنا</a>
 			</div>
 		</nav>
 
@@ -290,7 +290,7 @@
 						<a
 							{href}
 							onclick={() => (menuOpen = false)}
-							class="rounded-lg px-3 py-2.5 transition-colors hover:bg-neutral-50 active:bg-emerald-50"
+							class="rounded-lg px-3 py-2.5 transition-colors hover:bg-neutral-50 active:bg-neutral-100"
 							>{label}</a
 						>
 					{/each}
@@ -299,36 +299,38 @@
 		{/if}
 	</header>
 
-	<!-- 3. Hero: full-bleed photo (uploaded from settings) with overlay copy -->
+	<!-- 3. Hero: short photo banner (uploaded from settings) with overlay copy -->
 	<section class="mx-auto max-w-5xl px-4 pt-6 md:pt-10">
 		{#if brand.heroImage}
-			<div class="relative -mx-4 overflow-hidden shadow-[0_20px_60px_-20px_rgba(2,44,34,0.5)] md:mx-0 md:rounded-3xl">
-				<img
-					src={brand.heroImage}
-					alt={brand.name}
-					class="absolute inset-0 h-full w-full object-cover"
-					loading="eager"
-				/>
+			<div class="relative -mx-4 overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] md:mx-0 md:rounded-3xl">
+				<div class="aspect-[16/10] w-full md:aspect-auto md:min-h-[540px]">
+					<img
+						src={brand.heroImage}
+						alt={brand.name}
+						class="absolute inset-0 h-full w-full object-cover"
+						loading="eager"
+					/>
+				</div>
 				<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" aria-hidden="true"></div>
-				<div class="relative flex min-h-[480px] flex-col justify-end p-6 pb-8 md:min-h-[540px] md:p-12">
-					<div class="space-y-4 text-center md:text-start">
+				<div class="absolute inset-x-0 bottom-0 p-5 pb-6 md:p-12">
+					<div class="mx-auto max-w-2xl space-y-3 text-center md:space-y-4">
 						<span
 							class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-black/40 px-3.5 py-1.5 text-xs font-bold text-amber-300 backdrop-blur"
 						>
 							عرض الافتتاح — الرشاش فابور
 						</span>
-						<h1 class="font-display text-3xl font-bold leading-[1.5] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
+						<h1 class="font-display text-[26px] font-bold leading-[1.5] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
 							نظّم دارك، وخلي التنظيف ساهل
 						</h1>
-						<p class="mx-auto max-w-md text-sm leading-loose text-white/85 md:mx-0 md:text-base">
+						<p class="mx-auto max-w-md text-[13px] leading-loose text-white/85 md:text-base">
 							المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
 							<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
 							والخلاص ملي توصلك السلعة.
 						</p>
-						<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center md:justify-start">
+						<div class="flex flex-col gap-2.5 pt-1 sm:flex-row sm:justify-center">
 							<a
 								href="#bestsellers"
-								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-emerald-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
+								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-neutral-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
 							>
 								تسوّق دابا
 							</a>
@@ -343,64 +345,53 @@
 				</div>
 			</div>
 		{:else}
-			<div class="relative overflow-hidden rounded-3xl bg-emerald-950 text-white shadow-[0_20px_60px_-20px_rgba(2,44,34,0.5)]">
-				<div
-					class="pointer-events-none absolute inset-0 opacity-[0.15]"
-					style="background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0); background-size: 22px 22px;"
-					aria-hidden="true"
-				></div>
-				<div
-					class="pointer-events-none absolute -top-24 -start-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
-					aria-hidden="true"
-				></div>
-				<div class="relative p-7 text-center md:p-12 md:text-start">
-					<div class="mx-auto max-w-xl space-y-4 md:mx-0">
-						<span
-							class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1.5 text-xs font-bold text-amber-300"
+			<div class="rounded-3xl border border-neutral-200 bg-white p-7 text-center shadow-sm md:p-12">
+				<div class="mx-auto max-w-xl space-y-4">
+					<span
+						class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-xs font-bold text-amber-800"
+					>
+						عرض الافتتاح — الرشاش فابور
+					</span>
+					<h1 class="font-display text-3xl font-bold leading-[1.5] text-neutral-900 md:text-5xl md:leading-[1.4]">
+						نظّم دارك، وخلي التنظيف ساهل
+					</h1>
+					<p class="text-sm leading-loose text-neutral-500 md:text-base">
+						المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
+						<strong class="text-amber-700">الرشاش فابور</strong>. التوصيل لجميع المدن
+						والخلاص ملي توصلك السلعة.
+					</p>
+					<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center">
+						<a
+							href="#bestsellers"
+							class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-neutral-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
 						>
-							عرض الافتتاح — الرشاش فابور
-						</span>
-						<h1 class="font-display text-3xl font-bold leading-[1.5] md:text-5xl md:leading-[1.4]">
-							نظّم دارك، وخلي التنظيف ساهل
-						</h1>
-						<p class="text-sm leading-loose text-emerald-100/80 md:text-base">
-							المنظم الذكي اللي كيجمع ليك كلشي في بلاصة وحدة، ومع كل طلب
-							<strong class="text-amber-300">الرشاش فابور</strong>. التوصيل لجميع المدن
-							والخلاص ملي توصلك السلعة.
-						</p>
-						<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center md:justify-start">
-							<a
-								href="#bestsellers"
-								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-amber-400 px-7 font-bold text-emerald-950 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-amber-300 active:scale-[0.98]"
-							>
-								تسوّق دابا
-							</a>
-							<a
-								href="#offer"
-								class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-7 font-bold text-white transition-all duration-300 hover:bg-white/10 active:scale-[0.98]"
-							>
-								شوف العرض
-							</a>
-						</div>
+							تسوّق دابا
+						</a>
+						<a
+							href="#offer"
+							class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-neutral-300 bg-white px-7 font-bold text-neutral-900 transition-all duration-300 hover:bg-neutral-50 active:scale-[0.98]"
+						>
+							شوف العرض
+						</a>
 					</div>
 				</div>
 			</div>
 		{/if}
 		<div class="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-neutral-600">
 			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 				</svg>
 				خلص ملي توصلك
 			</span>
 			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
 				</svg>
 				توصيل لجميع المدن
 			</span>
 			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
 				</svg>
 				+1000 زبون راضٍ
@@ -419,17 +410,17 @@
 					aria-label={s.title}
 				>
 					<span
-						class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-white ring-4 ring-emerald-600/15 transition-all duration-300 group-hover:shadow-xl group-hover:ring-emerald-500/40"
+						class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-white ring-4 ring-neutral-200 transition-all duration-300 group-hover:shadow-xl group-hover:ring-neutral-400"
 					>
 						{#if s.image}
 							<img src={s.image} alt={s.title} class="h-full w-full object-cover" loading="lazy" />
 						{:else}
-							<svg class="h-1/3 w-1/3 text-emerald-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+							<svg class="h-1/3 w-1/3 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 							</svg>
 						{/if}
 					</span>
-					<span class="line-clamp-2 px-1 text-center text-xs font-extrabold leading-snug text-neutral-800 transition-colors group-hover:text-emerald-700 md:text-sm">{s.title}</span>
+					<span class="line-clamp-2 px-1 text-center text-xs font-extrabold leading-snug text-neutral-800 transition-colors group-hover:text-neutral-900 md:text-sm">{s.title}</span>
 				</a>
 			{/each}
 		</div>
@@ -451,7 +442,7 @@
 			{#if query.trim()}
 				<p class="mt-2 text-sm text-neutral-500">
 					نتائج البحث عن “{query.trim()}”: {visible.length}
-					<button type="button" onclick={() => (query = '')} class="font-bold text-emerald-700 underline underline-offset-4">مسح البحث</button>
+					<button type="button" onclick={() => (query = '')} class="font-bold text-neutral-900 underline underline-offset-4">مسح البحث</button>
 				</p>
 			{/if}
 		</div>
@@ -468,7 +459,7 @@
 				<button
 					type="button"
 					onclick={() => (query = '')}
-					class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-emerald-950 px-6 font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+					class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-neutral-950 px-6 font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
 				>
 					عرض كل المنتجات
 				</button>
@@ -477,9 +468,9 @@
 			<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{#each visible as s}
 					<article
-						class="group flex flex-col overflow-hidden rounded-3xl border border-neutral-200/60 bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:shadow-xl hover:border-emerald-500/30 active:scale-[0.99]"
+						class="group flex flex-col overflow-hidden rounded-3xl border border-neutral-200/60 bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:shadow-xl hover:border-neutral-300 active:scale-[0.99]"
 					>
-						<div class="relative h-60 overflow-hidden bg-gradient-to-bl from-emerald-50 via-[#faf9f6] to-amber-50">
+						<div class="relative h-60 overflow-hidden bg-neutral-50">
 							{#if s.image}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
 									<img
@@ -521,7 +512,7 @@
 						<div class="flex flex-1 flex-col gap-3 p-5">
 							<div>
 								{#if s.real}
-									<a href={`/${s.slug}`} class="text-[15px] font-extrabold leading-snug text-neutral-900 transition-colors hover:text-emerald-700">
+									<a href={`/${s.slug}`} class="text-[15px] font-extrabold leading-snug text-neutral-900 transition-colors hover:text-neutral-900">
 										{s.title}
 									</a>
 								{:else}
@@ -530,7 +521,7 @@
 								<p class="mt-1 line-clamp-2 text-xs leading-relaxed text-neutral-500">{s.subtitle}</p>
 							</div>
 							<div class="flex items-baseline gap-2">
-								<span class="text-lg font-black text-emerald-700">{s.price} {cur}</span>
+								<span class="text-lg font-black text-neutral-900">{s.price} {cur}</span>
 								{#if s.oldPrice}
 									<span class="text-xs text-neutral-400 line-through">{s.oldPrice} {cur}</span>
 								{/if}
@@ -542,21 +533,21 @@
 								</div>
 							{:else}
 								<div class="flex items-center gap-1.5">
-									<span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">جديد في المتجر</span>
+									<span class="rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-bold text-neutral-900">جديد في المتجر</span>
 								</div>
 							{/if}
 							<div class="mt-auto flex gap-2 pt-1">
 								{#if s.real}
 									<a
 										href={`/${s.slug}`}
-										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-emerald-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-emerald-900 active:scale-[0.98]"
+										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-neutral-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-neutral-800 active:scale-[0.98]"
 									>
 										اطلب دابا
 									</a>
 									<button
 										type="button"
 										onclick={() => addToCart(s)}
-										class="inline-flex min-h-12 w-12 items-center justify-center rounded-2xl border border-emerald-900/15 bg-emerald-50 text-emerald-800 transition-all duration-300 hover:bg-emerald-100 active:scale-95"
+										class="inline-flex min-h-12 w-12 items-center justify-center rounded-2xl border border-neutral-300 bg-neutral-100 text-neutral-800 transition-all duration-300 hover:bg-neutral-200 active:scale-95"
 										aria-label={`زيد ${s.title} للسلة`}
 									>
 										<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -566,7 +557,7 @@
 								{:else}
 									<a
 										href="#offer"
-										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-emerald-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-emerald-900 active:scale-[0.98]"
+										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-neutral-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-neutral-800 active:scale-[0.98]"
 									>
 										احجز دابا
 									</a>
@@ -616,8 +607,8 @@
 		{@render sectionTitle('علاش يختارونا المغاربة', 'الشراء من عندنا ساهل وآمن')}
 		<div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-3">
 			{#each [['توصيل لجميع المدن', 'من طنجة للكويرة، السلعة توصلك حتى لباب الدار', 'truck'], ['خلص ملي توصلك', 'الدفع عند الاستلام — ما تخلص حتى تشوف السلعة بعينيك', 'cash'], ['جودة مضمونة', 'منتجات مختارة بعناية وضمان الاستبدال', 'shield']] as [t, d, icon]}
-				<div class="rounded-3xl border border-neutral-200/60 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-xl hover:border-emerald-500/30">
-					<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-950 text-amber-300">
+				<div class="rounded-3xl border border-neutral-200/60 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-xl hover:border-neutral-300">
+					<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-950 text-amber-300">
 						{#if icon === 'truck'}
 							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
@@ -641,7 +632,7 @@
 
 	<!-- 8. Order CTA -->
 	<section id="offer" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-12">
-		<div class="relative overflow-hidden rounded-3xl bg-emerald-950 px-6 py-10 text-center text-white md:py-14">
+		<div class="relative overflow-hidden rounded-3xl bg-neutral-950 px-6 py-10 text-center text-white md:py-14">
 			<div
 				class="pointer-events-none absolute inset-0 opacity-[0.12]"
 				style="background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0); background-size: 20px 20px;"
@@ -654,7 +645,7 @@
 				<h2 class="font-display text-2xl font-bold leading-snug md:text-4xl">
 					جاهز تنظّم دارك؟
 				</h2>
-				<p class="text-sm leading-loose text-emerald-100/80 md:text-base">
+				<p class="text-sm leading-loose text-neutral-300 md:text-base">
 					خلّي لينا الطلب دابا عبر واتساب، أكّد معانا العنوان بالتليفون،
 					والسلعة توصلك حتى لباب الدار وتخلص ملي تستلمها.
 				</p>
@@ -677,7 +668,7 @@
 						رجع للمنتجات
 					</a>
 				</div>
-				<p class="text-xs text-emerald-100/60">
+				<p class="text-xs text-neutral-400">
 					متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}
 				</p>
 			</div>
@@ -689,7 +680,7 @@
 		<div class="mx-auto grid max-w-5xl grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
-					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-900 font-display text-lg font-bold text-amber-400">ف</span>
+					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-amber-400">ف</span>
 					<span class="font-display text-xl font-bold text-white">{brand.name}</span>
 				</div>
 				<p class="text-xs leading-loose text-neutral-400">
@@ -720,7 +711,7 @@
 					href={`${waBase}?text=${encodeURIComponent('السلام Valoriia، عندي استفسار')}`}
 					target="_blank"
 					rel="noopener"
-					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-emerald-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-200"
+					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-neutral-200 transition-colors hover:border-neutral-400 hover:text-white"
 				>
 					<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 						<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
@@ -771,7 +762,7 @@
 				class="flex flex-col items-center gap-1 py-1 active:scale-95"
 				aria-label="تواصل عبر واتساب"
 			>
-				<span class="flex h-12 w-12 shrink-0 -translate-y-3 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl ring-4 ring-[#faf9f6]">
+				<span class="flex h-12 w-12 shrink-0 -translate-y-3 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl ring-4 ring-white">
 					<svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 						<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
 					</svg>
@@ -820,7 +811,7 @@
 								drawerOpen = false;
 								document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' });
 							}}
-							class="mt-2 inline-flex min-h-11 items-center rounded-xl bg-emerald-950 px-6 font-bold text-white active:scale-[0.98]"
+							class="mt-2 inline-flex min-h-11 items-center rounded-xl bg-neutral-950 px-6 font-bold text-white active:scale-[0.98]"
 						>
 							تسوّق دابا
 						</button>
@@ -831,18 +822,18 @@
 							{@const item = bySlug[k]}
 							{#if item}
 								<div class="flex items-center gap-3 rounded-2xl border border-neutral-200/60 p-3">
-									<div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-emerald-50">
+									<div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
 										{#if item.image}
 											<img src={item.image} alt={item.title} class="h-full w-full object-cover" />
 										{:else}
-											<svg class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+											<svg class="h-6 w-6 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 											</svg>
 										{/if}
 									</div>
 									<div class="min-w-0 flex-1">
 										<p class="truncate text-sm font-bold text-neutral-800">{item.title}</p>
-										<p class="text-xs font-black text-emerald-700">{item.price} {cur}</p>
+										<p class="text-xs font-black text-neutral-900">{item.price} {cur}</p>
 									</div>
 									<div class="flex items-center gap-1.5">
 										<button type="button" onclick={() => setQty(k, q - 1)} class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-600 active:scale-95" aria-label="نقص الكمية">−</button>
