@@ -1,6 +1,7 @@
 ﻿<script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/format';
+	import { ShoppingCart } from '@lucide/svelte';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
@@ -175,7 +176,7 @@
 						<div class="grid grid-cols-1 gap-2.5">
 							{#each pricing.offers as offer}
 								<label
-									class="relative flex cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
+									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -214,9 +215,9 @@
 										</span>
 									</span>
 									<span class="shrink-0 text-left">
-										<span class="block text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
+										<span class="block whitespace-nowrap text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
 										{#if offer.originalPrice > offer.price}
-											<span class="mt-0.5 block text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
+											<span class="mt-0.5 block whitespace-nowrap text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
 										{/if}
 									</span>
 								</label>
@@ -227,11 +228,9 @@
 					<button
 						type="button"
 						onclick={addSelectedToCart}
-						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98]"
+						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#FACC15] py-3.5 text-base font-black text-neutral-900 shadow-lg transition-all hover:bg-[#eab308] active:scale-[0.98]"
 					>
-						<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
-						</svg>
+						<ShoppingCart class="h-5 w-5 shrink-0" />
 						<span>أضف إلى السلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
 					</button>
 
