@@ -131,6 +131,13 @@
 		cartUi.openDrawer();
 	}
 
+	function scrollToOffers() {
+		const offersSection = document.getElementById('offers') || document.querySelector('[data-section="offers"]') || document.getElementById('checkout-form');
+		if (offersSection) {
+			offersSection.scrollIntoView({ behavior: 'smooth' });
+		}
+	}
+
 
 	onMount(() => {
 		const formTop = document.getElementById('checkout-form');
@@ -168,18 +175,12 @@
 </script>
 
 <div
-	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-border/30 pb-20"
+	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-border/30 pb-32"
 	style="{buildThemeCssVars(t)}; background-color: var(--t-bg, #faf9f6); color: var(--t-text, #1c1917);"
 >
-	<!-- Trust bar -->
-	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
-		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings.commerce.freeShippingText} • {settings.commerce.paymentMethod}</span>
-	</div>
-
-	<!-- â”€â”€ Stacked images: first fills 9:16, rest keep natural ratio â”€â”€ -->
+	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
 	{#if slides.length > 0}
-		<div class="w-full bg-black/5">
+		<div class="w-full bg-black/5 pb-24 md:pb-28">
 			<img
 				src={slides[0].src}
 				alt={slides[0].alt}
@@ -209,7 +210,7 @@
 
 	<!-- Checkout form -->
 	<div id="checkout-form" class="px-3 py-6 md:px-4">
-		<div class="border border-border/60 shadow-lg overflow-hidden rounded-3xl bg-white" dir="rtl">
+		<div id="offers" data-section="offers" class="border border-border/60 shadow-lg overflow-hidden rounded-3xl bg-white scroll-mt-6" dir="rtl">
 			<div class="h-1" style="background-color: var(--t-primary, #047857);"></div>
 			<div class="text-center pb-3 pt-5 select-none px-4">
 				<h2 class="text-2xl font-extrabold tracking-tight font-display">
@@ -337,7 +338,8 @@
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" dir="rtl">
 			<button
-				onclick={addSelectedToCart}
+				type="button"
+				onclick={scrollToOffers}
 				style="background-color: var(--t-cta, #16a34a);"
 				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-2xl shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>

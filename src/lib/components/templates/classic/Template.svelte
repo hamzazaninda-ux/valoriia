@@ -53,7 +53,10 @@
 	// ──────────────────────────────────────────────────────────────
 
 	function scrollToForm() {
-		document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' });
+		const offersSection = document.getElementById('offers') || document.querySelector('[data-section="offers"]') || document.getElementById('checkout-form');
+		if (offersSection) {
+			offersSection.scrollIntoView({ behavior: 'smooth' });
+		}
 	}
 
 	const sheetsUrl = $derived(
@@ -308,11 +311,6 @@
 		</span>
 	</label>
 {/snippet}
-	<div class="bg-gradient-to-r from-emerald-600 to-green-600 text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #10b981), #059669);">
-		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{t.sections.trustBadges.freeShippingText || settings.commerce.freeShippingText} • {t.sections.trustBadges.codText || settings.commerce.paymentMethod}</span>
-	</div>
-
 	<!-- ── Hero Carousel ─────────────────────────────────────────── -->
 	<div class="hero-carousel-wrapper w-full">
 		<Carousel {slides} />
@@ -353,7 +351,7 @@
 		<p class="text-[11px] font-bold mt-1" style="color: var(--t-primary, #10b981);">{t.sections.pricing.freeShippingBadgeText}</p>
 		<button
 			type="button"
-			onclick={addSelectedToCart}
+			onclick={scrollToForm}
 			class="mt-4 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 border-white/25 bg-white/10 px-8 font-extrabold text-white backdrop-blur transition-all duration-300 hover:bg-white/20 active:scale-[0.98]"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -364,7 +362,7 @@
 	</div>
 
 	<div id="checkout-form" class="px-4 py-8 bg-gradient-to-b from-muted/5 to-muted/15 flex-1">
-		<div class="border border-border/60 shadow-lg overflow-hidden rounded-2xl bg-card" dir="rtl">
+		<div id="offers" data-section="offers" class="border border-border/60 shadow-lg overflow-hidden rounded-2xl bg-card scroll-mt-6" dir="rtl">
 			<div class="h-1 bg-emerald-500"></div>
 			<div class="text-center pb-4 pt-6 select-none px-6">
 				<h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-700 tracking-wide pb-1.5" style="font-family: 'El Messiri', sans-serif;">
@@ -686,7 +684,8 @@
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-background via-background to-transparent pointer-events-none" dir="rtl">
 			<button
-				onclick={addSelectedToCart}
+				type="button"
+				onclick={scrollToForm}
 				style="background-color: var(--t-cta, #f97316);"
 				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
