@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { cartUi, type CompletedOrder } from '$lib/stores/cart.svelte';
 	import { buildOrderPayload, sendOrder, trackPurchase } from '$lib/utils/checkout';
 
@@ -34,6 +33,14 @@
 	let accepting = $state<string | null>(null);
 	let done = $state(false);
 	let expired = $state(false);
+	let timer: ReturnType<typeof setInterval> | null = null;
+
+	function stopTimer() {
+		if (timer) {
+			clearInterval(timer);
+			timer = null;
+		}
+	}
 
 	function priceOf(p: UpsellProduct) {
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
@@ -82,18 +89,26 @@
 		});
 	}
 
-	onMount(() => {
-		// Countdown is display-only: it NEVER navigates by itself.
-		// The customer leaves only via an explicit action (accept / skip / continue).
-		const timer = setInterval(() => {
-			left -= 1;
-			if (left <= 0) {
-				clearInterval(timer);
-				left = 0;
-				expired = true;
-			}
-		}, 1000);
-		return () => clearInterval(timer);
+	// Start (and reset) the countdown only while the upsell is the active
+	// surface. A page-load timer would already be expired by the time the
+	// customer reaches this step.
+	$effect(() => {
+		if (cartUi.upsell) {
+			left = seconds;
+			expired = false;
+			stopTimer();
+			timer = setInterval(() => {
+				left -= 1;
+				if (left <= 0) {
+					stopTimer();
+					left = 0;
+					expired = true;
+				}
+			}, 1000);
+		}
+		return () => {
+			stopTimer();
+		};
 	});
 </script>
 
@@ -101,7 +116,7 @@
 	<div class="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="عرض خاص بعد الطلب">
 		<div class="absolute inset-0 bg-black/65 backdrop-blur-[2px]"></div>
 		<div class="relative w-full max-w-md overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl" dir="rtl">
-			<div class="bg-gradient-to-l from-amber-500 to-orange-500 px-5 py-4 text-center text-white">
+			<div class="bg-gradient-to-l from-amber-500 to-orange-500 px-5 py-3.5 text-center text-white">
 				<p class="text-sm font-black">عرض خاص غير لهاد الطلب!</p>
 				<p class="mt-0.5 text-[11px] font-semibold text-white/85">زيد منتج آخر بنفس التوصيل — بلا مصاريف زيادة</p>
 				<div class="mx-auto mt-2.5 h-2 max-w-[220px] overflow-hidden rounded-full bg-white/30">
@@ -113,13 +128,13 @@
 				<p class="mt-1 font-display text-2xl font-black tabular-nums" aria-live="polite">0:{String(Math.max(left, 0)).padStart(2, '0')}</p>
 			</div>
 
-			<div class="max-h-[46dvh] space-y-2.5 overflow-y-auto p-4">
+			<div class="max-h-[46dvh] space-y-2 overflow-y-auto p-3">
 				{#if products.length === 0}
 					<p class="py-4 text-center text-sm text-neutral-500">شكراً على طلبك! غادي نعيطو ليك للتأكيد.</p>
 				{/if}
 				{#each products.slice(0, 3) as p}
-					<div class="flex items-center gap-3 rounded-2xl border border-neutral-200/70 p-3">
-						<span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-50">
+					<div class="flex items-center gap-2.5 rounded-xl border border-neutral-200/70 p-2.5">
+						<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-50">
 							{#if p.heroImage}
 								<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover" loading="lazy" />
 							{:else}
@@ -153,7 +168,7 @@
 				{/each}
 			</div>
 
-			<div class="border-t border-neutral-100 p-4">
+			<div class="border-t border-neutral-100 p-3">
 				{#if expired}
 					<button
 						type="button"

@@ -103,52 +103,46 @@
 					<p class="text-sm text-neutral-400">المنتجات اللي تزيدها غتبان هنا</p>
 				</div>
 			{:else}
-				<div class="flex-1 space-y-3 overflow-y-auto p-4">
+				<div class="flex-1 space-y-1.5 overflow-y-auto p-3">
 					{#each cart.lines as line (line.key)}
-						<div class="rounded-2xl border border-neutral-200/60 p-3">
-							<div class="flex items-start justify-between gap-2">
-								<p class="min-w-0 flex-1 text-sm font-extrabold leading-snug text-neutral-800">{line.title}</p>
-								<button
-									type="button"
-									onclick={() => cart.remove(line.key)}
-									class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-neutral-300 transition-colors hover:bg-red-50 hover:text-red-500"
-									aria-label="حيد من السلة"
-								>
-									<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916" />
-									</svg>
-								</button>
-							</div>
-							<span class="mt-2 block h-28 w-full overflow-hidden rounded-xl bg-neutral-100">
+						<div class="flex items-center gap-2 rounded-xl border border-neutral-200/60 bg-white p-2">
+							<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-neutral-100">
 								{#if line.image}
 									<img src={line.image} alt={line.title} class="h-full w-full object-cover" />
 								{:else}
-									<span class="flex h-full w-full items-center justify-center">
-										<svg class="h-7 w-7 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-										</svg>
-									</span>
+									<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+									</svg>
 								{/if}
 							</span>
-							<div class="mt-2 flex items-center justify-between gap-2">
+							<span class="min-w-0 flex-1">
+								<span class="block truncate text-[13px] font-extrabold leading-tight text-neutral-800">{line.title}</span>
 								{#if line.offerTitle}
-									<span class="truncate text-[11px] font-semibold text-neutral-400">{line.offerTitle}</span>
-								{:else}
-									<span></span>
+									<span class="block truncate text-[11px] text-neutral-400">{line.offerTitle}</span>
 								{/if}
-								<span class="shrink-0 text-sm font-black text-neutral-900">{line.price} {currency}</span>
-							</div>
+								<span class="mt-0.5 block text-[13px] font-black text-neutral-900">{line.price} {currency}</span>
+							</span>
+							<button
+								type="button"
+								onclick={() => cart.remove(line.key)}
+								class="flex h-8 w-8 shrink-0 items-center justify-center self-start rounded-lg text-neutral-300 transition-colors hover:bg-red-50 hover:text-red-500"
+								aria-label="حيد من السلة"
+							>
+								<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+									<path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
 						</div>
 					{/each}
 
 					{#if moreOffers.length > 0}
-						<div class="rounded-2xl border border-amber-200 bg-amber-50/60 p-3">
-							<p class="px-1 pb-2 text-sm font-extrabold text-neutral-800">
+						<div class="rounded-xl border border-amber-200 bg-amber-50/60 p-2.5">
+							<p class="px-1 pb-1.5 text-[13px] font-extrabold text-neutral-800">
 								زيد عرض آخر بنفس التوصيل
 							</p>
-							<div class="space-y-2">
+							<div class="space-y-1.5">
 								{#each moreOffers as o}
-									<div class="flex items-center gap-3 rounded-xl border border-amber-200/70 bg-white p-2.5">
+									<div class="flex items-center gap-2.5 rounded-xl border border-amber-200/70 bg-white p-2">
 										<span class="min-w-0 flex-1 text-right">
 											<span class="block truncate text-[13px] font-extrabold text-neutral-800">{o.title}</span>
 											<span class="mt-0.5 block text-xs font-black text-emerald-700">{o.price} {currency}</span>
@@ -167,13 +161,13 @@
 					{/if}
 
 					{#if crossSells.length > 0}
-						<div class="pt-1">
-							<p class="px-1 pb-2 text-sm font-extrabold text-neutral-800">
+						<div class="pt-0.5">
+							<p class="px-1 pb-1.5 text-[13px] font-extrabold text-neutral-800">
 								كمّل طلبك بهاد المنتجات
 							</p>
-							<div class="space-y-2">
+							<div class="space-y-1.5">
 								{#each crossSells as p}
-									<div class="flex items-center gap-3 rounded-2xl border border-dashed border-emerald-600/30 bg-emerald-50/40 p-2.5">
+									<div class="flex items-center gap-2.5 rounded-xl border border-dashed border-emerald-600/30 bg-emerald-50/40 p-2">
 										<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
 											{#if p.heroImage}
 												<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover" loading="lazy" />
@@ -201,7 +195,7 @@
 					{/if}
 				</div>
 
-				<div class="space-y-2.5 border-t border-neutral-100 p-4">
+				<div class="space-y-2 border-t border-neutral-100 p-3.5">
 					<div class="flex items-center justify-between text-sm text-neutral-500">
 						<span>التوصيل</span>
 						<span class="font-bold text-emerald-600">مجاني</span>

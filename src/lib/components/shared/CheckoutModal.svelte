@@ -20,18 +20,29 @@
 	let fullName = $state('');
 	let phoneNumber = $state('');
 	let errors = $state({ fullName: '', phoneNumber: '' });
+	let submitError = $state('');
 	let loading = $state(false);
+
+	function focusField(id: 'co-name' | 'co-phone') {
+		const el = document.getElementById(id);
+		if (!el) return;
+		el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		(el as HTMLElement).focus({ preventScroll: true });
+	}
 
 	function handleSubmit(e: Event) {
 		e.preventDefault();
 		errors = { fullName: '', phoneNumber: '' };
+		submitError = '';
 
 		if (fullName.trim().length < 2) {
 			errors.fullName = 'دخل الاسم الكامل من فضلك';
+			focusField('co-name');
 			return;
 		}
 		if (!isValidMoroccanPhone(phoneNumber.trim())) {
 			errors.phoneNumber = 'رقم الهاتف غير صحيح (مثال: 0612345678)';
+			focusField('co-phone');
 			return;
 		}
 		if (cart.lines.length === 0) return;
@@ -61,12 +72,18 @@
 			currency
 		};
 
-		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(() => {
-			localStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
-			cart.clear();
-			loading = false;
-			onDone(completed);
-		});
+		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
+			() => {
+				localStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
+				cart.clear();
+				loading = false;
+				onDone(completed);
+			},
+			() => {
+				loading = false;
+				submitError = 'تعذر إرسال الطلب. المرجو المحاولة مرة أخرى.';
+			}
+		);
 	}
 </script>
 
@@ -130,6 +147,9 @@
 							id="co-name"
 							type="text"
 							bind:value={fullName}
+							oninput={() => {
+								if (errors.fullName) errors.fullName = '';
+							}}
 							placeholder="مثال: ياسين العلوي"
 							autocomplete="name"
 							class="h-12 w-full rounded-xl border border-neutral-300 bg-white px-3.5 text-right text-sm font-medium text-neutral-900 outline-none transition-all placeholder:text-neutral-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
@@ -147,6 +167,9 @@
 							type="tel"
 							inputmode="tel"
 							bind:value={phoneNumber}
+							oninput={() => {
+								if (errors.phoneNumber) errors.phoneNumber = '';
+							}}
 							placeholder="06xxxxxxxx"
 							autocomplete="tel"
 							class="h-12 w-full rounded-xl border border-neutral-300 bg-white px-3.5 text-right text-sm font-medium text-neutral-900 outline-none transition-all placeholder:text-neutral-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
@@ -169,6 +192,9 @@
 							<span>أكّد الطلب — {cart.subtotal} {currency}</span>
 						{/if}
 					</button>
+					{#if submitError}
+						<p class="text-center text-[11px] font-semibold text-red-600">{submitError}</p>
+					{/if}
 					<p class="text-center text-[11px] leading-relaxed text-neutral-400">
 						بالضغط على تأكيد، غادي نعيطو ليك باش نأكدو العنوان — والخلاص عند الاستلام
 					</p>

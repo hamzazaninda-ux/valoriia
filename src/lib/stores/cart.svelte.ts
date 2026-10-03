@@ -42,11 +42,6 @@ function load(): CartLine[] {
 }
 
 let lines = $state<CartLine[]>(load());
-let loaded = $state(false);
-
-if (typeof localStorage !== 'undefined') {
-	loaded = true;
-}
 
 function persist() {
 	if (typeof localStorage === 'undefined') return;
@@ -83,42 +78,72 @@ export const cart = {
 	}
 };
 
-// --- Global cart UI state (drawer / checkout / post-purchase upsell) ---
-let drawerOpen = $state(false);
-let checkoutOpen = $state(false);
-let upsell = $state<CompletedOrder | null>(null);
+// --- Single purchase-flow state -------------------------------------------
+// Exactly ONE flow surface is active at a time: null | 'cart' | 'checkout' |
+// 'upsell'. Combinations like cart+checkout are structurally impossible —
+// every transition closes the previous surface before opening the next one.
+export type FlowStep = null | 'cart' | 'checkout' | 'upsell';
+
+let flow = $state<FlowStep>(null);
+let upsellOrder = $state<CompletedOrder | null>(null);
+
+// Lock body scroll while any flow surface is open; released on close/reset.
+// (Managed explicitly in the transitions below — a module-level $effect
+// is not allowed here and throws effect_orphan at runtime.)
+function lockScroll() {
+	if (typeof document !== 'undefined') document.body.style.overflow = 'hidden';
+}
+function unlockScroll() {
+	if (typeof document !== 'undefined') document.body.style.overflow = '';
+}
 
 export const cartUi = {
+	/** Current active surface (single source of truth). */
+	get flow(): FlowStep {
+		return flow;
+	},
 	get drawer() {
-		return drawerOpen;
+		return flow === 'cart';
 	},
 	get checkout() {
-		return checkoutOpen;
+		return flow === 'checkout';
 	},
 	get upsell() {
-		return upsell;
+		return flow === 'upsell' ? upsellOrder : null;
 	},
 	openDrawer() {
-		drawerOpen = true;
+		upsellOrder = null;
+		flow = 'cart';
+		lockScroll();
 	},
 	closeDrawer() {
-		drawerOpen = false;
+		if (flow === 'cart') flow = null;
+		unlockScroll();
 	},
 	openCheckout() {
 		if (lines.length === 0) return;
-		drawerOpen = false;
-		checkoutOpen = true;
+		flow = 'checkout';
+		lockScroll();
 	},
 	closeCheckout() {
-		checkoutOpen = false;
+		if (flow === 'checkout') flow = null;
+		unlockScroll();
 	},
-	/** Called after a successful order: closes checkout, opens the timed upsell. */
+	/** Called after a successful order: checkout closes, upsell opens alone. */
 	beginUpsell(order: CompletedOrder) {
-		checkoutOpen = false;
-		drawerOpen = false;
-		upsell = order;
+		flow = 'upsell';
+		upsellOrder = order;
+		lockScroll();
 	},
 	endUpsell() {
-		upsell = null;
+		flow = null;
+		upsellOrder = null;
+		unlockScroll();
+	},
+	/** Full reset (e.g. before leaving to the Thank You page). */
+	resetAll() {
+		flow = null;
+		upsellOrder = null;
+		unlockScroll();
 	}
 };

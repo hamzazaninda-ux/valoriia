@@ -326,6 +326,6 @@
 		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
-		onFinish={() => { window.location.href = '/thank-you'; }}
+		onFinish={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
 	/>
 </div>
