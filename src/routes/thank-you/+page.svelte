@@ -2,6 +2,9 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { buildOrderPayload, sendOrder, trackPurchase } from '$lib/utils/checkout';
+
+	let { data }: { data?: { sheetsUrl?: string } } = $props();
 
 	interface OrderData {
 		orderId: string;
@@ -51,6 +54,52 @@
 	function handleBackHome() {
 		localStorage.removeItem('latestOrder');
 		window.location.href = '/';
+	}
+
+	// Post-order offer state (مسمار لاصق جداري — 20 قطعة بـ 99 DH)
+	let offerStatus = $state<'idle' | 'loading' | 'added' | 'error'>('idle');
+
+	async function handleAddOffer() {
+		if (!order || offerStatus === 'loading' || offerStatus === 'added') return;
+		offerStatus = 'loading';
+
+		const fallbackSheetsUrl =
+			'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
+		const targetSheetsUrl = data?.sheetsUrl || fallbackSheetsUrl;
+
+		const payload = buildOrderPayload(
+			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
+			[
+				{
+					key: 'mismar-lasik-20pcs',
+					slug: 'mismar-lasik',
+					title: 'مسمار لاصق جداري — 20 قطعة',
+					image: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp',
+					price: 99,
+					offerId: 0,
+					offerTitle: 'عرض ما بعد الطلب: 20 قطعة',
+					qty: 1
+				}
+			],
+			{
+				productTitle: 'مسمار لاصق جداري — 20 قطعة',
+				sku: 'MISMAR-LASIK-20PCS',
+				currency: 'DH',
+				pageUrl: typeof window !== 'undefined' ? window.location.href : ''
+			},
+			'upsell',
+			order.orderId
+		);
+
+		trackPurchase(99, 'مسمار لاصق جداري — 20 قطعة');
+
+		try {
+			await sendOrder(payload as Record<string, unknown>, targetSheetsUrl);
+		} catch (e) {
+			console.error('Error submitting post-order offer:', e);
+		} finally {
+			offerStatus = 'added';
+		}
 	}
 </script>
 
@@ -192,6 +241,84 @@
 				تم تسجيل طلبك وتأكيده بالنظام.
 			</div>
 		{/if}
+
+		<!-- Optional Post-Order Offer: مسمار لاصق جداري — 20 قطعة -->
+		<Card.Root class="w-full border border-border/80 shadow-lg overflow-hidden rounded-2xl bg-card mb-8">
+			<!-- Header Badge -->
+			<div class="bg-gradient-to-r from-emerald-600 to-green-600 px-4 py-2.5 flex items-center justify-between text-white text-xs font-bold">
+				<span class="flex items-center gap-1.5">
+					<span>🎁</span>
+					<span>عرض حصري إضافي لطلبك الحالي</span>
+				</span>
+				<span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-extrabold">توصيل مجاني مع طلبك</span>
+			</div>
+
+			<Card.Content class="p-5">
+				<div class="flex flex-col sm:flex-row items-center gap-4">
+					<!-- Clear Product Image -->
+					<div class="relative w-32 h-32 sm:w-36 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-muted border border-border/60 flex items-center justify-center">
+						<img
+							src="/images/mismar-lasik.webp"
+							alt="مسمار لاصق جداري — 20 قطعة"
+							class="w-full h-full object-cover"
+							loading="lazy"
+							onerror={(e) => {
+								(e.currentTarget as HTMLImageElement).src = 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp';
+							}}
+						/>
+						<span class="absolute bottom-1 right-1 bg-black/75 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+							20 قطعة
+						</span>
+					</div>
+
+					<!-- Product Info & CTA -->
+					<div class="flex-1 text-right w-full">
+						<h3 class="text-base sm:text-lg font-extrabold text-foreground leading-tight mb-1.5">
+							مسمار لاصق جداري — 20 قطعة
+						</h3>
+
+						<p class="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3">
+							تركيب سهل بدون حفر، مناسب للحمام والمطبخ وغرف المنزل.
+						</p>
+
+						<!-- Price & Quantity -->
+						<div class="flex items-baseline gap-2 mb-3">
+							<span class="text-2xl font-black text-emerald-600 font-mono">99 DH</span>
+							<span class="text-xs font-bold text-muted-foreground">/ 20 قطعة فقط</span>
+						</div>
+
+						<!-- CTA Button / Status -->
+						{#if offerStatus === 'added'}
+							<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 text-center">
+								<p class="text-xs sm:text-sm font-bold text-emerald-700 flex items-center justify-center gap-1.5">
+									<span>✅</span>
+									<span>تم تسجيل طلب إضافة العرض بنجاح!</span>
+								</p>
+								<p class="text-[11px] text-emerald-600 mt-1 leading-normal">
+									سيتم تأكيد 20 قطعة من المسمار اللاصق مع شحنتك هاتفياً (+99 DH عند الاستلام).
+								</p>
+							</div>
+						{:else}
+							<Button
+								onclick={handleAddOffer}
+								disabled={offerStatus === 'loading'}
+								class="w-full py-5 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+							>
+								{#if offerStatus === 'loading'}
+									<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+									<span>جاري إرسال طلب الإضافة...</span>
+								{:else}
+									<span>أضف 20 قطعة لطلبي بـ 99 DH</span>
+								{/if}
+							</Button>
+							<p class="text-[10px] text-muted-foreground text-center mt-1.5 font-medium">
+								الدفع عند الاستلام مع باقي طلبيتك • بدون أي مصاريف شحن إضافية
+							</p>
+						{/if}
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
 
 		<!-- Action Callout & WhatsApp Direct Support -->
 		<div class="w-full bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-8 text-center" dir="rtl">
