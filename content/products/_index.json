@@ -2,7 +2,7 @@
   {
     "id": "prod_hamil_jidari_makanis",
     "slug": "hamil-jidari-makanis",
-    "title": "حامل جداري للمكانس والممسحات",
+    "title": "حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات",
     "subtitle": "منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.",
     "heroImage": "",
     "startingPrice": 99,
@@ -59,7 +59,7 @@
     "slug": "qofl-al-aman",
     "title": "قفل الأمان للأطفال",
     "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
-    "heroImage": "/images/child-safety-lock.webp",
+    "heroImage": "https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp",
     "startingPrice": 50,
     "status": "published",
     "template": "classic",

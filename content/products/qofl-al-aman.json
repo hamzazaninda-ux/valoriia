@@ -7,7 +7,7 @@
   "template": "classic",
   "published": {
     "content": {
-      "heroImage": "/images/child-safety-lock.webp",
+      "heroImage": "https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp",
       "title": "قفل الأمان للأطفال",
       "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
       "rating": 4.9,

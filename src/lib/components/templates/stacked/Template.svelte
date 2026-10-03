@@ -61,7 +61,7 @@
 	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
 	const mopHolderProduct = {
 		slug: 'hamil-jidari-makanis',
-		title: 'حامل جداري للمكانس والممسحات',
+		title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 		subtitle: 'منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.',
 		heroImage: '', // DO NOT add any image yet
 		startingPrice: 99
@@ -72,12 +72,12 @@
 		slug: 'qofl-al-aman',
 		title: 'قفل الأمان للأطفال',
 		subtitle: 'حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات',
-		heroImage: '/images/child-safety-lock.webp',
+		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
 		startingPrice: 50
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// UPSELL #1: حامل جداري للمكانس والممسحات — 99 DH
+	// UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
 	// UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const cartUpsells = $derived.by(() => {
 		const foundMop = others.find(
@@ -91,7 +91,7 @@
 			{
 				...mopHolderProduct,
 				...(foundMop || {}),
-				title: 'حامل جداري للمكانس والممسحات',
+				title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 				startingPrice: 99,
 				heroImage: '' // MUST remain empty per instructions
 			},
@@ -100,7 +100,7 @@
 				...(foundLock || {}),
 				title: 'قفل الأمان للأطفال',
 				startingPrice: 50,
-				heroImage: '/images/child-safety-lock.webp'
+				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
 			}
 		];
 	});

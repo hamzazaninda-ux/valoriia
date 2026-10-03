@@ -32,7 +32,7 @@
 	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
 	const mopHolderProduct: UpsellProduct = {
 		slug: 'hamil-jidari-makanis',
-		title: 'حامل جداري للمكانس والممسحات',
+		title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 		heroImage: '', // DO NOT add any image yet
 		startingPrice: 99
 	};
@@ -41,12 +41,12 @@
 	const childLockProduct: UpsellProduct = {
 		slug: 'qofl-al-aman',
 		title: 'قفل الأمان للأطفال',
-		heroImage: '/images/child-safety-lock.webp',
+		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
 		startingPrice: 50
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// 1. UPSELL #1: حامل جداري للمكانس والممسحات — 99 DH
+	// 1. UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
 	// 2. UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const activeProducts = $derived.by(() => {
 		const foundMop = products.find(
@@ -60,7 +60,7 @@
 			{
 				...mopHolderProduct,
 				...(foundMop || {}),
-				title: 'حامل جداري للمكانس والممسحات',
+				title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 				startingPrice: 99,
 				heroImage: '' // MUST remain empty per instructions
 			},
@@ -69,7 +69,7 @@
 				...(foundLock || {}),
 				title: 'قفل الأمان للأطفال',
 				startingPrice: 50,
-				heroImage: '/images/child-safety-lock.webp'
+				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
 			}
 		];
 	});
@@ -144,7 +144,7 @@
 		const finalPrice = priceOf(p);
 		const finalImage = p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
 			? ''
-			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? '/images/child-safety-lock.webp' : '');
+			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp' : '');
 		const finalSku = p.slug === 'hamil-jidari-makanis' ? 'hamil-jidari-makanis' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
 		const payload = buildOrderPayload(
 			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
