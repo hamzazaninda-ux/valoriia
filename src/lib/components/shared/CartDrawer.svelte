@@ -55,6 +55,7 @@
 				if (isDrainValve) {
 					return {
 						...p,
+						title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
 						heroImage: DRAIN_VALVE_IMAGE,
 						startingPrice: 35
 					};
@@ -91,7 +92,11 @@
 			p.slug === 'qofl-al-aman' ||
 			p.title.includes('قفل') ||
 			p.title.includes('صغارك');
-		const addedTitle = isChildLock ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' : p.title;
+		const addedTitle = isChildLock 
+			? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' 
+			: isDrainValve 
+				? 'تهنى نهائياً من ريحة المجاري والصراصير 🪳' 
+				: p.title;
 		const addedPrice = isDrainValve ? 35 : (p.startingPrice || 0);
 		cart.add({
 			slug: p.slug,
