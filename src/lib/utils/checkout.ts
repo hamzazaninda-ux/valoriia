@@ -63,13 +63,122 @@ export function buildOrderPayload(
 	};
 }
 
+let lastAddToCartTime = 0;
+let lastAddToCartKey = '';
+
+export function trackAddToCart(price: number, productTitle: string, currency: string = 'MAD') {
+	if (typeof window === 'undefined') return;
+
+	const cur = currency === 'درهم' || !currency ? 'MAD' : currency;
+	const numPrice = Number(price) || 0;
+	const title = (productTitle || '').trim();
+
+	// Deduplication guard: prevent duplicate events within 500ms for identical item
+	const now = Date.now();
+	const key = `${title}:${numPrice}`;
+	if (now - lastAddToCartTime < 500 && lastAddToCartKey === key) {
+		return;
+	}
+	lastAddToCartTime = now;
+	lastAddToCartKey = key;
+
+	// Meta / Facebook Pixel
+	try {
+		if (typeof (window as any).fbq === 'function') {
+			(window as any).fbq('track', 'AddToCart', {
+				content_name: title,
+				content_type: 'product',
+				value: numPrice,
+				currency: cur
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] Meta AddToCart error:', err);
+	}
+
+	// TikTok Pixel
+	try {
+		if (typeof (window as any).ttq?.track === 'function') {
+			(window as any).ttq.track('AddToCart', {
+				content_name: title,
+				content_type: 'product',
+				value: numPrice,
+				currency: cur
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] TikTok AddToCart error:', err);
+	}
+
+	// Snapchat Pixel
+	try {
+		if (typeof (window as any).snaptr === 'function') {
+			(window as any).snaptr('track', 'ADD_CART', {
+				item_category: title,
+				price: numPrice,
+				currency: cur
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] Snap ADD_CART error:', err);
+	}
+
+	// Google Analytics / GA4 / Google Ads (gtag)
+	try {
+		if (typeof (window as any).gtag === 'function') {
+			(window as any).gtag('event', 'add_to_cart', {
+				currency: cur,
+				value: numPrice,
+				items: [
+					{
+						item_name: title,
+						price: numPrice,
+						quantity: 1
+					}
+				]
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] gtag add_to_cart error:', err);
+	}
+}
+
 export function trackPurchase(price: number, productTitle: string) {
 	if (typeof window === 'undefined') return;
-	if ((window as any).fbq) {
-		(window as any).fbq('track', 'Purchase', { value: price, currency: 'MAD', content_name: productTitle });
+	const numPrice = Number(price) || 0;
+	const title = (productTitle || '').trim();
+
+	try {
+		if ((window as any).fbq) {
+			(window as any).fbq('track', 'Purchase', { value: numPrice, currency: 'MAD', content_name: title });
+		}
+	} catch (err) {
+		console.warn('[Pixel] Meta Purchase error:', err);
 	}
-	if ((window as any).ttq) {
-		(window as any).ttq.track('CompletePayment', { value: price, currency: 'MAD', content_name: productTitle });
+	try {
+		if ((window as any).ttq) {
+			(window as any).ttq.track('CompletePayment', { value: numPrice, currency: 'MAD', content_name: title });
+		}
+	} catch (err) {
+		console.warn('[Pixel] TikTok Purchase error:', err);
+	}
+	try {
+		if ((window as any).snaptr) {
+			(window as any).snaptr('track', 'PURCHASE', { price: numPrice, currency: 'MAD', item_category: title });
+		}
+	} catch (err) {
+		console.warn('[Pixel] Snap Purchase error:', err);
+	}
+	try {
+		if ((window as any).gtag) {
+			(window as any).gtag('event', 'purchase', {
+				currency: 'MAD',
+				value: numPrice,
+				items: [{ item_name: title, price: numPrice, quantity: 1 }]
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] gtag purchase error:', err);
 	}
 }
 

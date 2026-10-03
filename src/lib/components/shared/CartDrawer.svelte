@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
+	import { trackAddToCart } from '$lib/utils/checkout';
 
 	export interface CrossSell {
 		slug: string;
@@ -90,14 +91,17 @@
 			p.slug === 'qofl-al-aman' ||
 			p.title.includes('قفل') ||
 			p.title.includes('صغارك');
+		const addedTitle = isChildLock ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' : p.title;
+		const addedPrice = isDrainValve ? 35 : (p.startingPrice || 0);
 		cart.add({
 			slug: p.slug,
-			title: isChildLock ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' : p.title,
+			title: addedTitle,
 			image: isDrainValve ? DRAIN_VALVE_IMAGE : (p.heroImage || ''),
-			price: isDrainValve ? 35 : (p.startingPrice || 0),
+			price: addedPrice,
 			offerId: 0,
 			offerTitle: 'العرض الأساسي'
 		});
+		trackAddToCart(addedPrice, addedTitle, currency);
 	}
 
 	function addOffer(o: DrawerOffer) {
@@ -109,6 +113,7 @@
 			offerId: o.id,
 			offerTitle: o.title
 		});
+		trackAddToCart(o.price, o.title || currentTitle, currency);
 	}
 </script>
 

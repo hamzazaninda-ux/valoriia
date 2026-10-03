@@ -86,6 +86,7 @@ export type FlowStep = null | 'cart' | 'checkout' | 'upsell';
 
 let flow = $state<FlowStep>(null);
 let upsellOrder = $state<CompletedOrder | null>(null);
+let returnUrl = '';
 
 // Lock body scroll while any flow surface is open; released on close/reset.
 // (Managed explicitly in the transitions below — a module-level $effect
@@ -95,6 +96,17 @@ function lockScroll() {
 }
 function unlockScroll() {
 	if (typeof document !== 'undefined') document.body.style.overflow = '';
+}
+
+if (typeof window !== 'undefined') {
+	window.addEventListener('popstate', () => {
+		if (flow === 'cart') {
+			cartUi.closeDrawer(false);
+		} else if (flow === 'checkout') {
+			flow = null;
+			unlockScroll();
+		}
+	});
 }
 
 export const cartUi = {
@@ -115,10 +127,23 @@ export const cartUi = {
 		upsellOrder = null;
 		flow = 'cart';
 		lockScroll();
+		if (typeof window !== 'undefined') {
+			if (window.location.pathname !== '/cart') {
+				returnUrl = window.location.pathname + window.location.search + window.location.hash;
+				window.history.pushState({ step: 'cart', returnUrl }, '', '/cart');
+			}
+		}
 	},
-	closeDrawer() {
+	closeDrawer(revertHistory = true) {
 		if (flow === 'cart') flow = null;
 		unlockScroll();
+		if (revertHistory && typeof window !== 'undefined' && window.location.pathname === '/cart') {
+			if (window.history.state?.step === 'cart') {
+				window.history.back();
+			} else if (returnUrl) {
+				window.history.replaceState({}, '', returnUrl);
+			}
+		}
 	},
 	openCheckout() {
 		if (lines.length === 0) return;
@@ -128,6 +153,13 @@ export const cartUi = {
 	closeCheckout() {
 		if (flow === 'checkout') flow = null;
 		unlockScroll();
+		if (typeof window !== 'undefined' && window.location.pathname === '/cart') {
+			if (window.history.state?.step === 'cart') {
+				window.history.back();
+			} else if (returnUrl) {
+				window.history.replaceState({}, '', returnUrl);
+			}
+		}
 	},
 	/** Called after a successful order: checkout closes, upsell opens alone. */
 	beginUpsell(order: CompletedOrder) {

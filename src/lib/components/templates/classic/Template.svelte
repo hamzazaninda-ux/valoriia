@@ -10,6 +10,7 @@
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
+	import { trackAddToCart } from '$lib/utils/checkout';
 	import Carousel from './Carousel.svelte';
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
@@ -128,6 +129,7 @@
 			offerId: offer.id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
+		trackAddToCart(activeOffer.price || 0, content.title || 'منتج', pricing.currency || 'MAD');
 		cartUi.openDrawer();
 	}
 
