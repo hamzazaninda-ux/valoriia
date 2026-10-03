@@ -10,6 +10,9 @@
 		startingPrice?: number;
 	}
 
+	export const POST_ORDER_UPSELL_IMAGE =
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png';
+
 	let {
 		order,
 		products = [],
@@ -36,7 +39,7 @@
 	const mopHolderProduct: UpsellProduct = {
 		slug: 'hamil-jidari-makanis',
 		title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
-		heroImage: '', // DO NOT add any image yet (empty until admin uploads)
+		heroImage: POST_ORDER_UPSELL_IMAGE,
 		startingPrice: 99
 	};
 
@@ -66,7 +69,7 @@
 				...(foundMop || {}),
 				title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 				startingPrice: 99,
-				heroImage: postOrderImage || foundMop?.heroImage || ''
+				heroImage: postOrderImage || foundMop?.heroImage || POST_ORDER_UPSELL_IMAGE
 			},
 			{
 				...childLockProduct,
@@ -148,7 +151,7 @@
 		accepting = p.slug;
 		const finalPrice = priceOf(p);
 		const finalImage = p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
-			? (postOrderImage || p.heroImage || '')
+			? (postOrderImage || p.heroImage || POST_ORDER_UPSELL_IMAGE)
 			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp' : '');
 		const finalSku = p.slug === 'hamil-jidari-makanis' ? 'hamil-jidari-makanis' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
 		const payload = buildOrderPayload(
@@ -245,17 +248,17 @@
 			{:else}
 				{@const p = currentProduct}
 
-				<!-- [ 1:1 IMAGE SLOT ] — Full width of card, true square, no extra padding -->
-				<div class="relative w-full aspect-square bg-neutral-100 overflow-hidden flex items-center justify-center border-b border-neutral-100">
-					{#if p.heroImage}
-						<img
-							src={p.heroImage}
-							alt={p.title}
-							class="h-full w-full object-cover"
-							loading="lazy"
-						/>
-					{/if}
-					<!-- Intentionally empty when !p.heroImage: no icon, no placeholder -->
+				<!-- [ 1:1 IMAGE SLOT ] — Full width of card, true square, no extra padding, always visible -->
+				<div class="relative w-full aspect-square bg-white overflow-hidden flex items-center justify-center">
+					<img
+						src={p.heroImage || (p.slug === 'qofl-al-aman' ? childLockProduct.heroImage : POST_ORDER_UPSELL_IMAGE)}
+						alt={p.title || 'عرض خاص بعد الطلب'}
+						class="w-full h-full aspect-square object-cover"
+						loading="eager"
+						onerror={(e) => {
+							(e.currentTarget as HTMLImageElement).src = POST_ORDER_UPSELL_IMAGE;
+						}}
+					/>
 				</div>
 
 				<!-- 3. Bottom: Decision buttons only (No title, no price, no extra whitespace) -->
