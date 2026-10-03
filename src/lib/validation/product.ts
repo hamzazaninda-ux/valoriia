@@ -171,9 +171,9 @@ export type ProductOrder = z.infer<typeof ProductOrderSchema>;
 // =============================================================================
 // Validates the SEO section of a product
 export const ProductSeoSchema = z.object({
-  metaTitle: PlainTextSchema.max(60, 'Meta title must be 60 characters or less'),
+  metaTitle: z.string().trim().refine((val) => !/<[^>]*>/.test(val), 'HTML tags are not allowed in this field').max(100, 'Meta title must be 100 characters or less'),
   // Allow empty string during save/create; non-empty is enforced at publish time in validatePublish()
-  metaDescription: PlainTextSchema.max(160, 'Meta description must be 160 characters or less'),
+  metaDescription: z.string().trim().refine((val) => !/<[^>]*>/.test(val), 'HTML tags are not allowed in this field').max(300, 'Meta description must be 300 characters or less'),
   ogImage: HttpUrlSchema.optional(),
   noindex: z.boolean()
 });

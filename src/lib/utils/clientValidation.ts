@@ -334,16 +334,16 @@ export function validateSeo(
     errors.push({ field: 'metaTitle', message: 'عنوان SEO مطلوب للنشر' });
   } else if (seo.metaTitle && containsHtml(seo.metaTitle)) {
     errors.push({ field: 'metaTitle', message: 'لا يسمح بعلامات HTML في عنوان SEO' });
-  } else if (seo.metaTitle && seo.metaTitle.length > 60) {
-    errors.push({ field: 'metaTitle', message: 'عنوان SEO طويل جداً (60 حرف كحد أقصى)' });
+  } else if (seo.metaTitle && seo.metaTitle.trim().length > 100) {
+    errors.push({ field: 'metaTitle', message: 'عنوان SEO طويل جداً (100 حرف كحد أقصى)' });
   }
 
   if (isPublishing && (!seo.metaDescription || !seo.metaDescription.trim())) {
     errors.push({ field: 'metaDescription', message: 'وصف SEO مطلوب للنشر' });
   } else if (seo.metaDescription && containsHtml(seo.metaDescription)) {
     errors.push({ field: 'metaDescription', message: 'لا يسمح بعلامات HTML في وصف SEO' });
-  } else if (seo.metaDescription && seo.metaDescription.length > 160) {
-    errors.push({ field: 'metaDescription', message: 'وصف SEO طويل جداً (160 حرف كحد أقصى)' });
+  } else if (seo.metaDescription && seo.metaDescription.trim().length > 300) {
+    errors.push({ field: 'metaDescription', message: 'وصف SEO طويل جداً (300 حرف كحد أقصى)' });
   }
 
   return errors;

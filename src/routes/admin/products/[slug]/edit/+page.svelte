@@ -1193,7 +1193,7 @@
 							bind:value={editState.seo.metaTitle}
 							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
 						/>
-						<p class="text-xs text-gray-500 mt-1">{editState.seo.metaTitle.length}/60 حرف</p>
+						<p class="text-xs text-gray-500 mt-1">{editState.seo.metaTitle.length}/100 حرف (الموصى به: 60-80 حرف)</p>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-700 mb-1">وصف SEO</label>
@@ -1202,7 +1202,7 @@
 							rows="3"
 							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
 						></textarea>
-						<p class="text-xs text-gray-500 mt-1">{editState.seo.metaDescription.length}/160 حرف</p>
+						<p class="text-xs text-gray-500 mt-1">{editState.seo.metaDescription.length}/300 حرف (الموصى به: 160 حرف)</p>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-700 mb-1">صورة OG (Open Graph)</label>
