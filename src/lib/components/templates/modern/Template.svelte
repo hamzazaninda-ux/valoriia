@@ -145,11 +145,7 @@
 </script>
 
 <div class="min-h-screen transition-all duration-300" style="{buildThemeCssVars(t)}; background-color: var(--t-bg, #0f172a); color: var(--t-text, #f1f5f9);">
-	{#if t.sections.trustBadges.showFreeShipping || t.sections.trustBadges.showCOD}
-		<div class="text-white text-center py-2.5 px-4 text-xs font-bold" dir="rtl" style="background-color: var(--t-primary, #6366f1);">
-			<span>{t.sections.trustBadges.freeShippingText || settings.commerce.freeShippingText} • {t.sections.trustBadges.codText || settings.commerce.paymentMethod}</span>
-		</div>
-	{/if}
+
 
 	<section class="relative overflow-hidden">
 		<div class="max-w-5xl mx-auto px-4 py-12 sm:py-20">

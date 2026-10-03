@@ -53,6 +53,7 @@
 	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	let showStickyBtn = $state(true);
+	let heroBottomVisible = $state(false);
 
 
 	const sheetsUrl = $derived(
@@ -167,8 +168,19 @@
 		if (formTop) observer.observe(formTop);
 		if (formBottom) observer.observe(formBottom);
 
+		// Hide the sticky CTA while the bottom of the hero (icons strip) is on screen
+		const heroBottom = document.getElementById('hero-bottom');
+		const heroObserver = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) heroBottomVisible = entry.isIntersecting;
+			},
+			{ threshold: 0 }
+		);
+		if (heroBottom) heroObserver.observe(heroBottom);
+
 		return () => {
 			observer.disconnect();
+			heroObserver.disconnect();
 		};
 	});
 
@@ -180,13 +192,17 @@
 >
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
 	{#if slides.length > 0}
-		<div class="w-full bg-black/5 pb-24 md:pb-28">
-			<img
-				src={slides[0].src}
-				alt={slides[0].alt}
-				class="block w-full aspect-[9/16] object-cover"
-				loading="eager"
-			/>
+		<div class="w-full bg-black/5">
+			<div class="relative">
+				<img
+					src={slides[0].src}
+					alt={slides[0].alt}
+					class="block w-full aspect-[9/16] object-cover"
+					loading="eager"
+				/>
+				<!-- Sentinel over the icons strip: sticky CTA hides while this is visible -->
+				<div id="hero-bottom" class="pointer-events-none absolute inset-x-0 bottom-0 h-[18%]" aria-hidden="true"></div>
+			</div>
 			{#each slides.slice(1) as s, i}
 				<img
 					src={s.src}
@@ -335,7 +351,7 @@
 		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
 	</footer>
 
-	{#if showStickyBtn && t.sections.advanced.showStickyButton}
+	{#if showStickyBtn && !heroBottomVisible && t.sections.advanced.showStickyButton}
 		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" dir="rtl">
 			<button
 				type="button"
