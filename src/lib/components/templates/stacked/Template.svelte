@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/format';
 	import { ShoppingCart } from '@lucide/svelte';
@@ -29,10 +29,10 @@
 		pricing.offers.find((o: ProductOffer) => o.id === currentPackId) || pricing.offers[0] || { title: '', price: 0, quantity: 1 }
 	);
 
-	// â”€â”€ Stacked images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Stacked images ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 	// First image fills a 9:16 frame (all phones identical), the rest keep
 	// their natural ratio (1:1 stays 1:1). Upload slots = hero + gallery.
-	// Accepts images from EVERY admin image list (gallery â†’ carousel â†’ hero)
+	// Accepts images from EVERY admin image list (gallery ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ carousel ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ hero)
 	// so a product can never render imageless no matter which tab was used.
 	// Empty URLs are filtered out (never render a broken <img>).
 	let slides = $derived.by(() => {
@@ -49,34 +49,28 @@
 		}
 		return [];
 	});
-	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
 
 	let showStickyBtn = $state(true);
 
-	const waNumber = $derived(
-		(order?.whatsappNumber || settings?.brand?.whatsappNumber || '').replace(/\D/g, '')
-	);
 
 	const sheetsUrl = $derived(
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
 	function addSelectedToCart() {
+		const offer = activeOffer as ProductOffer;
 		cart.add({
 			slug: (product as any).slug || '',
-			title: content.title || 'منتج',
-			image: slides[0]?.src || '',
+			title: content.title || 'Ã™â€¦Ã™â€ Ã˜ÂªÃ˜Â¬',
+			image: offer.image?.trim() || slides[0]?.src || '',
 			price: activeOffer.price || 0,
-			offerId: (activeOffer as ProductOffer).id ?? 0,
+			offerId: offer.id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
 		cartUi.openDrawer();
 	}
 
-	function waOrderLink() {
-		const text = `السلام ${settings?.brand?.name || 'Valoriia'}، بغيت نطلب:\n• ${content.title} — ${activeOffer?.title || ''}\nالثمن: ${activeOffer?.price || 0} ${settings?.commerce?.currencySymbol || 'درهم'}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
-		return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
-	}
 
 	onMount(() => {
 		const formTop = document.getElementById('checkout-form');
@@ -120,10 +114,10 @@
 	<!-- Trust bar -->
 	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
 		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings.commerce.freeShippingText} • {settings.commerce.paymentMethod}</span>
+		<span>{settings.commerce.freeShippingText} Ã¢â‚¬Â¢ {settings.commerce.paymentMethod}</span>
 	</div>
 
-	<!-- â”€â”€ Stacked images: first fills 9:16, rest keep natural ratio â”€â”€ -->
+	<!-- ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Stacked images: first fills 9:16, rest keep natural ratio ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ -->
 	{#if slides.length > 0}
 		<div class="w-full bg-black/5">
 			<img
@@ -148,8 +142,8 @@
 				<circle cx="42" cy="32" r="6" />
 				<path d="M25 72l18-18 12 12 10-10 30 30" stroke-linecap="round" stroke-linejoin="round" />
 			</svg>
-			<p class="font-bold text-emerald-950">بلاصة تصاور المنتج</p>
-			<p class="text-xs text-neutral-500 leading-relaxed">زيد الصورة اللولة (9:16) وباقي التصاور من معرض الصور في لوحة التحكم</p>
+			<p class="font-bold text-emerald-950">Ã˜Â¨Ã™â€žÃ˜Â§Ã˜ÂµÃ˜Â© Ã˜ÂªÃ˜ÂµÃ˜Â§Ã™Ë†Ã˜Â± Ã˜Â§Ã™â€žÃ™â€¦Ã™â€ Ã˜ÂªÃ˜Â¬</p>
+			<p class="text-xs text-neutral-500 leading-relaxed">Ã˜Â²Ã™Å Ã˜Â¯ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã˜Â§Ã™â€žÃ™â€žÃ™Ë†Ã™â€žÃ˜Â© (9:16) Ã™Ë†Ã˜Â¨Ã˜Â§Ã™â€šÃ™Å  Ã˜Â§Ã™â€žÃ˜ÂªÃ˜ÂµÃ˜Â§Ã™Ë†Ã˜Â± Ã™â€¦Ã™â€  Ã™â€¦Ã˜Â¹Ã˜Â±Ã˜Â¶ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â± Ã™ÂÃ™Å  Ã™â€žÃ™Ë†Ã˜Â­Ã˜Â© Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â­Ã™Æ’Ã™â€¦</p>
 		</div>
 	{/if}
 
@@ -162,7 +156,7 @@
 					{t.sections.orderForm.title}
 				</h2>
 				<p class="text-sm font-bold mt-2 px-2 leading-relaxed text-neutral-500">
-					عمّر الاستمارة وخلص ملي توصلك السلعة
+					Ã˜Â¹Ã™â€¦Ã™â€˜Ã˜Â± Ã˜Â§Ã™â€žÃ˜Â§Ã˜Â³Ã˜ÂªÃ™â€¦Ã˜Â§Ã˜Â±Ã˜Â© Ã™Ë†Ã˜Â®Ã™â€žÃ˜Âµ Ã™â€¦Ã™â€žÃ™Å  Ã˜ÂªÃ™Ë†Ã˜ÂµÃ™â€žÃ™Æ’ Ã˜Â§Ã™â€žÃ˜Â³Ã™â€žÃ˜Â¹Ã˜Â©
 				</p>
 			</div>
 
@@ -170,13 +164,13 @@
 				<div class="space-y-4">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
-							اختر العرض المناسب لك:
+							Ã˜Â§Ã˜Â®Ã˜ÂªÃ˜Â± Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¶ Ã˜Â§Ã™â€žÃ™â€¦Ã™â€ Ã˜Â§Ã˜Â³Ã˜Â¨ Ã™â€žÃ™Æ’:
 						</span>
 
 						<div class="grid grid-cols-1 gap-2.5">
 							{#each pricing.offers as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
+									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-700 shadow-sm' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -207,12 +201,6 @@
 												<span class="truncate">{offer.subtitle}</span>
 											</span>
 										{/if}
-										<span class="mt-1 flex flex-wrap items-center gap-1">
-											{#if offer.badge}
-												<span class="rounded bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white {offer.isPopular ? 'animate-pulse' : ''}">{offer.badge}</span>
-											{/if}
-											<span class="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white">توصيل مجاني</span>
-										</span>
 									</span>
 									<span class="shrink-0 text-left">
 										<span class="block whitespace-nowrap text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
@@ -228,25 +216,12 @@
 					<button
 						type="button"
 						onclick={addSelectedToCart}
-						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#FACC15] py-3.5 text-base font-black text-neutral-900 shadow-lg transition-all hover:bg-[#eab308] active:scale-[0.98]"
+						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-800 py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98]"
 					>
 						<ShoppingCart class="h-5 w-5 shrink-0" />
-						<span>أضف إلى السلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+						<span>Ã˜Â£Ã˜Â¶Ã™Â Ã˜Â¥Ã™â€žÃ™â€° Ã˜Â§Ã™â€žÃ˜Â³Ã™â€žÃ˜Â© Ã‚Â· {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
 					</button>
 
-					<div class="pt-2 space-y-2.5">
-						<a
-							href={waOrderLink()}
-							target="_blank"
-							rel="noopener"
-							class="w-full py-3.5 text-sm font-extrabold text-white rounded-full shadow active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba56]"
-						>
-							<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-								<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-							</svg>
-							<span>اطلب عبر واتساب</span>
-						</a>
-					</div>
 
 					{#if t.sections.pricing.showGuarantee}
 						<p class="text-center text-xs font-bold text-emerald-800 mt-1">
@@ -296,7 +271,7 @@
 	<div id="checkout-form-bottom"></div>
 
 	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4" dir="rtl">
-		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
+		<p>{content.footerText || `Ã‚Â© ${new Date().getFullYear()} ${settings.brand.name}. Ã˜Â¬Ã™â€¦Ã™Å Ã˜Â¹ Ã˜Â§Ã™â€žÃ˜Â­Ã™â€šÃ™Ë†Ã™â€š Ã™â€¦Ã˜Â­Ã™ÂÃ™Ë†Ã˜Â¸Ã˜Â©.`}</p>
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
@@ -311,9 +286,9 @@
 		</div>
 	{/if}
 
-	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
+	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
 	<CheckoutModal
-		currency={settings.commerce.currencySymbol || 'درهم'}
+		currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'}
 		sheetsUrl={sheetsUrl}
 		productTitle={content.title}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
@@ -322,7 +297,7 @@
 	<UpsellModal
 		order={cartUi.upsell!}
 		products={others}
-		currency={settings.commerce.currencySymbol || 'درهم'}
+		currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'}
 		sheetsUrl={sheetsUrl}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
 		onFinish={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
