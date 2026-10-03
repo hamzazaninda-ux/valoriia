@@ -37,8 +37,29 @@
 		currentImage?: string;
 	} = $props();
 
+	export const DRAIN_VALVE_IMAGE =
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
+
 	const crossSells = $derived(
-		others.filter((p) => !cart.lines.some((l) => l.slug === p.slug)).slice(0, 3)
+		others
+			.filter((p) => !cart.lines.some((l) => l.slug === p.slug))
+			.slice(0, 3)
+			.map((p) => {
+				const isDrainValve =
+					p.slug === 'samam-tasrif' ||
+					p.slug === 'filter-baloua' ||
+					p.title.includes('المجاري') ||
+					p.title.includes('صمام') ||
+					p.title.includes('البالوعة');
+				if (isDrainValve) {
+					return {
+						...p,
+						heroImage: DRAIN_VALVE_IMAGE,
+						startingPrice: 35
+					};
+				}
+				return p;
+			})
 	);
 
 	const moreOffers = $derived(
@@ -48,11 +69,17 @@
 	);
 
 	function addCrossSell(p: CrossSell) {
+		const isDrainValve =
+			p.slug === 'samam-tasrif' ||
+			p.slug === 'filter-baloua' ||
+			p.title.includes('المجاري') ||
+			p.title.includes('صمام') ||
+			p.title.includes('البالوعة');
 		cart.add({
 			slug: p.slug,
 			title: p.title,
-			image: p.heroImage || '',
-			price: p.startingPrice || 0,
+			image: isDrainValve ? DRAIN_VALVE_IMAGE : (p.heroImage || ''),
+			price: isDrainValve ? 35 : (p.startingPrice || 0),
 			offerId: 0,
 			offerTitle: 'العرض الأساسي'
 		});
@@ -174,7 +201,7 @@
 									<div class="flex items-center gap-2.5 rounded-xl border border-dashed border-emerald-600/30 bg-emerald-50/40 p-2">
 										<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200/60 bg-white">
 											{#if p.heroImage}
-												<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover rounded-lg" loading="lazy" />
+												<img src={p.heroImage} alt={p.title} class="w-12 h-12 object-cover rounded-lg shrink-0" loading="eager" />
 											{:else}
 												<svg class="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 													<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />

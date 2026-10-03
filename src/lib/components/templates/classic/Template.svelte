@@ -60,7 +60,7 @@
 	);
 
 	const DRAIN_VALVE_IMAGE =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
 
 	// Canonical definition of Floor Drain Valve (UPSELL #1)
 	const drainValveProduct = {
@@ -68,7 +68,7 @@
 		title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
 		subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
 		heroImage: DRAIN_VALVE_IMAGE,
-		startingPrice: 49
+		startingPrice: 35
 	};
 
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
@@ -81,7 +81,7 @@
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// UPSELL #1: تهنى نهائياً من ريحة المجاري والصراصير 🪳 — 49 DH
+	// UPSELL #1: تهنى نهائياً من ريحة المجاري والصراصير 🪳 — 35 DH
 	// UPSELL #2: حمي صغارك من الحوادث اليومية 🔒 — 49 DH
 	const cartUpsells = $derived.by(() => {
 		const foundDrain = others.find(
@@ -103,7 +103,7 @@
 				slug: 'samam-tasrif',
 				title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
 				subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
-				startingPrice: 49,
+				startingPrice: 35,
 				heroImage: DRAIN_VALVE_IMAGE
 			},
 			{
