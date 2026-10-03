@@ -203,6 +203,8 @@
 				<!-- Sentinel over the icons strip: sticky CTA hides while this is visible -->
 				<div id="hero-bottom" class="pointer-events-none absolute inset-x-0 bottom-0 h-[18%]" aria-hidden="true"></div>
 			</div>
+			<!-- Spacer (~110px) so the icons strip can scroll fully above the sticky CTA -->
+			<div class="pb-28" aria-hidden="true"></div>
 			{#each slides.slice(1) as s, i}
 				<img
 					src={s.src}
