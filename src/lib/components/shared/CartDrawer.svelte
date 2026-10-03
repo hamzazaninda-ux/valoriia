@@ -62,7 +62,7 @@
 		cart.add({
 			slug: currentSlug,
 			title: currentTitle,
-			image: currentImage,
+			image: o.image?.trim() || currentImage,
 			price: o.price,
 			offerId: o.id,
 			offerTitle: o.title
@@ -142,19 +142,23 @@
 							</p>
 							<div class="space-y-1.5">
 								{#each moreOffers as o}
-									<div class="flex items-center gap-2.5 rounded-xl border border-amber-200/70 bg-white p-2">
+									<button
+										type="button"
+										onclick={() => addOffer(o)}
+										aria-label="أضف {o.title} إلى السلة"
+										class="flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-xl border border-amber-200/70 bg-white p-2 text-right transition-all active:scale-[0.99] hover:border-amber-300"
+									>
 										<span class="min-w-0 flex-1 text-right">
 											<span class="block truncate text-[13px] font-extrabold text-neutral-800">{o.title}</span>
 											<span class="mt-0.5 block text-xs font-black text-emerald-700">{o.price} {currency}</span>
 										</span>
-										<button
-											type="button"
-											onclick={() => addOffer(o)}
-											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
+										<span
+											aria-hidden="true"
+											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white"
 										>
 											+ أضف
-										</button>
-									</div>
+										</span>
+									</button>
 								{/each}
 							</div>
 						</div>

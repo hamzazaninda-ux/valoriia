@@ -29,11 +29,54 @@
 		onFinish: () => void;
 	} = $props();
 
+	// Canonical definition of Child Safety Lock product (UPSELL #2)
+	const childLockProduct: UpsellProduct = {
+		slug: 'qofl-al-aman',
+		title: 'قفل الأمان للأطفال',
+		heroImage: '/images/child-safety-lock.webp',
+		startingPrice: 50
+	};
+
+	// Guaranteed sequence:
+	// 1. UPSELL #1 (existing first upsell product)
+	// 2. CHILD SAFETY LOCK — 50 DH
+	// 3. UPSELL #3 (existing third upsell product)
+	const activeProducts = $derived.by(() => {
+		const nonLock = products.filter(
+			(p) => p.slug !== 'qofl-al-aman' && !p.title.includes('قفل')
+		);
+		const foundLock = products.find(
+			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
+		) || childLockProduct;
+
+		const list: UpsellProduct[] = [];
+		// Upsell #1
+		if (nonLock[0]) {
+			list.push(nonLock[0]);
+		}
+		// Upsell #2: CHILD SAFETY LOCK — 50 DH
+		list.push({
+			...foundLock,
+			slug: foundLock.slug || 'qofl-al-aman',
+			title: 'قفل الأمان للأطفال',
+			heroImage: foundLock.heroImage || '/images/child-safety-lock.webp',
+			startingPrice: 50
+		});
+		// Upsell #3
+		if (nonLock[1]) {
+			list.push(nonLock[1]);
+		}
+		return list;
+	});
+
+	let currentStep = $state(0);
 	let left = $state(seconds);
 	let accepting = $state<string | null>(null);
 	let done = $state(false);
 	let expired = $state(false);
 	let timer: ReturnType<typeof setInterval> | null = null;
+
+	const currentProduct = $derived(activeProducts[currentStep] || null);
 
 	function stopTimer() {
 		if (timer) {
@@ -42,32 +85,66 @@
 		}
 	}
 
+	function resetStepTimer() {
+		stopTimer();
+		left = seconds;
+		expired = false;
+		timer = setInterval(() => {
+			left -= 1;
+			if (left <= 0) {
+				stopTimer();
+				left = 0;
+				expired = true;
+			}
+		}, 1000);
+	}
+
 	function priceOf(p: UpsellProduct) {
+		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 50;
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
 	}
+
 	function hasDeal(p: UpsellProduct) {
+		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 50;
 		return dealPrices[p.slug] !== undefined && (p.startingPrice || 0) > dealPrices[p.slug];
 	}
 
 	function finish() {
 		if (done) return;
 		done = true;
+		stopTimer();
 		cartUi.endUpsell();
 		onFinish();
+	}
+
+	function nextStep() {
+		if (currentStep + 1 < activeProducts.length) {
+			currentStep += 1;
+			resetStepTimer();
+		} else {
+			finish();
+		}
+	}
+
+	function skip() {
+		if (accepting || done) return;
+		nextStep();
 	}
 
 	function accept(p: UpsellProduct) {
 		if (accepting || done) return;
 		accepting = p.slug;
+		const finalPrice = priceOf(p);
+		const finalImage = p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? '/images/child-safety-lock.webp' : '');
 		const payload = buildOrderPayload(
 			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
 			[
 				{
-					key: `${p.slug}#0`,
+					key: `${p.slug}#${currentStep}`,
 					slug: p.slug,
 					title: p.title,
-					image: p.heroImage || '',
-					price: priceOf(p),
+					image: finalImage,
+					price: finalPrice,
 					offerId: 0,
 					offerTitle: 'عرض ما بعد الطلب',
 					qty: 1
@@ -75,36 +152,34 @@
 			],
 			{
 				productTitle: p.title,
-				sku,
+				sku: p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku,
 				currency,
 				pageUrl: typeof window !== 'undefined' ? window.location.href : ''
 			},
 			'upsell',
 			order.orderId
 		);
-		trackPurchase(payload.price as number, p.title);
-		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(() => {
-			localStorage.setItem('latestUpsell', JSON.stringify(payload));
-			finish();
-		});
+		trackPurchase(finalPrice, p.title);
+		sendOrder(payload as Record<string, unknown>, sheetsUrl)
+			.then(() => {
+				try {
+					localStorage.setItem('latestUpsell', JSON.stringify(payload));
+				} catch {}
+			})
+			.finally(() => {
+				accepting = null;
+				nextStep();
+			});
 	}
 
-	// Start (and reset) the countdown only while the upsell is the active
-	// surface. A page-load timer would already be expired by the time the
-	// customer reaches this step.
 	$effect(() => {
 		if (cartUi.upsell) {
-			left = seconds;
-			expired = false;
+			currentStep = 0;
+			done = false;
+			accepting = null;
+			resetStepTimer();
+		} else {
 			stopTimer();
-			timer = setInterval(() => {
-				left -= 1;
-				if (left <= 0) {
-					stopTimer();
-					left = 0;
-					expired = true;
-				}
-			}, 1000);
 		}
 		return () => {
 			stopTimer();
@@ -128,13 +203,13 @@
 				<p class="mt-1 font-display text-2xl font-black tabular-nums" aria-live="polite">0:{String(Math.max(left, 0)).padStart(2, '0')}</p>
 			</div>
 
-			<div class="max-h-[46dvh] space-y-2 overflow-y-auto p-3">
-				{#if products.length === 0}
+			<div class="p-4">
+				{#if !currentProduct}
 					<p class="py-4 text-center text-sm text-neutral-500">شكراً على طلبك! غادي نعيطو ليك للتأكيد.</p>
-				{/if}
-				{#each products.slice(0, 3) as p}
-					<div class="flex items-center gap-2.5 rounded-xl border border-neutral-200/70 p-2.5">
-						<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-50">
+				{:else}
+					{@const p = currentProduct}
+					<div class="flex items-center gap-3 rounded-2xl border border-neutral-200/70 p-3">
+						<span class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-50">
 							{#if p.heroImage}
 								<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover" loading="lazy" />
 							{:else}
@@ -156,7 +231,7 @@
 							type="button"
 							disabled={accepting !== null}
 							onclick={() => accept(p)}
-							class="inline-flex min-h-11 shrink-0 items-center rounded-xl bg-emerald-950 px-4 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
+							class="inline-flex min-h-11 shrink-0 items-center rounded-xl bg-emerald-950 px-4 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60 cursor-pointer"
 						>
 							{#if accepting === p.slug}
 								<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
@@ -165,25 +240,25 @@
 							{/if}
 						</button>
 					</div>
-				{/each}
+				{/if}
 			</div>
 
 			<div class="border-t border-neutral-100 p-3">
 				{#if expired}
 					<button
 						type="button"
-						onclick={finish}
-						class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-emerald-950 font-bold text-white transition-transform hover:scale-[1.01] active:scale-[0.98]"
+						onclick={skip}
+						class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-emerald-950 font-bold text-white transition-transform hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
 					>
-						انتهى وقت العرض — أكمل لصفحة الشكر
+						{currentStep < activeProducts.length - 1 ? 'انتهى وقت العرض — العرض الموالي' : 'انتهى وقت العرض — أكمل لصفحة الشكر'}
 					</button>
 				{:else}
 					<button
 						type="button"
-						onclick={finish}
-						class="w-full py-2.5 text-center text-sm font-bold text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-600"
+						onclick={skip}
+						class="w-full py-2.5 text-center text-sm font-bold text-neutral-400 underline underline-offset-4 transition-colors hover:text-neutral-600 cursor-pointer"
 					>
-						لا شكراً، كمل لصفحة الشكر
+						{currentStep < activeProducts.length - 1 ? 'لا شكراً، تخطي للعرض الموالي' : 'لا شكراً، كمل لصفحة الشكر'}
 					</button>
 				{/if}
 			</div>

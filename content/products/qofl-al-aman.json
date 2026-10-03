@@ -1,0 +1,53 @@
+{
+  "id": "prod_qofl_al_aman",
+  "slug": "qofl-al-aman",
+  "status": "published",
+  "createdAt": "2026-10-03T12:00:00.000Z",
+  "updatedAt": "2026-10-03T12:00:00.000Z",
+  "template": "classic",
+  "published": {
+    "content": {
+      "heroImage": "/images/child-safety-lock.webp",
+      "title": "قفل الأمان للأطفال",
+      "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
+      "rating": 4.9,
+      "reviewCount": 142,
+      "gallery": [],
+      "faq": [],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "قفل الأمان للأطفال",
+          "subtitle": "حماية أكيدة لأطفالك",
+          "price": 50,
+          "originalPrice": 80,
+          "quantity": 1,
+          "badge": "عرض خاص",
+          "isPopular": true,
+          "image": "/images/child-safety-lock.webp"
+        }
+      ]
+    },
+    "order": {
+      "sku": "child-safety-lock",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "قفل الأمان للأطفال | Valoriia",
+      "metaDescription": "قفل الأمان للأطفال لحماية الأدراج والخزانات والثلاجة.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}

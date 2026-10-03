@@ -60,12 +60,13 @@
 	);
 
 	function addSelectedToCart() {
+		const offer = activeOffer as ProductOffer;
 		cart.add({
 			slug: (product as any).slug || '',
 			title: content.title || 'منتج',
-			image: content.heroImage || content.gallery?.[0]?.src || content.carousel?.[0]?.image || '',
+			image: offer.image?.trim() || content.heroImage || content.gallery?.[0]?.src || content.carousel?.[0]?.image || '',
 			price: activeOffer.price || 0,
-			offerId: (activeOffer as ProductOffer).id ?? 0,
+			offerId: offer.id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
 		cartUi.openDrawer();
