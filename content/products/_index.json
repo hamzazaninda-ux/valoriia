@@ -1,5 +1,16 @@
 [
   {
+    "id": "prod_filter_baloua",
+    "slug": "filter-baloua",
+    "title": "فلتر مانع انسداد البالوعة",
+    "subtitle": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
+    "heroImage": "",
+    "startingPrice": 29,
+    "status": "published",
+    "template": "classic",
+    "updatedAt": "2026-10-03T16:30:00.000Z"
+  },
+  {
     "id": "prod_1790890982690_tyj0qm",
     "slug": "kit-tandim",
     "title": "طقم التنظيم المنزلي + هدية",
@@ -8,7 +19,7 @@
     "startingPrice": 229,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-10-02T15:47:10.938Z"
+    "updatedAt": "2026-10-03T16:54:57.634Z"
   },
   {
     "id": "prod_1790890965295_0dqn8q",
@@ -22,17 +33,6 @@
     "updatedAt": "2026-10-01T21:42:52.587Z"
   },
   {
-    "id": "prod_qofl_al_aman",
-    "slug": "qofl-al-aman",
-    "title": "قفل الأمان للأطفال",
-    "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
-    "heroImage": "/images/child-safety-lock.webp",
-    "startingPrice": 50,
-    "status": "published",
-    "template": "classic",
-    "updatedAt": "2026-10-03T12:00:00.000Z"
-  },
-  {
     "id": "prod_1790890947662_sde57v",
     "slug": "monazzim-daki",
     "title": "المنظم الذكي متعدد الاستعمال",
@@ -44,14 +44,14 @@
     "updatedAt": "2026-10-01T21:42:35.352Z"
   },
   {
-    "id": "prod_filter_baloua",
-    "slug": "filter-baloua",
-    "title": "فلتر مانع انسداد البالوعة",
-    "subtitle": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
-    "heroImage": "",
-    "startingPrice": 29,
+    "id": "prod_qofl_al_aman",
+    "slug": "qofl-al-aman",
+    "title": "قفل الأمان للأطفال",
+    "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
+    "heroImage": "/images/child-safety-lock.webp",
+    "startingPrice": 50,
     "status": "published",
     "template": "classic",
-    "updatedAt": "2026-10-03T16:30:00.000Z"
+    "updatedAt": "2026-10-03T12:00:00.000Z"
   }
 ]

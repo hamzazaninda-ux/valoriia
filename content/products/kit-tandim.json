@@ -3,7 +3,7 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-02T15:47:10.938Z",
+  "updatedAt": "2026-10-03T16:54:57.634Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -78,7 +78,7 @@
     },
     "order": {
       "sku": "kit-tandim",
-      "googleSheetsUrl": "",
+      "googleSheetsUrl": "https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec",
       "phoneConfirmation": true,
       "whatsappNumber": ""
     },
@@ -116,6 +116,10 @@
       {
         "action": "published",
         "timestamp": "2026-10-02T15:47:10.938Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-03T16:54:57.634Z"
       }
     ]
   }
