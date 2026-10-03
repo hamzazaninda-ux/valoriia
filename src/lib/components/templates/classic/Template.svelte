@@ -59,8 +59,42 @@
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
+	// Canonical definition of Child Safety Lock product (UPSELL #2)
+	const childLockProduct = {
+		slug: 'qofl-al-aman',
+		title: 'قفل الأمان للأطفال',
+		heroImage: '/images/child-safety-lock.webp',
+		startingPrice: 50
+	};
+
+	// Optional upsells in cart flow: Upsell #1 followed strictly by Upsell #2 (Child Safety Lock — 50 DH)
+	const cartUpsells = $derived.by(() => {
+		const nonLock = others.filter(
+			(p) => p.slug !== 'qofl-al-aman' && !p.title.includes('قفل')
+		);
+		const foundLock = others.find(
+			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
+		) || childLockProduct;
+
+		const list: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
+		// Upsell #1
+		if (nonLock[0]) {
+			list.push(nonLock[0]);
+		}
+		// Upsell #2: CHILD SAFETY LOCK — 50 DH
+		list.push({
+			...foundLock,
+			slug: foundLock.slug || 'qofl-al-aman',
+			title: 'قفل الأمان للأطفال',
+			heroImage: foundLock.heroImage || '/images/child-safety-lock.webp',
+			startingPrice: 50
+		});
+		return list;
+	});
+
 	function addSelectedToCart() {
 		const offer = activeOffer as ProductOffer;
+		cart.clear();
 		cart.add({
 			slug: (product as any).slug || '',
 			title: content.title || 'منتج',
@@ -634,7 +668,7 @@
 		</div>
 	{/if}
 
-	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={content.heroImage || ''} />
+	<CartDrawer others={cartUpsells} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={content.heroImage || ''} />
 	<CheckoutModal
 		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}

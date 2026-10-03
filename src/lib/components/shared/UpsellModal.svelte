@@ -39,8 +39,7 @@
 
 	// Guaranteed sequence:
 	// 1. UPSELL #1 (existing first upsell product)
-	// 2. CHILD SAFETY LOCK — 50 DH
-	// 3. UPSELL #3 (existing third upsell product)
+	// 2. UPSELL #2: CHILD SAFETY LOCK — 50 DH
 	const activeProducts = $derived.by(() => {
 		const nonLock = products.filter(
 			(p) => p.slug !== 'qofl-al-aman' && !p.title.includes('قفل')
@@ -62,10 +61,6 @@
 			heroImage: foundLock.heroImage || '/images/child-safety-lock.webp',
 			startingPrice: 50
 		});
-		// Upsell #3
-		if (nonLock[1]) {
-			list.push(nonLock[1]);
-		}
 		return list;
 	});
 
