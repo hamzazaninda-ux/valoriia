@@ -258,12 +258,12 @@
 					<!-- Clear Product Image -->
 					<div class="relative w-32 h-32 sm:w-36 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-muted border border-border/60 flex items-center justify-center">
 						<img
-							src="/images/mismar-lasik.webp"
+							src="https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp"
 							alt="مسمار لاصق جداري — 20 قطعة"
 							class="w-full h-full object-cover"
 							loading="lazy"
 							onerror={(e) => {
-								(e.currentTarget as HTMLImageElement).src = 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp';
+								(e.currentTarget as HTMLImageElement).src = '/images/mismar-lasik.webp';
 							}}
 						/>
 						<span class="absolute bottom-1 right-1 bg-black/75 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
