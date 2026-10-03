@@ -58,13 +58,16 @@
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
-	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
-	const mopHolderProduct = {
-		slug: 'hamil-jidari-makanis',
-		title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
-		subtitle: 'منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.',
-		heroImage: '', // DO NOT add any image yet
-		startingPrice: 99
+	const DRAIN_VALVE_IMAGE =
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
+
+	// Canonical definition of Floor Drain Valve (UPSELL #1)
+	const drainValveProduct = {
+		slug: 'samam-tasrif',
+		title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
+		subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
+		heroImage: DRAIN_VALVE_IMAGE,
+		startingPrice: 49
 	};
 
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
@@ -77,11 +80,16 @@
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
-	// UPSELL #2: حمي صغارك من الحوادث اليومية — 49 DH
+	// UPSELL #1: تهنى نهائياً من ريحة المجاري والصراصير 🪳 — 49 DH
+	// UPSELL #2: حمي صغارك من الحوادث اليومية 🔒 — 49 DH
 	const cartUpsells = $derived.by(() => {
-		const foundMop = others.find(
-			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
+		const foundDrain = others.find(
+			(p) =>
+				p.slug === 'samam-tasrif' ||
+				p.slug === 'filter-baloua' ||
+				p.title.includes('المجاري') ||
+				p.title.includes('صمام') ||
+				p.title.includes('البالوعة')
 		);
 		const foundLock = others.find(
 			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
@@ -89,11 +97,13 @@
 
 		return [
 			{
-				...mopHolderProduct,
-				...(foundMop || {}),
-				title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
-				startingPrice: 99,
-				heroImage: '' // MUST remain empty per instructions
+				...drainValveProduct,
+				...(foundDrain || {}),
+				slug: 'samam-tasrif',
+				title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
+				subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
+				startingPrice: 49,
+				heroImage: DRAIN_VALVE_IMAGE
 			},
 			{
 				...childLockProduct,

@@ -172,9 +172,9 @@
 							<div class="space-y-1.5">
 								{#each crossSells as p}
 									<div class="flex items-center gap-2.5 rounded-xl border border-dashed border-emerald-600/30 bg-emerald-50/40 p-2">
-										<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white">
+										<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200/60 bg-white">
 											{#if p.heroImage}
-												<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover" loading="lazy" />
+												<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover rounded-lg" loading="lazy" />
 											{:else}
 												<svg class="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 													<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
@@ -182,8 +182,8 @@
 											{/if}
 										</span>
 										<span class="min-w-0 flex-1">
-											<span class="block truncate text-[13px] font-extrabold text-neutral-800">{p.title}</span>
-											<span class="block text-xs font-black text-emerald-700">{p.startingPrice || 0} {currency}</span>
+											<span class="block text-xs sm:text-[13px] font-bold text-gray-900 leading-snug line-clamp-2" title={p.title}>{p.title}</span>
+											<span class="mt-0.5 block text-xs font-black text-emerald-700">{p.startingPrice || 0} {currency}</span>
 										</span>
 										<button
 											type="button"
