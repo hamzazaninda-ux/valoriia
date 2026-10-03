@@ -697,6 +697,7 @@
 		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
+		postOrderImage={settings?.commerce?.postOrderUpsellImage || ''}
 		onFinish={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
 	/>
 </div>

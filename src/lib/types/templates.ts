@@ -76,6 +76,7 @@ export interface TemplateProps {
       freeShippingText: string;
       paymentMethod: string;
       googleSheetsUrl?: string;
+      postOrderUpsellImage?: string;
     };
   };
   theme?: TemplateTheme | null;
