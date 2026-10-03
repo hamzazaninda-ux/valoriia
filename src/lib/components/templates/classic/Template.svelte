@@ -59,13 +59,13 @@
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
-	// Canonical definition of Drain Filter (UPSELL #1)
-	const drainFilterProduct = {
-		slug: 'filter-baloua',
-		title: 'فلتر مانع انسداد البالوعة',
-		subtitle: 'فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.',
+	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
+	const mopHolderProduct = {
+		slug: 'hamil-jidari-makanis',
+		title: 'حامل جداري للمكانس والممسحات',
+		subtitle: 'منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.',
 		heroImage: '', // DO NOT add any image yet
-		startingPrice: 29
+		startingPrice: 99
 	};
 
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
@@ -78,11 +78,11 @@
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// UPSELL #1: فلتر مانع انسداد البالوعة — 29 DH
+	// UPSELL #1: حامل جداري للمكانس والممسحات — 99 DH
 	// UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const cartUpsells = $derived.by(() => {
-		const foundFilter = others.find(
-			(p) => p.slug === 'filter-baloua' || p.title.includes('فلتر')
+		const foundMop = others.find(
+			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
 		);
 		const foundLock = others.find(
 			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
@@ -90,10 +90,10 @@
 
 		return [
 			{
-				...drainFilterProduct,
-				...(foundFilter || {}),
-				title: 'فلتر مانع انسداد البالوعة',
-				startingPrice: 29,
+				...mopHolderProduct,
+				...(foundMop || {}),
+				title: 'حامل جداري للمكانس والممسحات',
+				startingPrice: 99,
 				heroImage: '' // MUST remain empty per instructions
 			},
 			{

@@ -1,0 +1,53 @@
+{
+  "id": "prod_hamil_jidari_makanis",
+  "slug": "hamil-jidari-makanis",
+  "status": "published",
+  "createdAt": "2026-10-03T17:22:00.000Z",
+  "updatedAt": "2026-10-03T17:22:00.000Z",
+  "template": "classic",
+  "published": {
+    "content": {
+      "heroImage": "",
+      "title": "حامل جداري للمكانس والممسحات",
+      "subtitle": "منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.",
+      "rating": 4.9,
+      "reviewCount": 112,
+      "gallery": [],
+      "faq": [],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "حامل جداري للمكانس والممسحات",
+          "subtitle": "منظم جداري عملي",
+          "price": 99,
+          "originalPrice": 149,
+          "quantity": 1,
+          "badge": "عرض خاص",
+          "isPopular": true,
+          "image": ""
+        }
+      ]
+    },
+    "order": {
+      "sku": "hamil-jidari-makanis",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "حامل جداري للمكانس والممسحات | Valoriia",
+      "metaDescription": "منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}

@@ -29,12 +29,12 @@
 		onFinish: () => void;
 	} = $props();
 
-	// Canonical definition of Drain Filter (UPSELL #1)
-	const drainFilterProduct: UpsellProduct = {
-		slug: 'filter-baloua',
-		title: 'فلتر مانع انسداد البالوعة',
+	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
+	const mopHolderProduct: UpsellProduct = {
+		slug: 'hamil-jidari-makanis',
+		title: 'حامل جداري للمكانس والممسحات',
 		heroImage: '', // DO NOT add any image yet
-		startingPrice: 29
+		startingPrice: 99
 	};
 
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
@@ -46,11 +46,11 @@
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
-	// 1. UPSELL #1: فلتر مانع انسداد البالوعة — 29 DH
+	// 1. UPSELL #1: حامل جداري للمكانس والممسحات — 99 DH
 	// 2. UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const activeProducts = $derived.by(() => {
-		const foundFilter = products.find(
-			(p) => p.slug === 'filter-baloua' || p.title.includes('فلتر')
+		const foundMop = products.find(
+			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
 		);
 		const foundLock = products.find(
 			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
@@ -58,10 +58,10 @@
 
 		return [
 			{
-				...drainFilterProduct,
-				...(foundFilter || {}),
-				title: 'فلتر مانع انسداد البالوعة',
-				startingPrice: 29,
+				...mopHolderProduct,
+				...(foundMop || {}),
+				title: 'حامل جداري للمكانس والممسحات',
+				startingPrice: 99,
 				heroImage: '' // MUST remain empty per instructions
 			},
 			{
@@ -105,13 +105,13 @@
 	}
 
 	function priceOf(p: UpsellProduct) {
-		if (p.slug === 'filter-baloua' || p.title.includes('فلتر')) return 29;
+		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return 99;
 		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 50;
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
 	}
 
 	function hasDeal(p: UpsellProduct) {
-		if (p.slug === 'filter-baloua' || p.title.includes('فلتر')) return (p.startingPrice || 0) > 29;
+		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return (p.startingPrice || 0) > 99;
 		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 50;
 		return dealPrices[p.slug] !== undefined && (p.startingPrice || 0) > dealPrices[p.slug];
 	}
@@ -142,10 +142,10 @@
 		if (accepting || done) return;
 		accepting = p.slug;
 		const finalPrice = priceOf(p);
-		const finalImage = p.slug === 'filter-baloua' || p.title.includes('فلتر')
+		const finalImage = p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
 			? ''
 			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? '/images/child-safety-lock.webp' : '');
-		const finalSku = p.slug === 'filter-baloua' ? 'filter-baloua' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
+		const finalSku = p.slug === 'hamil-jidari-makanis' ? 'hamil-jidari-makanis' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
 		const payload = buildOrderPayload(
 			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
 			[

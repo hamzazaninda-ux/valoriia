@@ -1,12 +1,23 @@
 [
   {
+    "id": "prod_hamil_jidari_makanis",
+    "slug": "hamil-jidari-makanis",
+    "title": "حامل جداري للمكانس والممسحات",
+    "subtitle": "منظم جداري متعدد الاستخدامات للمكانس والممسحات وأدوات التنظيف. تركيب سهل بدون حفر، ويوفر مساحة ويساعد على ترتيب أدوات التنظيف في الحمام أو المطبخ.",
+    "heroImage": "",
+    "startingPrice": 99,
+    "status": "published",
+    "template": "classic",
+    "updatedAt": "2026-10-03T17:22:00.000Z"
+  },
+  {
     "id": "prod_filter_baloua",
     "slug": "filter-baloua",
     "title": "فلتر مانع انسداد البالوعة",
     "subtitle": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
     "heroImage": "",
     "startingPrice": 29,
-    "status": "published",
+    "status": "draft",
     "template": "classic",
     "updatedAt": "2026-10-03T16:30:00.000Z"
   },
