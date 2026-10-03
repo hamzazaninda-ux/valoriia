@@ -5,6 +5,7 @@
 	export interface UpsellProduct {
 		slug: string;
 		title: string;
+		description?: string;
 		heroImage?: string;
 		startingPrice?: number;
 	}
@@ -40,14 +41,15 @@
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
 	const childLockProduct: UpsellProduct = {
 		slug: 'qofl-al-aman',
-		title: 'قفل الأمان للأطفال',
+		title: 'حمي صغارك من الحوادث اليومية 🔒',
+		description: 'قفل بسيط وفعّال للخزانات والأدراج',
 		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-		startingPrice: 50
+		startingPrice: 49
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
 	// 1. UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
-	// 2. UPSELL #2: قفل الأمان للأطفال — 50 DH
+	// 2. UPSELL #2: حمي صغارك من الحوادث اليومية — 49 DH
 	const activeProducts = $derived.by(() => {
 		const foundMop = products.find(
 			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
@@ -64,13 +66,14 @@
 				startingPrice: 99,
 				heroImage: '' // MUST remain empty per instructions
 			},
-			{
-				...childLockProduct,
-				...(foundLock || {}),
-				title: 'قفل الأمان للأطفال',
-				startingPrice: 50,
-				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
-			}
+		{
+			...childLockProduct,
+			...(foundLock || {}),
+			title: 'حمي صغارك من الحوادث اليومية 🔒',
+			description: 'قفل بسيط وفعّال للخزانات والأدراج',
+			startingPrice: 49,
+			heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
+		}
 		];
 	});
 
@@ -106,13 +109,13 @@
 
 	function priceOf(p: UpsellProduct) {
 		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return 99;
-		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 50;
+		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 49;
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
 	}
 
 	function hasDeal(p: UpsellProduct) {
 		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return (p.startingPrice || 0) > 99;
-		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 50;
+		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 49;
 		return dealPrices[p.slug] !== undefined && (p.startingPrice || 0) > dealPrices[p.slug];
 	}
 
@@ -230,6 +233,9 @@
 						</span>
 						<span class="min-w-0 flex-1">
 							<span class="block truncate text-sm font-extrabold text-neutral-800">{p.title}</span>
+							{#if p.description}
+								<span class="mt-0.5 block truncate text-[11px] font-semibold text-neutral-500">{p.description}</span>
+							{/if}
 							<span class="mt-0.5 flex items-baseline gap-1.5">
 								<span class="text-base font-black text-emerald-700">{priceOf(p)} {currency}</span>
 								{#if hasDeal(p)}

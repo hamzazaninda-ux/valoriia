@@ -31,10 +31,10 @@ export const load: PageServerLoad = async ({ params }) => {
 
     others = allowed.slice(0, 2).map((p) => ({
       slug: p.slug,
-      title: p.slug === 'hamil-jidari-makanis' ? 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات' : p.slug === 'qofl-al-aman' ? 'قفل الأمان للأطفال' : p.title,
+      title: p.slug === 'hamil-jidari-makanis' ? 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات' : p.slug === 'qofl-al-aman' ? 'حمي صغارك من الحوادث اليومية 🔒' : p.title,
       subtitle: p.subtitle,
       heroImage: p.slug === 'hamil-jidari-makanis' ? '' : p.slug === 'qofl-al-aman' ? 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp' : (p.heroImage || ''),
-      startingPrice: p.slug === 'hamil-jidari-makanis' ? 99 : p.slug === 'qofl-al-aman' ? 50 : p.startingPrice
+      startingPrice: p.slug === 'hamil-jidari-makanis' ? 99 : p.slug === 'qofl-al-aman' ? 49 : p.startingPrice
     }));
   } catch {
     others = [];

@@ -70,15 +70,15 @@
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
 	const childLockProduct = {
 		slug: 'qofl-al-aman',
-		title: 'قفل الأمان للأطفال',
-		subtitle: 'حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات',
+		title: 'حمي صغارك من الحوادث اليومية 🔒',
+		subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
 		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-		startingPrice: 50
+		startingPrice: 49
 	};
 
 	// Active upsell list contains EXACTLY TWO products:
 	// UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
-	// UPSELL #2: قفل الأمان للأطفال — 50 DH
+	// UPSELL #2: حمي صغارك من الحوادث اليومية — 49 DH
 	const cartUpsells = $derived.by(() => {
 		const foundMop = others.find(
 			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
@@ -98,8 +98,9 @@
 			{
 				...childLockProduct,
 				...(foundLock || {}),
-				title: 'قفل الأمان للأطفال',
-				startingPrice: 50,
+				title: 'حمي صغارك من الحوادث اليومية 🔒',
+				subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+				startingPrice: 49,
 				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
 			}
 		];
