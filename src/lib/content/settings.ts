@@ -41,6 +41,7 @@ export async function readCommerceSettings(): Promise<CommerceSettings> {
     freeShippingText: 'توصيل مجاني لجميع مدن المغرب',
     paymentMethod: 'الدفع عند الاستلام (COD)',
     googleSheetsUrl: '',
+    postOrderUpsellImage: '',
     ...data
   } as CommerceSettings;
 }
@@ -52,6 +53,7 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
     gtmContainerId: '',
     facebookPixelId: '',
     tiktokPixelId: '',
+    snapchatPixelId: '',
     googleAnalyticsId: '',
     googleAdsId: '',
     defaultOgImage: '',
@@ -87,12 +89,14 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
       freeShippingText: 'توصيل مجاني لجميع مدن المغرب',
       paymentMethod: 'الدفع عند الاستلام (COD)',
       googleSheetsUrl: '',
+      postOrderUpsellImage: '',
       ...JSON.parse(commerce)
     };
     const trackingData = {
       gtmContainerId: '',
       facebookPixelId: '',
       tiktokPixelId: '',
+      snapchatPixelId: '',
       googleAnalyticsId: '',
       googleAdsId: '',
       defaultOgImage: '',

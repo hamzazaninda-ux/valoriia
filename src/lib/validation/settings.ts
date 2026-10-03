@@ -32,7 +32,8 @@ export const CommerceSettingsSchema = z.object({
   currencySymbol: NonEmptyPlainTextSchema.max(5, 'Currency symbol must be 5 characters or less'),
   freeShippingText: NonEmptyPlainTextSchema.max(100, 'Free shipping text must be 100 characters or less'),
   paymentMethod: NonEmptyPlainTextSchema.max(100, 'Payment method must be 100 characters or less'),
-  googleSheetsUrl: HttpUrlSchema
+  googleSheetsUrl: HttpUrlSchema,
+  postOrderUpsellImage: z.string().optional().default('')
 });
 
 export type CommerceSettings = z.infer<typeof CommerceSettingsSchema>;
@@ -44,6 +45,7 @@ export const TrackingSettingsSchema = z.object({
   gtmContainerId: GtmContainerIdSchema,
   facebookPixelId: z.string().optional().default(''),
   tiktokPixelId: z.string().optional().default(''),
+  snapchatPixelId: z.string().optional().default(''),
   googleAnalyticsId: z.string().optional().default(''),
   googleAdsId: z.string().optional().default(''),
   defaultOgImage: z.string().optional().default(''),

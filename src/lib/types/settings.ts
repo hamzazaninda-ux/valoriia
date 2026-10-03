@@ -14,12 +14,14 @@ export interface CommerceSettings {
   freeShippingText: string;
   paymentMethod: string;
   googleSheetsUrl: string;
+  postOrderUpsellImage?: string;
 }
 
 export interface TrackingSettings {
   gtmContainerId: string;
   facebookPixelId: string;
   tiktokPixelId: string;
+  snapchatPixelId: string;
   googleAnalyticsId: string;
   googleAdsId: string;
   defaultOgImage: string;
