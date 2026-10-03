@@ -35,7 +35,7 @@
 		onFinish: () => void;
 	} = $props();
 
-	// Canonical definition of Broom/Mop Wall Holder (UPSELL #1)
+	// Canonical definition of Broom/Mop Wall Holder (The ONLY post-order upsell product)
 	const mopHolderProduct: UpsellProduct = {
 		slug: 'hamil-jidari-makanis',
 		title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
@@ -43,24 +43,11 @@
 		startingPrice: 99
 	};
 
-	// Canonical definition of Child Safety Lock product (UPSELL #2)
-	const childLockProduct: UpsellProduct = {
-		slug: 'qofl-al-aman',
-		title: 'حمي صغارك من الحوادث اليومية 🔒',
-		description: 'قفل بسيط وفعّال للخزانات والأدراج',
-		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-		startingPrice: 49
-	};
-
-	// Active upsell list contains EXACTLY TWO products:
-	// 1. UPSELL #1: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
-	// 2. UPSELL #2: حمي صغارك من الحوادث اليومية — 49 DH
+	// Active upsell list contains EXACTLY ONE single product:
+	// UPSELL: حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات — 99 DH
 	const activeProducts = $derived.by(() => {
 		const foundMop = products.find(
 			(p) => p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
-		);
-		const foundLock = products.find(
-			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
 		);
 
 		return [
@@ -70,26 +57,17 @@
 				title: 'حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات',
 				startingPrice: 99,
 				heroImage: postOrderImage || foundMop?.heroImage || POST_ORDER_UPSELL_IMAGE
-			},
-			{
-				...childLockProduct,
-				...(foundLock || {}),
-				title: 'حمي صغارك من الحوادث اليومية 🔒',
-				description: 'قفل بسيط وفعّال للخزانات والأدراج',
-				startingPrice: 49,
-				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
 			}
 		];
 	});
 
-	let currentStep = $state(0);
 	let left = $state(seconds);
 	let accepting = $state<string | null>(null);
 	let done = $state(false);
 	let expired = $state(false);
 	let timer: ReturnType<typeof setInterval> | null = null;
 
-	const currentProduct = $derived(activeProducts[currentStep] || null);
+	const currentProduct = $derived(activeProducts[0] || null);
 
 	function stopTimer() {
 		if (timer) {
@@ -114,14 +92,7 @@
 
 	function priceOf(p: UpsellProduct) {
 		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return 99;
-		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 49;
-		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
-	}
-
-	function hasDeal(p: UpsellProduct) {
-		if (p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')) return (p.startingPrice || 0) > 99;
-		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 49;
-		return dealPrices[p.slug] !== undefined && (p.startingPrice || 0) > dealPrices[p.slug];
+		return dealPrices[p.slug] ?? p.startingPrice ?? 99;
 	}
 
 	function finish() {
@@ -129,36 +100,26 @@
 		done = true;
 		stopTimer();
 		cartUi.endUpsell();
+		cartUi.resetAll();
 		onFinish();
-	}
-
-	function nextStep() {
-		if (currentStep + 1 < activeProducts.length) {
-			currentStep += 1;
-			resetStepTimer();
-		} else {
-			finish();
-		}
 	}
 
 	function skip() {
 		if (accepting || done) return;
-		nextStep();
+		finish();
 	}
 
 	function accept(p: UpsellProduct) {
 		if (accepting || done) return;
 		accepting = p.slug;
 		const finalPrice = priceOf(p);
-		const finalImage = p.slug === 'hamil-jidari-makanis' || p.title.includes('حامل') || p.title.includes('مكانس')
-			? (postOrderImage || p.heroImage || POST_ORDER_UPSELL_IMAGE)
-			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp' : '');
-		const finalSku = p.slug === 'hamil-jidari-makanis' ? 'hamil-jidari-makanis' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
+		const finalImage = postOrderImage || p.heroImage || POST_ORDER_UPSELL_IMAGE;
+		const finalSku = p.slug === 'hamil-jidari-makanis' ? 'hamil-jidari-makanis' : sku;
 		const payload = buildOrderPayload(
 			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
 			[
 				{
-					key: `${p.slug}#${currentStep}`,
+					key: `${p.slug}#0`,
 					slug: p.slug,
 					title: p.title,
 					image: finalImage,
@@ -186,13 +147,12 @@
 			})
 			.finally(() => {
 				accepting = null;
-				nextStep();
+				finish();
 			});
 	}
 
 	$effect(() => {
 		if (cartUi.upsell) {
-			currentStep = 0;
 			done = false;
 			accepting = null;
 			resetStepTimer();
@@ -251,7 +211,7 @@
 				<!-- [ 1:1 IMAGE SLOT ] — Full width of card, true square, no extra padding, always visible -->
 				<div class="relative w-full aspect-square bg-white overflow-hidden flex items-center justify-center">
 					<img
-						src={p.heroImage || (p.slug === 'qofl-al-aman' ? childLockProduct.heroImage : POST_ORDER_UPSELL_IMAGE)}
+						src={p.heroImage || POST_ORDER_UPSELL_IMAGE}
 						alt={p.title || 'عرض خاص بعد الطلب'}
 						class="w-full h-full aspect-square object-cover"
 						loading="eager"
@@ -261,7 +221,7 @@
 					/>
 				</div>
 
-				<!-- 3. Bottom: Decision buttons only (No title, no price, no extra whitespace) -->
+				<!-- 3. Bottom: Decision buttons only (Single Offer: Direct to thank-you) -->
 				<div class="p-4 sm:p-5 space-y-2">
 					<button
 						type="button"
@@ -283,7 +243,7 @@
 							onclick={skip}
 							class="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-xs font-bold text-neutral-700 transition-colors cursor-pointer"
 						>
-							{currentStep < activeProducts.length - 1 ? 'انتهى وقت العرض — العرض الموالي' : 'انتهى وقت العرض — متابعة لصفحة الشكر'}
+							انتهى وقت العرض — متابعة لصفحة الشكر
 						</button>
 					{:else}
 						<button
@@ -291,7 +251,7 @@
 							onclick={skip}
 							class="w-full py-1.5 text-center text-xs font-bold text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
 						>
-							{currentStep < activeProducts.length - 1 ? 'لا شكراً، تخطي للعرض الموالي' : 'لا شكراً، متابعة لصفحة الشكر'}
+							لا شكراً، متابعة لصفحة الشكر
 						</button>
 					{/if}
 				</div>
