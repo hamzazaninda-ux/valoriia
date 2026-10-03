@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/format';
 	import { ShoppingCart } from '@lucide/svelte';
@@ -29,10 +29,10 @@
 		pricing.offers.find((o: ProductOffer) => o.id === currentPackId) || pricing.offers[0] || { title: '', price: 0, quantity: 1 }
 	);
 
-	// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Stacked images ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+	// â”€â”€ Stacked images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 	// First image fills a 9:16 frame (all phones identical), the rest keep
 	// their natural ratio (1:1 stays 1:1). Upload slots = hero + gallery.
-	// Accepts images from EVERY admin image list (gallery ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ carousel ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ hero)
+	// Accepts images from EVERY admin image list (gallery â†’ carousel â†’ hero)
 	// so a product can never render imageless no matter which tab was used.
 	// Empty URLs are filtered out (never render a broken <img>).
 	let slides = $derived.by(() => {
@@ -49,7 +49,7 @@
 		}
 		return [];
 	});
-	// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	let showStickyBtn = $state(true);
 
@@ -59,13 +59,12 @@
 	);
 
 	function addSelectedToCart() {
-		const offer = activeOffer as ProductOffer;
 		cart.add({
 			slug: (product as any).slug || '',
-			title: content.title || 'Ã™â€¦Ã™â€ Ã˜ÂªÃ˜Â¬',
-			image: offer.image?.trim() || slides[0]?.src || '',
+			title: content.title || 'منتج',
+			image: slides[0]?.src || '',
 			price: activeOffer.price || 0,
-			offerId: offer.id ?? 0,
+			offerId: (activeOffer as ProductOffer).id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
 		cartUi.openDrawer();
@@ -114,10 +113,10 @@
 	<!-- Trust bar -->
 	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
 		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings.commerce.freeShippingText} Ã¢â‚¬Â¢ {settings.commerce.paymentMethod}</span>
+		<span>{settings.commerce.freeShippingText} • {settings.commerce.paymentMethod}</span>
 	</div>
 
-	<!-- ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Stacked images: first fills 9:16, rest keep natural ratio ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ -->
+	<!-- â”€â”€ Stacked images: first fills 9:16, rest keep natural ratio â”€â”€ -->
 	{#if slides.length > 0}
 		<div class="w-full bg-black/5">
 			<img
@@ -142,8 +141,8 @@
 				<circle cx="42" cy="32" r="6" />
 				<path d="M25 72l18-18 12 12 10-10 30 30" stroke-linecap="round" stroke-linejoin="round" />
 			</svg>
-			<p class="font-bold text-emerald-950">Ã˜Â¨Ã™â€žÃ˜Â§Ã˜ÂµÃ˜Â© Ã˜ÂªÃ˜ÂµÃ˜Â§Ã™Ë†Ã˜Â± Ã˜Â§Ã™â€žÃ™â€¦Ã™â€ Ã˜ÂªÃ˜Â¬</p>
-			<p class="text-xs text-neutral-500 leading-relaxed">Ã˜Â²Ã™Å Ã˜Â¯ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã˜Â§Ã™â€žÃ™â€žÃ™Ë†Ã™â€žÃ˜Â© (9:16) Ã™Ë†Ã˜Â¨Ã˜Â§Ã™â€šÃ™Å  Ã˜Â§Ã™â€žÃ˜ÂªÃ˜ÂµÃ˜Â§Ã™Ë†Ã˜Â± Ã™â€¦Ã™â€  Ã™â€¦Ã˜Â¹Ã˜Â±Ã˜Â¶ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â± Ã™ÂÃ™Å  Ã™â€žÃ™Ë†Ã˜Â­Ã˜Â© Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â­Ã™Æ’Ã™â€¦</p>
+			<p class="font-bold text-emerald-950">بلاصة تصاور المنتج</p>
+			<p class="text-xs text-neutral-500 leading-relaxed">زيد الصورة اللولة (9:16) وباقي التصاور من معرض الصور في لوحة التحكم</p>
 		</div>
 	{/if}
 
@@ -156,7 +155,7 @@
 					{t.sections.orderForm.title}
 				</h2>
 				<p class="text-sm font-bold mt-2 px-2 leading-relaxed text-neutral-500">
-					Ã˜Â¹Ã™â€¦Ã™â€˜Ã˜Â± Ã˜Â§Ã™â€žÃ˜Â§Ã˜Â³Ã˜ÂªÃ™â€¦Ã˜Â§Ã˜Â±Ã˜Â© Ã™Ë†Ã˜Â®Ã™â€žÃ˜Âµ Ã™â€¦Ã™â€žÃ™Å  Ã˜ÂªÃ™Ë†Ã˜ÂµÃ™â€žÃ™Æ’ Ã˜Â§Ã™â€žÃ˜Â³Ã™â€žÃ˜Â¹Ã˜Â©
+					عمّر الاستمارة وخلص ملي توصلك السلعة
 				</p>
 			</div>
 
@@ -164,13 +163,13 @@
 				<div class="space-y-4">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
-							Ã˜Â§Ã˜Â®Ã˜ÂªÃ˜Â± Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¶ Ã˜Â§Ã™â€žÃ™â€¦Ã™â€ Ã˜Â§Ã˜Â³Ã˜Â¨ Ã™â€žÃ™Æ’:
+							اختر العرض المناسب لك:
 						</span>
 
 						<div class="grid grid-cols-1 gap-2.5">
 							{#each pricing.offers as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-700 shadow-sm' : 'border-neutral-200'}"
+									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white p-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-blue-500 shadow-md shadow-blue-500/10' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -201,7 +200,8 @@
 												<span class="truncate">{offer.subtitle}</span>
 											</span>
 										{/if}
-									</span>
+										
+										</span>
 									<span class="shrink-0 text-left">
 										<span class="block whitespace-nowrap text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
 										{#if offer.originalPrice > offer.price}
@@ -216,10 +216,10 @@
 					<button
 						type="button"
 						onclick={addSelectedToCart}
-						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-800 py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98]"
+						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#FACC15] py-3.5 text-base font-black text-neutral-900 shadow-lg transition-all hover:bg-[#eab308] active:scale-[0.98]"
 					>
 						<ShoppingCart class="h-5 w-5 shrink-0" />
-						<span>Ã˜Â£Ã˜Â¶Ã™Â Ã˜Â¥Ã™â€žÃ™â€° Ã˜Â§Ã™â€žÃ˜Â³Ã™â€žÃ˜Â© Ã‚Â· {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+						<span>أضف إلى السلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
 					</button>
 
 
@@ -271,7 +271,7 @@
 	<div id="checkout-form-bottom"></div>
 
 	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4" dir="rtl">
-		<p>{content.footerText || `Ã‚Â© ${new Date().getFullYear()} ${settings.brand.name}. Ã˜Â¬Ã™â€¦Ã™Å Ã˜Â¹ Ã˜Â§Ã™â€žÃ˜Â­Ã™â€šÃ™Ë†Ã™â€š Ã™â€¦Ã˜Â­Ã™ÂÃ™Ë†Ã˜Â¸Ã˜Â©.`}</p>
+		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
@@ -286,9 +286,9 @@
 		</div>
 	{/if}
 
-	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
+	<CartDrawer others={others} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
 	<CheckoutModal
-		currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'}
+		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
 		productTitle={content.title}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
@@ -297,7 +297,7 @@
 	<UpsellModal
 		order={cartUi.upsell!}
 		products={others}
-		currency={settings.commerce.currencySymbol || 'Ã˜Â¯Ã˜Â±Ã™â€¡Ã™â€¦'}
+		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
 		onFinish={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
