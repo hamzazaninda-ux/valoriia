@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/format';
 	import { ShoppingCart } from '@lucide/svelte';
@@ -150,7 +150,7 @@
 	<div id="checkout-form" class="px-3 py-6 md:px-4">
 		<div class="border border-border/60 shadow-lg overflow-hidden rounded-3xl bg-white" dir="rtl">
 			<div class="h-1" style="background-color: var(--t-primary, #047857);"></div>
-			<div class="text-center pb-4 pt-6 select-none px-6">
+			<div class="text-center pb-3 pt-5 select-none px-4">
 				<h2 class="text-2xl font-extrabold tracking-tight font-display">
 					{t.sections.orderForm.title}
 				</h2>
@@ -159,8 +159,8 @@
 				</p>
 			</div>
 
-			<div class="px-4 pb-6">
-				<div class="space-y-4">
+			<div class="px-3 pb-5">
+				<div class="space-y-3">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
 							اختر العرض المناسب لك:
@@ -169,7 +169,7 @@
 						<div class="grid grid-cols-1 gap-2.5">
 							{#each pricing.offers as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center gap-3 rounded-xl border-2 bg-white px-3.5 py-3 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-neutral-900 shadow-sm' : 'border-neutral-200'}"
+									class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white px-3 py-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-neutral-900 shadow-sm' : 'border-neutral-200'}"
 								>
 									<input
 										type="radio"
@@ -180,11 +180,11 @@
 										class="sr-only"
 									/>
 									{#if offer.image}
-										<span class="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
+										<span class="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
 											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
 										</span>
 									{:else}
-										<span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+										<span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
 											<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 											</svg>
@@ -200,7 +200,6 @@
 												<span class="truncate">{offer.subtitle}</span>
 											</span>
 										{/if}
-										
 										</span>
 									<span class="shrink-0 text-left">
 										<span class="block whitespace-nowrap text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
