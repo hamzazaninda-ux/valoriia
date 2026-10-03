@@ -39,7 +39,7 @@
 	} = $props();
 
 	export const DRAIN_VALVE_IMAGE =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
 
 	const crossSells = $derived(
 		others
@@ -130,7 +130,7 @@
 			onclick={() => cartUi.closeDrawer()}
 			aria-label="سد السلة"
 		></button>
-		<aside class="absolute bottom-0 left-0 top-0 flex w-[88%] max-w-sm flex-col bg-white shadow-2xl" dir="rtl">
+		<aside class="absolute bottom-0 left-0 top-0 flex w-full max-w-full sm:max-w-md h-full flex-col bg-white shadow-2xl" dir="rtl">
 			<div class="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
 				<h2 class="font-display text-lg font-bold text-neutral-900">السلة ({cart.count})</h2>
 				<button
@@ -168,7 +168,7 @@
 								{/if}
 							</span>
 							<span class="min-w-0 flex-1">
-								<span class="block truncate text-[13px] font-extrabold leading-tight text-neutral-800">{line.title}</span>
+								<span class="block text-xs sm:text-sm font-extrabold leading-tight text-neutral-800 line-clamp-2">{line.title}</span>
 								{#if line.offerTitle}
 									<span class="block truncate text-[11px] text-neutral-400">{line.offerTitle}</span>
 								{/if}
@@ -201,7 +201,7 @@
 										class="flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-xl border border-amber-200/70 bg-white p-2 text-right transition-all active:scale-[0.99] hover:border-amber-300"
 									>
 										<span class="min-w-0 flex-1 text-right">
-											<span class="block truncate text-[13px] font-extrabold text-neutral-800">{o.title}</span>
+											<span class="block text-xs sm:text-sm font-extrabold text-neutral-800 line-clamp-2">{o.title}</span>
 											<span class="mt-0.5 block text-xs font-black text-emerald-700">{o.price} {currency}</span>
 										</span>
 										<span
@@ -234,7 +234,7 @@
 											{/if}
 										</span>
 										<span class="min-w-0 flex-1">
-											<span class="block text-xs sm:text-[13px] font-bold text-gray-900 leading-snug line-clamp-2" title={p.title}>{p.title}</span>
+											<span class="block text-xs sm:text-sm font-bold text-gray-900 leading-snug line-clamp-2" title={p.title}>{p.title}</span>
 											<span class="mt-0.5 block text-xs font-black text-emerald-700">{p.startingPrice || 0} {currency}</span>
 										</span>
 										<button
