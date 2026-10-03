@@ -19,16 +19,23 @@ export const load: PageServerLoad = async ({ params }) => {
   let others: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
   try {
     const all = await listProducts();
-    others = all
-      .filter((p) => p.status === 'published' && p.slug !== product.slug)
-      .slice(0, 4)
-      .map((p) => ({
-        slug: p.slug,
-        title: p.title,
-        subtitle: p.subtitle,
-        heroImage: p.heroImage,
-        startingPrice: p.startingPrice
-      }));
+    const excludedSlugs = new Set(['mimsahat-asyr', 'monazzim-daki']);
+    const allowed = all.filter(
+      (p) => p.status === 'published' && p.slug !== product.slug && !excludedSlugs.has(p.slug)
+    );
+    const orderMap: Record<string, number> = {
+      'filter-baloua': 1,
+      'qofl-al-aman': 2
+    };
+    allowed.sort((a, b) => (orderMap[a.slug] || 99) - (orderMap[b.slug] || 99));
+
+    others = allowed.slice(0, 2).map((p) => ({
+      slug: p.slug,
+      title: p.slug === 'filter-baloua' ? 'فلتر مانع انسداد البالوعة' : p.slug === 'qofl-al-aman' ? 'قفل الأمان للأطفال' : p.title,
+      subtitle: p.subtitle,
+      heroImage: p.slug === 'filter-baloua' ? '' : p.slug === 'qofl-al-aman' ? '/images/child-safety-lock.webp' : (p.heroImage || ''),
+      startingPrice: p.slug === 'filter-baloua' ? 29 : p.slug === 'qofl-al-aman' ? 50 : p.startingPrice
+    }));
   } catch {
     others = [];
   }

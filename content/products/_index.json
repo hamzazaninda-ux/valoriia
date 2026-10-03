@@ -28,7 +28,7 @@
     "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
     "heroImage": "https://placehold.co/800x800/fdf6e3/92400e?text=Valoriia",
     "startingPrice": 129,
-    "status": "published",
+    "status": "draft",
     "template": "classic",
     "updatedAt": "2026-10-01T21:42:52.587Z"
   },
@@ -39,7 +39,7 @@
     "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
     "heroImage": "https://placehold.co/800x800/faf9f6/022c22?text=Valoriia",
     "startingPrice": 149,
-    "status": "published",
+    "status": "draft",
     "template": "classic",
     "updatedAt": "2026-10-01T21:42:35.352Z"
   },

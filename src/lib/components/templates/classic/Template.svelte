@@ -692,7 +692,7 @@
 	/>
 	<UpsellModal
 		order={cartUi.upsell!}
-		products={others}
+		products={cartUpsells}
 		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
