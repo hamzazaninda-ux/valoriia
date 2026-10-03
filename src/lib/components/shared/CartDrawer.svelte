@@ -58,6 +58,17 @@
 						startingPrice: 35
 					};
 				}
+				const isChildLock =
+					p.slug === 'qofl-al-aman' ||
+					p.title.includes('قفل') ||
+					p.title.includes('صغارك');
+				if (isChildLock) {
+					return {
+						...p,
+						title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
+						startingPrice: 49
+					};
+				}
 				return p;
 			})
 	);
@@ -75,9 +86,13 @@
 			p.title.includes('المجاري') ||
 			p.title.includes('صمام') ||
 			p.title.includes('البالوعة');
+		const isChildLock =
+			p.slug === 'qofl-al-aman' ||
+			p.title.includes('قفل') ||
+			p.title.includes('صغارك');
 		cart.add({
 			slug: p.slug,
-			title: p.title,
+			title: isChildLock ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' : p.title,
 			image: isDrainValve ? DRAIN_VALVE_IMAGE : (p.heroImage || ''),
 			price: isDrainValve ? 35 : (p.startingPrice || 0),
 			offerId: 0,

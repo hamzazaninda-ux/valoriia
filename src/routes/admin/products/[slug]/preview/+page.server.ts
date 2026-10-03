@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ params }) => {
         p.slug === 'samam-tasrif' || p.slug === 'filter-baloua'
           ? 'تهنى نهائياً من ريحة المجاري والصراصير 🪳'
           : p.slug === 'qofl-al-aman'
-            ? 'حمي صغارك من الحوادث اليومية 🔒'
+            ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒'
             : p.title,
       subtitle:
         p.slug === 'samam-tasrif' || p.slug === 'filter-baloua'

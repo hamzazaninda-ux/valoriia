@@ -74,7 +74,7 @@
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
 	const childLockProduct = {
 		slug: 'qofl-al-aman',
-		title: 'حمي صغارك من الحوادث اليومية 🔒',
+		title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
 		subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
 		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
 		startingPrice: 49
@@ -82,7 +82,7 @@
 
 	// Active upsell list contains EXACTLY TWO products:
 	// UPSELL #1: تهنى نهائياً من ريحة المجاري والصراصير 🪳 — 35 DH
-	// UPSELL #2: حمي صغارك من الحوادث اليومية 🔒 — 49 DH
+	// UPSELL #2: قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
 	const cartUpsells = $derived.by(() => {
 		const foundDrain = others.find(
 			(p) =>
@@ -109,7 +109,7 @@
 			{
 				...childLockProduct,
 				...(foundLock || {}),
-				title: 'حمي صغارك من الحوادث اليومية 🔒',
+				title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
 				subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
 				startingPrice: 49,
 				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
