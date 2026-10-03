@@ -204,7 +204,7 @@
 
 {#if cartUi.upsell}
 	<div
-		class="fixed inset-0 z-[90] flex items-center justify-center p-3.5 sm:p-5 overflow-y-auto"
+		class="fixed inset-0 z-[90] flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
 		role="dialog"
 		aria-modal="true"
 		aria-label="عرض خاص بعد الطلب"
@@ -215,7 +215,7 @@
 			class="relative w-full max-w-sm sm:max-w-md my-auto overflow-hidden rounded-3xl bg-white shadow-2xl border border-neutral-100"
 			dir="rtl"
 		>
-			<!-- 1. Header: OFFER TITLE + SHORT SUBTITLE + COUNTDOWN -->
+			<!-- 1. Header: OFFER TITLE + SHORT SUBTITLE + COUNTDOWN (UNTOUCHED) -->
 			<div class="bg-gradient-to-l from-amber-500 via-orange-500 to-amber-600 px-5 py-4 text-center text-white">
 				<h3 class="text-base sm:text-lg font-black tracking-tight">عرض خاص غير لهاد الطلب!</h3>
 				<p class="mt-0.5 text-xs font-semibold text-white/90">زيد منتج آخر بنفس التوصيل — بلا مصاريف زيادة</p>
@@ -237,84 +237,62 @@
 				</div>
 			</div>
 
-			<!-- 2. Body: [ 1:1 IMAGE SLOT ] + PRODUCT NAME + PRICE + CTA -->
-			<div class="p-5 sm:p-6 text-center">
-				{#if !currentProduct}
-					<p class="py-6 text-center text-sm font-bold text-neutral-500">شكراً على طلبك! غادي نعيطو ليك للتأكيد.</p>
-				{:else}
-					{@const p = currentProduct}
+			<!-- 2. Middle: Large 1:1 Square Product Image taking full width -->
+			{#if !currentProduct}
+				<div class="p-6 text-center text-sm font-bold text-neutral-500">
+					شكراً على طلبك! غادي نعيطو ليك للتأكيد.
+				</div>
+			{:else}
+				{@const p = currentProduct}
 
-					<!-- [ 1:1 IMAGE SLOT ] — Centered, square, empty when no image -->
-					<div class="mx-auto w-44 h-44 sm:w-52 sm:h-52 aspect-square rounded-2xl border border-neutral-200/80 bg-neutral-50/60 overflow-hidden flex items-center justify-center shadow-inner">
-						{#if p.heroImage}
-							<img
-								src={p.heroImage}
-								alt={p.title}
-								class="h-full w-full object-cover"
-								loading="lazy"
-							/>
+				<!-- [ 1:1 IMAGE SLOT ] — Full width of card, true square, no extra padding -->
+				<div class="relative w-full aspect-square bg-neutral-100 overflow-hidden flex items-center justify-center border-b border-neutral-100">
+					{#if p.heroImage}
+						<img
+							src={p.heroImage}
+							alt={p.title}
+							class="h-full w-full object-cover"
+							loading="lazy"
+						/>
+					{/if}
+					<!-- Intentionally empty when !p.heroImage: no icon, no placeholder -->
+				</div>
+
+				<!-- 3. Bottom: Decision buttons only (No title, no price, no extra whitespace) -->
+				<div class="p-4 sm:p-5 space-y-2">
+					<button
+						type="button"
+						disabled={accepting !== null}
+						onclick={() => accept(p)}
+						class="w-full min-h-12 py-3.5 px-6 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-900/20 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+					>
+						{#if accepting === p.slug}
+							<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+							<span>جاري الإضافة...</span>
+						{:else}
+							<span>+ زيد للطلب</span>
 						{/if}
-						<!-- Intentionally empty when !p.heroImage: no icon, no placeholder image -->
-					</div>
+					</button>
 
-					<!-- PRODUCT NAME + PRICE -->
-					<div class="mt-3.5 text-center">
-						<h4 class="text-sm sm:text-base font-extrabold text-neutral-900 leading-snug">
-							{p.title}
-						</h4>
-						{#if p.description}
-							<p class="mt-1 text-xs font-medium text-neutral-500">
-								{p.description}
-							</p>
-						{/if}
-						<div class="mt-2 flex items-baseline justify-center gap-2">
-							<span class="text-2xl font-black text-emerald-700 font-mono">
-								{priceOf(p)} {currency}
-							</span>
-							{#if hasDeal(p)}
-								<span class="text-xs font-semibold text-neutral-400 line-through">
-									{p.startingPrice} {currency}
-								</span>
-							{/if}
-						</div>
-					</div>
-
-					<!-- CTA + SKIP BUTTON -->
-					<div class="mt-4.5 space-y-2">
+					{#if expired}
 						<button
 							type="button"
-							disabled={accepting !== null}
-							onclick={() => accept(p)}
-							class="w-full min-h-12 py-3 px-6 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-900/20 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60"
+							onclick={skip}
+							class="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-xs font-bold text-neutral-700 transition-colors cursor-pointer"
 						>
-							{#if accepting === p.slug}
-								<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-								<span>جاري الإضافة...</span>
-							{:else}
-								<span>+ زيد للطلب</span>
-							{/if}
+							{currentStep < activeProducts.length - 1 ? 'انتهى وقت العرض — العرض الموالي' : 'انتهى وقت العرض — متابعة لصفحة الشكر'}
 						</button>
-
-						{#if expired}
-							<button
-								type="button"
-								onclick={skip}
-								class="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-xs font-bold text-neutral-700 transition-colors cursor-pointer"
-							>
-								{currentStep < activeProducts.length - 1 ? 'انتهى وقت العرض — العرض الموالي' : 'انتهى وقت العرض — متابعة لصفحة الشكر'}
-							</button>
-						{:else}
-							<button
-								type="button"
-								onclick={skip}
-								class="w-full py-1.5 text-center text-xs font-bold text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
-							>
-								{currentStep < activeProducts.length - 1 ? 'لا شكراً، تخطي للعرض الموالي' : 'لا شكراً، متابعة لصفحة الشكر'}
-							</button>
-						{/if}
-					</div>
-				{/if}
-			</div>
+					{:else}
+						<button
+							type="button"
+							onclick={skip}
+							class="w-full py-1.5 text-center text-xs font-bold text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+						>
+							{currentStep < activeProducts.length - 1 ? 'لا شكراً، تخطي للعرض الموالي' : 'لا شكراً، متابعة لصفحة الشكر'}
+						</button>
+					{/if}
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}
