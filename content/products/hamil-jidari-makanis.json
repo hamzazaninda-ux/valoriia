@@ -3,7 +3,7 @@
   "slug": "hamil-jidari-makanis",
   "status": "draft",
   "createdAt": "2026-10-03T17:22:00.000Z",
-  "updatedAt": "2026-10-03T20:34:17.600Z",
+  "updatedAt": "2026-10-03T20:44:49.125Z",
   "template": "classic",
   "published": {
     "content": {
@@ -40,8 +40,8 @@
           "originalPrice": 149,
           "quantity": 1,
           "badge": "عرض خاص",
-          "isPopular": true,
-          "image": ""
+          "image": "",
+          "isPopular": true
         }
       ]
     },
@@ -59,12 +59,21 @@
   },
   "draft": {
     "content": {
-      "heroImage": "",
+      "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png",
       "title": "حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات",
       "subtitle": "حامل جداري عملي لتنظيم أدوات التنظيف في الحمام أو المطبخ. يستوعب حتى 5 أدوات في نفس الوقت. تركيب سهل بدون ثقب بفضل اللاصق القوي. حل مثالي لتوفير المساحة وترتيب المنزل.",
       "rating": 4.9,
       "reviewCount": 112,
       "gallery": [],
+      "carousel": [
+        {
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png",
+          "alt": "",
+          "title": "",
+          "bgGradient": "",
+          "badge": null
+        }
+      ],
       "faq": [
         {
           "question": "واش التركيب كيحتاج الحفر فالأرضية أو الحائط؟",
@@ -79,7 +88,33 @@
           "answer": "الدفع عند الاستلام بعد معاينة المنتج، والتوصيل سريع لجميع المدن المغربية."
         }
       ],
-      "footerText": ""
+      "footerText": "",
+      "killers": {
+        "bullets": [
+          "",
+          "",
+          ""
+        ],
+        "featuredReview": {
+          "text": "",
+          "image": "",
+          "author": ""
+        },
+        "stories": [],
+        "gridReviews": [],
+        "benefits": [],
+        "usageSteps": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "footerCta": {
+          "text": "",
+          "image": ""
+        },
+        "guarantees": []
+      }
     },
     "pricing": {
       "currency": "MAD",
@@ -92,8 +127,8 @@
           "originalPrice": 149,
           "quantity": 1,
           "badge": "عرض خاص",
-          "isPopular": true,
-          "image": ""
+          "image": "",
+          "isPopular": true
         }
       ]
     },
