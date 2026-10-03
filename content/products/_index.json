@@ -42,5 +42,16 @@
     "status": "published",
     "template": "classic",
     "updatedAt": "2026-10-01T21:42:35.352Z"
+  },
+  {
+    "id": "prod_filter_baloua",
+    "slug": "filter-baloua",
+    "title": "فلتر مانع انسداد البالوعة",
+    "subtitle": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
+    "heroImage": "",
+    "startingPrice": 29,
+    "status": "published",
+    "template": "classic",
+    "updatedAt": "2026-10-03T16:30:00.000Z"
   }
 ]

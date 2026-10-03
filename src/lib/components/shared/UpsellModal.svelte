@@ -29,6 +29,14 @@
 		onFinish: () => void;
 	} = $props();
 
+	// Canonical definition of Drain Filter (UPSELL #1)
+	const drainFilterProduct: UpsellProduct = {
+		slug: 'filter-baloua',
+		title: 'فلتر مانع انسداد البالوعة',
+		heroImage: '', // DO NOT add any image yet
+		startingPrice: 29
+	};
+
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
 	const childLockProduct: UpsellProduct = {
 		slug: 'qofl-al-aman',
@@ -37,31 +45,33 @@
 		startingPrice: 50
 	};
 
-	// Guaranteed sequence:
-	// 1. UPSELL #1 (existing first upsell product)
-	// 2. UPSELL #2: CHILD SAFETY LOCK — 50 DH
+	// Active upsell list contains EXACTLY TWO products:
+	// 1. UPSELL #1: فلتر مانع انسداد البالوعة — 29 DH
+	// 2. UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const activeProducts = $derived.by(() => {
-		const nonLock = products.filter(
-			(p) => p.slug !== 'qofl-al-aman' && !p.title.includes('قفل')
+		const foundFilter = products.find(
+			(p) => p.slug === 'filter-baloua' || p.title.includes('فلتر')
 		);
 		const foundLock = products.find(
 			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
-		) || childLockProduct;
+		);
 
-		const list: UpsellProduct[] = [];
-		// Upsell #1
-		if (nonLock[0]) {
-			list.push(nonLock[0]);
-		}
-		// Upsell #2: CHILD SAFETY LOCK — 50 DH
-		list.push({
-			...foundLock,
-			slug: foundLock.slug || 'qofl-al-aman',
-			title: 'قفل الأمان للأطفال',
-			heroImage: foundLock.heroImage || '/images/child-safety-lock.webp',
-			startingPrice: 50
-		});
-		return list;
+		return [
+			{
+				...drainFilterProduct,
+				...(foundFilter || {}),
+				title: 'فلتر مانع انسداد البالوعة',
+				startingPrice: 29,
+				heroImage: '' // MUST remain empty per instructions
+			},
+			{
+				...childLockProduct,
+				...(foundLock || {}),
+				title: 'قفل الأمان للأطفال',
+				startingPrice: 50,
+				heroImage: '/images/child-safety-lock.webp'
+			}
+		];
 	});
 
 	let currentStep = $state(0);
@@ -95,11 +105,13 @@
 	}
 
 	function priceOf(p: UpsellProduct) {
+		if (p.slug === 'filter-baloua' || p.title.includes('فلتر')) return 29;
 		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return 50;
 		return dealPrices[p.slug] ?? p.startingPrice ?? 0;
 	}
 
 	function hasDeal(p: UpsellProduct) {
+		if (p.slug === 'filter-baloua' || p.title.includes('فلتر')) return (p.startingPrice || 0) > 29;
 		if (p.slug === 'qofl-al-aman' || p.title.includes('قفل')) return (p.startingPrice || 0) > 50;
 		return dealPrices[p.slug] !== undefined && (p.startingPrice || 0) > dealPrices[p.slug];
 	}
@@ -130,7 +142,10 @@
 		if (accepting || done) return;
 		accepting = p.slug;
 		const finalPrice = priceOf(p);
-		const finalImage = p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? '/images/child-safety-lock.webp' : '');
+		const finalImage = p.slug === 'filter-baloua' || p.title.includes('فلتر')
+			? ''
+			: p.heroImage || (p.slug === 'qofl-al-aman' || p.title.includes('قفل') ? '/images/child-safety-lock.webp' : '');
+		const finalSku = p.slug === 'filter-baloua' ? 'filter-baloua' : p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku;
 		const payload = buildOrderPayload(
 			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
 			[
@@ -147,7 +162,7 @@
 			],
 			{
 				productTitle: p.title,
-				sku: p.slug === 'qofl-al-aman' ? 'child-safety-lock' : sku,
+				sku: finalSku,
 				currency,
 				pageUrl: typeof window !== 'undefined' ? window.location.href : ''
 			},

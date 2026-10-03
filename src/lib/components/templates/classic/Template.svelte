@@ -59,37 +59,51 @@
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
+	// Canonical definition of Drain Filter (UPSELL #1)
+	const drainFilterProduct = {
+		slug: 'filter-baloua',
+		title: 'فلتر مانع انسداد البالوعة',
+		subtitle: 'فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.',
+		heroImage: '', // DO NOT add any image yet
+		startingPrice: 29
+	};
+
 	// Canonical definition of Child Safety Lock product (UPSELL #2)
 	const childLockProduct = {
 		slug: 'qofl-al-aman',
 		title: 'قفل الأمان للأطفال',
+		subtitle: 'حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات',
 		heroImage: '/images/child-safety-lock.webp',
 		startingPrice: 50
 	};
 
-	// Optional upsells in cart flow: Upsell #1 followed strictly by Upsell #2 (Child Safety Lock — 50 DH)
+	// Active upsell list contains EXACTLY TWO products:
+	// UPSELL #1: فلتر مانع انسداد البالوعة — 29 DH
+	// UPSELL #2: قفل الأمان للأطفال — 50 DH
 	const cartUpsells = $derived.by(() => {
-		const nonLock = others.filter(
-			(p) => p.slug !== 'qofl-al-aman' && !p.title.includes('قفل')
+		const foundFilter = others.find(
+			(p) => p.slug === 'filter-baloua' || p.title.includes('فلتر')
 		);
 		const foundLock = others.find(
 			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
-		) || childLockProduct;
+		);
 
-		const list: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
-		// Upsell #1
-		if (nonLock[0]) {
-			list.push(nonLock[0]);
-		}
-		// Upsell #2: CHILD SAFETY LOCK — 50 DH
-		list.push({
-			...foundLock,
-			slug: foundLock.slug || 'qofl-al-aman',
-			title: 'قفل الأمان للأطفال',
-			heroImage: foundLock.heroImage || '/images/child-safety-lock.webp',
-			startingPrice: 50
-		});
-		return list;
+		return [
+			{
+				...drainFilterProduct,
+				...(foundFilter || {}),
+				title: 'فلتر مانع انسداد البالوعة',
+				startingPrice: 29,
+				heroImage: '' // MUST remain empty per instructions
+			},
+			{
+				...childLockProduct,
+				...(foundLock || {}),
+				title: 'قفل الأمان للأطفال',
+				startingPrice: 50,
+				heroImage: '/images/child-safety-lock.webp'
+			}
+		];
 	});
 
 	function addSelectedToCart() {

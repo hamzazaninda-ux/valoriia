@@ -1,0 +1,53 @@
+{
+  "id": "prod_filter_baloua",
+  "slug": "filter-baloua",
+  "status": "published",
+  "createdAt": "2026-10-03T16:30:00.000Z",
+  "updatedAt": "2026-10-03T16:30:00.000Z",
+  "template": "classic",
+  "published": {
+    "content": {
+      "heroImage": "",
+      "title": "فلتر مانع انسداد البالوعة",
+      "subtitle": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
+      "rating": 4.9,
+      "reviewCount": 98,
+      "gallery": [],
+      "faq": [],
+      "footerText": ""
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "فلتر مانع انسداد البالوعة",
+          "subtitle": "فلتر صغير وعملي",
+          "price": 29,
+          "originalPrice": 49,
+          "quantity": 1,
+          "badge": "عرض خاص",
+          "isPopular": true,
+          "image": ""
+        }
+      ]
+    },
+    "order": {
+      "sku": "filter-baloua",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": ""
+    },
+    "seo": {
+      "metaTitle": "فلتر مانع انسداد البالوعة | Valoriia",
+      "metaDescription": "فلتر صغير وعملي كيركب بسهولة فالبالوعة، كيساعد على منع تجمع الأوساخ والشعر داخل الصرف ويحافظ على البالوعة نظيفة.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}
