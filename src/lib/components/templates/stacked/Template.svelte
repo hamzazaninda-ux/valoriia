@@ -273,7 +273,7 @@
 											<span class="block whitespace-nowrap text-base sm:text-lg font-black text-gray-900">dh {offer.price.toFixed(2)}</span>
 										</span>
 									</label>
-								{#else}
+								{:else}
 									<label
 										class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white px-3 py-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-neutral-900 shadow-sm' : 'border-neutral-200'}"
 									>
