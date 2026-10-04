@@ -2,14 +2,41 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import type { LayoutData } from './$types';
+	import { afterNavigate } from '$app/navigation';
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
 
 	const tracking = $derived(data?.settings?.tracking);
+
+	let isFirstNav = true;
+	afterNavigate(() => {
+		if (isFirstNav) {
+			isFirstNav = false;
+			return;
+		}
+		if (typeof window !== 'undefined' && (window as any).snaptr && tracking?.snapchatPixelId) {
+			(window as any).snaptr('track', 'PAGE_VIEW');
+		}
+	});
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+
+	<!-- Snapchat Pixel Code -->
+	{#if tracking?.snapchatPixelId}
+		<script>
+			(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+			{a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+			a.queue=[];var s='script';var r=t.createElement(s);r.async=!0;
+			r.src=n;var u=t.getElementsByTagName(s)[0];
+			u.parentNode.insertBefore(r,u);})(window,document,
+			'https://sc-static.net/scevent.min.js');
+
+			snaptr('init', '{tracking.snapchatPixelId}');
+			snaptr('track', 'PAGE_VIEW');
+		</script>
+	{/if}
 
 	<!-- Meta / Facebook Pixel Code -->
 	{#if tracking?.facebookPixelId}

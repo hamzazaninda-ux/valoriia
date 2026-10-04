@@ -79,7 +79,7 @@
 			offerId: 0,
 			offerTitle: 'العرض الأساسي'
 		});
-		trackAddToCart(addedPrice, addedTitle, currency);
+		trackAddToCart(addedPrice, addedTitle, 'MAD', addedTitle, 1);
 	}
 </script>
 

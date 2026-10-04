@@ -61,7 +61,7 @@
 			'cart'
 		);
 
-		trackPurchase(payload.price as number, productTitle);
+		trackPurchase(payload.price as number, productTitle, payload.orderId as string);
 
 		const completed: CompletedOrder = {
 			orderId: payload.orderId as string,

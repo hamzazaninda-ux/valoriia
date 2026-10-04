@@ -38,6 +38,9 @@
 		if (stored) {
 			try {
 				order = JSON.parse(stored);
+				if (order && order.orderId && order.price) {
+					trackPurchase(order.price, order.productTitle || 'طقم التنظيم المنزلي', order.orderId);
+				}
 			} catch (e) {
 				console.error('Error parsing stored order:', e);
 			}
@@ -91,7 +94,7 @@
 			order.orderId
 		);
 
-		trackPurchase(99, 'مسمار لاصق جداري — 20 قطعة');
+		trackPurchase(99, 'مسمار لاصق جداري — 20 قطعة', `${order.orderId}-U2`);
 
 		try {
 			await sendOrder(payload as Record<string, unknown>, targetSheetsUrl);

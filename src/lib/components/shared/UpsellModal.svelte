@@ -138,7 +138,7 @@
 			'upsell',
 			order.orderId
 		);
-		trackPurchase(finalPrice, p.title);
+		trackPurchase(finalPrice, p.title, `${order.orderId}-U1`);
 		sendOrder(payload as Record<string, unknown>, sheetsUrl)
 			.then(() => {
 				try {

@@ -160,7 +160,13 @@
 			offerId: (activeOffer as ProductOffer).id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
-		trackAddToCart(activeOffer.price || 0, content.title || 'منتج', pricing.currency || 'MAD');
+		trackAddToCart(
+			activeOffer.price || 0,
+			content.title || 'طقم التنظيم المنزلي',
+			'MAD',
+			activeOffer.title || content.title || 'طقم التنظيم المنزلي',
+			1
+		);
 		cartUi.openDrawer();
 	}
 

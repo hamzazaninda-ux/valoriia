@@ -66,16 +66,23 @@ export function buildOrderPayload(
 let lastAddToCartTime = 0;
 let lastAddToCartKey = '';
 
-export function trackAddToCart(price: number, productTitle: string, currency: string = 'MAD') {
+export function trackAddToCart(
+	price: number,
+	productTitle: string,
+	currency: string = 'MAD',
+	itemCategory?: string,
+	numberItems: number = 1
+) {
 	if (typeof window === 'undefined') return;
 
-	const cur = currency === 'درهم' || !currency ? 'MAD' : currency;
+	const cur = 'MAD';
 	const numPrice = Number(price) || 0;
 	const title = (productTitle || '').trim();
+	const category = (itemCategory || title).trim();
 
 	// Deduplication guard: prevent duplicate events within 500ms for identical item
 	const now = Date.now();
-	const key = `${title}:${numPrice}`;
+	const key = `${category}:${numPrice}`;
 	if (now - lastAddToCartTime < 500 && lastAddToCartKey === key) {
 		return;
 	}
@@ -114,9 +121,10 @@ export function trackAddToCart(price: number, productTitle: string, currency: st
 	try {
 		if (typeof (window as any).snaptr === 'function') {
 			(window as any).snaptr('track', 'ADD_CART', {
-				item_category: title,
 				price: numPrice,
-				currency: cur
+				currency: 'MAD',
+				item_category: category,
+				number_items: numberItems || 1
 			});
 		}
 	} catch (err) {
@@ -133,7 +141,7 @@ export function trackAddToCart(price: number, productTitle: string, currency: st
 					{
 						item_name: title,
 						price: numPrice,
-						quantity: 1
+						quantity: numberItems || 1
 					}
 				]
 			});
@@ -143,37 +151,72 @@ export function trackAddToCart(price: number, productTitle: string, currency: st
 	}
 }
 
-export function trackPurchase(price: number, productTitle: string) {
+export function trackPurchase(price: number, productTitle: string, transactionId?: string) {
 	if (typeof window === 'undefined') return;
 	const numPrice = Number(price) || 0;
 	const title = (productTitle || '').trim();
+	const txnId = (transactionId || `ORD-${Date.now()}`).trim();
 
+	// Deduplication Guard: prevent duplicate Purchase events (especially on page reload or double firing)
+	const storageKey = `snap_purchased_${txnId}`;
 	try {
-		if ((window as any).fbq) {
-			(window as any).fbq('track', 'Purchase', { value: numPrice, currency: 'MAD', content_name: title });
+		if (sessionStorage.getItem(storageKey)) {
+			return; // Already tracked for this transaction
 		}
-	} catch (err) {
-		console.warn('[Pixel] Meta Purchase error:', err);
+		sessionStorage.setItem(storageKey, '1');
+	} catch {
+		// sessionStorage fallback
 	}
+
+	// Snapchat Pixel
 	try {
-		if ((window as any).ttq) {
-			(window as any).ttq.track('CompletePayment', { value: numPrice, currency: 'MAD', content_name: title });
-		}
-	} catch (err) {
-		console.warn('[Pixel] TikTok Purchase error:', err);
-	}
-	try {
-		if ((window as any).snaptr) {
-			(window as any).snaptr('track', 'PURCHASE', { price: numPrice, currency: 'MAD', item_category: title });
+		if (typeof (window as any).snaptr === 'function') {
+			(window as any).snaptr('track', 'PURCHASE', {
+				price: numPrice,
+				currency: 'MAD',
+				transaction_id: txnId,
+				item_category: title
+			});
 		}
 	} catch (err) {
 		console.warn('[Pixel] Snap Purchase error:', err);
 	}
+
+	// Meta / Facebook Pixel
+	try {
+		if ((window as any).fbq) {
+			(window as any).fbq('track', 'Purchase', {
+				value: numPrice,
+				currency: 'MAD',
+				content_name: title,
+				order_id: txnId
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] Meta Purchase error:', err);
+	}
+
+	// TikTok Pixel
+	try {
+		if ((window as any).ttq) {
+			(window as any).ttq.track('CompletePayment', {
+				value: numPrice,
+				currency: 'MAD',
+				content_name: title,
+				order_id: txnId
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] TikTok Purchase error:', err);
+	}
+
+	// Google Analytics / GA4 / Google Ads (gtag)
 	try {
 		if ((window as any).gtag) {
 			(window as any).gtag('event', 'purchase', {
 				currency: 'MAD',
 				value: numPrice,
+				transaction_id: txnId,
 				items: [{ item_name: title, price: numPrice, quantity: 1 }]
 			});
 		}
