@@ -544,7 +544,7 @@
 	<TrustSection
 		whatsappNumber={waNumber || '212626558375'}
 		brandName={brand.name || 'Lhamza Shop'}
-		supportHours={brand.supportHours || 'طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً'}
+		supportHours="طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً"
 	/>
 
 	<!-- 9. Footer -->
