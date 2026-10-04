@@ -214,70 +214,46 @@
 		onOpenCart={() => (drawerOpen = true)}
 	/>
 
-	<!-- 3. Hero: short photo banner (uploaded from settings) with overlay copy -->
-	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-3 md:pt-10">
-		{#if brand.heroImage}
-			<div class="relative overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] rounded-3xl mx-3 sm:mx-0">
-				<div class="aspect-[16/10] w-full md:aspect-auto md:min-h-[540px]">
-					<img
-						src={brand.heroImage}
-						alt={brand.name}
-						class="absolute inset-0 h-full w-full object-cover"
-						loading="eager"
-					/>
-				</div>
-				<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" aria-hidden="true"></div>
-				<div class="absolute inset-x-0 bottom-0 px-4 py-3 sm:p-5 pb-5 md:p-12">
-					<div class="mx-auto max-w-2xl space-y-3 text-center md:space-y-4">
-						<h1 class="font-display text-[24px] sm:text-[26px] font-bold leading-[1.4] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
-							رتّب دارك بلا عناء
-						</h1>
-						<p class="mx-auto max-w-md text-[13px] leading-relaxed text-white/85 md:text-base">
-							منتجات التنظيم والنظافة المنزلية — التوصيل لجميع المدن والخلاص ملي توصلك السلعة.
-						</p>
-						<div class="flex flex-col gap-2.5 pt-1 sm:flex-row sm:justify-center">
-							<a
-								href="#bestsellers"
-								class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#C99738] px-7 font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-[#b88528] active:scale-[0.98]"
-							>
-								تسوّق دابا
-							</a>
-							<a
-								href="#why"
-								class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-7 font-bold text-white backdrop-blur transition-all duration-300 hover:bg-white/20 active:scale-[0.98]"
-							>
-								شوف العرض
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		{:else}
-			<div class="rounded-3xl border border-stone-200/70 bg-white px-4 py-3 mx-3 text-center shadow-sm md:p-12 md:mx-0">
-				<div class="mx-auto max-w-xl space-y-3">
-					<h1 class="font-display text-2xl font-bold leading-[1.5] text-[#1E293B] md:text-5xl md:leading-[1.4]">
-						رتّب دارك بلا عناء
+	<!-- 3. Full-width Visual Branded Hero Banner -->
+	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-2 md:pt-4">
+		<div class="relative w-full aspect-[16/10] sm:aspect-[21/9] min-h-[300px] sm:min-h-[380px] overflow-hidden rounded-2xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)] mx-auto my-2">
+			<!-- Background image with fallback -->
+			<img
+				src={brand.heroImage || '/images/hero-banner.webp'}
+				alt="رتّب دارك بأناقة وراحة بال - Lhamza Shop"
+				class="absolute inset-0 h-full w-full object-cover"
+				loading="eager"
+				onerror={(e) => {
+					(e.currentTarget as HTMLImageElement).src =
+						'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1600&q=80';
+				}}
+			/>
+
+			<!-- Dark Overlay for text contrast -->
+			<div class="absolute inset-0 bg-black/35 bg-gradient-to-t from-black/80 via-black/35 to-black/20" aria-hidden="true"></div>
+
+			<!-- Centered Content -->
+			<div class="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+				<div class="mx-auto max-w-2xl space-y-2.5 sm:space-y-3.5 px-2">
+					<h1 class="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold leading-[1.3] text-white drop-shadow-md">
+						رتّب دارك بأناقة وراحة بال
 					</h1>
-					<p class="text-[13px] leading-relaxed text-stone-500 md:text-base">
-						منتجات التنظيم والنظافة المنزلية — التوصيل لجميع المدن والخلاص ملي توصلك السلعة.
+					<p class="mx-auto max-w-lg text-xs sm:text-base md:text-lg font-medium leading-relaxed text-white/90 drop-shadow">
+						حلول ذكية للتنظيم المنزلي بدون حفر وبدون عناء
 					</p>
-					<div class="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-center">
+					<div class="pt-2 sm:pt-3">
 						<a
 							href="#bestsellers"
-							class="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#1B4332] px-7 font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-[#143326] active:scale-[0.98]"
+							class="inline-flex min-h-11 sm:min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-6 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
 						>
-							تسوّق دابا
-						</a>
-						<a
-							href="#why"
-							class="inline-flex min-h-12 items-center justify-center rounded-2xl border border-stone-300 bg-white px-7 font-bold text-[#1E293B] transition-all duration-300 hover:bg-stone-50 active:scale-[0.98]"
-						>
-							شوف العرض
+							<span>اكتشف العروض الآن</span>
+							<span aria-hidden="true">←</span>
 						</a>
 					</div>
 				</div>
 			</div>
-		{/if}
+		</div>
+
 		<!-- Trust Badges Bar: px-4 py-3 mx-3 on mobile -->
 		<div class="mx-3 sm:mx-auto mt-4 sm:mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-2.5 sm:gap-6 text-xs sm:text-sm font-bold text-[#1E293B] bg-white border border-stone-200/70 rounded-2xl px-4 py-3 shadow-2xs" dir="rtl">
 			<span class="inline-flex items-center gap-2">
