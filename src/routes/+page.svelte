@@ -144,12 +144,6 @@
 		window.open(`${waBase}?text=${encodeURIComponent(text)}`, '_blank');
 	}
 
-	const marqueeItems = $derived([
-		`التوصيل سريع لجميع المدن المغربية`,
-		`الدفع عند الاستلام`,
-		`المنظم + الرشاش فابور`,
-		`أكثر من 1000 زبون راضٍ`
-	]);
 </script>
 
 <svelte:head>
@@ -189,22 +183,9 @@
 {/snippet}
 
 <div id="top" class="min-h-screen bg-white font-body text-neutral-800 pb-[88px] md:pb-0" dir="rtl">
-	<!-- 1. Announcement marquee -->
-	<div class="overflow-hidden bg-neutral-950 py-2 text-white" aria-hidden="true">
-		<div class="animate-store-marquee flex w-max items-center gap-8 pe-8">
-			{#each [0, 1] as dup}
-				<div class="flex items-center gap-8" aria-hidden={dup === 1}>
-					{#each marqueeItems as item}
-						<span class="flex items-center gap-8 whitespace-nowrap text-xs font-semibold">
-							{item}
-							<svg class="h-2 w-2 text-amber-400" viewBox="0 0 8 8" fill="currentColor">
-								<rect x="1.5" y="1.5" width="5" height="5" rx="1" transform="rotate(45 4 4)" />
-							</svg>
-						</span>
-					{/each}
-				</div>
-			{/each}
-		</div>
+	<!-- 1. Single Elegant Top Announcement Banner -->
+	<div class="py-2.5 px-4 text-center text-xs sm:text-sm font-bold text-white shadow-2xs" style="background-color: #1B4332;" dir="rtl">
+		<span>🚚 التوصيل مجاني وسريع لجميع المدن المغربية • الدفع نقداً عند استلام ومعاينة طلبك</span>
 	</div>
 
 	<!-- 2. Sticky header: icons right, centered logo, hamburger left (mobile) -->
@@ -250,9 +231,9 @@
 				</button>
 			</div>
 
-			<a href="#top" class="absolute left-1/2 flex -translate-x-1/2 items-center gap-2" aria-label={brand.name || 'Lhamza Shop'}>
-				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-950 font-display text-lg font-bold text-amber-400">L</span>
-				<span class="font-display text-xl font-bold text-neutral-950">{brand.name || 'Lhamza Shop'}</span>
+			<a href="#top" class="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 group" aria-label={brand.name || 'Lhamza Shop'}>
+				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1B4332] font-display text-lg font-black text-amber-400 shadow-xs">L</span>
+				<span class="font-display text-xl sm:text-2xl font-black tracking-tight text-neutral-950 transition-colors group-hover:text-emerald-950">{brand.name || 'Lhamza Shop'}</span>
 			</a>
 
 			<div class="flex items-center">
@@ -272,17 +253,16 @@
 		<nav class="hidden border-t border-neutral-100 md:block" aria-label="التنقل الرئيسي">
 			<div class="mx-auto flex max-w-5xl items-center justify-center gap-8 px-4 py-2.5 text-sm font-semibold text-neutral-600">
 				<a href="#top" class="transition-colors hover:text-neutral-900">الرئيسية</a>
-				<a href="#collections" class="transition-colors hover:text-neutral-900">المجموعات</a>
-				<a href="#bestsellers" class="transition-colors hover:text-neutral-900">الأكثر مبيعاً</a>
-				<a href="#why" class="transition-colors hover:text-neutral-900">علاش حنا</a>
-				<a href="#contact" class="transition-colors hover:text-neutral-900">اتصل بنا</a>
+				<a href="#bestsellers" class="transition-colors hover:text-neutral-900">المنتجات</a>
+				<a href="#offer" class="transition-colors hover:text-neutral-900">عروض خاصة</a>
+				<a href="#contact" class="transition-colors hover:text-neutral-900">تواصل معنا</a>
 			</div>
 		</nav>
 
 		{#if menuOpen}
 			<nav class="border-t border-neutral-100 bg-white px-4 py-3 md:hidden">
 				<div class="grid gap-1 text-sm font-semibold text-neutral-700">
-					{#each [['الرئيسية', '#top'], ['المجموعات', '#collections'], ['الأكثر مبيعاً', '#bestsellers'], ['علاش حنا', '#why'], ['اتصل بنا', '#contact']] as [label, href]}
+					{#each [['الرئيسية', '#top'], ['المنتجات', '#bestsellers'], ['عروض خاصة', '#offer'], ['تواصل معنا', '#contact']] as [label, href]}
 						<a
 							{href}
 							onclick={() => (menuOpen = false)}
@@ -359,24 +339,21 @@
 				</div>
 			</div>
 		{/if}
-		<div class="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-neutral-600">
-			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-				</svg>
-				خلص ملي توصلك
+		<!-- Trust Badges Bar -->
+		<div class="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-bold text-neutral-800 bg-neutral-50/80 border border-neutral-200/80 rounded-2xl py-3 px-5 shadow-2xs" dir="rtl">
+			<span class="inline-flex items-center gap-2">
+				<span class="text-base sm:text-lg">🛡️</span>
+				<span>ضمان جودة 14 يوماً</span>
 			</span>
-			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-				</svg>
-				توصيل لجميع المدن
+			<span class="text-neutral-300 hidden sm:inline" aria-hidden="true">•</span>
+			<span class="inline-flex items-center gap-2">
+				<span class="text-base sm:text-lg">📦</span>
+				<span>حق المعاينة قبل الدفع</span>
 			</span>
-			<span class="inline-flex items-center gap-1.5">
-				<svg class="h-4 w-4 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-				</svg>
-				+1000 زبون راضٍ
+			<span class="text-neutral-300 hidden sm:inline" aria-hidden="true">•</span>
+			<span class="inline-flex items-center gap-2">
+				<span class="text-base sm:text-lg">⚡</span>
+				<span>شحن سريع لباب الدار</span>
 			</span>
 		</div>
 	</section>

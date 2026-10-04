@@ -245,7 +245,7 @@
 	<!-- Store Header: Logo / Brand Name -->
 	<header class="bg-white/95 backdrop-blur-sm border-b border-neutral-200/70 py-3 px-4 flex items-center justify-between sticky top-0 z-30 shadow-2xs" dir="rtl">
 		<div class="flex items-center gap-2">
-			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-950 font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
+			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B4332] font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
 			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name || 'Lhamza Shop'}</span>
 		</div>
 		<a
@@ -258,10 +258,9 @@
 		</a>
 	</header>
 
-	<!-- Trust bar -->
-	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
-		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-		<span>{settings?.commerce?.freeShippingText || 'توصيل مجاني لجميع المدن'} • {settings?.commerce?.paymentMethod || 'الدفع عند الاستلام'}</span>
+	<!-- Unified Announcement Banner -->
+	<div class="text-white text-center py-2.5 px-4 text-xs sm:text-sm font-bold shadow-2xs z-10 flex items-center justify-center gap-2" dir="rtl" style="background-color: #1B4332;">
+		<span>🚚 التوصيل مجاني وسريع لجميع المدن المغربية • الدفع نقداً عند استلام ومعاينة طلبك</span>
 	</div>
 
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
