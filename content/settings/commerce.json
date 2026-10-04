@@ -3,5 +3,6 @@
   "currencySymbol": "DH",
   "freeShippingText": "شامل لمصاريف الشحن",
   "paymentMethod": "الدفع عند الإستلام",
-  "googleSheetsUrl": ""
+  "googleSheetsUrl": "",
+  "postOrderUpsellImage": ""
 }
