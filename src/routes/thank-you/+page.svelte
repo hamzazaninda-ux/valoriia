@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as Card from '$lib/components/ui/card/index.js';
 	import { buildOrderPayload, sendOrder, trackPurchase } from '$lib/utils/checkout';
 
-	let { data }: { data?: { sheetsUrl?: string } } = $props();
+	let { data }: { data?: { sheetsUrl?: string; whatsappNumber?: string } } = $props();
 
 	interface OrderData {
 		orderId: string;
@@ -21,8 +19,26 @@
 
 	// Order data state
 	let order = $state<OrderData | null>(null);
+	let copied = $state(false);
+
+	// Phone edit state
+	let isEditingPhone = $state(false);
+	let newPhone = $state('');
+	let phoneUpdateSuccess = $state(false);
+
+	// Time check: daytime (9:00 - 21:00) vs night
+	let isDaytime = $state(true);
+
+	// Post-order 1-click upsell state
+	let upsellStatus = $state<'idle' | 'loading' | 'added' | 'error'>('idle');
+	let upsellAdded = $state(false);
+
+	const currentTotal = $derived((order?.price || 349) + (upsellAdded ? 35 : 0));
 
 	onMount(async () => {
+		const hour = new Date().getHours();
+		isDaytime = hour >= 9 && hour < 21;
+
 		const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('latestOrder') : null;
 		if (stored) {
 			try {
@@ -32,8 +48,19 @@
 			}
 		}
 
-		const orderId = (order as any)?.id || order?.orderId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('orderId') : null) || ('ORD-' + Date.now());
-		const totalPrice = Number((order as any)?.total || order?.price || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('total') : null) || 349);
+		const orderId =
+			(order as any)?.id ||
+			order?.orderId ||
+			(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('orderId') : null) ||
+			'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
+		const totalPrice = Number(
+			(order as any)?.total ||
+			order?.price ||
+			(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('total') : null) ||
+			349
+		);
+
 		const trackedKey = 'snap_tracked_purchase_' + orderId;
 
 		if (!order) {
@@ -44,8 +71,13 @@
 				address: 'المغرب',
 				date: new Date().toLocaleDateString('ar-MA'),
 				price: totalPrice,
-				productTitle: 'طقم التنظيم المنزلي + هدية'
+				productTitle: 'باك الحمام الذكي'
 			};
+		}
+
+		// Ensure orderId format
+		if (order && !order.orderId) {
+			order.orderId = String(orderId);
 		}
 
 		const fireSnapPurchase = () => {
@@ -67,43 +99,88 @@
 			setTimeout(fireSnapPurchase, 1000);
 		}
 
-		trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي', String(orderId));
+		trackPurchase(totalPrice, order.productTitle || 'باك الحمام الذكي', String(orderId));
 	});
 
-	// Function to clear order and go home manually when user clicks button
-	function handleBackHome() {
-		localStorage.removeItem('latestOrder');
-		window.location.href = '/';
+	function copyOrderId() {
+		if (!order?.orderId) return;
+		if (typeof navigator !== 'undefined' && navigator.clipboard) {
+			navigator.clipboard.writeText(order.orderId).then(() => {
+				copied = true;
+				setTimeout(() => { copied = false; }, 2500);
+			}).catch(() => {});
+		}
 	}
 
-	// Post-order offer state (مسمار لاصق جداري — 20 قطعة بـ 99 DH)
-	let offerStatus = $state<'idle' | 'loading' | 'added' | 'error'>('idle');
+	function startEditPhone() {
+		newPhone = order?.phoneNumber || '';
+		isEditingPhone = true;
+		phoneUpdateSuccess = false;
+	}
 
-	async function handleAddOffer() {
-		if (!order || offerStatus === 'loading' || offerStatus === 'added') return;
-		offerStatus = 'loading';
+	async function savePhone() {
+		if (!newPhone.trim() || !order) return;
+		order.phoneNumber = newPhone.trim();
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('latestOrder', JSON.stringify(order));
+		}
+		isEditingPhone = false;
+		phoneUpdateSuccess = true;
+		setTimeout(() => { phoneUpdateSuccess = false; }, 4000);
+
+		// Send phone update to Google Sheets
+		try {
+			const fallbackSheetsUrl =
+				'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
+			const targetSheetsUrl = data?.sheetsUrl || fallbackSheetsUrl;
+
+			const payload = buildOrderPayload(
+				{ fullName: order.fullName, phoneNumber: order.phoneNumber, city: order.address },
+				[{ key: 'phone-update', slug: 'phone-update', title: 'تعديل رقم الهاتف', price: 0, offerId: 0, qty: 1 }],
+				{ productTitle: 'تعديل رقم الهاتف', sku: 'PHONE-UPDATE', currency: 'DH', pageUrl: typeof window !== 'undefined' ? window.location.href : '' },
+				'update',
+				order.orderId
+			);
+			sendOrder(payload as Record<string, unknown>, targetSheetsUrl).catch(() => {});
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+	const whatsappUrl = $derived.by(() => {
+		const rawNum = data?.whatsappNumber || '';
+		const cleanNum = rawNum.replace(/[^0-9]/g, '');
+		const text = `سلام، طلبت باك الحمام الذكي ورقم طلبي هو ${order?.orderId || ''} وبغيت نأكد طلبي دابا للتوصيل السريع.`;
+		return cleanNum
+			? `https://wa.me/${cleanNum}?text=${encodeURIComponent(text)}`
+			: `https://wa.me/?text=${encodeURIComponent(text)}`;
+	});
+
+	async function handleAddUpsell() {
+		if (!order || upsellStatus === 'loading' || upsellStatus === 'added') return;
+		upsellStatus = 'loading';
 
 		const fallbackSheetsUrl =
 			'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
 		const targetSheetsUrl = data?.sheetsUrl || fallbackSheetsUrl;
 
 		const payload = buildOrderPayload(
-			{ fullName: order.fullName, phoneNumber: order.phoneNumber },
+			{ fullName: order.fullName, phoneNumber: order.phoneNumber, city: order.address },
 			[
 				{
-					key: 'mismar-lasik-20pcs',
-					slug: 'mismar-lasik',
-					title: 'مسمار لاصق جداري — 20 قطعة',
-					image: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp',
-					price: 99,
+					key: 'samam-tasrif-upsell',
+					slug: 'samam-tasrif',
+					title: 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات 🪳',
+					image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png',
+					price: 35,
 					offerId: 0,
-					offerTitle: 'عرض ما بعد الطلب: 20 قطعة',
+					offerTitle: 'عرض ما بعد الطلب: صمام تصريف بـ 35 DH',
 					qty: 1
 				}
 			],
 			{
-				productTitle: 'مسمار لاصق جداري — 20 قطعة',
-				sku: 'MISMAR-LASIK-20PCS',
+				productTitle: 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات',
+				sku: 'SAMAM-TASRIF-35DH',
 				currency: 'DH',
 				pageUrl: typeof window !== 'undefined' ? window.location.href : ''
 			},
@@ -111,267 +188,427 @@
 			order.orderId
 		);
 
-		trackPurchase(99, 'مسمار لاصق جداري — 20 قطعة', `${order.orderId}-U2`);
+		trackPurchase(35, 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات', `${order.orderId}-U1`);
 
 		try {
 			await sendOrder(payload as Record<string, unknown>, targetSheetsUrl);
 		} catch (e) {
-			console.error('Error submitting post-order offer:', e);
+			console.error('Error submitting post-order upsell:', e);
 		} finally {
-			offerStatus = 'added';
+			upsellAdded = true;
+			upsellStatus = 'added';
+			if (typeof localStorage !== 'undefined') {
+				const updated = { ...order, price: (order.price || 349) + 35 };
+				localStorage.setItem('latestOrder', JSON.stringify(updated));
+			}
 		}
+	}
+
+	function handleBackHome() {
+		localStorage.removeItem('latestOrder');
+		window.location.href = '/';
 	}
 </script>
 
 <svelte:head>
-	<title>شكراً لك! تم تسجيل طلبك بنجاح</title>
+	<title>تم تسجيل طلبك بنجاح | Valoriia</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<!-- Premium Direct Response Container -->
-<div class="max-w-xl mx-auto bg-background shadow-2xl min-h-screen flex flex-col justify-between border-x border-border/30 relative" dir="rtl">
+<!-- Premium High-Converting Container -->
+<div class="max-w-xl mx-auto bg-[#faf9f6] text-[#1c1917] shadow-2xl min-h-screen flex flex-col justify-between border-x border-neutral-200/60 relative" dir="rtl">
 	
-	<!-- Top Success Banner -->
-	<div class="bg-gradient-to-r from-emerald-600 to-green-600 text-white text-center py-2 px-4 text-xs font-bold shadow-sm">
-		تهانينا! لقد تأهلت للحصول على شحن مجاني وسريع لطلبك
+	<!-- Top Bar -->
+	<div class="bg-gradient-to-r from-emerald-700 to-green-700 text-white text-center py-2.5 px-4 text-xs font-black shadow-xs flex items-center justify-center gap-2">
+		<span class="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
+		<span>تهانينا! تم تأكيد حجز طلبك بنجاح والتوصيل مجاني 🚚</span>
 	</div>
 
-	<!-- Main Thank You Content -->
-	<main class="flex-1 px-5 py-8 flex flex-col items-center">
+	<!-- Main Content Area -->
+	<main class="flex-1 px-3 sm:px-5 py-6 sm:py-8 flex flex-col items-center">
 		
-		<!-- Animated Celebratory Checkmark Icon -->
-		<div class="relative flex items-center justify-center mb-6 mt-4">
-			<div class="absolute w-20 h-20 bg-green-500/10 rounded-full animate-ping duration-1000"></div>
-			<div class="absolute w-16 h-16 bg-green-500/20 rounded-full animate-pulse"></div>
-			<div class="relative w-12 h-12 bg-gradient-to-tr from-emerald-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-6 h-6 text-white">
+		<!-- 1. Header & Order Status -->
+		<div class="relative flex items-center justify-center mb-4 mt-2">
+			<div class="absolute w-20 h-20 bg-emerald-500/15 rounded-full animate-ping duration-1000"></div>
+			<div class="absolute w-16 h-16 bg-emerald-500/25 rounded-full animate-pulse"></div>
+			<div class="relative w-13 h-13 bg-gradient-to-tr from-emerald-600 to-green-600 rounded-full flex items-center justify-center shadow-lg text-white">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-7 h-7">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 				</svg>
 			</div>
 		</div>
 
-		<!-- Celebratory Headers -->
-		<h1 class="text-2xl sm:text-3xl font-extrabold text-foreground text-center mb-3">
-			تم تسجيل طلبك بنجاح!
+		<h1 class="text-xl sm:text-2xl font-black font-display text-neutral-900 text-center mb-1.5 leading-snug">
+			شكراً {order?.fullName || 'عميلنا العزيز'} — طلبك محجوز بنجاح!
 		</h1>
-		
-		<p class="text-sm sm:text-base text-muted-foreground text-center max-w-md mb-6 leading-relaxed px-2">
-			شكراً لثقتكم بمنتجاتنا. لقد تم استلام تفاصيل طلبكم بنجاح في نظامنا.
+		<p class="text-xs sm:text-sm text-neutral-600 text-center max-w-md mb-4 leading-relaxed">
+			شكراً لثقتك بـ Valoriia. تفاصيل طلبك مسجلة في نظامنا وجاهزة للمعالجة.
 		</p>
 
-		<!-- Phone Confirmation Alert Box -->
-		<div class="w-full bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4.5 mb-8 text-right relative overflow-hidden shadow-xs" style="font-family: 'El Messiri', sans-serif;">
+		<!-- Order ID Badge with 1-click Copy -->
+		<div class="inline-flex items-center gap-2 bg-white border border-neutral-200 rounded-xl px-3.5 py-1.5 shadow-2xs mb-6 text-xs sm:text-sm">
+			<span class="text-neutral-500 font-medium">رقم الطلب:</span>
+			<span class="font-mono font-black text-emerald-800 tracking-wider">{order?.orderId || 'ORD-000000'}</span>
+			<button
+				type="button"
+				onclick={copyOrderId}
+				class="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-md border border-emerald-200 transition-colors cursor-pointer"
+				title="نسخ رقم الطلب"
+			>
+				{#if copied}
+					<span class="text-emerald-700 font-black">تم النسخ ✓</span>
+				{:else}
+					<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9 9 9 0 00-9 9" />
+					</svg>
+					<span>نسخ</span>
+				{/if}
+			</button>
+		</div>
+
+		<!-- 2. Call Schedule Notice Card -->
+		<div class="w-full rounded-2xl border border-emerald-200/90 bg-emerald-50/60 p-4 sm:p-5 mb-5 shadow-xs">
 			<div class="flex items-start gap-3">
-				<div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5 animate-pulse">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 animate-bounce">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.582c0-.71.474-1.356 1.185-1.444L7.5 4.772c.596-.073 1.186.235 1.41.779l1.64 4.002a1.502 1.502 0 0 1-.32 1.586l-1.897 1.897m0 0a15.023 15.023 0 0 0 4.757 4.757l1.897-1.897a1.502 1.502 0 0 1 1.586-.32l4.002 1.64c.544.224.852.814.779 1.41l-.366 2.985c-.088.711-.734 1.185-1.444 1.185C11.127 21 2.25 12.127 2.25 1.75c0-.71.474-1.356 1.185-1.444L6.582 2.25" />
+				<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100/80 text-emerald-800 mt-0.5 border border-emerald-200">
+					<svg class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.582c0-.71.474-1.356 1.185-1.444L7.5 4.772c.596-.073 1.186.235 1.41.779l1.64 4.002a1.502 1.502 0 01-.32 1.586l-1.897 1.897m0 0a15.023 15.023 0 004.757 4.757l1.897-1.897a1.502 1.502 0 011.586-.32l4.002 1.64c.544.224.852.814.779 1.41l-.366 2.985c-.088.711-.734 1.185-1.444 1.185C11.127 21 2.25 12.127 2.25 1.75c0-.71.474-1.356 1.185-1.444L6.582 2.25" />
 					</svg>
 				</div>
-				
-				<div class="space-y-1.5 flex-1">
-					<h4 class="text-sm font-extrabold text-amber-900 flex items-center gap-1">
-						<span>⚠️ تنبيه هام: مكالمة الهاتف ضرورية لتأكيد الطلب!</span>
-					</h4>
-					<p class="text-xs sm:text-sm text-amber-800 leading-relaxed font-semibold">
-						يرجى إبقاء هاتفكم مشغلاً وقريباً منكم لانتظار مكالمة فريق التأكيد (Confirmation) الخاص بنا:
+				<div class="flex-1">
+					<h3 class="text-sm sm:text-base font-extrabold text-neutral-900 leading-tight">
+						{#if isDaytime}
+							🟢 فريق التأكيد شغال دابا
+						{:else}
+							🌙 استراحة فريق العمل
+						{/if}
+					</h3>
+					<p class="text-xs sm:text-sm text-neutral-700 font-medium mt-1 leading-relaxed">
+						{#if isDaytime}
+							سنتصل بك خلال <strong>15 إلى 30 دقيقة</strong> لتأكيد العنوان والتوصيل.
+						{:else}
+							سنتصل بك غداً صباحاً ابتداءً من <strong>9:30 صباحاً</strong> لتأكيد العنوان.
+						{/if}
 					</p>
-					<div class="space-y-1.5 pt-1 text-xs sm:text-sm text-amber-800 font-bold">
-						<div class="flex items-center gap-2">
-							<span>📞</span>
-							<p><span>إذا طلبت الآن بالنهار:</span> سنتصل بك في <span class="underline">نفس اليوم</span> لتأكيد عنوان الشحن.</p>
+
+					<!-- Phone Display & Edit Action -->
+					<div class="mt-3 pt-2.5 border-t border-emerald-200/70 flex items-center justify-between gap-2 flex-wrap text-xs">
+						<div class="flex items-center gap-1.5 font-bold text-neutral-800">
+							<span class="text-neutral-500 font-normal">رقم هاتفك المسجل:</span>
+							<span dir="ltr" class="font-mono text-emerald-950 text-sm font-black">{order?.phoneNumber || 'غير مسجل'}</span>
 						</div>
-						<div class="flex items-center gap-2">
-							<span>🌅</span>
-							<p><span>إذا طلبت الآن بالليل:</span> سنتصل بك في <span class="underline">صباح الغد</span> مباشرة.</p>
-						</div>
+						{#if !isEditingPhone}
+							<button
+								type="button"
+								onclick={startEditPhone}
+								class="text-[11px] font-extrabold text-emerald-800 hover:text-emerald-900 underline cursor-pointer bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs"
+							>
+								تعديل الرقم ✏️
+							</button>
+						{/if}
 					</div>
-					<p class="text-[10px] sm:text-[11px] text-amber-700 font-extrabold border-t border-amber-200/50 pt-1.5 mt-1">
-						* شحنتك لن تخرج للتوصيل إلا بعد تأكيدها معك هاتفياً. شكراً لتفهمكم.
+
+					<!-- Inline Edit Phone Form -->
+					{#if isEditingPhone}
+						<div class="mt-3 p-2.5 bg-white rounded-xl border border-emerald-300 shadow-xs flex items-center gap-2">
+							<input
+								type="tel"
+								bind:value={newPhone}
+								dir="ltr"
+								placeholder="06/07 xxxxxxxx"
+								class="flex-1 px-3 py-1.5 text-xs sm:text-sm font-mono border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+							/>
+							<button
+								type="button"
+								onclick={savePhone}
+								class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 cursor-pointer"
+							>
+								حفظ
+							</button>
+							<button
+								type="button"
+								onclick={() => { isEditingPhone = false; }}
+								class="px-2 py-1.5 text-neutral-500 text-xs hover:text-neutral-700 cursor-pointer"
+							>
+								إلغاء
+							</button>
+						</div>
+					{/if}
+
+					{#if phoneUpdateSuccess}
+						<p class="mt-2 text-xs font-bold text-emerald-700 flex items-center gap-1">
+							<span>✓</span> تم تحديث رقم هاتفك بنجاح!
+						</p>
+					{/if}
+				</div>
+			</div>
+		</div>
+
+		<!-- 3. WhatsApp 1-Click Action Button (Pulsing Green) -->
+		<div class="w-full mb-5">
+			<a
+				href={whatsappUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="relative w-full py-4 px-4 font-black text-white bg-[#15803D] hover:bg-[#166534] active:scale-[0.98] rounded-2xl shadow-xl shadow-green-600/30 flex items-center justify-center gap-2.5 text-sm sm:text-base transition-all duration-300 no-underline text-center select-none cursor-pointer group overflow-hidden"
+			>
+				<span class="absolute inset-0 rounded-2xl bg-white/20 animate-ping opacity-75 duration-1000 pointer-events-none"></span>
+				<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="shrink-0 text-white animate-bounce">
+					<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z"/>
+				</svg>
+				<span>💬 أكد طلبك الآن مباشرة عبر الواتساب (بدون مكالمة)</span>
+			</a>
+		</div>
+
+		<!-- 4. Demystifying the Call (3 Points) -->
+		<div class="w-full rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
+			<h4 class="font-extrabold text-xs sm:text-sm text-neutral-900 mb-2.5">
+				شنو غايوقع فالمكالمة؟
+			</h4>
+			<div class="space-y-2 text-xs sm:text-sm text-neutral-700">
+				<div class="flex items-start gap-2.5">
+					<span class="text-base shrink-0 mt-0.5">⏱️</span>
+					<p class="leading-relaxed"><strong>مكالمة سريعة</strong> في أقل من دقيقة فقط للتأكد من تفاصيل العنوان والمدينة.</p>
+				</div>
+				<div class="flex items-start gap-2.5">
+					<span class="text-base shrink-0 mt-0.5">💵</span>
+					<p class="leading-relaxed"><strong>بدون أداء مسبق:</strong> لا نطلب أي بطاقة بنكية — الخلاص كاش عند الاستلام فقط.</p>
+				</div>
+				<div class="flex items-start gap-2.5">
+					<span class="text-base shrink-0 mt-0.5">🔄</span>
+					<p class="leading-relaxed"><strong>إلى كنتِ مشغول:</strong> إلى ما جاوبتيش، غانصيفطو ليك رسالة تذكيرية في الواتساب.</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 5. 1-Click Post-Purchase Upsell Engine -->
+		<div class="w-full rounded-3xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-50/60 to-white p-4 sm:p-5 mb-6 shadow-md relative overflow-hidden">
+			<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold mb-3 shadow-xs">
+				<span>✨</span>
+				<span>عرض خاص بالطلبية ديالك فقط (شحن مجاني مدمج)</span>
+			</div>
+
+			<div class="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4">
+				<div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0 rounded-2xl overflow-hidden bg-white border border-emerald-100 shadow-xs flex items-center justify-center">
+					<img
+						src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png"
+						alt="صمام سيليكون ذكي مانع لروائح المجاري والحشرات"
+						class="w-full h-full object-cover"
+						loading="lazy"
+					/>
+					<span class="absolute top-1.5 right-1.5 bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
+						-50%
+					</span>
+				</div>
+
+				<div class="flex-1 text-right w-full">
+					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug mb-1">
+						صمام سيليكون ذكي مانع لروائح المجاري والحشرات 🪳
+					</h4>
+					<p class="text-xs text-neutral-600 leading-relaxed mb-2.5">
+						تهنى نهائياً من الروائح الكريهة وحشرات المجاري، كيتركب فـ 5 ثواني فلافابو أو لافايونس.
 					</p>
+					<div class="flex items-baseline gap-2 mb-3">
+						<span class="text-xl sm:text-2xl font-black text-emerald-700 font-mono">35 DH</span>
+						<span class="text-xs text-neutral-400 line-through">70 DH</span>
+						<span class="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">وفّر 35 درهم</span>
+					</div>
+
+					{#if upsellAdded}
+						<div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3 text-center">
+							<p class="text-xs sm:text-sm font-extrabold text-emerald-800 flex items-center justify-center gap-1.5">
+								<span>✅</span>
+								<span>تمت الإضافة لطلبيتك بنجاح (+35 DH)</span>
+							</p>
+							<p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
+								المجموع الجديد: <strong class="font-mono">{currentTotal} DH</strong> مع شحن مجاني مدمج.
+							</p>
+						</div>
+					{:else}
+						<button
+							type="button"
+							onclick={handleAddUpsell}
+							disabled={upsellStatus === 'loading'}
+							class="w-full py-3 px-4 font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
+						>
+							{#if upsellStatus === 'loading'}
+								<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+								<span>جاري إضافة العرض لطلبيتك...</span>
+							{:else}
+								<span>+ زيدو لطلبيتي دابا بـ 35 DH (بدون مصاريف شحن إضافية)</span>
+							{/if}
+						</button>
+					{/if}
 				</div>
 			</div>
 		</div>
 
 		<!-- Order Summary Card -->
 		{#if order}
-			<Card.Root class="w-full border border-border/60 shadow-lg overflow-hidden rounded-2xl bg-card mb-8">
-				<div class="bg-muted/40 px-5 py-3 border-b border-border/40 flex justify-between items-center text-xs font-bold text-muted-foreground">
-					<span>تفاصيل الطلب الخاص بك</span>
-					<span class="bg-emerald-500/10 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-500/20">قيد المعالجة</span>
+			<div class="w-full rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
+				<div class="flex justify-between items-center text-xs font-bold text-neutral-500 pb-3 border-b border-neutral-100">
+					<span>تفاصيل الطلبية</span>
+					<span class="bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200/60">مؤكد بالحجز</span>
 				</div>
-				
-				<Card.Content class="p-5 space-y-4">
+				<div class="grid grid-cols-2 gap-y-2.5 text-xs sm:text-sm py-3 border-b border-neutral-100">
+					<span class="text-neutral-500">المنتج:</span>
+					<span class="text-neutral-900 font-extrabold text-left">{order.productTitle || 'باك الحمام الذكي'}</span>
 					
-					<!-- Details Grid -->
-					<div class="grid grid-cols-2 gap-y-3.5 gap-x-2 text-sm border-b border-border/40 pb-4">
-						{#if order.sku}
-							<span class="text-muted-foreground font-medium text-right">رمز المنتج (SKU):</span>
-							<span class="text-foreground font-extrabold text-left font-mono">{order.sku}</span>
-						{/if}
+					{#if order.offer}
+						<span class="text-neutral-500">العرض:</span>
+						<span class="text-neutral-900 font-bold text-left">{order.offer}</span>
+					{/if}
 
-						<span class="text-muted-foreground font-medium text-right">رقم الطلب:</span>
-						<span class="text-foreground font-extrabold text-left font-mono">{order.orderId}</span>
+					<span class="text-neutral-500">الاسم:</span>
+					<span class="text-neutral-900 font-bold text-left">{order.fullName}</span>
 
-						<span class="text-muted-foreground font-medium text-right">تاريخ الطلب:</span>
-						<span class="text-foreground font-bold text-left">{order.date}</span>
+					<span class="text-neutral-500">المدينة:</span>
+					<span class="text-neutral-900 font-bold text-left">{order.address}</span>
 
-						<span class="text-muted-foreground font-medium text-right">الاسم الكامل:</span>
-						<span class="text-foreground font-bold text-left">{order.fullName}</span>
+					<span class="text-neutral-500">مصاريف الشحن:</span>
+					<span class="text-emerald-700 font-bold text-left">مجاني (0 DH)</span>
 
-						<span class="text-muted-foreground font-medium text-right">رقم الهاتف:</span>
-						<span class="text-foreground font-bold text-left font-mono" dir="ltr">{order.phoneNumber}</span>
+					{#if upsellAdded}
+						<span class="text-emerald-700 font-bold">+ صمام المجاري الذكي:</span>
+						<span class="text-emerald-700 font-mono font-bold text-left">+35 DH</span>
+					{/if}
+				</div>
 
-						<span class="text-muted-foreground font-medium text-right">المدينة / Ville:</span>
-						<span class="text-foreground font-bold text-left">{order.address}</span>
-
-						{#if order.offer}
-							<span class="text-muted-foreground font-medium text-right">العرض المختار:</span>
-							<span class="text-foreground font-bold text-left text-xs">
-								{order.offer}
-							</span>
-						{/if}
-					</div>
-
-					<!-- Pricing Summary -->
-					<div class="pt-1.5 space-y-2 text-sm">
-						<div class="flex justify-between items-center">
-							<span class="text-muted-foreground font-medium">سعر الشحن:</span>
-							<span class="text-emerald-600 font-bold">مجاني (Free)</span>
-						</div>
-						<div class="flex justify-between items-center">
-							<span class="text-muted-foreground font-medium">طريقة الدفع:</span>
-							<span class="text-foreground font-bold">الدفع عند الاستلام</span>
-						</div>
-						<div class="flex justify-between items-center pt-2.5 border-t border-border/40">
-							<span class="text-base font-extrabold text-foreground">المجموع الإجمالي:</span>
-							<span class="text-lg font-extrabold text-emerald-600 font-mono">
-								{#if order.price}
-									{order.price} DH
-								{:else}
-									الدفع عند الاستلام
-								{/if}
-							</span>
-						</div>
-					</div>
-
-				</Card.Content>
-			</Card.Root>
-		{:else}
-			<div class="p-6 text-center text-gray-500 bg-gray-50 rounded-2xl border mb-6 w-full text-xs">
-				تم تسجيل طلبك وتأكيده بالنظام.
+				<div class="flex justify-between items-center pt-3">
+					<span class="font-extrabold text-sm sm:text-base text-neutral-900">المجموع المطلوب عند الاستلام:</span>
+					<span class="text-lg sm:text-xl font-black text-emerald-700 font-mono">{currentTotal} DH</span>
+				</div>
 			</div>
 		{/if}
 
-		<!-- Optional Post-Order Offer: مسمار لاصق جداري — 20 قطعة -->
-		<Card.Root class="w-full border border-border/80 shadow-lg overflow-hidden rounded-2xl bg-card mb-8">
-			<!-- Header Badge -->
-			<div class="bg-gradient-to-r from-emerald-600 to-green-600 px-4 py-2.5 flex items-center justify-between text-white text-xs font-bold">
-				<span class="flex items-center gap-1.5">
-					<span>🎁</span>
-					<span>عرض حصري إضافي لطلبك الحالي</span>
-				</span>
-				<span class="bg-white/20 px-2 py-0.5 rounded text-[11px] font-extrabold">توصيل مجاني مع طلبك</span>
-			</div>
-
-			<Card.Content class="p-5">
-				<div class="flex flex-col sm:flex-row items-center gap-4">
-					<!-- Clear Product Image -->
-					<div class="relative w-32 h-32 sm:w-36 sm:h-36 shrink-0 rounded-xl overflow-hidden bg-muted border border-border/60 flex items-center justify-center">
-						<img
-							src="https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/mismar-lasik.webp"
-							alt="مسمار لاصق جداري — 20 قطعة"
-							class="w-full h-full object-cover"
-							loading="lazy"
-							onerror={(e) => {
-								(e.currentTarget as HTMLImageElement).src = '/images/mismar-lasik.webp';
-							}}
-						/>
-						<span class="absolute bottom-1 right-1 bg-black/75 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-							20 قطعة
-						</span>
-					</div>
-
-					<!-- Product Info & CTA -->
-					<div class="flex-1 text-right w-full">
-						<h3 class="text-base sm:text-lg font-extrabold text-foreground leading-tight mb-1.5">
-							مسمار لاصق جداري — 20 قطعة
-						</h3>
-
-						<p class="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3">
-							تركيب سهل بدون حفر، مناسب للحمام والمطبخ وغرف المنزل.
-						</p>
-
-						<!-- Price & Quantity -->
-						<div class="flex items-baseline gap-2 mb-3">
-							<span class="text-2xl font-black text-emerald-600 font-mono">99 DH</span>
-							<span class="text-xs font-bold text-muted-foreground">/ 20 قطعة فقط</span>
+		<!-- 6. Order Journey Timeline -->
+		<div class="w-full rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
+			<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 mb-4 text-center">
+				رحلة طلبك حتى لباب دارك
+			</h4>
+			<div class="space-y-4 relative before:absolute before:right-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-emerald-200">
+				<!-- Step 1 -->
+				<div class="flex items-start gap-3 relative">
+					<span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold z-10 shadow-xs">
+						✓
+					</span>
+					<div class="flex-1 pt-0.5">
+						<div class="flex items-center justify-between">
+							<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">1. استلمنا طلبك (الآن)</h5>
+							<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">تمت بنجاح ✅</span>
 						</div>
-
-						<!-- CTA Button / Status -->
-						{#if offerStatus === 'added'}
-							<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 text-center">
-								<p class="text-xs sm:text-sm font-bold text-emerald-700 flex items-center justify-center gap-1.5">
-									<span>✅</span>
-									<span>تم تسجيل طلب إضافة العرض بنجاح!</span>
-								</p>
-								<p class="text-[11px] text-emerald-600 mt-1 leading-normal">
-									سيتم تأكيد 20 قطعة من المسمار اللاصق مع شحنتك هاتفياً (+99 DH عند الاستلام).
-								</p>
-							</div>
-						{:else}
-							<Button
-								onclick={handleAddOffer}
-								disabled={offerStatus === 'loading'}
-								class="w-full py-5 text-sm font-extrabold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-							>
-								{#if offerStatus === 'loading'}
-									<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-									<span>جاري إرسال طلب الإضافة...</span>
-								{:else}
-									<span>أضف 20 قطعة لطلبي بـ 99 DH</span>
-								{/if}
-							</Button>
-							<p class="text-[10px] text-muted-foreground text-center mt-1.5 font-medium">
-								الدفع عند الاستلام مع باقي طلبيتك • بدون أي مصاريف شحن إضافية
-							</p>
-						{/if}
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">تم حجز طلبك في نظامنا وجاري تجهيزه.</p>
 					</div>
 				</div>
-			</Card.Content>
-		</Card.Root>
 
-		<!-- Action Callout & WhatsApp Direct Support -->
-		<div class="w-full bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-8 text-center" dir="rtl">
-			<h4 class="text-sm font-bold text-blue-900 dark:text-blue-300 mb-1.5">هل تحتاج إلى تعديل أو استفسار سريع؟</h4>
-			<p class="text-xs text-muted-foreground leading-relaxed mb-4">
-				يمكنك التواصل معنا مباشرة عبر واتساب لتعديل العنوان، تغيير المنتج أو لتسريع عملية الشحن.
-			</p>
-			
-			<Button
-				href="https://wa.me/?text={encodeURIComponent('مرحباً، أود الاستفسار عن طلبي رقم ' + (order?.orderId || ''))}"
-				target="_blank"
-				class="w-full py-5 font-bold text-white bg-[#25D366] hover:bg-[#20ba56] rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="shrink-0 text-white">
-					<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z"/>
-				</svg>
-				<span>تعديل الطلب عبر واتساب</span>
-			</Button>
+				<!-- Step 2 -->
+				<div class="flex items-start gap-3 relative">
+					<span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold z-10 border border-emerald-300">
+						2
+					</span>
+					<div class="flex-1 pt-0.5">
+						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">2. تأكيد الطلب (اليوم)</h5>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">مكالمة هاتفية سريعة أو واتساب للتأكد من العنوان والمدينة.</p>
+					</div>
+				</div>
+
+				<!-- Step 3 -->
+				<div class="flex items-start gap-3 relative">
+					<span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold z-10 border border-emerald-300">
+						3
+					</span>
+					<div class="flex-1 pt-0.5">
+						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">3. شحن الطلبية (خلال 24 ساعة)</h5>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">إرسال الكولية مباشرة مع شركة التوصيل السريع لمدينتك.</p>
+					</div>
+				</div>
+
+				<!-- Step 4 -->
+				<div class="flex items-start gap-3 relative">
+					<span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold z-10 border border-emerald-300">
+						4
+					</span>
+					<div class="flex-1 pt-0.5">
+						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">4. الاستلام والمعاينة (خلال 24-48 ساعة)</h5>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">كيتصل بيك الموزع، كتقلب سلعتك وتتأكد منها عاد كتخلص.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 7. Trust & Inspection Advice -->
+		<div class="grid grid-cols-1 gap-2.5 mb-5 w-full">
+			<div class="flex items-start gap-3 p-3.5 rounded-2xl border border-emerald-100 bg-emerald-50/50 text-right">
+				<span class="text-2xl shrink-0">📦</span>
+				<div>
+					<h5 class="font-extrabold text-xs sm:text-sm text-emerald-950 mb-0.5">حق المعاينة مضمون</h5>
+					<p class="text-[11px] sm:text-xs text-emerald-900/80 leading-relaxed font-medium">
+						ملي يجيب ليك الموزع (Livreur) الطلب، فتح الكولية وتأكد من جودة الحامل والرشاشة عاد خلّص.
+					</p>
+				</div>
+			</div>
+
+			<div class="flex items-start gap-3 p-3.5 rounded-2xl border border-amber-100 bg-amber-50/50 text-right">
+				<span class="text-2xl shrink-0">💵</span>
+				<div>
+					<h5 class="font-extrabold text-xs sm:text-sm text-amber-950 mb-0.5">نصيحة لتسليم سريع ومريح</h5>
+					<p class="text-[11px] sm:text-xs text-amber-900/80 leading-relaxed font-medium">
+						يرجى تجهيز المبلغ المحدد مسبقاً ({currentTotal} DH) ليسهل عليك وعلى الموزع تسليم الطلب بسرعة وبدون تعقيد.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 8. Delivery FAQs Accordion -->
+		<div class="w-full rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 mb-6 shadow-xs">
+			<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 mb-3 text-center">
+				أسئلة شائعة حول الاستلام والتوصيل
+			</h4>
+			<div class="space-y-2">
+				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
+					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
+						<span>إلى كنت فخدمتي وما نقدرش نستلم الكولية؟</span>
+						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
+					</summary>
+					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
+						الموزع غيتاصل بيك وتقدر تحدد معاه الوقت المناسب، أو يستلمها في بلاصتك أي شخص من العائلة، أو يجيبها ليك للخدمة.
+					</div>
+				</details>
+
+				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
+					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
+						<span>واش نقدر نلغي الطلب أو نغير عدد الحبات؟</span>
+						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
+					</summary>
+					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
+						نعم، فاش يتصل بيك فريق التأكيد أو تواصل معنا عبر الواتساب ونقوم بتعديل طلبك بكل سهولة.
+					</div>
+				</details>
+
+				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
+					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
+						<span>واش كاين ضمان على السلعة؟</span>
+						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
+					</summary>
+					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
+						نعم، ضمان 14 يوماً للاستبدال والاسترجاع في حال وجود أي عيب مصنعي.
+					</div>
+				</details>
+			</div>
 		</div>
 
 		<!-- Back Home Button -->
-		<Button
+		<button
+			type="button"
 			onclick={handleBackHome}
-			variant="outline"
-			class="w-full py-6 font-bold text-foreground border-border hover:bg-muted rounded-xl cursor-pointer"
+			class="w-full py-3.5 px-4 font-bold text-neutral-700 border border-neutral-300 hover:bg-neutral-100 active:scale-[0.99] rounded-xl text-xs sm:text-sm transition-all cursor-pointer text-center"
 		>
-			العودة لصفحة الشراء الرئيسية
-		</Button>
+			العودة لصفحة المتجر الرئيسية
+		</button>
 
 	</main>
 
 	<!-- Footer -->
-	<footer class="bg-muted/40 py-6 text-center text-xs text-muted-foreground border-t border-border/20 px-4">
+	<footer class="bg-neutral-950 py-5 text-center text-xs text-neutral-400 px-4">
 		<p>© {new Date().getFullYear()} Valoriia. جميع الحقوق محفوظة.</p>
 	</footer>
 
