@@ -1,4 +1,5 @@
 <script lang="ts">
+	import TrustSection from '$lib/components/sections/TrustSection.svelte';
 	let { data } = $props();
 
 	const brand = $derived(data.settings.brand);
@@ -539,78 +540,12 @@
 		</div>
 	</div>
 
-	<!-- 7. Why us -->
-	<section id="why" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-12">
-		{@render sectionTitle('علاش يختارونا المغاربة', 'الشراء من عندنا ساهل وآمن')}
-		<div class="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-3">
-			{#each [['توصيل لجميع المدن', 'من طنجة للكويرة، السلعة توصلك حتى لباب الدار', 'truck'], ['خلص ملي توصلك', 'الدفع عند الاستلام — ما تخلص حتى تشوف السلعة بعينيك', 'cash'], ['جودة مضمونة', 'منتجات مختارة بعناية وضمان الاستبدال', 'shield']] as [t, d, icon]}
-				<div class="rounded-3xl border border-stone-200/60 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-xl hover:border-stone-300">
-					<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738]">
-						{#if icon === 'truck'}
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-							</svg>
-						{:else if icon === 'cash'}
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5H3.75a1.5 1.5 0 01-1.5-1.5V6a1.5 1.5 0 011.5-1.5zm4.125 9.75a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0zm3.75 0a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0zm3.75 0a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0zM18 14.25l.008-.008" />
-							</svg>
-						{:else}
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
-							</svg>
-						{/if}
-					</span>
-					<h3 class="mt-3.5 font-display text-base font-bold text-[#1E293B]">{t}</h3>
-					<p class="mt-1 text-sm leading-relaxed text-stone-500">{d}</p>
-				</div>
-			{/each}
-		</div>
-	</section>
-
-	<!-- 8. Order CTA -->
-	<section id="offer" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-12">
-		<div class="relative overflow-hidden rounded-3xl bg-[#1B4332] px-6 py-10 text-center text-white shadow-xl md:py-14">
-			<div
-				class="pointer-events-none absolute inset-0 opacity-[0.12]"
-				style="background-image: radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0); background-size: 20px 20px;"
-				aria-hidden="true"
-			></div>
-			<div class="relative mx-auto max-w-xl space-y-4">
-				<span class="inline-flex items-center rounded-full border border-[#C99738]/40 bg-[#C99738]/15 px-4 py-1.5 text-xs font-bold text-[#C99738]">
-					عرض محدود — الرشاش فابور مع كل طلب
-				</span>
-				<h2 class="font-display text-2xl font-bold leading-snug md:text-4xl text-white">
-					جاهز تنظّم دارك؟
-				</h2>
-				<p class="text-sm leading-loose text-stone-200 md:text-base">
-					خلّي لينا الطلب دابا عبر واتساب، أكّد معانا العنوان بالتليفون،
-					والسلعة توصلك حتى لباب الدار وتخلص ملي تستلمها.
-				</p>
-				<div class="flex flex-col items-center justify-center gap-3 pt-1 sm:flex-row">
-					<a
-						href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، بغيت نستفسر على العرض ديال المنظم + الرشاش فابور')}`}
-						target="_blank"
-						rel="noopener"
-						class="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-[#25D366] px-8 font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-[#20ba56] active:scale-[0.98]"
-					>
-						<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-							<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-						</svg>
-						اطلب عبر واتساب
-					</a>
-					<a
-						href="#bestsellers"
-						class="inline-flex min-h-12 items-center rounded-2xl border border-white/20 px-8 font-bold text-white transition-colors hover:bg-white/10"
-					>
-						رجع للمنتجات
-					</a>
-				</div>
-				<p class="text-xs text-stone-300">
-					متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}
-				</p>
-			</div>
-		</div>
-	</section>
+	<!-- 7. Why us & Customer Service -->
+	<TrustSection
+		whatsappNumber={waNumber || '212626558375'}
+		brandName={brand.name || 'Lhamza Shop'}
+		supportHours={brand.supportHours || 'طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً'}
+	/>
 
 	<!-- 9. Footer -->
 	<footer id="contact" class="mt-14 scroll-mt-24 bg-[#0E261C] text-stone-300">
