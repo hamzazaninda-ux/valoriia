@@ -178,6 +178,12 @@
 	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-border/30 pb-32"
 	style="{buildThemeCssVars(t)}; background-color: var(--t-bg, #faf9f6); color: var(--t-text, #1c1917);"
 >
+	<!-- Trust bar -->
+	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
+		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+		<span>{settings?.commerce?.freeShippingText || 'توصيل مجاني لجميع المدن'} • {settings?.commerce?.paymentMethod || 'الدفع عند الاستلام'}</span>
+	</div>
+
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
 	{#if slides.length > 0}
 		<div class="w-full bg-black/5">
