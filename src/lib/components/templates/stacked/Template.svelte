@@ -480,6 +480,49 @@
 		</div>
 	</div>
 
+	<!-- ── TRUST & ASSURANCE SECTION ── -->
+	<section class="px-2 sm:px-4 pb-4" dir="rtl">
+		<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+			<!-- Feature 1: Inspection -->
+			<div class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3.5 sm:p-4 transition-all">
+				<div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-emerald-200/70 shadow-xs text-emerald-700">
+					<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+					</svg>
+				</div>
+				<div class="flex-1 min-w-0">
+					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug">حق المعاينة مكفول 📦</h4>
+					<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">قلّب سلعتك وتأكد من الجودة والمقاسات عاد خلّص Livreur.</p>
+				</div>
+			</div>
+
+			<!-- Feature 2: Warranty -->
+			<div class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3.5 sm:p-4 transition-all">
+				<div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-emerald-200/70 shadow-xs text-emerald-700">
+					<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
+					</svg>
+				</div>
+				<div class="flex-1 min-w-0">
+					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug">ضمان الاستبدال 14 يوماً 🛡️</h4>
+					<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">إلى لقيتي أي عيب مصنعي أو نقص في القطع، نبدلوه ليك فابور.</p>
+				</div>
+			</div>
+
+			<!-- Feature 3: Free Shipping -->
+			<div class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3.5 sm:p-4 transition-all">
+				<div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-emerald-200/70 shadow-xs text-emerald-700">
+					<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+					</svg>
+				</div>
+				<div class="flex-1 min-w-0">
+					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug">توصيل سريع ومجاني 🚚</h4>
+					<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">التوصيل فابور لجميع مدن وقرى المغرب خلال 24 - 48 ساعة.</p>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<!-- FAQ -->
 	{#if t.sections.trustBadges.showFAQ && content.faq && content.faq.length > 0}
