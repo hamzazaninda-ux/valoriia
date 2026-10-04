@@ -120,14 +120,14 @@ const BASE_DEFAULTS: ThemeSections = {
 export function getDefaultTheme(templateId: string = 'classic'): TemplateTheme {
   const colorsByTemplate: Record<string, ThemeColors> = {
     classic: {
-      primary: '#10b981',
-      cta: '#f97316',
-      ctaHover: '#ea580c',
-      accent: '#f59e0b',
-      background: '#f9fafb',
+      primary: '#1B4332',
+      cta: '#1B4332',
+      ctaHover: '#143326',
+      accent: '#C99738',
+      background: '#FAF9F6',
       surface: '#ffffff',
-      text: '#111827',
-      textMuted: '#6b7280',
+      text: '#1E293B',
+      textMuted: '#64748B',
     },
     modern: {
       primary: '#6366f1',
@@ -160,14 +160,14 @@ export function getDefaultTheme(templateId: string = 'classic'): TemplateTheme {
       textMuted: '#a09880',
     },
     stacked: {
-      primary: '#047857',
-      cta: '#16a34a',
-      ctaHover: '#15803d',
-      accent: '#f59e0b',
-      background: '#faf9f6',
+      primary: '#1B4332',
+      cta: '#1B4332',
+      ctaHover: '#143326',
+      accent: '#C99738',
+      background: '#FAF9F6',
       surface: '#ffffff',
-      text: '#1c1917',
-      textMuted: '#78716c',
+      text: '#1E293B',
+      textMuted: '#64748B',
     },
   };
 

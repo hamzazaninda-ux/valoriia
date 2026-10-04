@@ -3,14 +3,14 @@
   "name": "Classic Landing",
   "baseTemplate": "classic",
   "colors": {
-    "primary": "#10b713",
-    "cta": "#15f930",
-    "ctaHover": "#ea580c",
-    "accent": "#f59e0b",
-    "background": "#f9fafb",
+    "primary": "#1B4332",
+    "cta": "#1B4332",
+    "ctaHover": "#143326",
+    "accent": "#C99738",
+    "background": "#FAF9F6",
     "surface": "#ffffff",
-    "text": "#111827",
-    "textMuted": "#6b7280"
+    "text": "#1E293B",
+    "textMuted": "#64748B"
   },
   "sections": {
     "hero": {

@@ -263,10 +263,10 @@
 </svelte:head>
 
 <!-- Premium High-Converting Container -->
-<div class="max-w-xl mx-auto bg-[#faf9f6] text-[#1c1917] shadow-2xl min-h-screen flex flex-col justify-between border-x border-neutral-200/60 relative" dir="rtl">
+<div class="max-w-xl mx-auto bg-[#FAF9F6] text-[#1E293B] shadow-2xl min-h-screen flex flex-col justify-between border-x border-stone-200/60 relative" dir="rtl">
 	
 	<!-- Top Bar -->
-	<div class="bg-gradient-to-r from-emerald-700 to-green-700 text-white text-center py-2.5 px-4 text-xs font-black shadow-xs flex items-center justify-center gap-2">
+	<div class="bg-[#1B4332] text-white text-center py-2.5 px-4 text-xs font-black shadow-xs flex items-center justify-center gap-2">
 		<span class="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
 		<span>تهانينا! تم تأكيد حجز طلبك بنجاح والتوصيل مجاني 🚚</span>
 	</div>

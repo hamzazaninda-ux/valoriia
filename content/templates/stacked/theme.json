@@ -3,14 +3,14 @@
   "name": "Stacked Images",
   "baseTemplate": "stacked",
   "colors": {
-    "primary": "#047857",
-    "cta": "#15803d",
-    "ctaHover": "#166534",
-    "accent": "#f59e0b",
-    "background": "#faf9f6",
+    "primary": "#1B4332",
+    "cta": "#1B4332",
+    "ctaHover": "#143326",
+    "accent": "#C99738",
+    "background": "#FAF9F6",
     "surface": "#ffffff",
-    "text": "#1c1917",
-    "textMuted": "#78716c"
+    "text": "#1E293B",
+    "textMuted": "#64748B"
   },
   "sections": {
     "hero": {

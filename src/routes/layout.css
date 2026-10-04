@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&family=El+Messiri:wght@600;700&family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -11,8 +11,8 @@
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: #1B4332;
+  --color-primary-foreground: #ffffff;
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -20,15 +20,15 @@
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
 
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: #C99738;
+  --color-accent-foreground: #ffffff;
 
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-ring: #1B4332;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -37,33 +37,33 @@
   /* Add animations for pulsing order CTA button */
   --animate-pulse-slow: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
-  /* Lhamza Shop storefront type system (Arabic-first) */
-  --font-display: 'El Messiri', 'Cairo', sans-serif;
-  --font-body: 'Tajawal', 'Cairo', sans-serif;
+  /* Lhamza Shop luxury type system (Readex Pro + Tajawal Arabic-first) */
+  --font-display: 'Readex Pro', 'Tajawal', 'IBM Plex Sans Arabic', sans-serif;
+  --font-body: 'Readex Pro', 'Tajawal', 'IBM Plex Sans Arabic', sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --background: 40 20% 97.5%; /* #FAF9F6 Warm Off-White */
+    --foreground: 222 47% 17%;  /* #1E293B Deep Slate */
+    --card: 0 0% 100%;          /* #FFFFFF Pure Card */
+    --card-foreground: 222 47% 17%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --popover-foreground: 222 47% 17%;
+    --primary: 155 42% 18%;     /* #1B4332 Forest Emerald */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 15% 94%;
+    --secondary-foreground: 222 47% 17%;
+    --muted: 40 10% 92%;
+    --muted-foreground: 215 16% 47%; /* #64748B Slate Muted */
+    --accent: 38 56% 50%;       /* #C99738 Warm Brass/Amber */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --border: 30 10% 90%;       /* stone-200 */
+    --input: 30 10% 90%;
+    --ring: 155 42% 18%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -73,19 +73,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 155 42% 28%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 38 56% 50%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --ring: 155 42% 35%;
   }
 
   * {
@@ -93,10 +93,10 @@
   }
   
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: #FAF9F6;
+    color: #1E293B;
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'Tajawal', 'Cairo', 'El Messiri', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Readex Pro', 'Tajawal', 'IBM Plex Sans Arabic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
