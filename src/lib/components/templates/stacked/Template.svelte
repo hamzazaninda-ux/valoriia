@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/format';
 	import { ShoppingCart } from '@lucide/svelte';
-	import StarRating from '$lib/components/shared/StarRating.svelte';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import UpsellModal from '$lib/components/shared/UpsellModal.svelte';
@@ -367,19 +366,6 @@
 		</div>
 	</div>
 
-	<!-- Rating summary -->
-	{#if t.sections.hero.showRating}
-		<div class="px-4 pb-2" dir="rtl">
-			<div class="rounded-3xl border border-neutral-200/60 bg-white p-5 text-center shadow-sm">
-				<div class="flex items-center justify-center">
-					<StarRating rating={content.rating} reviewCount={content.reviewCount} />
-				</div>
-				{#if t.sections.hero.showSalesCount && t.sections.hero.salesCountText}
-					<p class="text-xs text-neutral-500 font-semibold mt-1.5">{t.sections.hero.salesCountText}</p>
-				{/if}
-			</div>
-		</div>
-	{/if}
 
 	<!-- FAQ -->
 	{#if t.sections.trustBadges.showFAQ && content.faq && content.faq.length > 0}
