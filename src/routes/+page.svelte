@@ -217,7 +217,7 @@
 	</div>
 {/snippet}
 
-<div id="top" class="min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-10 md:pb-0" dir="rtl">
+<div id="top" class="min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-20 md:pb-0" dir="rtl">
 	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
 	<AnnouncementBar />
 
@@ -509,7 +509,16 @@
 	</footer>
 
 	<!-- 10. Floating WhatsApp Action -->
-	<BottomNav whatsappNumber={waNumber || '212626558375'} />
+	<BottomNav
+		whatsappNumber={waNumber || '212626558375'}
+		{cartCount}
+		onSearch={() => {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			searchOpen = true;
+			setTimeout(() => document.getElementById('store-search-input')?.focus({ preventScroll: true }), 350);
+		}}
+		onOpenCart={() => (drawerOpen = true)}
+	/>
 
 <!-- 11. Cart drawer -->
 {#if drawerOpen}
