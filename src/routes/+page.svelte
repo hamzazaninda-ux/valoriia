@@ -83,6 +83,7 @@
 				(p: any) =>
 					p.slug !== 'hamil-jidari-makanis' &&
 					p.slug !== 'filter-baloua' &&
+					p.slug !== 'qofl-al-aman' &&
 					!p.heroImage?.includes('79')
 			)
 			.slice(0, 12)

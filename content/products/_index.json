@@ -61,7 +61,7 @@
     "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
     "heroImage": "https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp",
     "startingPrice": 50,
-    "status": "published",
+    "status": "draft",
     "template": "classic",
     "updatedAt": "2026-10-03T12:00:00.000Z"
   }

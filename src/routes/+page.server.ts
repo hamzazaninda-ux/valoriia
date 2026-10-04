@@ -12,6 +12,7 @@ export const load: PageServerLoad = async () => {
         p.status === 'published' &&
         p.slug !== 'hamil-jidari-makanis' &&
         p.slug !== 'filter-baloua' &&
+        p.slug !== 'qofl-al-aman' &&
         !p.heroImage?.includes('79')
     ),
     settings
