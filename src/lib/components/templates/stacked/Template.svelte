@@ -53,7 +53,6 @@
 	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 	let showStickyBtn = $state(true);
-	let heroBottomVisible = $state(false);
 
 
 	const sheetsUrl = $derived(
@@ -168,19 +167,8 @@
 		if (formTop) observer.observe(formTop);
 		if (formBottom) observer.observe(formBottom);
 
-		// Hide the sticky CTA while the bottom of the hero (icons strip) is on screen
-		const heroBottom = document.getElementById('hero-bottom');
-		const heroObserver = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) heroBottomVisible = entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		if (heroBottom) heroObserver.observe(heroBottom);
-
 		return () => {
 			observer.disconnect();
-			heroObserver.disconnect();
 		};
 	});
 
@@ -200,11 +188,9 @@
 					class="block w-full aspect-[9/16] object-cover"
 					loading="eager"
 				/>
-				<!-- Sentinel over the icons strip: sticky CTA hides while this is visible -->
-				<div id="hero-bottom" class="pointer-events-none absolute inset-x-0 bottom-0 h-[18%]" aria-hidden="true"></div>
 			</div>
-			<!-- Spacer (~110px) so the icons strip can scroll fully above the sticky CTA -->
-			<div class="pb-28" aria-hidden="true"></div>
+			<!-- Spacer so the icons strip can scroll fully above the compact sticky CTA -->
+			<div class="pb-24" aria-hidden="true"></div>
 			{#each slides.slice(1) as s, i}
 				<img
 					src={s.src}
@@ -353,13 +339,13 @@
 		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
 	</footer>
 
-	{#if showStickyBtn && !heroBottomVisible && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" dir="rtl">
+	{#if showStickyBtn && t.sections.advanced.showStickyButton}
+		<div class="fixed bottom-2 sm:bottom-3 left-0 right-0 z-50 px-3 sm:px-4 pointer-events-none" dir="rtl">
 			<button
 				type="button"
 				onclick={scrollToOffers}
 				style="background-color: var(--t-cta, #16a34a);"
-				class="w-full max-w-xl mx-auto block py-4 px-6 text-lg font-extrabold text-white rounded-2xl shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
+				class="w-full max-w-xl mx-auto flex items-center justify-center h-11 py-2.5 px-4 text-sm sm:text-base font-bold text-white rounded-xl shadow-lg active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
 				{t.sections.pricing.stickyCtaText || t.sections.pricing.ctaText}
 			</button>
