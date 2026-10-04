@@ -252,8 +252,8 @@
 	{/if}
 
 	<!-- Checkout form -->
-	<div id="checkout-form" class="px-3 py-6 md:px-4">
-		<div id="offers" data-section="offers" class="border border-border/60 shadow-lg overflow-hidden rounded-3xl bg-white scroll-mt-6" dir="rtl">
+	<div id="checkout-form" class="px-2 sm:px-4 py-6">
+		<div id="offers" data-section="offers" class="border border-border/60 shadow-lg rounded-3xl bg-white scroll-mt-6" dir="rtl">
 			<div class="h-1" style="background-color: var(--t-primary, #047857);"></div>
 			<div class="text-center pb-3 pt-5 select-none px-4">
 				<h2 class="text-2xl font-extrabold tracking-tight font-display">
@@ -264,17 +264,17 @@
 				</p>
 			</div>
 
-			<div class="px-3 pb-5">
+			<div class="px-2 sm:px-3.5 pb-5">
 				<div class="space-y-3">
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-3.5 pt-2">
+						<div class="grid grid-cols-1 gap-3.5 pt-3">
 							{#each offersList as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center gap-2.5 sm:gap-3 rounded-xl border-2 p-3 sm:p-4 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-sky-600 bg-sky-50/60 shadow-sm' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+									class="relative flex w-full cursor-pointer items-center justify-between gap-1.5 sm:gap-2.5 rounded-xl border-2 px-2.5 py-3 sm:px-3.5 sm:py-3.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-sky-600 bg-sky-50/60 shadow-sm' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
 								>
 									<input
 										type="radio"
@@ -285,52 +285,57 @@
 										class="sr-only"
 									/>
 									{#if offer.badge || offer.isPopular || offer.id === 2}
-										<span class="absolute -top-3 right-4 z-10 bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[11px] px-3 py-0.5 rounded-full shadow-sm">
+										<span class="absolute -top-3 right-3 z-10 bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[11px] px-3 py-0.5 rounded-full shadow-sm">
 											{offer.badge || '⭐ الأكثر طلباً'}
 										</span>
 									{/if}
-									<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 {currentPackId === offer.id ? 'border-sky-600 bg-sky-600' : 'border-neutral-300 bg-white'}">
-										{#if currentPackId === offer.id}
-											<span class="h-2 w-2 rounded-full bg-white"></span>
-										{/if}
-									</span>
+
+									<!-- Right: Radio + Text Info -->
+									<div class="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 {currentPackId === offer.id ? 'border-sky-600 bg-sky-600' : 'border-neutral-300 bg-white'}">
+											{#if currentPackId === offer.id}
+												<span class="h-2 w-2 rounded-full bg-white"></span>
+											{/if}
+										</span>
+										<div class="min-w-0 flex-1 text-right">
+											{#if offer.id === 2}
+												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">2 منظمات + 2 رشاشات هدية 🎁</span>
+												<span class="text-[11px] text-sky-800 font-medium mt-1 block">توصيل مجاني لجميع المدن</span>
+											{:else if offer.id === 1}
+												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">1 قطعة + رشاشة هدية 🎁</span>
+												<span class="text-[11px] text-sky-800 font-medium mt-1 block">توصيل مجاني لجميع المدن</span>
+											{:else}
+												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">{offer.title}</span>
+												{#if offer.subtitle}
+													<span class="text-[11px] text-sky-800 font-medium mt-1 block truncate">{offer.subtitle}</span>
+												{/if}
+											{/if}
+										</div>
+									</div>
+
+									<!-- Center: Offer Image -->
 									{#if offer.image}
-										<span class="h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg bg-white border {currentPackId === offer.id ? 'border-sky-100' : 'border-neutral-200'} shadow-sm">
+										<span class="h-12 w-12 sm:h-14 sm:w-14 rounded-lg overflow-hidden border border-gray-100 shrink-0 mx-1.5 sm:mx-2 bg-white shadow-xs">
 											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
 										</span>
 									{:else}
-										<span class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+										<span class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100 mx-1.5 sm:mx-2">
 											<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 											</svg>
 										</span>
 									{/if}
-									<span class="min-w-0 flex-1 text-right">
-										{#if offer.id === 2}
-											<span class="block text-sm sm:text-base font-black text-gray-900 leading-snug">2 منظمات + 2 رشاشات هدية 🎁</span>
-											<span class="text-xs text-neutral-500 font-semibold mt-0.5 block">توصيل مجاني لجميع المدن</span>
-										{:else if offer.id === 1}
-											<span class="block text-sm sm:text-base font-bold text-gray-900 leading-snug">1 قطعة + رشاشة هدية 🎁</span>
-											<span class="mt-1 inline-block">
-												<span class="bg-[#0284c7] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md inline-block shrink-0">توصيل مجاني</span>
-											</span>
-										{:else}
-											<span class="block text-sm font-extrabold text-black">{offer.title}</span>
-											{#if offer.subtitle}
-												<span class="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-neutral-500">
-													<span class="truncate">{offer.subtitle}</span>
-												</span>
-											{/if}
+
+									<!-- Left: Price & Savings Badge -->
+									<div class="shrink-0 text-left flex flex-col items-end">
+										<span class="block whitespace-nowrap text-sm sm:text-base font-black text-gray-900 leading-tight">dh {offer.price.toFixed(2)}</span>
+										{#if offer.originalPrice && offer.originalPrice > offer.price}
+											<span class="text-[11px] text-gray-400 line-through leading-tight">dh {offer.originalPrice.toFixed(2)}</span>
 										{/if}
-									</span>
-									<span class="shrink-0 text-left">
-										<span class="block whitespace-nowrap text-base sm:text-lg font-black text-gray-900">dh {offer.price.toFixed(2)}</span>
 										{#if offer.id === 2 || (offer.originalPrice && offer.originalPrice > offer.price && (offer.badge || offer.isPopular))}
-											<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">وفّر {(offer.originalPrice ? offer.originalPrice - offer.price : 109)} درهم</span>
-										{:else if offer.originalPrice && offer.originalPrice > offer.price}
-											<span class="mt-0.5 block whitespace-nowrap text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
+											<span class="text-[10px] sm:text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded shrink-0 whitespace-nowrap mt-1 leading-normal">وفّر {(offer.originalPrice ? offer.originalPrice - offer.price : 109)} درهم</span>
 										{/if}
-									</span>
+									</div>
 								</label>
 							{/each}
 						</div>
