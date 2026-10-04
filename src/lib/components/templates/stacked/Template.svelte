@@ -160,17 +160,11 @@
 			offerId: (activeOffer as ProductOffer).id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
-		(window as any).snaptr?.('track', 'ADD_CART', {
-			price: Number(activeOffer.price || 229),
-			currency: 'MAD'
-		});
-
 		trackAddToCart(
 			activeOffer.price || 0,
 			content.title || 'طقم التنظيم المنزلي',
 			'MAD',
-			activeOffer.title || content.title || 'طقم التنظيم المنزلي',
-			1
+			activeOffer.id ? String(activeOffer.id) : 'kit-tandim'
 		);
 		cartUi.openDrawer();
 	}

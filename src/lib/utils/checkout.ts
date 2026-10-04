@@ -70,7 +70,7 @@ export function trackAddToCart(
 	price: number,
 	productTitle: string,
 	currency: string = 'MAD',
-	itemCategory?: string,
+	itemId?: string | number,
 	numberItems: number = 1
 ) {
 	if (typeof window === 'undefined') return;
@@ -78,16 +78,29 @@ export function trackAddToCart(
 	const cur = 'MAD';
 	const numPrice = Number(price) || 0;
 	const title = (productTitle || '').trim();
-	const category = (itemCategory || title).trim();
+	const id = String(itemId || 'kit-tandim');
 
 	// Deduplication guard: prevent duplicate events within 500ms for identical item
 	const now = Date.now();
-	const key = `${category}:${numPrice}`;
+	const key = `${id}:${numPrice}`;
 	if (now - lastAddToCartTime < 500 && lastAddToCartKey === key) {
 		return;
 	}
 	lastAddToCartTime = now;
 	lastAddToCartKey = key;
+
+	// Snapchat Pixel (Single Source of Truth)
+	try {
+		if (typeof (window as any).snaptr === 'function') {
+			(window as any).snaptr('track', 'ADD_CART', {
+				price: numPrice,
+				currency: 'MAD',
+				item_ids: [id]
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] Snap ADD_CART error:', err);
+	}
 
 	// Meta / Facebook Pixel
 	try {
@@ -115,21 +128,6 @@ export function trackAddToCart(
 		}
 	} catch (err) {
 		console.warn('[Pixel] TikTok AddToCart error:', err);
-	}
-
-	// Snapchat Pixel
-	try {
-		if (typeof (window as any).snaptr === 'function') {
-			(window as any).snaptr('track', 'ADD_CART', {
-				price: numPrice,
-				currency: 'MAD',
-				item_ids: [String(category || 'kit-tandim')],
-				item_category: category,
-				number_items: numberItems || 1
-			});
-		}
-	} catch (err) {
-		console.warn('[Pixel] Snap ADD_CART error:', err);
 	}
 
 	// Google Analytics / GA4 / Google Ads (gtag)
