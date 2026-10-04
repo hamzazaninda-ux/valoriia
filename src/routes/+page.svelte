@@ -24,6 +24,24 @@
 		real: boolean;
 	};
 
+	const circularCategories = [
+		{
+			title: 'طقم الحمام الذكي',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png',
+			href: '/kit-tandim'
+		},
+		{
+			title: 'منظمات ومماسح ذكية',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png',
+			href: '/hamil-jidari-makanis'
+		},
+		{
+			title: 'أقفال وحلول الأمان',
+			image: '/images/child-safety-lock.webp',
+			href: '/qofl-al-aman'
+		}
+	];
+
 	// Fallback collection (3 slots) — disappears automatically once real products exist.
 	const placeholders: Slot[] = [
 		{
@@ -253,48 +271,39 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Trust Badges Bar: px-4 py-3 mx-3 on mobile -->
-		<div class="mx-3 sm:mx-auto mt-4 sm:mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-2.5 sm:gap-6 text-xs sm:text-sm font-bold text-[#1E293B] bg-white border border-stone-200/70 rounded-2xl px-4 py-3 shadow-2xs" dir="rtl">
-			<span class="inline-flex items-center gap-2">
-				<span class="text-base sm:text-lg">🛡️</span>
-				<span>ضمان جودة 14 يوماً</span>
-			</span>
-			<span class="text-stone-300 hidden sm:inline" aria-hidden="true">•</span>
-			<span class="inline-flex items-center gap-2">
-				<span class="text-base sm:text-lg">📦</span>
-				<span>حق المعاينة قبل الدفع</span>
-			</span>
-			<span class="text-stone-300 hidden sm:inline" aria-hidden="true">•</span>
-			<span class="inline-flex items-center gap-2">
-				<span class="text-base sm:text-lg">⚡</span>
-				<span>شحن سريع لباب الدار</span>
-			</span>
-		</div>
 	</section>
 
-	<!-- 4. Collections -->
-	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-8">
-		{@render sectionTitle('تسوّق حسب المجموعة', 'اختار القسم اللي كيهمّك ودخل شوف المنتجات')}
-		<div class="mt-7 grid grid-cols-3 gap-3 sm:gap-6">
-			{#each catalog.slice(0, 3) as s}
+	<!-- 4. Collections: Circular Category Avatars directly below Hero -->
+	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-6 pb-2">
+		<div class="text-center mb-6">
+			<h2 class="font-display text-xl sm:text-2xl font-black text-[#1E293B] tracking-tight">
+				تسوّق حسب المجموعة
+			</h2>
+			<div class="mx-auto mt-2 h-[2px] w-20 rounded-full bg-stone-300"></div>
+		</div>
+
+		<div class="flex overflow-x-auto justify-start sm:justify-center gap-4 sm:gap-8 px-2 sm:px-4 py-2 scrollbar-none" dir="rtl">
+			{#each circularCategories as cat}
 				<a
-					href={s.real ? `/${s.slug}` : '#bestsellers'}
-					class="group flex flex-col items-center gap-2.5 active:scale-[0.97]"
-					aria-label={s.title}
+					href={cat.href}
+					class="group flex flex-col items-center gap-2.5 shrink-0 active:scale-95 transition-transform"
+					aria-label={cat.title}
 				>
-					<span
-						class="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-white ring-4 ring-stone-200/80 transition-all duration-300 group-hover:shadow-xl group-hover:ring-[#1B4332]/40"
+					<div
+						class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-stone-200 overflow-hidden shadow-sm bg-white p-1 flex items-center justify-center transition-all duration-300 group-hover:border-[#1B4332] group-hover:shadow-md"
 					>
-						{#if s.image}
-							<img src={s.image} alt={s.title} class="h-full w-full object-cover" loading="lazy" />
-						{:else}
-							<svg class="h-1/3 w-1/3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-							</svg>
-						{/if}
+						<img
+							src={cat.image}
+							alt={cat.title}
+							class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
+							loading="lazy"
+						/>
+					</div>
+					<span
+						class="text-xs sm:text-sm font-bold text-[#1E293B] text-center max-w-[100px] sm:max-w-[120px] leading-tight transition-colors group-hover:text-[#1B4332]"
+					>
+						{cat.title}
 					</span>
-					<span class="line-clamp-2 px-1 text-center text-xs font-extrabold leading-snug text-[#1E293B] transition-colors group-hover:text-[#1B4332] md:text-sm">{s.title}</span>
 				</a>
 			{/each}
 		</div>
