@@ -1237,7 +1237,7 @@
 							<div class="text-blue-700 text-lg font-medium hover:underline cursor-pointer">
 								{editState.seo.metaTitle || editState.content.title || 'عنوان المنتج'}
 							</div>
-							<div class="text-green-700 text-xs mb-1">https://valoriia.ma/{slugValue}</div>
+							<div class="text-green-700 text-xs mb-1">https://lhamza.shop/{slugValue}</div>
 							<div class="text-gray-600 text-sm">
 								{editState.seo.metaDescription || editState.content.subtitle || 'وصف المنتج'}
 							</div>
@@ -1253,7 +1253,7 @@
 									/>
 								{/if}
 								<div class="p-3">
-									<div class="text-xs text-gray-400">valoriia.ma</div>
+									<div class="text-xs text-gray-400">lhamza.shop</div>
 									<div class="text-sm font-medium text-gray-900">
 										{editState.seo.metaTitle || editState.content.title || 'عنوان المنتج'}
 									</div>

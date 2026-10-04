@@ -37,7 +37,7 @@
   /* Add animations for pulsing order CTA button */
   --animate-pulse-slow: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
-  /* Valoriia storefront type system (Arabic-first) */
+  /* Lhamza Shop storefront type system (Arabic-first) */
   --font-display: 'El Messiri', 'Cairo', sans-serif;
   --font-body: 'Tajawal', 'Cairo', sans-serif;
 }

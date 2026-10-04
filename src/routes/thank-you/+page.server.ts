@@ -9,12 +9,12 @@ export const load: PageServerLoad = async () => {
     ]);
     return {
       sheetsUrl: commerce?.googleSheetsUrl || 'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec',
-      whatsappNumber: brand?.whatsappNumber || ''
+      whatsappNumber: brand?.whatsappNumber || '212626558375'
     };
   } catch {
     return {
       sheetsUrl: 'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec',
-      whatsappNumber: ''
+      whatsappNumber: '212626558375'
     };
   }
 };

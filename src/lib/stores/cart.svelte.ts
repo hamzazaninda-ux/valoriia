@@ -22,12 +22,12 @@ export interface CompletedOrder {
 	currency: string;
 }
 
-const STORAGE_KEY = 'valoriia-cart-v2';
+const STORAGE_KEY = 'lhamza-cart-v2';
 
 function load(): CartLine[] {
 	if (typeof localStorage === 'undefined') return [];
 	try {
-		const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+		const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem('valoriia-cart-v2') || '[]');
 		if (!Array.isArray(raw)) return [];
 		// No quantities in this store: every line counts once.
 		return raw

@@ -24,7 +24,7 @@ export const load: PageServerLoad = async () => {
     health: {
       sheets: !!(settings?.commerce?.googleSheetsUrl || '').trim(),
       whatsapp: !!(settings?.brand?.whatsappNumber || '').trim(),
-      brandName: settings?.brand?.name || 'Valoriia'
+      brandName: settings?.brand?.name || 'Lhamza Shop'
     }
   };
 };

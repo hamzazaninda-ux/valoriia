@@ -23,7 +23,7 @@
 </script>
 
 <svelte:head>
-	<title>لوحة التحكم - Valoriia</title>
+	<title>لوحة التحكم - Lhamza Shop</title>
 </svelte:head>
 
 <div class="space-y-6" dir="rtl">

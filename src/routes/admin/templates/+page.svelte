@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<title>القوالب — Valoriia CMS</title>
+	<title>القوالب — Lhamza Shop CMS</title>
 </svelte:head>
 
 <div class="space-y-8">

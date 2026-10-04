@@ -242,6 +242,22 @@
 	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-border/30 pb-32"
 	style="{buildThemeCssVars(t)}; background-color: var(--t-bg, #faf9f6); color: var(--t-text, #1c1917);"
 >
+	<!-- Store Header: Logo / Brand Name -->
+	<header class="bg-white/95 backdrop-blur-sm border-b border-neutral-200/70 py-3 px-4 flex items-center justify-between sticky top-0 z-30 shadow-2xs" dir="rtl">
+		<div class="flex items-center gap-2">
+			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-950 font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
+			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name || 'Lhamza Shop'}</span>
+		</div>
+		<a
+			href="https://wa.me/212626558375?text=%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D8%A8%D8%A7%D9%83%20%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85%20%D8%A7%D9%84%D8%B0%D9%83%D9%8A"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/80 hover:bg-emerald-100 transition-colors"
+		>
+			<span>💬 خدمة الزبناء</span>
+		</a>
+	</header>
+
 	<!-- Trust bar -->
 	<div class="text-white text-center py-2.5 px-4 text-xs font-bold shadow-sm z-10 flex items-center justify-center gap-2" dir="rtl" style="background: linear-gradient(135deg, var(--t-primary, #047857), #065f46);">
 		<span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
@@ -717,8 +733,9 @@
 
 	<div id="checkout-form-bottom"></div>
 
-	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4" dir="rtl">
-		<p>{content.footerText || `© ${new Date().getFullYear()} ${settings.brand.name}. جميع الحقوق محفوظة.`}</p>
+	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4 space-y-1.5" dir="rtl">
+		<p class="font-bold text-neutral-300">Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية</p>
+		<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}

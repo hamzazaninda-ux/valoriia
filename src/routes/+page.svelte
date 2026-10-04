@@ -105,7 +105,7 @@
 	$effect(() => {
 		if (!cartReady && typeof localStorage !== 'undefined') {
 			try {
-				cart = JSON.parse(localStorage.getItem('valoriia-cart') || '{}');
+				cart = JSON.parse(localStorage.getItem('lhamza-cart') || localStorage.getItem('valoriia-cart') || '{}');
 			} catch {
 				cart = {};
 			}
@@ -114,7 +114,7 @@
 	});
 	$effect(() => {
 		if (cartReady && typeof localStorage !== 'undefined') {
-			localStorage.setItem('valoriia-cart', JSON.stringify(cart));
+			localStorage.setItem('lhamza-cart', JSON.stringify(cart));
 		}
 	});
 
@@ -140,7 +140,7 @@
 		const lines = Object.keys(cart).map(
 			(k) => `• ${bySlug[k]?.title || k}`
 		);
-		const text = `السلام، بغيت نطلب من Valoriia:\n${lines.join('\n')}\nالمجموع التقريبي: ${cartTotal} ${cur}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
+		const text = `السلام، بغيت نطلب من Lhamza Shop:\n${lines.join('\n')}\nالمجموع التقريبي: ${cartTotal} ${cur}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
 		window.open(`${waBase}?text=${encodeURIComponent(text)}`, '_blank');
 	}
 
@@ -153,10 +153,10 @@
 </script>
 
 <svelte:head>
-	<title>{brand.name} | متجر التنظيم والنظافة في المغرب</title>
+	<title>{brand.name || 'Lhamza Shop'} | متجر التنظيم والنظافة في المغرب</title>
 	<meta
 		name="description"
-		content="Valoriia — متجر مغربي للتنظيم والنظافة المنزلية. التوصيل لجميع المدن والدفع عند الاستلام."
+		content="Lhamza Shop — متجر مغربي للتنظيم والنظافة المنزلية. التوصيل لجميع المدن والدفع عند الاستلام."
 	/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </svelte:head>
@@ -250,9 +250,9 @@
 				</button>
 			</div>
 
-			<a href="#top" class="absolute left-1/2 flex -translate-x-1/2 items-center gap-2" aria-label={brand.name}>
-				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-950 font-display text-lg font-bold text-amber-400">ف</span>
-				<span class="font-display text-xl font-bold text-neutral-950">{brand.name}</span>
+			<a href="#top" class="absolute left-1/2 flex -translate-x-1/2 items-center gap-2" aria-label={brand.name || 'Lhamza Shop'}>
+				<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-950 font-display text-lg font-bold text-amber-400">L</span>
+				<span class="font-display text-xl font-bold text-neutral-950">{brand.name || 'Lhamza Shop'}</span>
 			</a>
 
 			<div class="flex items-center">
@@ -633,7 +633,7 @@
 				</p>
 				<div class="flex flex-col items-center justify-center gap-3 pt-1 sm:flex-row">
 					<a
-						href={`${waBase}?text=${encodeURIComponent('السلام Valoriia، بغيت نستفسر على العرض ديال المنظم + الرشاش فابور')}`}
+						href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، بغيت نستفسر على العرض ديال المنظم + الرشاش فابور')}`}
 						target="_blank"
 						rel="noopener"
 						class="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-[#25D366] px-8 font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-[#20ba56] active:scale-[0.98]"
@@ -662,11 +662,11 @@
 		<div class="mx-auto grid max-w-5xl grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
-					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-amber-400">ف</span>
-					<span class="font-display text-xl font-bold text-white">{brand.name}</span>
+					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-amber-400">L</span>
+					<span class="font-display text-xl font-bold text-white">{brand.name || 'Lhamza Shop'}</span>
 				</div>
 				<p class="text-xs leading-loose text-neutral-400">
-					متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة
+					Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة
 					بعناية، توصيل سريع، والخلاص عند الاستلام.
 				</p>
 			</div>
@@ -690,7 +690,7 @@
 			<div class="space-y-3">
 				<h4 class="text-sm font-bold text-white">تواصل معانا</h4>
 				<a
-					href={`${waBase}?text=${encodeURIComponent('السلام Valoriia، عندي استفسار')}`}
+					href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، عندي استفسار')}`}
 					target="_blank"
 					rel="noopener"
 					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-neutral-200 transition-colors hover:border-neutral-400 hover:text-white"
@@ -703,8 +703,8 @@
 				<p class="text-[11px] text-neutral-500">متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}</p>
 			</div>
 		</div>
-		<div class="border-t border-white/10 bg-black/40 py-5 text-center text-[11px] text-neutral-500">
-			<p>© {new Date().getFullYear()} {brand.name} — الدفع عند الاستلام في جميع أنحاء المغرب.</p>
+		<div class="border-t border-white/10 bg-black/40 py-5 text-center text-xs text-neutral-400">
+			<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
 		</div>
 	</footer>
 
@@ -738,7 +738,7 @@
 				<span class="text-[10px] font-bold">Shop</span>
 			</a>
 			<a
-				href={`${waBase}?text=${encodeURIComponent('السلام Valoriia، عندي استفسار')}`}
+				href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، عندي استفسار')}`}
 				target="_blank"
 				rel="noopener"
 				class="flex flex-col items-center gap-1 py-1 active:scale-95"

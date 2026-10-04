@@ -39,46 +39,88 @@
 		const hour = new Date().getHours();
 		isDaytime = hour >= 9 && hour < 21;
 
-		const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('latestOrder') : null;
-		if (stored) {
+		let rawOrder: any = null;
+
+		// 1. Read from localStorage or sessionStorage
+		if (typeof window !== 'undefined') {
 			try {
-				order = JSON.parse(stored);
+				const localData = localStorage.getItem('latestOrder');
+				const sessionData = sessionStorage.getItem('latestOrder') || sessionStorage.getItem('lastCompletedOrder');
+				if (localData) {
+					rawOrder = JSON.parse(localData);
+				} else if (sessionData) {
+					rawOrder = JSON.parse(sessionData);
+				}
 			} catch (e) {
 				console.error('Error parsing stored order:', e);
 			}
 		}
 
+		// 2. Read query params for fallback/overrides
+		const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+		const paramName = urlParams?.get('name') || urlParams?.get('fullName') || urlParams?.get('client');
+		const paramPhone = urlParams?.get('phone') || urlParams?.get('phoneNumber') || urlParams?.get('tel');
+		const paramCity = urlParams?.get('city') || urlParams?.get('address');
+		const paramOrderId = urlParams?.get('orderId') || urlParams?.get('id');
+		const paramTotal = urlParams?.get('total') || urlParams?.get('price');
+
 		const orderId =
-			(order as any)?.id ||
-			order?.orderId ||
-			(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('orderId') : null) ||
+			rawOrder?.orderId ||
+			rawOrder?.id ||
+			paramOrderId ||
 			'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
+		const fullName =
+			rawOrder?.fullName ||
+			rawOrder?.name ||
+			rawOrder?.clientName ||
+			paramName ||
+			'عميل مميز';
+
+		const phoneNumber =
+			rawOrder?.phoneNumber ||
+			rawOrder?.phone ||
+			rawOrder?.tel ||
+			rawOrder?.telephone ||
+			paramPhone ||
+			'';
+
+		const address =
+			rawOrder?.address ||
+			rawOrder?.city ||
+			paramCity ||
+			'المغرب';
+
 		const totalPrice = Number(
-			(order as any)?.total ||
-			order?.price ||
-			(typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('total') : null) ||
+			rawOrder?.price ||
+			rawOrder?.total ||
+			paramTotal ||
 			349
 		);
 
+		order = {
+			orderId: String(orderId),
+			fullName,
+			phoneNumber,
+			address,
+			date: rawOrder?.date || new Date().toLocaleDateString('ar-MA'),
+			price: totalPrice,
+			productTitle: rawOrder?.productTitle || 'باك الحمام الذكي',
+			offer: rawOrder?.offer || '',
+			sku: rawOrder?.sku || 'SKU-GENERAL',
+			qte: rawOrder?.qte || rawOrder?.quantity || 1
+		};
+
+		// Keep persistent copy in storage so refresh or back-button never empties data
+		if (typeof window !== 'undefined') {
+			try {
+				sessionStorage.setItem('latestOrder', JSON.stringify(order));
+				sessionStorage.setItem('lastCompletedOrder', JSON.stringify(order));
+				localStorage.setItem('latestOrder', JSON.stringify(order));
+			} catch {}
+		}
+
 		const trackedKey = 'snap_tracked_purchase_' + orderId;
-
-		if (!order) {
-			order = {
-				orderId: String(orderId),
-				fullName: 'عميل مميز',
-				phoneNumber: '',
-				address: 'المغرب',
-				date: new Date().toLocaleDateString('ar-MA'),
-				price: totalPrice,
-				productTitle: 'باك الحمام الذكي'
-			};
-		}
-
-		// Ensure orderId format
-		if (order && !order.orderId) {
-			order.orderId = String(orderId);
-		}
 
 		const fireSnapPurchase = () => {
 			if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(trackedKey)) {
@@ -124,6 +166,10 @@
 		if (typeof localStorage !== 'undefined') {
 			localStorage.setItem('latestOrder', JSON.stringify(order));
 		}
+		if (typeof sessionStorage !== 'undefined') {
+			sessionStorage.setItem('latestOrder', JSON.stringify(order));
+			sessionStorage.setItem('lastCompletedOrder', JSON.stringify(order));
+		}
 		isEditingPhone = false;
 		phoneUpdateSuccess = true;
 		setTimeout(() => { phoneUpdateSuccess = false; }, 4000);
@@ -148,12 +194,10 @@
 	}
 
 	const whatsappUrl = $derived.by(() => {
-		const rawNum = data?.whatsappNumber || '';
-		const cleanNum = rawNum.replace(/[^0-9]/g, '');
-		const text = `سلام، طلبت باك الحمام الذكي ورقم طلبي هو ${order?.orderId || ''} وبغيت نأكد طلبي دابا للتوصيل السريع.`;
-		return cleanNum
-			? `https://wa.me/${cleanNum}?text=${encodeURIComponent(text)}`
-			: `https://wa.me/?text=${encodeURIComponent(text)}`;
+		const orderId = order?.orderId || 'ORD-000000';
+		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
+		const msg = `سلام عليكم، قمت بطلب باك الحمام الذكي من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
+		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
 	});
 
 	async function handleAddUpsell() {
@@ -197,21 +241,24 @@
 		} finally {
 			upsellAdded = true;
 			upsellStatus = 'added';
+			const updated = { ...order, price: (order.price || 349) + 35 };
 			if (typeof localStorage !== 'undefined') {
-				const updated = { ...order, price: (order.price || 349) + 35 };
 				localStorage.setItem('latestOrder', JSON.stringify(updated));
+			}
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.setItem('latestOrder', JSON.stringify(updated));
+				sessionStorage.setItem('lastCompletedOrder', JSON.stringify(updated));
 			}
 		}
 	}
 
 	function handleBackHome() {
-		localStorage.removeItem('latestOrder');
 		window.location.href = '/';
 	}
 </script>
 
 <svelte:head>
-	<title>تم تسجيل طلبك بنجاح | Valoriia</title>
+	<title>تم تسجيل طلبك بنجاح | Lhamza Shop</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -239,10 +286,10 @@
 		</div>
 
 		<h1 class="text-xl sm:text-2xl font-black font-display text-neutral-900 text-center mb-1.5 leading-snug">
-			شكراً {order?.fullName || 'عميلنا العزيز'} — طلبك محجوز بنجاح!
+			شكراً {order?.fullName && order.fullName !== 'عميل مميز' ? order.fullName : 'لثقتك في Lhamza Shop'}!
 		</h1>
-		<p class="text-xs sm:text-sm text-neutral-600 text-center max-w-md mb-4 leading-relaxed">
-			شكراً لثقتك بـ Valoriia. تفاصيل طلبك مسجلة في نظامنا وجاهزة للمعالجة.
+		<p class="text-xs sm:text-sm text-neutral-600 text-center max-w-md mb-4 leading-relaxed font-medium">
+			شكراً لثقتك في Lhamza Shop! تفاصيل طلبك مسجلة في نظامنا وجاهزة للمعالجة.
 		</p>
 
 		<!-- Order ID Badge with 1-click Copy -->
@@ -405,7 +452,7 @@
 						صمام سيليكون ذكي مانع لروائح المجاري والحشرات 🪳
 					</h4>
 					<p class="text-xs text-neutral-600 leading-relaxed mb-2.5">
-						تهنى نهائياً من الروائح الكريهة وحشرات المجاري، كيتركب فـ 5 ثواني فلافابو أو لافايونس.
+						صمام ذكي من السيليكون كيهنيك نهائياً من الروائح الكريهة وحشرات المجاري، كيركب فـ 5 ثواني بدون أدوات.
 					</p>
 					<div class="flex items-baseline gap-2 mb-3">
 						<span class="text-xl sm:text-2xl font-black text-emerald-700 font-mono">35 DH</span>
@@ -496,7 +543,7 @@
 							<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">1. استلمنا طلبك (الآن)</h5>
 							<span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">تمت بنجاح ✅</span>
 						</div>
-						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">تم حجز طلبك في نظامنا وجاري تجهيزه.</p>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">تم تسجيل طلبك بنجاح وجاري تجهيزه في المستودع.</p>
 					</div>
 				</div>
 
@@ -529,7 +576,7 @@
 					</span>
 					<div class="flex-1 pt-0.5">
 						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">4. الاستلام والمعاينة (خلال 24-48 ساعة)</h5>
-						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">كيتصل بيك الموزع، كتقلب سلعتك وتتأكد منها عاد كتخلص.</p>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">كيتصل بيك الموزع (Livreur) باش يسلمك الكولية، كتقلب سلعتك وتتأكد منها عاد كتخلص.</p>
 					</div>
 				</div>
 			</div>
@@ -608,8 +655,9 @@
 	</main>
 
 	<!-- Footer -->
-	<footer class="bg-neutral-950 py-5 text-center text-xs text-neutral-400 px-4">
-		<p>© {new Date().getFullYear()} Valoriia. جميع الحقوق محفوظة.</p>
+	<footer class="bg-neutral-950 py-6 text-center text-xs text-neutral-400 px-4 space-y-1.5">
+		<p class="font-bold text-neutral-300">Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية</p>
+		<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
 	</footer>
 
 </div>

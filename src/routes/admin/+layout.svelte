@@ -95,9 +95,9 @@
 		<!-- Desktop sidebar (right side in RTL = start) -->
 		<aside class="fixed inset-y-0 right-0 z-40 hidden w-64 flex-col border-l border-neutral-200/70 bg-emerald-950 text-white lg:flex">
 			<a href="/admin" class="flex items-center gap-2.5 px-5 pt-6 pb-5">
-				<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-400 font-display text-xl font-bold text-emerald-950">ف</span>
+				<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-400 font-display text-xl font-bold text-emerald-950">L</span>
 				<span>
-					<span class="block font-display text-lg font-bold leading-none">Valoriia</span>
+					<span class="block font-display text-lg font-bold leading-none">Lhamza Shop</span>
 					<span class="mt-1 block text-[11px] text-emerald-200/60">لوحة التحكم</span>
 				</span>
 			</a>
@@ -187,8 +187,8 @@
 				<aside class="absolute inset-y-0 right-0 flex w-72 flex-col bg-emerald-950 text-white shadow-2xl">
 					<div class="flex items-center justify-between px-5 pt-5 pb-4">
 						<span class="flex items-center gap-2.5">
-							<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400 font-display text-lg font-bold text-emerald-950">ف</span>
-							<span class="font-display text-lg font-bold">Valoriia</span>
+							<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400 font-display text-lg font-bold text-emerald-950">L</span>
+							<span class="font-display text-lg font-bold">Lhamza Shop</span>
 						</span>
 						<button
 							type="button"
@@ -251,7 +251,7 @@
 							<path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
 						</svg>
 					</button>
-					<span class="font-display text-lg font-bold text-emerald-950 lg:hidden">Valoriia</span>
+					<span class="font-display text-lg font-bold text-emerald-950 lg:hidden">Lhamza Shop</span>
 					<div class="ms-auto flex items-center gap-2">
 						<a
 							href="/"
