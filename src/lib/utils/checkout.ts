@@ -7,6 +7,7 @@ import type { CartLine } from '$lib/stores/cart.svelte';
 export interface CheckoutCustomer {
 	fullName: string;
 	phoneNumber: string;
+	city?: string;
 }
 
 export interface CheckoutContext {
@@ -38,8 +39,8 @@ export function buildOrderPayload(
 		fullName: customer.fullName.trim(),
 		phoneNumber: customer.phoneNumber.trim(),
 		// City is collected on the confirmation call for popup orders.
-		address: 'يُحدد عند التأكيد',
-		city: 'يُحدد عند التأكيد',
+		address: customer.city?.trim() || 'يُحدد عند التأكيد',
+		city: customer.city?.trim() || 'يُحدد عند التأكيد',
 		offer: titles.join(' + '),
 		price: subtotal,
 		quantity: totalQty,
