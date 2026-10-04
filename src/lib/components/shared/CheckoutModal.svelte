@@ -61,7 +61,18 @@
 			'cart'
 		);
 
-		trackPurchase(payload.price as number, productTitle, payload.orderId as string);
+		const orderId = String(payload.orderId);
+		const orderTotal = Number(payload.price);
+		if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem('snap_order_' + orderId)) {
+			(window as any).snaptr('track', 'PURCHASE', {
+				price: Number(orderTotal),
+				currency: 'MAD',
+				transaction_id: String(orderId)
+			});
+			sessionStorage.setItem('snap_order_' + orderId, 'true');
+		}
+
+		trackPurchase(orderTotal, productTitle, orderId);
 
 		const completed: CompletedOrder = {
 			orderId: payload.orderId as string,

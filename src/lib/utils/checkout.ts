@@ -123,6 +123,7 @@ export function trackAddToCart(
 			(window as any).snaptr('track', 'ADD_CART', {
 				price: numPrice,
 				currency: 'MAD',
+				item_ids: [String(category || 'kit-tandim')],
 				item_category: category,
 				number_items: numberItems || 1
 			});
@@ -158,12 +159,12 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	const txnId = (transactionId || `ORD-${Date.now()}`).trim();
 
 	// Deduplication Guard: prevent duplicate Purchase events (especially on page reload or double firing)
-	const storageKey = `snap_purchased_${txnId}`;
+	const storageKey = `snap_order_${txnId}`;
 	try {
-		if (sessionStorage.getItem(storageKey)) {
+		if (sessionStorage.getItem(storageKey) || sessionStorage.getItem(`snap_purchased_${txnId}`)) {
 			return; // Already tracked for this transaction
 		}
-		sessionStorage.setItem(storageKey, '1');
+		sessionStorage.setItem(storageKey, 'true');
 	} catch {
 		// sessionStorage fallback
 	}
