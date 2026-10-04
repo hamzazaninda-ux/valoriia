@@ -7,7 +7,13 @@ export const load: PageServerLoad = async () => {
   const settings = await readSettings();
 
   return {
-    products: products.filter(p => p.status === 'published'),
+    products: products.filter(
+      (p) =>
+        p.status === 'published' &&
+        p.slug !== 'hamil-jidari-makanis' &&
+        p.slug !== 'filter-baloua' &&
+        !p.heroImage?.includes('79')
+    ),
     settings
   };
 };

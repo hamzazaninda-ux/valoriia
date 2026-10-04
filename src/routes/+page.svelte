@@ -23,59 +23,71 @@
 	// Fallback collection (3 slots) — disappears automatically once real products exist.
 	const placeholders: Slot[] = [
 		{
-			slug: '',
-			title: 'المنظم الذكي متعدد الاستعمال',
-			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب',
-			image: '',
-			price: 149,
-			oldPrice: 249,
-			discount: 'تخفيض 40%',
-			rating: 4.8,
-			reviews: 127,
-			real: false
+			slug: 'kit-tandim',
+			title: 'طقم التنظيم المنزلي + هدية',
+			subtitle: 'المنظم الذكي للحمام (بدون حفر) + رشاش فابور',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png',
+			price: 229,
+			oldPrice: 299,
+			discount: null,
+			rating: 4.9,
+			reviews: 203,
+			real: true
 		},
 		{
-			slug: '',
+			slug: 'mimsahat-asyr',
 			title: 'ممسحة العصر الذكية',
 			subtitle: 'عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة',
-			image: '',
+			image: 'https://placehold.co/800x800/fdf6e3/92400e?text=Lhamza+Shop',
 			price: 129,
 			oldPrice: 199,
-			discount: 'تخفيض 35%',
+			discount: null,
 			rating: 4.7,
 			reviews: 89,
 			real: false
 		},
 		{
-			slug: '',
-			title: 'طقم التنظيم المنزلي + هدية',
-			subtitle: 'ثلاث قطع أساسية لكل دار + الرشاش فابور',
-			image: '',
-			price: 199,
-			oldPrice: 299,
-			discount: 'تخفيض 33%',
-			rating: 4.9,
-			reviews: 203,
+			slug: 'monazzim-daki',
+			title: 'المنظم الذكي متعدد الاستعمال',
+			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب',
+			image: 'https://placehold.co/800x800/faf9f6/022c22?text=Lhamza+Shop',
+			price: 149,
+			oldPrice: 249,
+			discount: null,
+			rating: 4.8,
+			reviews: 127,
 			real: false
 		}
 	];
 
 	function toSlot(p: any): Slot {
+		const price = p.startingPrice || 229;
+		const oldPrice = p.oldPrice || (price === 229 ? 299 : Math.round(price * 1.3));
 		return {
 			slug: p.slug,
 			title: p.title,
 			subtitle: p.subtitle || '',
 			image: p.heroImage || '',
-			price: p.startingPrice || 0,
-			oldPrice: null,
+			price,
+			oldPrice,
 			discount: null,
-			rating: 0,
-			reviews: 0,
+			rating: p.rating || 4.9,
+			reviews: p.reviews || p.reviewCount || 203,
 			real: true
 		};
 	}
 
-	const real = $derived((data.products || []).slice(0, 12).map(toSlot));
+	const real = $derived(
+		(data.products || [])
+			.filter(
+				(p: any) =>
+					p.slug !== 'hamil-jidari-makanis' &&
+					p.slug !== 'filter-baloua' &&
+					!p.heroImage?.includes('79')
+			)
+			.slice(0, 12)
+			.map(toSlot)
+	);
 	const catalog = $derived(
 		real.length >= 3 ? real : [...real, ...placeholders].slice(0, 3)
 	);
@@ -427,100 +439,65 @@
 			<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{#each visible as s}
 					<article
-						class="group flex flex-col overflow-hidden rounded-3xl border border-neutral-200/60 bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:shadow-xl hover:border-neutral-300 active:scale-[0.99]"
+						class="group flex flex-col overflow-hidden rounded-3xl border border-neutral-200/70 bg-white p-3.5 sm:p-4 shadow-sm transition-all duration-300 ease-out hover:shadow-xl hover:border-neutral-300 active:scale-[0.99]"
 					>
-						<div class="relative h-60 overflow-hidden bg-neutral-50">
+						<div class="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden rounded-2xl bg-neutral-50 flex items-center justify-center">
 							{#if s.image}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
 									<img
 										src={s.image}
 										alt={s.title}
 										loading="lazy"
-										class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
 									/>
 								</a>
 							{:else}
-								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full" aria-label={s.title}>
-									<svg viewBox="0 0 320 220" class="h-full w-full" role="img" aria-label={s.title}>
-										<circle cx="255" cy="45" r="60" fill="#022c22" opacity="0.06" />
-										<circle cx="40" cy="185" r="70" fill="#d97706" opacity="0.08" />
-										<rect x="110" y="45" width="100" height="130" rx="12" fill="none" stroke="#022c22" stroke-width="4" opacity="0.75" />
-										<rect x="110" y="45" width="100" height="30" rx="12" fill="#022c22" opacity="0.12" />
-										<line x1="110" y1="105" x2="210" y2="105" stroke="#022c22" stroke-width="3" opacity="0.4" />
-										<line x1="110" y1="140" x2="210" y2="140" stroke="#022c22" stroke-width="3" opacity="0.4" />
-										<rect x="222" y="95" width="34" height="80" rx="8" fill="none" stroke="#d97706" stroke-width="4" opacity="0.8" />
-										<rect x="228" y="82" width="22" height="13" rx="4" fill="none" stroke="#d97706" stroke-width="4" opacity="0.8" />
-										<path d="M70 60 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#d97706" opacity="0.7" />
-										<circle cx="262" cy="60" r="3" fill="#022c22" opacity="0.3" />
-										<circle cx="60" cy="170" r="3" fill="#022c22" opacity="0.3" />
-									</svg>
+								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full p-4" aria-label={s.title}>
+									<div class="flex h-full w-full items-center justify-center rounded-xl bg-neutral-100/70 text-neutral-400">
+										<svg class="h-12 w-12 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+											<path stroke-linecap="round" stroke-linejoin="round" d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4M2 7h20" />
+										</svg>
+									</div>
 								</a>
-							{/if}
-							{#if s.discount}
-								<span class="absolute start-3 top-3 rounded-lg bg-rose-600 px-2.5 py-1 text-[11px] font-black text-white shadow-md">
-									{s.discount}
-								</span>
-							{/if}
-							{#if !s.real}
-								<span class="absolute end-3 top-3 rounded-lg border border-amber-500/30 bg-white/90 px-2.5 py-1 text-[11px] font-black text-amber-700 backdrop-blur">
-									قريباً
-								</span>
 							{/if}
 						</div>
 
-						<div class="flex flex-1 flex-col gap-3 p-5">
+						<div class="flex flex-1 flex-col justify-between gap-3 pt-3 sm:pt-4 px-1 pb-1">
 							<div>
 								{#if s.real}
-									<a href={`/${s.slug}`} class="text-[15px] font-extrabold leading-snug text-neutral-900 transition-colors hover:text-neutral-900">
+									<a href={`/${s.slug}`} class="font-display text-base sm:text-lg font-bold leading-snug text-neutral-900 transition-colors hover:text-emerald-950">
 										{s.title}
 									</a>
 								{:else}
-									<h3 class="text-[15px] font-extrabold leading-snug text-neutral-900">{s.title}</h3>
+									<h3 class="font-display text-base sm:text-lg font-bold leading-snug text-neutral-900">{s.title}</h3>
 								{/if}
-								<p class="mt-1 line-clamp-2 text-xs leading-relaxed text-neutral-500">{s.subtitle}</p>
+								{#if s.subtitle}
+									<p class="mt-1 line-clamp-2 text-xs leading-relaxed text-neutral-500">{s.subtitle}</p>
+								{/if}
 							</div>
-							<div class="flex items-baseline gap-2">
-								<span class="text-lg font-black text-neutral-900">{s.price} {cur}</span>
+
+							<div class="flex items-baseline gap-2.5">
+								<span class="font-display text-xl sm:text-2xl font-black text-neutral-950">{s.price} DH</span>
 								{#if s.oldPrice}
-									<span class="text-xs text-neutral-400 line-through">{s.oldPrice} {cur}</span>
+									<span class="text-xs sm:text-sm text-neutral-400 line-through font-semibold">{s.oldPrice} DH</span>
 								{/if}
 							</div>
+
 							{#if s.reviews > 0}
-								<div class="flex items-center gap-1.5">
+								<div class="flex items-center gap-1.5 text-xs text-neutral-500">
 									{@render stars(s.rating)}
 									<span class="text-[11px] text-neutral-400">({s.reviews} تقييم)</span>
 								</div>
-							{:else}
-								<div class="flex items-center gap-1.5">
-									<span class="rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-bold text-neutral-900">جديد في المتجر</span>
-								</div>
 							{/if}
-							<div class="mt-auto flex gap-2 pt-1">
-								{#if s.real}
-									<a
-										href={`/${s.slug}`}
-										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-neutral-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-neutral-800 active:scale-[0.98]"
-									>
-										اطلب دابا
-									</a>
-									<button
-										type="button"
-										onclick={() => addToCart(s)}
-										class="inline-flex min-h-12 w-12 items-center justify-center rounded-2xl border border-neutral-300 bg-neutral-100 text-neutral-800 transition-all duration-300 hover:bg-neutral-200 active:scale-95"
-										aria-label={`زيد ${s.title} للسلة`}
-									>
-										<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-										</svg>
-									</button>
-								{:else}
-									<a
-										href="#offer"
-										class="inline-flex min-h-12 flex-1 items-center justify-center rounded-2xl bg-neutral-950 px-4 text-sm font-bold text-white transition-all duration-300 hover:bg-neutral-800 active:scale-[0.98]"
-									>
-										احجز دابا
-									</a>
-								{/if}
+
+							<div class="mt-auto pt-2">
+								<a
+									href={s.real ? `/${s.slug}` : '#offer'}
+									class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
+									style="background-color: #1B4332;"
+								>
+									<span>اطلب الآن • الدفع عند الاستلام 🚚</span>
+								</a>
 							</div>
 						</div>
 					</article>
