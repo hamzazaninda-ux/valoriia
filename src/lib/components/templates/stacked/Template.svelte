@@ -232,8 +232,6 @@
 					loading="eager"
 				/>
 			</div>
-			<!-- Spacer so the icons strip can scroll fully above the compact sticky CTA -->
-			<div class="pb-24" aria-hidden="true"></div>
 			{#each slides.slice(1) as s, i}
 				<img
 					src={s.src}
@@ -254,6 +252,122 @@
 			<p class="text-xs text-neutral-500 leading-relaxed">زيد الصورة اللولة (9:16) وباقي التصاور من معرض الصور في لوحة التحكم</p>
 		</div>
 	{/if}
+
+	<!-- ── NO-DRILLING INSTALLATION & BEFORE/AFTER SHOWCASE ── -->
+	<section class="px-2 sm:px-4 pt-6 pb-2" dir="rtl">
+		<div class="rounded-3xl border border-neutral-200/70 bg-white p-4 sm:p-6 shadow-sm">
+			<!-- Header -->
+			<div class="text-center mb-5">
+				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
+					<svg class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+					</svg>
+					تثبيت ذكي بدون مسامير وبدون حفير
+				</span>
+				<h3 class="text-xl sm:text-2xl font-extrabold font-display text-neutral-900 tracking-tight">
+					سهولة التركيب في 3 خطوات
+				</h3>
+				<p class="text-xs sm:text-sm text-neutral-500 mt-1 font-medium">
+					ركّبو راسك فـ 5 دقايق بلا ما تضيّع لافايونس وبلا ما تحتاج معلم
+				</p>
+			</div>
+
+			<!-- 3 Steps -->
+			<div class="space-y-3">
+				<!-- Step 1 -->
+				<div class="flex items-start gap-3 rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-3 sm:p-3.5 transition-colors hover:bg-neutral-50">
+					<div class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800 border border-emerald-200/60">
+						<svg class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8 7l4-4m0 0l4 4m-4-4v18m-4-4l4 4m0 0l4-4" />
+						</svg>
+						<span class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-[11px] font-bold text-white shadow-xs">
+							1
+						</span>
+					</div>
+					<div class="flex-1 min-w-0">
+						<h4 class="font-extrabold text-sm sm:text-base text-neutral-900">عدّل الارتفاع</h4>
+						<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">
+							قابل للتعديل بسهولة من 1.10 متر إلى 3 أمتار ليناسب أي سقف.
+						</p>
+					</div>
+				</div>
+
+				<!-- Step 2 -->
+				<div class="flex items-start gap-3 rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-3 sm:p-3.5 transition-colors hover:bg-neutral-50">
+					<div class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800 border border-emerald-200/60">
+						<svg class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
+						</svg>
+						<span class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-[11px] font-bold text-white shadow-xs">
+							2
+						</span>
+					</div>
+					<div class="flex-1 min-w-0">
+						<h4 class="font-extrabold text-sm sm:text-base text-neutral-900">ثبّت بالضغط</h4>
+						<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">
+							نوابض داخلية قوية تثبت الحامل بين الأرض والسقف بإحكام بدون مسامير.
+						</p>
+					</div>
+				</div>
+
+				<!-- Step 3 -->
+				<div class="flex items-start gap-3 rounded-2xl border border-neutral-200/80 bg-neutral-50/50 p-3 sm:p-3.5 transition-colors hover:bg-neutral-50">
+					<div class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800 border border-emerald-200/60">
+						<svg class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h12A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6zM3.75 10.5h16.5m-16.5 4.5h16.5" />
+						</svg>
+						<span class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-[11px] font-bold text-white shadow-xs">
+							3
+						</span>
+					</div>
+					<div class="flex-1 min-w-0">
+						<h4 class="font-extrabold text-sm sm:text-base text-neutral-900">رتّب مستلزماتك</h4>
+						<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">
+							4 رفوف واسعة تتسع لأكثر من 15 كلغ من القنينات والصابون.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Before & After Comparison Box -->
+			<div class="mt-6 pt-5 border-t border-neutral-200/70">
+				<h4 class="text-center font-display font-extrabold text-base sm:text-lg text-neutral-900 mb-3.5">
+					الفرق قبل وبعد استعمال الحامل الذكي
+				</h4>
+				<div class="grid grid-cols-2 gap-2.5 sm:gap-4">
+					<!-- Before (قبل) -->
+					<div class="flex flex-col justify-between rounded-2xl border border-neutral-200 bg-neutral-50/80 p-3 sm:p-4 transition-all">
+						<div>
+							<div class="inline-flex items-center gap-1 rounded-lg bg-red-100 px-2 py-0.5 text-xs font-black text-red-700 mb-2">
+								<svg class="h-3.5 w-3.5 shrink-0 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+								</svg>
+								<span>قبل</span>
+							</div>
+							<p class="text-xs sm:text-sm font-medium text-neutral-600 leading-relaxed">
+								حمّام مكركب، قنينات طايحة في الأرض، وتلف مستمر في السيراميك بسبب المسامير.
+							</p>
+						</div>
+					</div>
+
+					<!-- After (بعد) -->
+					<div class="flex flex-col justify-between rounded-2xl border-2 border-emerald-600 bg-emerald-50/60 p-3 sm:p-4 shadow-sm transition-all">
+						<div>
+							<div class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2 py-0.5 text-xs font-black text-white mb-2 shadow-xs">
+								<svg class="h-3.5 w-3.5 shrink-0 text-white" viewBox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+								</svg>
+								<span>بعد</span>
+							</div>
+							<p class="text-xs sm:text-sm font-bold text-neutral-900 leading-relaxed">
+								حمّام منظم ومرتب في زاوية أنيقة، استغلال ذكي للمساحة، ونظافة بدون مجهود.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<!-- Checkout form -->
 	<div id="checkout-form" class="px-2 sm:px-4 py-6">
