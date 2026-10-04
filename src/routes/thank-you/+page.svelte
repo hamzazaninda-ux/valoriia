@@ -22,45 +22,52 @@
 	// Order data state
 	let order = $state<OrderData | null>(null);
 
-	// Retrieve order data from localStorage and redirect home on page refresh
-	onMount(() => {
-		// Check if page was refreshed / reloaded
-		const navEntries = performance.getEntriesByType('navigation');
-		const isReload = navEntries.length > 0 && (navEntries[0] as PerformanceNavigationTiming).type === 'reload';
-
-		if (isReload) {
-			localStorage.removeItem('latestOrder');
-			window.location.href = '/';
-			return;
-		}
-
-		const stored = localStorage.getItem('latestOrder');
+	onMount(async () => {
+		const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('latestOrder') : null;
 		if (stored) {
 			try {
 				order = JSON.parse(stored);
-				if (order && order.orderId && order.price) {
-					const orderId = String(order.orderId);
-					const total = Number(order.price);
-					if (typeof window !== 'undefined' && !sessionStorage.getItem('snap_order_' + orderId)) {
-						(window as any).snaptr?.('track', 'PURCHASE', {
-							price: Number(total),
-							currency: 'MAD',
-							transaction_id: String(orderId)
-						});
-						sessionStorage.setItem('snap_order_' + orderId, 'true');
-					}
-					trackPurchase(order.price, order.productTitle || 'طقم التنظيم المنزلي', order.orderId);
-				}
 			} catch (e) {
 				console.error('Error parsing stored order:', e);
 			}
 		}
 
-		// If no order data found (visited page directly), redirect to home page
+		const orderId = (order as any)?.id || order?.orderId || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('orderId') : null) || ('ORD-' + Date.now());
+		const totalPrice = Number((order as any)?.total || order?.price || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('total') : null) || 349);
+		const trackedKey = 'snap_tracked_purchase_' + orderId;
+
 		if (!order) {
-			window.location.href = '/';
-			return;
+			order = {
+				orderId: String(orderId),
+				fullName: 'عميل مميز',
+				phoneNumber: '',
+				address: 'المغرب',
+				date: new Date().toLocaleDateString('ar-MA'),
+				price: totalPrice,
+				productTitle: 'طقم التنظيم المنزلي + هدية'
+			};
 		}
+
+		const fireSnapPurchase = () => {
+			if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(trackedKey)) {
+				(window as any).snaptr('track', 'PURCHASE', {
+					price: totalPrice,
+					currency: 'MAD',
+					transaction_id: String(orderId)
+				});
+				sessionStorage.setItem(trackedKey, 'true');
+				console.log('✅ Snapchat PURCHASE tracked successfully:', { orderId, totalPrice });
+				return true;
+			}
+			return false;
+		};
+
+		if (!fireSnapPurchase()) {
+			setTimeout(fireSnapPurchase, 300);
+			setTimeout(fireSnapPurchase, 1000);
+		}
+
+		trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي', String(orderId));
 	});
 
 	// Function to clear order and go home manually when user clicks button

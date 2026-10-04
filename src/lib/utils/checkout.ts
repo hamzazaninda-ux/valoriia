@@ -167,19 +167,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		// sessionStorage fallback
 	}
 
-	// Snapchat Pixel
-	try {
-		if (typeof (window as any).snaptr === 'function') {
-			(window as any).snaptr('track', 'PURCHASE', {
-				price: numPrice,
-				currency: 'MAD',
-				transaction_id: txnId,
-				item_category: title
-			});
-		}
-	} catch (err) {
-		console.warn('[Pixel] Snap Purchase error:', err);
-	}
+
 
 	// Meta / Facebook Pixel
 	try {
