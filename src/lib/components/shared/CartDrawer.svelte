@@ -39,86 +39,47 @@
 	} = $props();
 
 	export const DRAIN_VALVE_IMAGE =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/مقارنة_قبل_وبعد_لسدادة_مصرف_الأرضية.png';
+	export const CHILD_LOCK_IMAGE =
+		'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp';
 
-	const crossSells = $derived(
-		others
-			.filter((p) => !cart.lines.some((l) => l.slug === p.slug))
-			.slice(0, 3)
-			.map((p) => {
-				const isDrainValve =
-					p.slug === 'samam-tasrif' ||
-					p.slug === 'filter-baloua' ||
-					p.title.includes('المجاري') ||
-					p.title.includes('صمام') ||
-					p.title.includes('البالوعة');
-				if (isDrainValve) {
-					return {
-						...p,
-						title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
-						heroImage: DRAIN_VALVE_IMAGE,
-						startingPrice: 35
-					};
-				}
-				const isChildLock =
-					p.slug === 'qofl-al-aman' ||
-					p.title.includes('قفل') ||
-					p.title.includes('صغارك');
-				if (isChildLock) {
-					return {
-						...p,
-						title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-						startingPrice: 49
-					};
-				}
-				return p;
-			})
-	);
+	const crossSells = $derived.by(() => {
+		const drainValve: CrossSell = {
+			slug: 'samam-tasrif',
+			title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
+			subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
+			heroImage: DRAIN_VALVE_IMAGE,
+			startingPrice: 35
+		};
 
-	const moreOffers = $derived(
-		(offers || []).filter(
-			(o) => currentSlug && !cart.lines.some((l) => l.slug === currentSlug && l.offerId === o.id)
-		)
-	);
+		const childLock: CrossSell = {
+			slug: 'qofl-al-aman',
+			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
+			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+			heroImage: CHILD_LOCK_IMAGE,
+			startingPrice: 49
+		};
+
+		return [drainValve, childLock].filter((p) => !cart.lines.some((l) => l.slug === p.slug));
+	});
 
 	function addCrossSell(p: CrossSell) {
-		const isDrainValve =
-			p.slug === 'samam-tasrif' ||
-			p.slug === 'filter-baloua' ||
-			p.title.includes('المجاري') ||
-			p.title.includes('صمام') ||
-			p.title.includes('البالوعة');
-		const isChildLock =
-			p.slug === 'qofl-al-aman' ||
-			p.title.includes('قفل') ||
-			p.title.includes('صغارك');
-		const addedTitle = isChildLock 
-			? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' 
-			: isDrainValve 
-				? 'تهنى نهائياً من ريحة المجاري والصراصير 🪳' 
-				: p.title;
-		const addedPrice = isDrainValve ? 35 : (p.startingPrice || 0);
+		const isDrainValve = p.slug === 'samam-tasrif';
+		const addedTitle = isDrainValve
+			? 'تهنى نهائياً من ريحة المجاري والصراصير 🪳'
+			: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒';
+		const addedImage = isDrainValve ? DRAIN_VALVE_IMAGE : CHILD_LOCK_IMAGE;
+		const addedPrice = isDrainValve ? 35 : 49;
+
 		cart.add({
 			slug: p.slug,
 			title: addedTitle,
-			image: isDrainValve ? DRAIN_VALVE_IMAGE : (p.heroImage || ''),
+			image: addedImage,
 			price: addedPrice,
 			offerId: 0,
 			offerTitle: 'العرض الأساسي'
 		});
 		trackAddToCart(addedPrice, addedTitle, currency);
-	}
-
-	function addOffer(o: DrawerOffer) {
-		cart.add({
-			slug: currentSlug,
-			title: currentTitle,
-			image: o.image?.trim() || currentImage,
-			price: o.price,
-			offerId: o.id,
-			offerTitle: o.title
-		});
-		trackAddToCart(o.price, o.title || currentTitle, currency);
 	}
 </script>
 
@@ -187,35 +148,6 @@
 						</div>
 					{/each}
 
-					{#if moreOffers.length > 0}
-						<div class="rounded-xl border border-amber-200 bg-amber-50/60 p-2.5">
-							<p class="px-1 pb-1.5 text-[13px] font-extrabold text-neutral-800">
-								زيد عرض آخر بنفس التوصيل
-							</p>
-							<div class="space-y-1.5">
-								{#each moreOffers as o}
-									<button
-										type="button"
-										onclick={() => addOffer(o)}
-										aria-label="أضف {o.title} إلى السلة"
-										class="flex min-h-12 w-full cursor-pointer items-center gap-2.5 rounded-xl border border-amber-200/70 bg-white p-2 text-right transition-all active:scale-[0.99] hover:border-amber-300"
-									>
-										<span class="min-w-0 flex-1 text-right">
-											<span class="block text-xs sm:text-sm font-extrabold text-neutral-800 line-clamp-2">{o.title}</span>
-											<span class="mt-0.5 block text-xs font-black text-emerald-700">{o.price} {currency}</span>
-										</span>
-										<span
-											aria-hidden="true"
-											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white"
-										>
-											+ أضف
-										</span>
-									</button>
-								{/each}
-							</div>
-						</div>
-					{/if}
-
 					{#if crossSells.length > 0}
 						<div class="pt-0.5">
 							<p class="px-1 pb-1.5 text-[13px] font-extrabold text-neutral-800">
@@ -226,7 +158,19 @@
 									<div class="flex items-center gap-2.5 rounded-xl border border-dashed border-emerald-600/30 bg-emerald-50/40 p-2">
 										<span class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200/60 bg-white">
 											{#if p.heroImage}
-												<img src={p.heroImage} alt={p.title} class="w-12 h-12 object-cover rounded-lg shrink-0" loading="eager" />
+												<img
+													src={p.heroImage}
+													alt={p.slug === 'samam-tasrif' ? 'صمام مجاري' : p.title}
+													class="w-12 h-12 rounded-lg object-cover shrink-0"
+													loading="eager"
+													onerror={(e) => {
+														const target = e.currentTarget as HTMLImageElement;
+														if (!target.dataset.tried) {
+															target.dataset.tried = '1';
+															if (p.slug === 'samam-tasrif') target.src = '/images/samam-tasrif.png';
+														}
+													}}
+												/>
 											{:else}
 												<svg class="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
 													<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
