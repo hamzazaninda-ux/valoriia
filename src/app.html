@@ -4,6 +4,9 @@
 		<!-- Google Tag Manager: add your container ID in content/settings/tracking.json -->
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="text-scale" content="scale" />
+		%sveltekit.head%
+
 		<!-- Snap Pixel Code -->
 		<script type="text/javascript">
 		(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
@@ -17,8 +20,6 @@
 		snaptr('track', 'PAGE_VIEW');
 		</script>
 		<!-- End Snap Pixel Code -->
-
-		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>

@@ -39,13 +39,15 @@
 			try {
 				order = JSON.parse(stored);
 				if (order && order.orderId && order.price) {
-					if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem('snap_order_' + order.orderId)) {
-						(window as any).snaptr('track', 'PURCHASE', {
-							price: Number(order.price),
+					const orderId = String(order.orderId);
+					const total = Number(order.price);
+					if (typeof window !== 'undefined' && !sessionStorage.getItem('snap_order_' + orderId)) {
+						(window as any).snaptr?.('track', 'PURCHASE', {
+							price: Number(total),
 							currency: 'MAD',
-							transaction_id: String(order.orderId)
+							transaction_id: String(orderId)
 						});
-						sessionStorage.setItem('snap_order_' + order.orderId, 'true');
+						sessionStorage.setItem('snap_order_' + orderId, 'true');
 					}
 					trackPurchase(order.price, order.productTitle || 'طقم التنظيم المنزلي', order.orderId);
 				}

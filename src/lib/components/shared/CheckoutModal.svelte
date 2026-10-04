@@ -63,8 +63,8 @@
 
 		const orderId = String(payload.orderId);
 		const orderTotal = Number(payload.price);
-		if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem('snap_order_' + orderId)) {
-			(window as any).snaptr('track', 'PURCHASE', {
+		if (typeof window !== 'undefined' && !sessionStorage.getItem('snap_order_' + orderId)) {
+			(window as any).snaptr?.('track', 'PURCHASE', {
 				price: Number(orderTotal),
 				currency: 'MAD',
 				transaction_id: String(orderId)
