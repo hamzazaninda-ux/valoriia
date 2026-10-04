@@ -217,7 +217,7 @@
 	<!-- 3. Hero: short photo banner (uploaded from settings) with overlay copy -->
 	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-3 md:pt-10">
 		{#if brand.heroImage}
-			<div class="relative overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] rounded-3xl mx-1 sm:mx-0">
+			<div class="relative overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.35)] rounded-3xl mx-3 sm:mx-0">
 				<div class="aspect-[16/10] w-full md:aspect-auto md:min-h-[540px]">
 					<img
 						src={brand.heroImage}
@@ -227,7 +227,7 @@
 					/>
 				</div>
 				<div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" aria-hidden="true"></div>
-				<div class="absolute inset-x-0 bottom-0 px-4 py-5 sm:p-5 pb-6 md:p-12">
+				<div class="absolute inset-x-0 bottom-0 px-4 py-3 sm:p-5 pb-5 md:p-12">
 					<div class="mx-auto max-w-2xl space-y-3 text-center md:space-y-4">
 						<h1 class="font-display text-[24px] sm:text-[26px] font-bold leading-[1.4] text-white drop-shadow-lg md:text-5xl md:leading-[1.4]">
 							رتّب دارك بلا عناء
@@ -253,7 +253,7 @@
 				</div>
 			</div>
 		{:else}
-			<div class="rounded-3xl border border-stone-200/70 bg-white px-4 py-6 mx-3 text-center shadow-sm md:p-12 md:mx-0">
+			<div class="rounded-3xl border border-stone-200/70 bg-white px-4 py-3 mx-3 text-center shadow-sm md:p-12 md:mx-0">
 				<div class="mx-auto max-w-xl space-y-3">
 					<h1 class="font-display text-2xl font-bold leading-[1.5] text-[#1E293B] md:text-5xl md:leading-[1.4]">
 						رتّب دارك بلا عناء
