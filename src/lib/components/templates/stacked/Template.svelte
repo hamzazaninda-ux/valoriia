@@ -20,14 +20,47 @@
 	let pricing = $derived(version.pricing);
 	let order = $derived(version.order);
 
-	let selectedPack = $state<number | null>(null);
+	const defaultOffers: ProductOffer[] = [
+		{
+			id: 1,
+			title: '1 قطعة + رشاشة هدية 🎁',
+			subtitle: 'توصيل مجاني لجميع المدن',
+			price: 229,
+			originalPrice: 299,
+			quantity: 1,
+			badge: null,
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png',
+			isPopular: false
+		},
+		{
+			id: 2,
+			title: '2 منظمات + 2 رشاشات هدية 🎁',
+			subtitle: 'توصيل مجاني لجميع المدن',
+			price: 349,
+			originalPrice: 458,
+			quantity: 2,
+			badge: '⭐ الأكثر طلباً',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png',
+			isPopular: true
+		}
+	];
+
+	const offersList = $derived.by(() => {
+		const rawOffers = (pricing?.offers && pricing.offers.length > 0) ? pricing.offers : defaultOffers;
+		if (rawOffers.length < 2) {
+			return defaultOffers;
+		}
+		return rawOffers;
+	});
+
+	let selectedPack = $state<number | null>(2);
 
 	const currentPackId = $derived(
-		selectedPack ?? pricing.offers.find((o: ProductOffer) => o.isPopular)?.id ?? pricing.offers[0]?.id ?? 1
+		selectedPack ?? offersList.find((o: ProductOffer) => o.isPopular)?.id ?? offersList[1]?.id ?? offersList[0]?.id ?? 2
 	);
 
 	const activeOffer = $derived(
-		pricing.offers.find((o: ProductOffer) => o.id === currentPackId) || pricing.offers[0] || { title: '', price: 0, quantity: 1 }
+		offersList.find((o: ProductOffer) => o.id === currentPackId) || offersList[1] || offersList[0] || { title: '', price: 0, quantity: 1 }
 	);
 
 	// â”€â”€ Stacked images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -238,83 +271,67 @@
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-2.5">
-							{#each pricing.offers as offer, idx}
-								{#if idx === 0 || offer.id === 1}
-									<label
-										class="relative flex w-full cursor-pointer items-center gap-2.5 sm:gap-3 rounded-xl border-2 border-[#0284c7] bg-[#f0f9ff] p-3 sm:p-4 transition-all duration-200 select-none active:scale-[0.99] shadow-sm"
-									>
-										<input
-											type="radio"
-											name="selectedPack-stacked"
-											value={offer.id}
-											checked={currentPackId === offer.id}
-											onchange={() => (selectedPack = offer.id)}
-											class="sr-only"
-										/>
-										{#if offer.image}
-											<span class="h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg bg-white border border-sky-100 shadow-sm">
-												<img src={offer.image} alt="1 قطعة + رشاشة هدية 🎁" class="h-full w-full object-cover" loading="lazy" />
-											</span>
-										{:else}
-											<span class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
-												<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-													<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-												</svg>
-											</span>
+						<div class="grid grid-cols-1 gap-3.5 pt-2">
+							{#each offersList as offer}
+								<label
+									class="relative flex w-full cursor-pointer items-center gap-2.5 sm:gap-3 rounded-xl border-2 p-3 sm:p-4 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-sky-600 bg-sky-50/60 shadow-sm' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+								>
+									<input
+										type="radio"
+										name="selectedPack-stacked"
+										value={offer.id}
+										checked={currentPackId === offer.id}
+										onchange={() => (selectedPack = offer.id)}
+										class="sr-only"
+									/>
+									{#if offer.badge || offer.isPopular || offer.id === 2}
+										<span class="absolute -top-3 right-4 z-10 bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[11px] px-3 py-0.5 rounded-full shadow-sm">
+											{offer.badge || '⭐ الأكثر طلباً'}
+										</span>
+									{/if}
+									<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 {currentPackId === offer.id ? 'border-sky-600 bg-sky-600' : 'border-neutral-300 bg-white'}">
+										{#if currentPackId === offer.id}
+											<span class="h-2 w-2 rounded-full bg-white"></span>
 										{/if}
-										<span class="min-w-0 flex-1 text-right">
+									</span>
+									{#if offer.image}
+										<span class="h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg bg-white border {currentPackId === offer.id ? 'border-sky-100' : 'border-neutral-200'} shadow-sm">
+											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
+										</span>
+									{:else}
+										<span class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+											<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+											</svg>
+										</span>
+									{/if}
+									<span class="min-w-0 flex-1 text-right">
+										{#if offer.id === 2}
+											<span class="block text-sm sm:text-base font-black text-gray-900 leading-snug">2 منظمات + 2 رشاشات هدية 🎁</span>
+											<span class="text-xs text-neutral-500 font-semibold mt-0.5 block">توصيل مجاني لجميع المدن</span>
+										{:else if offer.id === 1}
 											<span class="block text-sm sm:text-base font-bold text-gray-900 leading-snug">1 قطعة + رشاشة هدية 🎁</span>
 											<span class="mt-1 inline-block">
 												<span class="bg-[#0284c7] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-md inline-block shrink-0">توصيل مجاني</span>
 											</span>
-										</span>
-										<span class="shrink-0 text-left">
-											<span class="block whitespace-nowrap text-base sm:text-lg font-black text-gray-900">dh {offer.price.toFixed(2)}</span>
-										</span>
-									</label>
-								{:else}
-									<label
-										class="relative flex w-full cursor-pointer items-center gap-2.5 rounded-xl border-2 bg-white px-3 py-2.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-neutral-900 shadow-sm' : 'border-neutral-200'}"
-									>
-										<input
-											type="radio"
-											name="selectedPack-stacked"
-											value={offer.id}
-											checked={currentPackId === offer.id}
-											onchange={() => (selectedPack = offer.id)}
-											class="sr-only"
-										/>
-										{#if offer.image}
-											<span class="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-												<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
-											</span>
 										{:else}
-											<span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
-												<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-													<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-												</svg>
-											</span>
-										{/if}
-										<span class="min-w-0 flex-1 text-right">
 											<span class="block text-sm font-extrabold text-black">{offer.title}</span>
 											{#if offer.subtitle}
 												<span class="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-neutral-500">
-													<svg class="h-3.5 w-3.5 shrink-0 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-														<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-													</svg>
 													<span class="truncate">{offer.subtitle}</span>
 												</span>
 											{/if}
-										</span>
-										<span class="shrink-0 text-left">
-											<span class="block whitespace-nowrap text-[15px] font-black text-neutral-900">dh {offer.price.toFixed(2)}</span>
-											{#if offer.originalPrice > offer.price}
-												<span class="mt-0.5 block whitespace-nowrap text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
-											{/if}
-										</span>
-									</label>
-								{/if}
+										{/if}
+									</span>
+									<span class="shrink-0 text-left">
+										<span class="block whitespace-nowrap text-base sm:text-lg font-black text-gray-900">dh {offer.price.toFixed(2)}</span>
+										{#if offer.id === 2 || (offer.originalPrice && offer.originalPrice > offer.price && (offer.badge || offer.isPopular))}
+											<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 inline-block">وفّر {(offer.originalPrice ? offer.originalPrice - offer.price : 109)} درهم</span>
+										{:else if offer.originalPrice && offer.originalPrice > offer.price}
+											<span class="mt-0.5 block whitespace-nowrap text-[11px] text-neutral-400 line-through">dh {offer.originalPrice.toFixed(2)}</span>
+										{/if}
+									</span>
+								</label>
 							{/each}
 						</div>
 					</div>
@@ -393,7 +410,7 @@
 		</div>
 	{/if}
 
-	<CartDrawer others={cartUpsells} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={pricing.offers} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
+	<CartDrawer others={cartUpsells} currency={settings.commerce.currencySymbol || 'درهم'} salesText={t.sections.hero.salesCountText} offers={offersList} currentSlug={(product as any).slug || ''} currentTitle={content.title} currentImage={slides[0]?.src || ''} />
 	<CheckoutModal
 		currency={settings.commerce.currencySymbol || 'درهم'}
 		sheetsUrl={sheetsUrl}
