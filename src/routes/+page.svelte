@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Header from '$lib/components/shared/Header.svelte';
+	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import BottomNav from '$lib/components/shared/BottomNav.svelte';
 	import TrustSection from '$lib/components/sections/TrustSection.svelte';
 	let { data } = $props();
@@ -199,10 +200,9 @@
 {/snippet}
 
 <div id="top" class="min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-10 md:pb-0" dir="rtl">
-	<!-- 1. Single Elegant Top Announcement Banner -->
-	<div class="py-2.5 px-4 text-center text-xs sm:text-sm font-bold text-white shadow-2xs" style="background-color: #1B4332;" dir="rtl">
-		<span>🚚 التوصيل مجاني وسريع لجميع المدن المغربية • الدفع نقداً عند استلام ومعاينة طلبك</span>
-	</div>
+	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
+	<AnnouncementBar />
+
 
 	<!-- 2. Sticky header -->
 	<Header

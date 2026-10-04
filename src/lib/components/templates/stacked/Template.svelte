@@ -3,6 +3,7 @@
 	import { formatPrice } from '$lib/utils/format';
 	import { ShoppingCart } from '@lucide/svelte';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
+	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import UpsellModal from '$lib/components/shared/UpsellModal.svelte';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
@@ -258,10 +259,9 @@
 		</a>
 	</header>
 
-	<!-- Unified Announcement Banner -->
-	<div class="text-white text-center py-2.5 px-4 text-xs sm:text-sm font-bold shadow-2xs z-10 flex items-center justify-center gap-2" dir="rtl" style="background-color: #1B4332;">
-		<span>🚚 التوصيل مجاني وسريع لجميع المدن المغربية • الدفع نقداً عند استلام ومعاينة طلبك</span>
-	</div>
+	<!-- Unified Announcement Marquee Banner -->
+	<AnnouncementBar />
+
 
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
 	{#if slides.length > 0}
