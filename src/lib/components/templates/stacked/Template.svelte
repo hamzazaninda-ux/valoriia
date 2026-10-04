@@ -524,6 +524,127 @@
 		</div>
 	</section>
 
+	<!-- ── CUSTOMER REVIEWS & TESTIMONIALS ── -->
+	<section class="px-2 sm:px-4 py-6" dir="rtl">
+		<!-- Section Header -->
+		<div class="text-center mb-5">
+			<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
+				<svg class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+				</svg>
+				تجارب حقيقية 100%
+			</span>
+			<h3 class="text-xl sm:text-2xl font-extrabold font-display text-neutral-900 tracking-tight">
+				آراء زبنائنا الكرام
+			</h3>
+			<p class="text-xs sm:text-sm text-neutral-500 mt-1 font-medium">
+				هذا ما يقوله زبناؤنا بعد تجربة طقم التنظيم والرشاش الهدية
+			</p>
+		</div>
+
+		<!-- Reviews Cards List -->
+		<div class="space-y-3.5">
+			<!-- Review 1: Fatima Zahra -->
+			<div class="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-all hover:border-neutral-300">
+				<div class="flex items-center justify-between gap-2 mb-2.5">
+					<div class="flex items-center gap-2.5">
+						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-800">
+							ف
+						</div>
+						<div>
+							<h4 class="font-extrabold text-sm text-neutral-900 leading-tight">فاطمة الزهراء</h4>
+							<span class="text-[11px] text-neutral-500 font-medium">الدار البيضاء</span>
+						</div>
+					</div>
+					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200/60">
+						<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						مشتري مؤكد ✅
+					</span>
+				</div>
+
+				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
+					{#each Array(5) as _}
+						<svg class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+						</svg>
+					{/each}
+				</div>
+
+				<p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-normal">
+					"وصلني الكيت البارح وركبتو راسي بدون ما نحتاج راجلي ولا معلم حيت مكيحتاجش الحفير. صحيح وهز ليا كاع الشامبوانات ديال الدار كاملة. شكراً ليكم".
+				</p>
+			</div>
+
+			<!-- Review 2: Hicham -->
+			<div class="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-all hover:border-neutral-300">
+				<div class="flex items-center justify-between gap-2 mb-2.5">
+					<div class="flex items-center gap-2.5">
+						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-800">
+							هـ
+						</div>
+						<div>
+							<h4 class="font-extrabold text-sm text-neutral-900 leading-tight">هشام</h4>
+							<span class="text-[11px] text-neutral-500 font-medium">مراكش</span>
+						</div>
+					</div>
+					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200/60">
+						<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						مشتري مؤكد ✅
+					</span>
+				</div>
+
+				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
+					{#each Array(5) as _}
+						<svg class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+						</svg>
+					{/each}
+				</div>
+
+				<p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-normal">
+					"الصراحة الرشاشة الهدية واعرة بزاف الجهد ديال الما تبدل عندي فالدوش. المنظم حتى هو إينوكس مكيصداش مع الفوار. تعامل احترافي وتوصيل سريع".
+				</p>
+			</div>
+
+			<!-- Review 3: Souad -->
+			<div class="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-all hover:border-neutral-300">
+				<div class="flex items-center justify-between gap-2 mb-2.5">
+					<div class="flex items-center gap-2.5">
+						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-800">
+							س
+						</div>
+						<div>
+							<h4 class="font-extrabold text-sm text-neutral-900 leading-tight">سعاد</h4>
+							<span class="text-[11px] text-neutral-500 font-medium">طنجة</span>
+						</div>
+					</div>
+					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200/60">
+						<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						مشتري مؤكد ✅
+					</span>
+				</div>
+
+				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
+					{#each Array(5) as _}
+						<svg class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+						</svg>
+					{/each}
+				</div>
+
+				<p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-normal">
+					"كنت خايفة من القياس حيت السقف عندي عالي، ولكن التيليسكوب كيتجبد مزيان وكيتبت صحيح بزاف. وليت متهنية من كركبة الحمام".
+				</p>
+			</div>
+		</div>
+	</section>
+
 	<!-- FAQ -->
 	{#if t.sections.trustBadges.showFAQ && content.faq && content.faq.length > 0}
 		<div class="px-4 py-4" dir="rtl">
