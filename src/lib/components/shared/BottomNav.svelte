@@ -21,7 +21,7 @@
 	href={waUrl}
 	target="_blank"
 	rel="noopener"
-	class="fixed bottom-20 left-4 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl ring-4 ring-white transition-all duration-300 hover:scale-105 hover:bg-[#20ba56] active:scale-95 md:bottom-6 md:left-5 md:h-14 md:w-14"
+	class="fixed bottom-[76px] left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl ring-4 ring-white transition-all duration-300 hover:scale-105 hover:bg-[#20ba56] active:scale-95 md:bottom-6 md:left-5 md:h-14 md:w-14"
 	aria-label="تواصل معنا عبر واتساب"
 >
 	<svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

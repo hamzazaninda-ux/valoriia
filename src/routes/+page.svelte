@@ -27,12 +27,12 @@
 	const circularCategories = [
 		{
 			title: 'طقم الحمام الذكي',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png',
+			image: '/images/col_a.png',
 			href: '/kit-tandim'
 		},
 		{
 			title: 'منظمات ومماسح ذكية',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png',
+			image: '/images/col_b.png',
 			href: '/hamil-jidari-makanis'
 		},
 		{
@@ -233,8 +233,8 @@
 	/>
 
 	<!-- 3. Full-width Visual Branded Hero Banner -->
-	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-2 md:pt-4">
-		<div class="relative w-full aspect-[16/10] sm:aspect-[21/9] min-h-[300px] sm:min-h-[380px] overflow-hidden rounded-2xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)] mx-auto my-2">
+	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-1 md:pt-4">
+		<div class="relative w-full aspect-[2/1] sm:aspect-[21/9] min-h-[180px] max-h-[220px] sm:max-h-none sm:min-h-[380px] overflow-hidden rounded-2xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)] mx-auto mb-3 mt-1 sm:my-2">
 			<!-- Background image with fallback -->
 			<img
 				src={brand.heroImage || '/images/hero-banner.webp'}
@@ -251,20 +251,20 @@
 			<div class="absolute inset-0 bg-black/35 bg-gradient-to-t from-black/80 via-black/35 to-black/20" aria-hidden="true"></div>
 
 			<!-- Centered Content -->
-			<div class="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-				<div class="mx-auto max-w-2xl space-y-2.5 sm:space-y-3.5 px-2">
-					<h1 class="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold leading-[1.3] text-white drop-shadow-md">
+			<div class="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-6 text-center">
+				<div class="mx-auto max-w-2xl space-y-1.5 sm:space-y-3.5 px-2 mt-4 sm:mt-0">
+					<h1 class="font-display text-xl sm:text-4xl md:text-5xl font-extrabold leading-[1.3] text-white drop-shadow-md">
 						رتّب دارك بأناقة وراحة بال
 					</h1>
-					<p class="mx-auto max-w-lg text-xs sm:text-base md:text-lg font-medium leading-relaxed text-white/90 drop-shadow">
+					<p class="mx-auto max-w-lg text-[11px] sm:text-base md:text-lg font-medium leading-relaxed text-white/90 drop-shadow">
 						حلول ذكية للتنظيم المنزلي بدون حفر وبدون عناء
 					</p>
-					<div class="pt-2 sm:pt-3">
+					<div class="pt-1.5 sm:pt-3">
 						<a
 							href="#bestsellers"
-							class="inline-flex min-h-11 sm:min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-6 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
+							class="inline-flex min-h-9 sm:min-h-12 items-center justify-center gap-1.5 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-5 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
 						>
-							<span>اكتشف العروض الآن</span>
+							<span>اكتشف العروض</span>
 							<span aria-hidden="true">←</span>
 						</a>
 					</div>

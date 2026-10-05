@@ -47,20 +47,23 @@
 			</button>
 		</div>
 
-		<!-- 2. Center (المنتصف): Store Name "Lhamza Shop" in one clean line, no overlapping badge -->
+		<!-- 2. Center (المنتصف): Store Name "Lhamza Shop" with Branded Logo -->
 		<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto">
 			<a
 				href="#top"
-				class="group flex items-center whitespace-nowrap px-2 py-1"
+				class="group flex items-center gap-2 whitespace-nowrap px-2 py-1"
 				aria-label={brandName}
 			>
+				<span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B4332] text-[#C99738] font-bold text-lg">
+					L
+				</span>
 				<span class="font-display text-lg sm:text-2xl font-black tracking-tight text-[#1E293B] transition-colors group-hover:text-[#1B4332]">
 					{brandName}
 				</span>
 			</a>
 		</div>
 
-		<!-- 3. Left Side (جهة اليسار): Search icon + Cart icon comfortably spaced -->
+		<!-- 3. Left Side (جهة اليسار): Search icon + Cart icon (desktop only) -->
 		<div class="flex items-center gap-3 sm:gap-4">
 			{#if searchOpen}
 				<input
@@ -84,7 +87,7 @@
 			<button
 				type="button"
 				onclick={() => onOpenCart?.()}
-				class="relative flex h-10 w-10 items-center justify-center rounded-xl text-stone-700 transition-colors hover:bg-stone-200/60 active:scale-95"
+				class="relative hidden md:flex h-10 w-10 items-center justify-center rounded-xl text-stone-700 transition-colors hover:bg-stone-200/60 active:scale-95"
 				aria-label="سلة التسوق"
 			>
 				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
