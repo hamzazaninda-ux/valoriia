@@ -38,9 +38,17 @@
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 		<!-- Card 1: Package Inspection -->
 		<div class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-[#1B4332]/40 hover:shadow-xl">
+			<!-- Subtle Moroccan Geometric Pattern Accent (<= 5% opacity) -->
+			<div class="pointer-events-none absolute -end-6 -bottom-6 h-28 w-28 text-[#1B4332] opacity-[0.04]" aria-hidden="true">
+				<svg viewBox="0 0 100 100" fill="currentColor">
+					<polygon points="50,0 62,38 100,50 62,62 50,100 38,62 0,50 38,38" />
+					<circle cx="50" cy="50" r="16" fill="none" stroke="currentColor" stroke-width="4" />
+				</svg>
+			</div>
+
 			<div class="space-y-4">
 				<div class="flex items-center justify-between">
-					<span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
+					<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
 						<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
 						</svg>
@@ -50,9 +58,8 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B] flex items-center gap-1.5">
-						<span>📦</span>
-						<span>فتح الكولية وقلّب عاد خلّص</span>
+					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+						فتح الكولية وقلّب عاد خلّص
 					</h3>
 					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
 						حق المعاينة مكفول قانونياً وأخلاقياً. تأكد من جودة المنتج وجميع قطعه قبل دفع أي درهم للموزع.
@@ -69,9 +76,17 @@
 
 		<!-- Card 2: Direct Fast Delivery -->
 		<div class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-[#1B4332]/40 hover:shadow-xl">
+			<!-- Subtle Moroccan Geometric Pattern Accent (<= 5% opacity) -->
+			<div class="pointer-events-none absolute -end-6 -bottom-6 h-28 w-28 text-[#1B4332] opacity-[0.04]" aria-hidden="true">
+				<svg viewBox="0 0 100 100" fill="currentColor">
+					<polygon points="50,0 62,38 100,50 62,62 50,100 38,62 0,50 38,38" />
+					<circle cx="50" cy="50" r="16" fill="none" stroke="currentColor" stroke-width="4" />
+				</svg>
+			</div>
+
 			<div class="space-y-4">
 				<div class="flex items-center justify-between">
-					<span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
+					<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
 						<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
 						</svg>
@@ -81,9 +96,8 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B] flex items-center gap-1.5">
-						<span>⚡</span>
-						<span>توصيل مباشر حتى لباب دارك</span>
+					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+						توصيل مباشر حتى لباب دارك
 					</h3>
 					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
 						خدمة توصيل سريعة ومجانية تغطي كافة ربوع المملكة خلال 24 إلى 48 ساعة فقط.
@@ -100,9 +114,17 @@
 
 		<!-- Card 3: 14-Day Replacement Warranty -->
 		<div class="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-[#1B4332]/40 hover:shadow-xl">
+			<!-- Subtle Moroccan Geometric Pattern Accent (<= 5% opacity) -->
+			<div class="pointer-events-none absolute -end-6 -bottom-6 h-28 w-28 text-[#1B4332] opacity-[0.04]" aria-hidden="true">
+				<svg viewBox="0 0 100 100" fill="currentColor">
+					<polygon points="50,0 62,38 100,50 62,62 50,100 38,62 0,50 38,38" />
+					<circle cx="50" cy="50" r="16" fill="none" stroke="currentColor" stroke-width="4" />
+				</svg>
+			</div>
+
 			<div class="space-y-4">
 				<div class="flex items-center justify-between">
-					<span class="flex h-13 w-13 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
+					<span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1B4332] text-[#C99738] shadow-xs transition-transform duration-300 group-hover:scale-105">
 						<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0 1 12 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 0 1-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 0 1 4.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
 						</svg>
@@ -112,9 +134,8 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B] flex items-center gap-1.5">
-						<span>🛡️</span>
-						<span>ضمان استبدال رسمي لمدة 14 يوماً</span>
+					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+						ضمان استبدال رسمي لمدة 14 يوماً
 					</h3>
 					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
 						خدمة ما بعد البيع رهن إشارتك؛ في حال وجود أي ملاحظة أو عيب نقوم باستبدال المنتج مجاناً وبدون تعقيدات.

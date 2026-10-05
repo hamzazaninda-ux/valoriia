@@ -217,7 +217,20 @@
 	</div>
 {/snippet}
 
-<div id="top" class="min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-20 md:pb-0" dir="rtl">
+<div id="top" class="relative min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-20 md:pb-0" dir="rtl">
+	<!-- Ambient Moroccan Cultural Geometric Motif (<= 3% opacity, background only) -->
+	<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025]" aria-hidden="true">
+		<svg class="h-full w-full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<pattern id="moroccan-khatam" width="60" height="60" patternUnits="userSpaceOnUse">
+					<path d="M30 0 L40 20 L60 30 L40 40 L30 60 L20 40 L0 30 L20 20 Z" fill="none" stroke="#1B4332" stroke-width="1.2" />
+					<circle cx="30" cy="30" r="8" fill="none" stroke="#C99738" stroke-width="0.8" />
+				</pattern>
+			</defs>
+			<rect width="100%" height="100%" fill="url(#moroccan-khatam)" />
+		</svg>
+	</div>
+
 	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
 	<AnnouncementBar />
 
@@ -262,10 +275,12 @@
 					<div class="pt-1.5 sm:pt-3">
 						<a
 							href="#bestsellers"
-							class="inline-flex min-h-9 sm:min-h-12 items-center justify-center gap-1.5 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-5 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
+							class="inline-flex min-h-10 sm:min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-6 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
 						>
-							<span>اكتشف العروض</span>
-							<span aria-hidden="true">←</span>
+							<span>اكتشف العروض الحصرية</span>
+							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+							</svg>
 						</a>
 					</div>
 				</div>
@@ -275,11 +290,17 @@
 
 	<!-- 4. Collections: Circular Category Avatars directly below Hero -->
 	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-6 pb-2">
-		<div class="text-center mb-6">
+		<div class="text-center mb-5 space-y-1.5">
+			<span class="inline-flex items-center gap-1.5 rounded-full border border-stone-200/80 bg-white/80 px-3 py-0.5 text-[11px] font-bold text-stone-600 shadow-2xs">
+				<svg class="h-3 w-3 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+				</svg>
+				تشكيلة مختارة بعناية
+			</span>
 			<h2 class="font-display text-xl sm:text-2xl font-black text-[#1E293B] tracking-tight">
 				تسوّق حسب المجموعة
 			</h2>
-			<div class="mx-auto mt-2 h-[2px] w-20 rounded-full bg-stone-300"></div>
+			<div class="mx-auto h-0.5 w-16 rounded-full bg-[#1B4332]"></div>
 		</div>
 
 		<div class="flex overflow-x-auto justify-start sm:justify-center gap-4 sm:gap-8 px-2 sm:px-4 py-2 scrollbar-none" dir="rtl">
@@ -351,9 +372,17 @@
 			<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 				{#each visible as s}
 					<article
-						class="group flex flex-col overflow-hidden rounded-3xl border border-stone-200/60 bg-white p-3.5 sm:p-4 shadow-sm transition-all duration-300 ease-out hover:shadow-xl hover:border-stone-300 active:scale-[0.99]"
+						class="group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-3.5 sm:p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-[#1B4332]/30 active:scale-[0.99]"
 					>
 						<div class="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden rounded-2xl bg-stone-50 flex items-center justify-center">
+							<!-- Reassurance Floating Pill -->
+							<span class="absolute top-2.5 end-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-emerald-900 shadow-xs backdrop-blur-xs border border-emerald-100">
+								<svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+								</svg>
+								<span>توصيل مجاني</span>
+							</span>
+
 							{#if s.image}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
 									<img
@@ -402,14 +431,31 @@
 								</div>
 							{/if}
 
-							<div class="mt-auto pt-2">
+							<div class="mt-auto space-y-2 pt-2">
 								<a
 									href={s.real ? `/${s.slug}` : '#offer'}
-									class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
+									class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
 									style="background-color: #1B4332;"
 								>
-									<span>اطلب الآن • الدفع عند الاستلام 🚚</span>
+									<span>اطلب الآن • الدفع عند الاستلام</span>
+									<svg class="h-4 w-4 shrink-0 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+									</svg>
 								</a>
+								<div class="flex items-center justify-between text-[11px] text-stone-400 font-medium px-1">
+									<span class="flex items-center gap-1">
+										<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+											<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+										</svg>
+										معاينة قبل الدفع
+									</span>
+									<span class="flex items-center gap-1">
+										<svg class="h-3 w-3 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+											<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+										</svg>
+										ضمان 14 يوم
+									</span>
+								</div>
 							</div>
 						</div>
 					</article>
@@ -430,21 +476,38 @@
 		{/if}
 	</section>
 
-	<!-- 6. Trust strip -->
-	<div class="mt-14 overflow-hidden border-y border-stone-200/70 bg-white/70 py-4" aria-hidden="true">
+	<!-- 6. Trust strip (Rich Moroccan COD guarantees stream) -->
+	<div class="mt-14 overflow-hidden border-y border-stone-200/70 bg-white/80 py-3.5" aria-hidden="true">
 		<div class="animate-store-marquee-fast flex w-max items-center gap-10 pe-10">
 			{#each [0, 1] as dup}
-				<div class="flex items-center gap-10" aria-hidden={dup === 1}>
-					{#each Array(6) as _, i}
-						<span class="flex items-center gap-2 whitespace-nowrap">
-							<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 20 20" fill="currentColor">
-								<path d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
-							</svg>
-							<span class={`font-display text-lg font-bold ${i % 2 ? 'text-transparent' : 'text-[#1E293B]'}`} style={i % 2 ? '-webkit-text-stroke: 1px #94a3b8;' : ''}>
-								أكثر من 1000 عميل راضٍ
-							</span>
-						</span>
-					{/each}
+				<div class="flex items-center gap-8" aria-hidden={dup === 1}>
+					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
+						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 20 20" fill="currentColor">
+							<path d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
+						</svg>
+						أكثر من 1,000 عميل راضٍ بالمغرب
+					</span>
+					<span class="text-stone-300">•</span>
+					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-emerald-900">
+						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+						</svg>
+						حق المعاينة والتجربة قبل الدفع
+					</span>
+					<span class="text-stone-300">•</span>
+					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
+						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+						</svg>
+						توصيل مجاني وسريع 24h - 48h
+					</span>
+					<span class="text-stone-300">•</span>
+					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
+						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+						</svg>
+						ضمان استبدال رسمي 14 يوماً
+					</span>
 				</div>
 			{/each}
 		</div>

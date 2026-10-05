@@ -6,18 +6,18 @@
 	let { class: className = '' }: Props = $props();
 
 	const announcementText =
-		'🚚 التوصيل مجاني وسريع لجميع المدن المغربية  •  الدفع نقداً عند استلام ومعاينة طلبك  •  ضمان استبدال واسترجاع 14 يوماً  •  تأكيد فوري عبر الواتساب  •  ';
+		'التوصيل مجاني وسريع لجميع المدن المغربية  ✦  الدفع نقداً بعد استلام ومعاينة طلبك  ✦  ضمان استبدال واسترجاع 14 يوماً  ✦  تأكيد فوري عبر الواتساب  ✦  ';
 </script>
 
 <aside
-	class="relative z-50 flex h-9 w-full items-center overflow-hidden bg-[#1B4332] text-white shadow-2xs select-none {className}"
+	class="relative z-50 flex h-8 sm:h-9 w-full items-center overflow-hidden bg-[#1B4332] text-white shadow-2xs select-none {className}"
 	aria-label="شريط الإعلانات"
 	dir="ltr"
 >
 	<div class="marquee-track flex items-center whitespace-nowrap">
 		{#each [0, 1, 2, 3] as i}
 			<div
-				class="flex shrink-0 items-center pe-8 text-xs font-medium tracking-wide text-white/95"
+				class="flex shrink-0 items-center pe-8 text-[11px] sm:text-xs font-semibold tracking-wide text-white/95"
 				aria-hidden={i > 0}
 				dir="rtl"
 			>
