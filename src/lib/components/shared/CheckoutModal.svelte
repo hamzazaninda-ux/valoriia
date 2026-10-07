@@ -76,7 +76,12 @@
 				sessionStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
 				cart.clear();
 				loading = false;
-				onDone(completed);
+				if (onDone) {
+					onDone(completed);
+				} else {
+					cartUi.resetAll();
+					window.location.href = '/thank-you';
+				}
 			},
 			() => {
 				loading = false;
