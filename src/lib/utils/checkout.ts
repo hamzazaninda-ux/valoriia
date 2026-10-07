@@ -81,16 +81,39 @@ export function trackAddToCart(
 	const title = (productTitle || '').trim();
 	const id = String(itemId || 'kit-tandim');
 
-	// Deduplication guard: prevent duplicate events within 500ms for identical item
+	// Deduplication guard: prevent duplicate events within 1500ms for identical item
 	const now = Date.now();
 	const key = `${id}:${numPrice}`;
-	if (now - lastAddToCartTime < 500 && lastAddToCartKey === key) {
+	if (now - lastAddToCartTime < 1500 && lastAddToCartKey === key) {
+		console.log('[Tracking] AddToCart debounced (duplicate suppressed):', key);
 		return;
 	}
 	lastAddToCartTime = now;
 	lastAddToCartKey = key;
 
-	// Snapchat Pixel (Single Source of Truth)
+	// 1. Google Tag Manager / GA4 dataLayer event (Standard e-commerce schema)
+	try {
+		(window as any).dataLayer = (window as any).dataLayer || [];
+		(window as any).dataLayer.push({
+			event: 'add_to_cart',
+			ecommerce: {
+				currency: 'MAD',
+				value: numPrice,
+				items: [
+					{
+						item_id: id,
+						item_name: title,
+						price: numPrice,
+						quantity: numberItems || 1
+					}
+				]
+			}
+		});
+	} catch (err) {
+		console.warn('[Tracking] dataLayer add_to_cart error:', err);
+	}
+
+	// 2. Snapchat Pixel (Single Source of Truth)
 	try {
 		if (typeof (window as any).snaptr === 'function') {
 			(window as any).snaptr('track', 'ADD_CART', {
@@ -103,39 +126,25 @@ export function trackAddToCart(
 		console.warn('[Pixel] Snap ADD_CART error:', err);
 	}
 
-	// Meta / Facebook Pixel
+	// 3. Meta / Facebook Pixel
 	try {
 		if (typeof (window as any).fbq === 'function') {
 			(window as any).fbq('track', 'AddToCart', {
 				content_name: title,
 				content_type: 'product',
 				value: numPrice,
-				currency: cur
+				currency: 'MAD'
 			});
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta AddToCart error:', err);
 	}
 
-	// TikTok Pixel
-	try {
-		if (typeof (window as any).ttq?.track === 'function') {
-			(window as any).ttq.track('AddToCart', {
-				content_name: title,
-				content_type: 'product',
-				value: numPrice,
-				currency: cur
-			});
-		}
-	} catch (err) {
-		console.warn('[Pixel] TikTok AddToCart error:', err);
-	}
-
-	// Google Analytics / GA4 / Google Ads (gtag)
+	// 4. Google Analytics / GA4 / Google Ads (gtag)
 	try {
 		if (typeof (window as any).gtag === 'function') {
 			(window as any).gtag('event', 'add_to_cart', {
-				currency: cur,
+				currency: 'MAD',
 				value: numPrice,
 				items: [
 					{
@@ -158,21 +167,60 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	const txnId = (transactionId || `ORD-${Date.now()}`).trim();
 
 	// Deduplication Guard: prevent duplicate Purchase events (especially on page reload or double firing)
-	const storageKey = `snap_order_${txnId}`;
+	const storageKey = `tracked_order_${txnId}`;
 	try {
-		if (sessionStorage.getItem(storageKey) || sessionStorage.getItem(`snap_purchased_${txnId}`)) {
+		if (
+			sessionStorage.getItem(storageKey) ||
+			sessionStorage.getItem(`snap_order_${txnId}`) ||
+			sessionStorage.getItem(`snap_purchased_${txnId}`)
+		) {
+			console.log('[Tracking] Purchase already tracked for transaction:', txnId);
 			return; // Already tracked for this transaction
 		}
 		sessionStorage.setItem(storageKey, 'true');
+		sessionStorage.setItem(`snap_order_${txnId}`, 'true');
 	} catch {
 		// sessionStorage fallback
 	}
 
-
-
-	// Meta / Facebook Pixel
+	// 1. Google Tag Manager / GA4 dataLayer event (Standard e-commerce schema)
 	try {
-		if ((window as any).fbq) {
+		(window as any).dataLayer = (window as any).dataLayer || [];
+		(window as any).dataLayer.push({
+			event: 'purchase',
+			ecommerce: {
+				transaction_id: txnId,
+				value: numPrice,
+				currency: 'MAD',
+				items: [
+					{
+						item_name: title,
+						price: numPrice,
+						quantity: 1
+					}
+				]
+			}
+		});
+	} catch (err) {
+		console.warn('[Tracking] dataLayer purchase error:', err);
+	}
+
+	// 2. Snapchat Pixel
+	try {
+		if (typeof (window as any).snaptr === 'function') {
+			(window as any).snaptr('track', 'PURCHASE', {
+				price: numPrice,
+				currency: 'MAD',
+				transaction_id: txnId
+			});
+		}
+	} catch (err) {
+		console.warn('[Pixel] Snap PURCHASE error:', err);
+	}
+
+	// 3. Meta / Facebook Pixel
+	try {
+		if (typeof (window as any).fbq === 'function') {
 			(window as any).fbq('track', 'Purchase', {
 				value: numPrice,
 				currency: 'MAD',
@@ -184,23 +232,9 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		console.warn('[Pixel] Meta Purchase error:', err);
 	}
 
-	// TikTok Pixel
+	// 4. Google Analytics / GA4 / Google Ads (gtag)
 	try {
-		if ((window as any).ttq) {
-			(window as any).ttq.track('CompletePayment', {
-				value: numPrice,
-				currency: 'MAD',
-				content_name: title,
-				order_id: txnId
-			});
-		}
-	} catch (err) {
-		console.warn('[Pixel] TikTok Purchase error:', err);
-	}
-
-	// Google Analytics / GA4 / Google Ads (gtag)
-	try {
-		if ((window as any).gtag) {
+		if (typeof (window as any).gtag === 'function') {
 			(window as any).gtag('event', 'purchase', {
 				currency: 'MAD',
 				value: numPrice,

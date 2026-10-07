@@ -52,7 +52,17 @@
 		return [childLock].filter((p) => !cart.lines.some((l) => l.slug === p.slug));
 	});
 
-	function addCrossSell(p: CrossSell) {
+	let isAddingCrossSell = false;
+	function addCrossSell(p: CrossSell, e?: MouseEvent) {
+		if (e) {
+			e.stopPropagation();
+		}
+		if (isAddingCrossSell) return;
+		isAddingCrossSell = true;
+		setTimeout(() => {
+			isAddingCrossSell = false;
+		}, 1000);
+
 		const addedTitle = 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒';
 		const addedImage = CHILD_LOCK_IMAGE;
 		const addedPrice = 49;
@@ -169,7 +179,7 @@
 										</span>
 										<button
 											type="button"
-											onclick={() => addCrossSell(p)}
+											onclick={(e) => addCrossSell(p, e)}
 											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
 										>
 											+ زيد

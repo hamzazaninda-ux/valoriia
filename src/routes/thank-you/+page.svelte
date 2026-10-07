@@ -116,28 +116,17 @@
 			} catch {}
 		}
 
-		const trackedKey = 'snap_tracked_purchase_' + orderId;
-
-		const fireSnapPurchase = () => {
-			if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(trackedKey)) {
-				(window as any).snaptr('track', 'PURCHASE', {
-					price: totalPrice,
-					currency: 'MAD',
-					transaction_id: String(orderId)
-				});
-				sessionStorage.setItem(trackedKey, 'true');
-				console.log('✅ Snapchat PURCHASE tracked successfully:', { orderId, totalPrice });
-				return true;
+		// Single Source of Truth Deduplication Guard:
+		// Prevents duplicate Purchase events on page refresh, back navigation, or SPA routing.
+		const purchaseTrackingKey = 'tracked_order_' + orderId;
+		if (typeof window !== 'undefined') {
+			if (sessionStorage.getItem(purchaseTrackingKey)) {
+				console.log('[Tracking] Purchase already tracked for order:', orderId);
+			} else {
+				sessionStorage.setItem(purchaseTrackingKey, 'true');
+				trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
 			}
-			return false;
-		};
-
-		if (!fireSnapPurchase()) {
-			setTimeout(fireSnapPurchase, 300);
-			setTimeout(fireSnapPurchase, 1000);
 		}
-
-		trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
 	});
 
 	function copyOrderId() {

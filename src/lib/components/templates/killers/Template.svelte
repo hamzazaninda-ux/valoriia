@@ -130,15 +130,6 @@
 			timestamp: new Date().toISOString()
 		};
 
-		// Track Pixel Purchase event if present
-		if (typeof window !== 'undefined') {
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'Purchase', { value: orderData.price, currency: currency, content_name: productTitle });
-			}
-			if ((window as any).ttq) {
-				(window as any).ttq.track('CompletePayment', { value: orderData.price, currency: currency, content_name: productTitle });
-			}
-		}
 
 		// Product-specific URL takes priority over the global default
 		const sheetsUrl = (order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim();

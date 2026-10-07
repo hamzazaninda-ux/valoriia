@@ -60,7 +60,6 @@
 			},
 			'cart'
 		);
-		trackPurchase(payload.price as number, productTitle, payload.orderId as string);
 
 		const completed: CompletedOrder = {
 			orderId: payload.orderId as string,
@@ -74,6 +73,7 @@
 		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
 			() => {
 				localStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
+				sessionStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
 				cart.clear();
 				loading = false;
 				onDone(completed);
