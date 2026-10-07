@@ -232,7 +232,7 @@
 	</div>
 
 	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
-	<AnnouncementBar />
+	<AnnouncementBar isStatic={false} />
 
 
 	<!-- 2. Sticky header -->

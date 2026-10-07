@@ -259,8 +259,8 @@
 		</a>
 	</header>
 
-	<!-- Unified Announcement Marquee Banner -->
-	<AnnouncementBar />
+	<!-- Static Announcement Banner for Product Landing -->
+	<AnnouncementBar isStatic={true} />
 
 
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
