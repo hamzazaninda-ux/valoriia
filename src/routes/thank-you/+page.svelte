@@ -128,6 +128,22 @@
 				trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
 			}
 		}
+
+		// TikTok CompletePayment Deduplication Guard (Strict Zero-Duplication)
+		const ttStorageKey = `tt_tracked_${orderId}`;
+		if (typeof window !== 'undefined') {
+			if (!sessionStorage.getItem(ttStorageKey) && !localStorage.getItem(ttStorageKey)) {
+				sessionStorage.setItem(ttStorageKey, 'true');
+				localStorage.setItem(ttStorageKey, 'true');
+				if ((window as any).ttq && typeof (window as any).ttq.track === 'function') {
+					(window as any).ttq.track('CompletePayment', {
+						content_type: 'product',
+						value: totalPrice,
+						currency: 'MAD'
+					});
+				}
+			}
+		}
 	});
 
 	function copyOrderId() {
