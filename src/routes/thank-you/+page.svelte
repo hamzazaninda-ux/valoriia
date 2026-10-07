@@ -129,19 +129,16 @@
 			}
 		}
 
-		// TikTok CompletePayment Deduplication Guard (Strict Zero-Duplication)
-		const ttStorageKey = `tt_tracked_${orderId}`;
-		if (typeof window !== 'undefined') {
-			if (!sessionStorage.getItem(ttStorageKey) && !localStorage.getItem(ttStorageKey)) {
-				sessionStorage.setItem(ttStorageKey, 'true');
-				localStorage.setItem(ttStorageKey, 'true');
-				if ((window as any).ttq && typeof (window as any).ttq.track === 'function') {
-					(window as any).ttq.track('CompletePayment', {
-						content_type: 'product',
-						value: totalPrice,
-						currency: 'MAD'
-					});
-				}
+		// Manual Direct TikTok CompletePayment Tracking (Zero Duplication)
+		if (typeof window !== 'undefined' && (window as any).ttq) {
+			const orderKey = 'tt_order_tracked_' + (orderId || 'default');
+			if (!sessionStorage.getItem(orderKey)) {
+				(window as any).ttq.track('CompletePayment', {
+					content_name: 'طقم التنظيم المنزلي',
+					currency: 'MAD',
+					value: totalPrice || 229
+				});
+				sessionStorage.setItem(orderKey, 'true');
 			}
 		}
 	});

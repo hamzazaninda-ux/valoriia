@@ -149,6 +149,7 @@
 	});
 
 	let isAddingToCart = false;
+	let lastTtAddToCart = 0;
 	function addSelectedToCart(e?: MouseEvent) {
 		if (e) {
 			e.stopPropagation();
@@ -157,7 +158,22 @@
 		isAddingToCart = true;
 		setTimeout(() => {
 			isAddingToCart = false;
-		}, 1000);
+		}, 1500);
+
+		const selectedPrice = activeOffer.price || 229;
+
+		// Manual direct TikTok AddToCart with 1.5s Debounce
+		const now = Date.now();
+		if (now - lastTtAddToCart > 1500) {
+			lastTtAddToCart = now;
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				(window as any).ttq.track('AddToCart', {
+					content_name: 'طقم التنظيم المنزلي',
+					currency: 'MAD',
+					value: selectedPrice || 229
+				});
+			}
+		}
 
 		cart.clear();
 		cart.add({

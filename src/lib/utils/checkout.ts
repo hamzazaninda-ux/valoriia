@@ -159,22 +159,6 @@ export function trackAddToCart(
 		console.warn('[Pixel] gtag add_to_cart error:', err);
 	}
 
-	// 5. TikTok Pixel (Strict Deduplicated AddToCart)
-	try {
-		if (typeof (window as any).ttq !== 'undefined' && typeof (window as any).ttq.track === 'function') {
-			(window as any).ttq.track('AddToCart', {
-				content_type: 'product',
-				content_id: id,
-				content_name: title,
-				quantity: numberItems || 1,
-				price: numPrice,
-				value: numPrice,
-				currency: 'MAD'
-			});
-		}
-	} catch (err) {
-		console.warn('[Pixel] TikTok AddToCart error:', err);
-	}
 }
 
 export function trackPurchase(price: number, productTitle: string, transactionId?: string) {
