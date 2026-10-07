@@ -208,7 +208,7 @@
 						onclick={() => cartUi.openCheckout()}
 						class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-emerald-950 font-bold text-white shadow transition-all hover:bg-emerald-900 active:scale-[0.98]"
 					>
-						أكمل الطلب ({cart.count})
+						<span class="pointer-events-none" style="pointer-events: none;">أكمل الطلب ({cart.count})</span>
 					</button>
 					<p class="text-center text-[11px] text-neutral-400">الدفع عند الاستلام — ما تخلص حتى توصلك السلعة</p>
 				</div>

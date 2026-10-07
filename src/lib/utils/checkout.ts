@@ -171,6 +171,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	try {
 		if (
 			sessionStorage.getItem(storageKey) ||
+			localStorage.getItem(storageKey) ||
 			sessionStorage.getItem(`snap_order_${txnId}`) ||
 			sessionStorage.getItem(`snap_purchased_${txnId}`)
 		) {
@@ -178,9 +179,10 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 			return; // Already tracked for this transaction
 		}
 		sessionStorage.setItem(storageKey, 'true');
+		localStorage.setItem(storageKey, 'true');
 		sessionStorage.setItem(`snap_order_${txnId}`, 'true');
 	} catch {
-		// sessionStorage fallback
+		// storage fallback
 	}
 
 	// 1. Google Tag Manager / GA4 dataLayer event (Standard e-commerce schema)

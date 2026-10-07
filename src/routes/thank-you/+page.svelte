@@ -120,10 +120,11 @@
 		// Prevents duplicate Purchase events on page refresh, back navigation, or SPA routing.
 		const purchaseTrackingKey = 'tracked_order_' + orderId;
 		if (typeof window !== 'undefined') {
-			if (sessionStorage.getItem(purchaseTrackingKey)) {
+			if (sessionStorage.getItem(purchaseTrackingKey) || localStorage.getItem(purchaseTrackingKey)) {
 				console.log('[Tracking] Purchase already tracked for order:', orderId);
 			} else {
 				sessionStorage.setItem(purchaseTrackingKey, 'true');
+				localStorage.setItem(purchaseTrackingKey, 'true');
 				trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
 			}
 		}
@@ -167,7 +168,7 @@
 
 			const payload = buildOrderPayload(
 				{ fullName: order.fullName, phoneNumber: order.phoneNumber, city: order.address },
-				[{ key: 'phone-update', slug: 'phone-update', title: 'تعديل رقم الهاتف', price: 0, offerId: 0, qty: 1 }],
+				[{ key: 'phone-update', slug: 'phone-update', title: 'تعديل رقم الهاتف', price: 0, offerId: 0, qty: 1, image: '', offerTitle: '' }],
 				{ productTitle: 'تعديل رقم الهاتف', sku: 'PHONE-UPDATE', currency: 'DH', pageUrl: typeof window !== 'undefined' ? window.location.href : '' },
 				'update',
 				order.orderId

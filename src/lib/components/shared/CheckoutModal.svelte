@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cart, cartUi, type CompletedOrder } from '$lib/stores/cart.svelte';
-	import { buildOrderPayload, sendOrder, trackPurchase } from '$lib/utils/checkout';
+	import { buildOrderPayload, sendOrder } from '$lib/utils/checkout';
 	import { isValidMoroccanPhone } from '$lib/utils/phone';
 
 	let {
@@ -190,10 +190,10 @@
 						class="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98] disabled:opacity-60"
 					>
 						{#if loading}
-							<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-							<span>جاري إرسال الطلب…</span>
+							<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent pointer-events-none" style="pointer-events: none;"></span>
+							<span class="pointer-events-none" style="pointer-events: none;">جاري إرسال الطلب…</span>
 						{:else}
-							<span>أكّد الطلب — {cart.subtotal} {currency}</span>
+							<span class="pointer-events-none" style="pointer-events: none;">أكّد الطلب — {cart.subtotal} {currency}</span>
 						{/if}
 					</button>
 					{#if submitError}

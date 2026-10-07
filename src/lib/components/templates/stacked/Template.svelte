@@ -487,8 +487,8 @@
 						onclick={addSelectedToCart}
 						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#15803D] py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-[#166534] active:scale-[0.98]"
 					>
-						<ShoppingCart class="h-5 w-5 shrink-0 pointer-events-none" />
-						<span class="pointer-events-none">أضف العرض للسلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+						<ShoppingCart class="h-5 w-5 shrink-0 pointer-events-none" style="pointer-events: none;" />
+						<span class="pointer-events-none" style="pointer-events: none;">أضف العرض للسلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
 					</button>
 
 
