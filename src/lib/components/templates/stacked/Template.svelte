@@ -8,7 +8,7 @@
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
-	import { trackAddToCart } from '$lib/utils/checkout';
+
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
 
@@ -149,30 +149,39 @@
 	});
 
 	let isAddingToCart = false;
-	let lastTtAddToCart = 0;
+	let lastAddToCart = 0;
 	function addSelectedToCart(e?: MouseEvent) {
 		if (e) {
 			e.stopPropagation();
 		}
-		if (isAddingToCart) return;
+		const now = Date.now();
+		if (isAddingToCart || now - lastAddToCart < 2000) return;
 		isAddingToCart = true;
+		lastAddToCart = now;
 		setTimeout(() => {
 			isAddingToCart = false;
-		}, 1500);
+		}, 2000);
 
 		const selectedPrice = activeOffer.price || 229;
 
-		// Manual direct TikTok AddToCart with 1.5s Debounce
-		const now = Date.now();
-		if (now - lastTtAddToCart > 1500) {
-			lastTtAddToCart = now;
-			if (typeof window !== 'undefined' && (window as any).ttq) {
-				(window as any).ttq.track('AddToCart', {
-					content_name: 'طقم التنظيم المنزلي',
+		// Single Pure Manual TikTok AddToCart Trigger
+		if (typeof window !== 'undefined' && (window as any).ttq) {
+			(window as any).ttq.track('AddToCart', {
+				content_name: 'طقم التنظيم المنزلي',
+				currency: 'MAD',
+				value: selectedPrice
+			});
+		}
+
+		// Direct Snapchat tracking without dataLayer
+		if (typeof window !== 'undefined' && (window as any).snaptr) {
+			try {
+				(window as any).snaptr('track', 'ADD_CART', {
+					price: selectedPrice,
 					currency: 'MAD',
-					value: selectedPrice || 229
+					item_ids: [String(activeOffer.id || 'kit-tandim')]
 				});
-			}
+			} catch {}
 		}
 
 		cart.clear();
@@ -180,16 +189,10 @@
 			slug: (product as any).slug || '',
 			title: content.title || 'منتج',
 			image: slides[0]?.src || '',
-			price: activeOffer.price || 0,
+			price: selectedPrice,
 			offerId: (activeOffer as ProductOffer).id ?? 0,
 			offerTitle: activeOffer.title || ''
 		});
-		trackAddToCart(
-			activeOffer.price || 0,
-			content.title || 'طقم التنظيم المنزلي',
-			'MAD',
-			activeOffer.id ? String(activeOffer.id) : 'kit-tandim'
-		);
 		cartUi.openDrawer();
 	}
 
@@ -501,7 +504,7 @@
 					<button
 						type="button"
 						onclick={addSelectedToCart}
-						class="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#15803D] py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-[#166534] active:scale-[0.98]"
+						class="add-to-cart flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#15803D] py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-[#166534] active:scale-[0.98]"
 					>
 						<ShoppingCart class="h-5 w-5 shrink-0 pointer-events-none" style="pointer-events: none;" />
 						<span class="pointer-events-none" style="pointer-events: none;">أضف العرض للسلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>

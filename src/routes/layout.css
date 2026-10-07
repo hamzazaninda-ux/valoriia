@@ -146,3 +146,9 @@ html {
 .animate-shake {
   animation: shake 0.4s ease-in-out;
 }
+
+/* Zero Event Bubbling on Add to Cart Buttons */
+button.add-to-cart *, .add-to-cart * {
+  pointer-events: none !important;
+}
+

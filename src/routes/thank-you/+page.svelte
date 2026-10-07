@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { buildOrderPayload, sendOrder, trackPurchase } from '$lib/utils/checkout';
+	import { buildOrderPayload, sendOrder } from '$lib/utils/checkout';
 
 	let { data }: { data?: { sheetsUrl?: string; whatsappNumber?: string } } = $props();
 
@@ -116,29 +116,16 @@
 			} catch {}
 		}
 
-		// Single Source of Truth Deduplication Guard:
-		// Prevents duplicate Purchase events on page refresh, back navigation, or SPA routing.
-		const purchaseTrackingKey = 'tracked_order_' + orderId;
-		if (typeof window !== 'undefined') {
-			if (sessionStorage.getItem(purchaseTrackingKey) || localStorage.getItem(purchaseTrackingKey)) {
-				console.log('[Tracking] Purchase already tracked for order:', orderId);
-			} else {
-				sessionStorage.setItem(purchaseTrackingKey, 'true');
-				localStorage.setItem(purchaseTrackingKey, 'true');
-				trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
-			}
-		}
-
 		// Manual Direct TikTok CompletePayment Tracking (Zero Duplication)
 		if (typeof window !== 'undefined' && (window as any).ttq) {
-			const orderKey = 'tt_order_tracked_' + (orderId || 'default');
-			if (!sessionStorage.getItem(orderKey)) {
+			const isFired = sessionStorage.getItem('order_tracked_' + orderId);
+			if (!isFired) {
 				(window as any).ttq.track('CompletePayment', {
 					content_name: 'طقم التنظيم المنزلي',
 					currency: 'MAD',
 					value: totalPrice || 229
 				});
-				sessionStorage.setItem(orderKey, 'true');
+				sessionStorage.setItem('order_tracked_' + orderId, 'true');
 			}
 		}
 	});
