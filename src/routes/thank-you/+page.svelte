@@ -29,11 +29,7 @@
 	// Time check: daytime (9:00 - 21:00) vs night
 	let isDaytime = $state(true);
 
-	// Post-order 1-click upsell state
-	let upsellStatus = $state<'idle' | 'loading' | 'added' | 'error'>('idle');
-	let upsellAdded = $state(false);
-
-	const currentTotal = $derived((order?.price || 349) + (upsellAdded ? 35 : 0));
+	const currentTotal = $derived(order?.price || 229);
 
 	onMount(async () => {
 		const hour = new Date().getHours();
@@ -105,7 +101,7 @@
 			address,
 			date: rawOrder?.date || new Date().toLocaleDateString('ar-MA'),
 			price: totalPrice,
-			productTitle: rawOrder?.productTitle || 'باك الحمام الذكي',
+			productTitle: rawOrder?.productTitle || 'طقم التنظيم المنزلي + هدية',
 			offer: rawOrder?.offer || '',
 			sku: rawOrder?.sku || 'SKU-GENERAL',
 			qte: rawOrder?.qte || rawOrder?.quantity || 1
@@ -141,7 +137,7 @@
 			setTimeout(fireSnapPurchase, 1000);
 		}
 
-		trackPurchase(totalPrice, order.productTitle || 'باك الحمام الذكي', String(orderId));
+		trackPurchase(totalPrice, order.productTitle || 'طقم التنظيم المنزلي + هدية', String(orderId));
 	});
 
 	function copyOrderId() {
@@ -196,62 +192,11 @@
 	const whatsappUrl = $derived.by(() => {
 		const orderId = order?.orderId || 'ORD-000000';
 		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
-		const msg = `سلام عليكم، قمت بطلب باك الحمام الذكي من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
+		const msg = `سلام عليكم، قمت بطلب طقم التنظيم المنزلي من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
 		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
 	});
 
-	async function handleAddUpsell() {
-		if (!order || upsellStatus === 'loading' || upsellStatus === 'added') return;
-		upsellStatus = 'loading';
-
-		const fallbackSheetsUrl =
-			'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
-		const targetSheetsUrl = data?.sheetsUrl || fallbackSheetsUrl;
-
-		const payload = buildOrderPayload(
-			{ fullName: order.fullName, phoneNumber: order.phoneNumber, city: order.address },
-			[
-				{
-					key: 'samam-tasrif-upsell',
-					slug: 'samam-tasrif',
-					title: 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات 🪳',
-					image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png',
-					price: 35,
-					offerId: 0,
-					offerTitle: 'عرض ما بعد الطلب: صمام تصريف بـ 35 DH',
-					qty: 1
-				}
-			],
-			{
-				productTitle: 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات',
-				sku: 'SAMAM-TASRIF-35DH',
-				currency: 'DH',
-				pageUrl: typeof window !== 'undefined' ? window.location.href : ''
-			},
-			'upsell',
-			order.orderId
-		);
-
-		trackPurchase(35, 'صمام سيليكون ذكي مانع لروائح المجاري والحشرات', `${order.orderId}-U1`);
-
-		try {
-			await sendOrder(payload as Record<string, unknown>, targetSheetsUrl);
-		} catch (e) {
-			console.error('Error submitting post-order upsell:', e);
-		} finally {
-			upsellAdded = true;
-			upsellStatus = 'added';
-			const updated = { ...order, price: (order.price || 349) + 35 };
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('latestOrder', JSON.stringify(updated));
-			}
-			if (typeof sessionStorage !== 'undefined') {
-				sessionStorage.setItem('latestOrder', JSON.stringify(updated));
-				sessionStorage.setItem('lastCompletedOrder', JSON.stringify(updated));
-			}
-		}
-	}
-
+	
 	function handleBackHome() {
 		window.location.href = '/';
 	}
@@ -427,68 +372,6 @@
 			</div>
 		</div>
 
-		<!-- 5. 1-Click Post-Purchase Upsell Engine -->
-		<div class="w-full rounded-3xl border-2 border-emerald-500 bg-gradient-to-b from-emerald-50/60 to-white p-4 sm:p-5 mb-6 shadow-md relative overflow-hidden">
-			<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold mb-3 shadow-xs">
-				<span>✨</span>
-				<span>عرض خاص بالطلبية ديالك فقط (شحن مجاني مدمج)</span>
-			</div>
-
-			<div class="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-4">
-				<div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0 rounded-2xl overflow-hidden bg-white border border-emerald-100 shadow-xs flex items-center justify-center">
-					<img
-						src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png"
-						alt="صمام سيليكون ذكي مانع لروائح المجاري والحشرات"
-						class="w-full h-full object-cover"
-						loading="lazy"
-					/>
-					<span class="absolute top-1.5 right-1.5 bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs">
-						-50%
-					</span>
-				</div>
-
-				<div class="flex-1 text-right w-full">
-					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug mb-1">
-						صمام سيليكون ذكي مانع لروائح المجاري والحشرات 🪳
-					</h4>
-					<p class="text-xs text-neutral-600 leading-relaxed mb-2.5">
-						صمام ذكي من السيليكون كيهنيك نهائياً من الروائح الكريهة وحشرات المجاري، كيركب فـ 5 ثواني بدون أدوات.
-					</p>
-					<div class="flex items-baseline gap-2 mb-3">
-						<span class="text-xl sm:text-2xl font-black text-emerald-700 font-mono">35 DH</span>
-						<span class="text-xs text-neutral-400 line-through">70 DH</span>
-						<span class="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">وفّر 35 درهم</span>
-					</div>
-
-					{#if upsellAdded}
-						<div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3 text-center">
-							<p class="text-xs sm:text-sm font-extrabold text-emerald-800 flex items-center justify-center gap-1.5">
-								<span>✅</span>
-								<span>تمت الإضافة لطلبيتك بنجاح (+35 DH)</span>
-							</p>
-							<p class="text-[11px] text-emerald-700 mt-0.5 font-medium">
-								المجموع الجديد: <strong class="font-mono">{currentTotal} DH</strong> مع شحن مجاني مدمج.
-							</p>
-						</div>
-					{:else}
-						<button
-							type="button"
-							onclick={handleAddUpsell}
-							disabled={upsellStatus === 'loading'}
-							class="w-full py-3 px-4 font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
-						>
-							{#if upsellStatus === 'loading'}
-								<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-								<span>جاري إضافة العرض لطلبيتك...</span>
-							{:else}
-								<span>+ زيدو لطلبيتي دابا بـ 35 DH (بدون مصاريف شحن إضافية)</span>
-							{/if}
-						</button>
-					{/if}
-				</div>
-			</div>
-		</div>
-
 		<!-- Order Summary Card -->
 		{#if order}
 			<div class="w-full rounded-2xl border border-neutral-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
@@ -498,7 +381,7 @@
 				</div>
 				<div class="grid grid-cols-2 gap-y-2.5 text-xs sm:text-sm py-3 border-b border-neutral-100">
 					<span class="text-neutral-500">المنتج:</span>
-					<span class="text-neutral-900 font-extrabold text-left">{order.productTitle || 'باك الحمام الذكي'}</span>
+					<span class="text-neutral-900 font-extrabold text-left">{order.productTitle || 'طقم التنظيم المنزلي + هدية'}</span>
 					
 					{#if order.offer}
 						<span class="text-neutral-500">العرض:</span>
@@ -514,10 +397,7 @@
 					<span class="text-neutral-500">مصاريف الشحن:</span>
 					<span class="text-emerald-700 font-bold text-left">مجاني (0 DH)</span>
 
-					{#if upsellAdded}
-						<span class="text-emerald-700 font-bold">+ صمام المجاري الذكي:</span>
-						<span class="text-emerald-700 font-mono font-bold text-left">+35 DH</span>
-					{/if}
+					
 				</div>
 
 				<div class="flex justify-between items-center pt-3">

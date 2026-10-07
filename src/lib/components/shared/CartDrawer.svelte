@@ -37,21 +37,10 @@
 		currentTitle?: string;
 		currentImage?: string;
 	} = $props();
-
-	export const DRAIN_VALVE_IMAGE =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/مقارنة_قبل_وبعد_لسدادة_مصرف_الأرضية.png';
 	export const CHILD_LOCK_IMAGE =
 		'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp';
 
 	const crossSells = $derived.by(() => {
-		const drainValve: CrossSell = {
-			slug: 'samam-tasrif',
-			title: 'تهنى نهائياً من ريحة المجاري والصراصير 🪳',
-			subtitle: 'صمام تصريف ذكي مضاد للروائح والحشرات',
-			heroImage: DRAIN_VALVE_IMAGE,
-			startingPrice: 35
-		};
-
 		const childLock: CrossSell = {
 			slug: 'qofl-al-aman',
 			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
@@ -60,16 +49,13 @@
 			startingPrice: 49
 		};
 
-		return [drainValve, childLock].filter((p) => !cart.lines.some((l) => l.slug === p.slug));
+		return [childLock].filter((p) => !cart.lines.some((l) => l.slug === p.slug));
 	});
 
 	function addCrossSell(p: CrossSell) {
-		const isDrainValve = p.slug === 'samam-tasrif';
-		const addedTitle = isDrainValve
-			? 'تهنى نهائياً من ريحة المجاري والصراصير 🪳'
-			: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒';
-		const addedImage = isDrainValve ? DRAIN_VALVE_IMAGE : CHILD_LOCK_IMAGE;
-		const addedPrice = isDrainValve ? 35 : 49;
+		const addedTitle = 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒';
+		const addedImage = CHILD_LOCK_IMAGE;
+		const addedPrice = 49;
 
 		cart.add({
 			slug: p.slug,
