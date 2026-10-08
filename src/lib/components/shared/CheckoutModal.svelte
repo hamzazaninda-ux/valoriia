@@ -72,15 +72,39 @@
 
 		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
 			() => {
+				const orderId = payload.orderId as string;
+				const calculatedTotal = (payload.price as number) || 229;
+
+				// Instant Firing on API Success (Before Redirect to avoid mobile drop-off)
+				if (typeof window !== 'undefined' && (window as any).ttq) {
+					try {
+						(window as any).ttq.track('CompletePayment', {
+							content_name: 'طقم التنظيم المنزلي',
+							currency: 'MAD',
+							value: calculatedTotal || 229
+						});
+					} catch (err) {
+						console.warn('[Pixel] ttq CompletePayment error:', err);
+					}
+				}
+				try {
+					sessionStorage.setItem('order_tracked_' + orderId, 'true');
+					localStorage.setItem('order_tracked_' + orderId, 'true');
+				} catch {}
+
 				localStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
 				sessionStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
 				cart.clear();
 				loading = false;
 				if (onDone) {
-					onDone(completed);
+					setTimeout(() => {
+						onDone(completed);
+					}, 200);
 				} else {
 					cartUi.resetAll();
-					window.location.href = '/thank-you';
+					setTimeout(() => {
+						window.location.href = '/thank-you';
+					}, 200);
 				}
 			},
 			() => {

@@ -111,8 +111,28 @@
 		const sheetsUrl = (order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim();
 
 		const saveAndRedirect = () => {
+			const calculatedTotal = orderData.price || 229;
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				try {
+					(window as any).ttq.track('CompletePayment', {
+						content_name: 'طقم التنظيم المنزلي',
+						currency: 'MAD',
+						value: calculatedTotal || 229
+					});
+				} catch (err) {
+					console.warn('[Pixel] ttq CompletePayment error:', err);
+				}
+			}
+			try {
+				sessionStorage.setItem('order_tracked_' + orderId, 'true');
+				localStorage.setItem('order_tracked_' + orderId, 'true');
+			} catch {}
+
 			localStorage.setItem('latestOrder', JSON.stringify(orderData));
-			window.location.href = '/thank-you';
+			sessionStorage.setItem('latestOrder', JSON.stringify(orderData));
+			setTimeout(() => {
+				window.location.href = '/thank-you';
+			}, 200);
 		};
 
 		if (sheetsUrl) {
