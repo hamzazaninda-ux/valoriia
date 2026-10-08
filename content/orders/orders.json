@@ -1,5 +1,22 @@
 [
   {
+    "id": "ORD-885428",
+    "createdAt": "2026-10-08T17:18:44.287Z",
+    "fullName": "حمزة - تجربة مباشرة",
+    "phone": "0612349988",
+    "city": "الدار البيضاء",
+    "address": "الدار البيضاء",
+    "product": "1 قطعة + رشاشة هدية 🎁",
+    "quantity": 1,
+    "totalPrice": 229,
+    "status": "جديد",
+    "sku": "kit-tandim",
+    "pageUrl": "",
+    "orderType": "direct",
+    "items": "",
+    "notes": ""
+  },
+  {
     "id": "ORD-599137",
     "createdAt": "2026-10-08T16:32:15.000Z",
     "fullName": "فاطمة الزهراء بناني",
