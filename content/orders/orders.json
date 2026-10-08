@@ -60,20 +60,5 @@
     "sku": "kit-tandim",
     "pageUrl": "https://lhamza.shop/kit-tandim",
     "orderType": "cart"
-  },
-  {
-    "id": "ORD-772104",
-    "createdAt": "2026-10-07T11:20:45.000Z",
-    "fullName": "يوسف العمراني",
-    "phone": "0655432198",
-    "city": "فاس",
-    "address": "طريق عين السمن، إقامة الأندلس",
-    "product": "1 قطعة + رشاشة هدية 🎁",
-    "quantity": 1,
-    "totalPrice": 229,
-    "status": "تم التسليم",
-    "sku": "kit-tandim",
-    "pageUrl": "https://lhamza.shop/kit-tandim",
-    "orderType": "direct"
   }
 ]
