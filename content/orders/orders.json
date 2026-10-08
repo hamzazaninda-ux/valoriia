@@ -45,20 +45,5 @@
     "sku": "kit-tandim",
     "pageUrl": "https://lhamza.shop/kit-tandim",
     "orderType": "direct"
-  },
-  {
-    "id": "ORD-318492",
-    "createdAt": "2026-10-07T19:40:10.000Z",
-    "fullName": "سناء التازي",
-    "phone": "0668901234",
-    "city": "طنجة",
-    "address": "طنجة البالية، مجمع ديار طنجة",
-    "product": "2 منظمات + 2 رشاشات هدية 🎁 + قفل أمان ذكي 🔒",
-    "quantity": 2,
-    "totalPrice": 398,
-    "status": "جاري الشحن",
-    "sku": "kit-tandim",
-    "pageUrl": "https://lhamza.shop/kit-tandim",
-    "orderType": "cart"
   }
 ]
