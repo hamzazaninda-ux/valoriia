@@ -29,7 +29,18 @@ export async function readBrandSettings(): Promise<BrandSettings> {
   const content = await gitReadFile('main', `${SETTINGS_PATH}/brand.json`);
   const data = JSON.parse(content);
   checkBrandForSensitiveFields(data);
-  return data as BrandSettings;
+  return {
+    name: 'Lhamza Shop',
+    tagline: 'Lhamza Shop',
+    logo: 'https://lhamza.shop/favicon.svg',
+    favicon: '/favicon.svg',
+    heroImage: '',
+    whatsappNumber: '',
+    supportHours: '9:00 - 22:00',
+    ...data,
+    ...(data.name === 'Valoriia' || !data.name ? { name: 'Lhamza Shop' } : {}),
+    ...(data.tagline === 'Valoriia' || !data.tagline ? { tagline: 'Lhamza Shop' } : {})
+  } as BrandSettings;
 }
 
 export async function readCommerceSettings(): Promise<CommerceSettings> {
@@ -81,8 +92,20 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
       gitReadFile('draft', `${SETTINGS_PATH}/commerce.json`),
       gitReadFile('draft', `${SETTINGS_PATH}/tracking.json`)
     ]);
-    const brandData = JSON.parse(brand);
-    checkBrandForSensitiveFields(brandData);
+    const rawBrand = JSON.parse(brand);
+    checkBrandForSensitiveFields(rawBrand);
+    const brandData = {
+      name: 'Lhamza Shop',
+      tagline: 'Lhamza Shop',
+      logo: 'https://lhamza.shop/favicon.svg',
+      favicon: '/favicon.svg',
+      heroImage: '',
+      whatsappNumber: '',
+      supportHours: '9:00 - 22:00',
+      ...rawBrand,
+      ...(rawBrand.name === 'Valoriia' || !rawBrand.name ? { name: 'Lhamza Shop' } : {}),
+      ...(rawBrand.tagline === 'Valoriia' || !rawBrand.tagline ? { tagline: 'Lhamza Shop' } : {})
+    };
     const commerceData = {
       currency: 'MAD',
       currencySymbol: 'د.م',

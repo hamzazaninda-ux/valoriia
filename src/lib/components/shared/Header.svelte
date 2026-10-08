@@ -52,13 +52,13 @@
 			<a
 				href="#top"
 				class="group flex items-center gap-2 whitespace-nowrap px-2 py-1"
-				aria-label={brandName}
+				aria-label={brandName && brandName !== 'Valoriia' ? brandName : 'Lhamza Shop'}
 			>
 				<span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B4332] text-[#C99738] font-bold text-lg">
 					L
 				</span>
 				<span class="font-display text-lg sm:text-2xl font-black tracking-tight text-[#1E293B] transition-colors group-hover:text-[#1B4332]">
-					{brandName}
+					{brandName && brandName !== 'Valoriia' ? brandName : 'Lhamza Shop'}
 				</span>
 			</a>
 		</div>

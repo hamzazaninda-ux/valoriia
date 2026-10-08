@@ -182,7 +182,7 @@
 </script>
 
 <svelte:head>
-	<title>{brand.name || 'Lhamza Shop'} | متجر التنظيم والنظافة في المغرب</title>
+	<title>{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'} | متجر التنظيم والنظافة في المغرب</title>
 	<meta
 		name="description"
 		content="Lhamza Shop — متجر مغربي للتنظيم والنظافة المنزلية. التوصيل لجميع المدن والدفع عند الاستلام."
@@ -237,7 +237,7 @@
 
 	<!-- 2. Sticky header -->
 	<Header
-		brandName={brand.name || 'Lhamza Shop'}
+		brandName={brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}
 		cartCount={cartCount}
 		bind:searchOpen
 		bind:menuOpen
@@ -526,7 +526,7 @@
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
 					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-[#C99738]">L</span>
-					<span class="font-display text-xl font-bold text-white">{brand.name || 'Lhamza Shop'}</span>
+					<span class="font-display text-xl font-bold text-white">{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}</span>
 				</div>
 				<p class="text-xs leading-loose text-stone-300">
 					Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة

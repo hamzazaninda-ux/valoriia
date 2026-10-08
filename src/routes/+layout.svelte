@@ -22,6 +22,8 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<meta property="og:site_name" content="Lhamza Shop" />
+	<meta name="apple-mobile-web-app-title" content="Lhamza Shop" />
 
 	<!-- Meta / Facebook Pixel Code -->
 	{#if tracking?.facebookPixelId}

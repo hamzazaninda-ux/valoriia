@@ -247,7 +247,7 @@
 	<header class="bg-white/95 backdrop-blur-sm border-b border-neutral-200/70 py-3 px-4 flex items-center justify-between sticky top-0 z-30 shadow-2xs" dir="rtl">
 		<div class="flex items-center gap-2">
 			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B4332] font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
-			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name || 'Lhamza Shop'}</span>
+			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'Lhamza Shop'}</span>
 		</div>
 		<a
 			href="https://wa.me/212626558375?text=%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D8%A8%D8%A7%D9%83%20%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85%20%D8%A7%D9%84%D8%B0%D9%83%D9%8A"

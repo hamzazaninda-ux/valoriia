@@ -6,7 +6,7 @@
     "thumbnail": "https://placehold.co/400x300/f0fdf4/166534?text=Classic",
     "isDefault": true,
     "version": 1,
-    "author": "valoriia",
+    "author": "Lhamza Shop",
     "category": "landing",
     "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
   },
@@ -17,7 +17,7 @@
     "thumbnail": "https://placehold.co/400x300/ecfdf5/059669?text=Modern",
     "isDefault": false,
     "version": 1,
-    "author": "valoriia",
+    "author": "Lhamza Shop",
     "category": "landing",
     "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
   },
@@ -28,7 +28,7 @@
     "thumbnail": "https://placehold.co/400x300/f9fafb/374151?text=Minimal",
     "isDefault": false,
     "version": 1,
-    "author": "valoriia",
+    "author": "Lhamza Shop",
     "category": "landing",
     "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
   },
@@ -39,7 +39,7 @@
     "thumbnail": "https://placehold.co/400x300/1a1a1a/c8a96e?text=Killers",
     "isDefault": false,
     "version": 1,
-    "author": "valoriia",
+    "author": "Lhamza Shop",
     "category": "landing",
     "supportedFeatures": ["hero", "carousel", "offers", "orderForm", "killers"]
   },
@@ -50,7 +50,7 @@
     "thumbnail": "https://placehold.co/400x300/022c22/fbbf24?text=Stacked",
     "isDefault": false,
     "version": 1,
-    "author": "valoriia",
+    "author": "Lhamza Shop",
     "category": "landing",
     "supportedFeatures": ["hero", "gallery", "offers", "orderForm", "faq", "whatsapp"]
   }
