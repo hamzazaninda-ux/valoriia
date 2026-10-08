@@ -128,6 +128,22 @@
 				localStorage.setItem('order_tracked_' + orderId, 'true');
 			} catch {}
 		}
+
+		// Manual Direct Snapchat PURCHASE Tracking (Fallback - Zero Duplication)
+		const snapKey = 'snap_tracked_' + orderId;
+		if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(snapKey)) {
+			try {
+				(window as any).snaptr('track', 'PURCHASE', {
+					currency: 'MAD',
+					price: totalPrice || 229,
+					transaction_id: String(orderId)
+				});
+				sessionStorage.setItem(snapKey, 'true');
+				localStorage.setItem(snapKey, 'true');
+			} catch (err) {
+				console.warn('[Pixel] Snap PURCHASE fallback error:', err);
+			}
+		}
 	});
 
 	function copyOrderId() {

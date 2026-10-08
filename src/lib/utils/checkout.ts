@@ -117,8 +117,9 @@ export function trackAddToCart(
 	try {
 		if (typeof (window as any).snaptr === 'function') {
 			(window as any).snaptr('track', 'ADD_CART', {
-				price: numPrice,
 				currency: 'MAD',
+				price: numPrice || 229,
+				item_category: title || 'طقم التنظيم المنزلي',
 				item_ids: [id]
 			});
 		}
@@ -173,6 +174,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		if (
 			sessionStorage.getItem(storageKey) ||
 			localStorage.getItem(storageKey) ||
+			sessionStorage.getItem(`snap_tracked_${txnId}`) ||
 			sessionStorage.getItem(`snap_order_${txnId}`) ||
 			sessionStorage.getItem(`snap_purchased_${txnId}`)
 		) {
@@ -181,6 +183,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		}
 		sessionStorage.setItem(storageKey, 'true');
 		localStorage.setItem(storageKey, 'true');
+		sessionStorage.setItem(`snap_tracked_${txnId}`, 'true');
 		sessionStorage.setItem(`snap_order_${txnId}`, 'true');
 	} catch {
 		// storage fallback

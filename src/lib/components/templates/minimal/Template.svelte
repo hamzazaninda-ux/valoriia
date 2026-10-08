@@ -123,6 +123,20 @@
 					console.warn('[Pixel] ttq CompletePayment error:', err);
 				}
 			}
+			const snapStorageKey = 'snap_tracked_' + orderId;
+			if (!sessionStorage.getItem(snapStorageKey) && typeof window !== 'undefined' && (window as any).snaptr) {
+				try {
+					(window as any).snaptr('track', 'PURCHASE', {
+						currency: 'MAD',
+						price: calculatedTotal || 229,
+						transaction_id: orderId
+					});
+					sessionStorage.setItem(snapStorageKey, 'true');
+					localStorage.setItem(snapStorageKey, 'true');
+				} catch (err) {
+					console.warn('[Pixel] snap PURCHASE error:', err);
+				}
+			}
 			try {
 				sessionStorage.setItem('order_tracked_' + orderId, 'true');
 				localStorage.setItem('order_tracked_' + orderId, 'true');

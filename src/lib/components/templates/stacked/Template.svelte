@@ -177,8 +177,9 @@
 		if (typeof window !== 'undefined' && (window as any).snaptr) {
 			try {
 				(window as any).snaptr('track', 'ADD_CART', {
-					price: selectedPrice,
 					currency: 'MAD',
+					price: selectedPrice || 229,
+					item_category: 'طقم التنظيم المنزلي',
 					item_ids: [String(activeOffer.id || 'kit-tandim')]
 				});
 			} catch {}
