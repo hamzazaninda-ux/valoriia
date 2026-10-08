@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { sendOrder } from '$lib/utils/checkout';
 	import { isValidMoroccanPhone } from '$lib/utils/phone';
 	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice, buildWhatsappUrl } from '$lib/utils/format';
@@ -135,18 +136,7 @@
 			}, 200);
 		};
 
-		if (sheetsUrl) {
-			fetch(sheetsUrl, {
-				method: 'POST',
-				mode: 'no-cors',
-				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-				body: JSON.stringify(orderData)
-			})
-				.then(saveAndRedirect)
-				.catch(saveAndRedirect);
-		} else {
-			saveAndRedirect();
-		}
+		sendOrder(orderData, sheetsUrl).finally(saveAndRedirect);
 	}
 
 	const whatsappUrl = $derived(() => {

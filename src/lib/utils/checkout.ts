@@ -250,15 +250,32 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	}
 }
 
-/** Fire-and-forget POST to the Sheets webhook. Always resolves (never blocks redirect). */
-export function sendOrder(payload: Record<string, unknown>, sheetsUrl: string): Promise<void> {
-	if (!sheetsUrl) return Promise.resolve();
-	return fetch(sheetsUrl, {
+/** Dual-storage order submission: saves to in-app storage via /api/orders and Google Sheets in parallel. */
+export async function sendOrder(payload: Record<string, unknown>, sheetsUrl?: string): Promise<void> {
+	const inAppPromise = fetch('/api/orders', {
 		method: 'POST',
-		mode: 'no-cors',
-		headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(payload)
 	})
-		.then(() => undefined)
-		.catch(() => undefined);
+		.then((r) => r.json())
+		.catch((err) => {
+			console.warn('[Orders] In-app save warning:', err);
+			return null;
+		});
+
+	const sheetsPromise = sheetsUrl
+		? fetch(sheetsUrl, {
+				method: 'POST',
+				mode: 'no-cors',
+				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+			body: JSON.stringify(payload)
+			})
+				.then(() => undefined)
+				.catch((err) => {
+					console.warn('[Orders] Sheets webhook warning:', err);
+					return undefined;
+				})
+		: Promise.resolve();
+
+	await Promise.allSettled([inAppPromise, sheetsPromise]);
 }

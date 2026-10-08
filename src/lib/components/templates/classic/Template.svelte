@@ -9,7 +9,7 @@
 		import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
-	import { trackAddToCart } from '$lib/utils/checkout';
+	import { trackAddToCart, sendOrder } from '$lib/utils/checkout';
 	import Carousel from './Carousel.svelte';
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
@@ -228,18 +228,7 @@
 			}, 200);
 		};
 
-		if (sheetsUrl) {
-			fetch(sheetsUrl, {
-				method: 'POST',
-				mode: 'no-cors',
-				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-				body: JSON.stringify(orderData)
-			})
-				.then(saveAndRedirect)
-				.catch(saveAndRedirect);
-		} else {
-			saveAndRedirect();
-		}
+		sendOrder(orderData, sheetsUrl).finally(saveAndRedirect);
 	}
 </script>
 

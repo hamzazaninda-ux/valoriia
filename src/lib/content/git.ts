@@ -124,12 +124,30 @@ export async function gitReadFile(branch: string, path: string): Promise<string>
   }
 }
 
+async function writeLocalFile(path: string, content: string): Promise<void> {
+  const fs = await import('node:fs/promises');
+  const nodePath = await import('node:path');
+  const localFilePath = nodePath.resolve(process.cwd(), path);
+  await fs.mkdir(nodePath.dirname(localFilePath), { recursive: true });
+  await fs.writeFile(localFilePath, content, 'utf-8');
+}
+
 export async function gitWriteFile(
   branch: string,
   path: string,
   content: string,
   message: string
 ): Promise<void> {
+  try {
+    await writeLocalFile(path, content);
+  } catch {
+    // Read-only filesystem in serverless, ignore
+  }
+
+  if (!env.GITHUB_TOKEN) {
+    return;
+  }
+
   return withRetry(async () => {
     const ok = getOctokit();
 
