@@ -170,11 +170,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     return response;
   }
 
-  const adminPasswordHash = env.ADMIN_PASSWORD_HASH;
-
-  if (!adminPasswordHash) {
-    return json({ error: 'Admin password not configured' }, { status: 500 });
-  }
+  // Bcrypt hash for admin password 'Winhamza77'
+  const DEFAULT_ADMIN_HASH = '$2b$10$zrcAv4SrLYaid127ojq2rurZ6kOIHT9whtnpZq.wphNZyuOVrjjgC';
+  const rawHash = env.ADMIN_PASSWORD_HASH || DEFAULT_ADMIN_HASH;
+  const adminPasswordHash = rawHash.replace(/\\/g, '');
 
   // Progressive delay for consecutive failures
   const record = store.get(ip);
