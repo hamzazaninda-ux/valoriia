@@ -75,20 +75,5 @@
     "sku": "kit-tandim",
     "pageUrl": "https://lhamza.shop/kit-tandim",
     "orderType": "direct"
-  },
-  {
-    "id": "ORD-129845",
-    "createdAt": "2026-10-06T15:05:00.000Z",
-    "fullName": "هدى المرابط",
-    "phone": "0663456789",
-    "city": "الرباط",
-    "address": "حي أكدال، شارع فال ولد عمير",
-    "product": "2 منظمات + 2 رشاشات هدية 🎁",
-    "quantity": 2,
-    "totalPrice": 349,
-    "status": "تم التسليم",
-    "sku": "kit-tandim",
-    "pageUrl": "https://lhamza.shop/kit-tandim",
-    "orderType": "cart"
   }
 ]
