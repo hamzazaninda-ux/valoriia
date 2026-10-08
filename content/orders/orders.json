@@ -30,20 +30,5 @@
     "sku": "kit-tandim",
     "pageUrl": "https://lhamza.shop/kit-tandim",
     "orderType": "cart"
-  },
-  {
-    "id": "ORD-842190",
-    "createdAt": "2026-10-08T14:15:20.000Z",
-    "fullName": "كريم العلمي",
-    "phone": "0672345678",
-    "city": "مراكش",
-    "address": "حي جليز، قرب ساحة 16 نونبر",
-    "product": "1 قطعة + رشاشة هدية 🎁",
-    "quantity": 1,
-    "totalPrice": 229,
-    "status": "مؤكد",
-    "sku": "kit-tandim",
-    "pageUrl": "https://lhamza.shop/kit-tandim",
-    "orderType": "direct"
   }
 ]
