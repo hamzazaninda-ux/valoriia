@@ -9,6 +9,8 @@
 	let searchQuery = $state('');
 	let selectedStatus = $state<string>('all');
 	let updatingOrderId = $state<string | null>(null);
+	let isSyncingAll = $state(false);
+	let syncingOrderId = $state<string | null>(null);
 	let toastMessage = $state<string | null>(null);
 	let toastType = $state<'success' | 'error'>('success');
 	let toastTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -212,6 +214,53 @@
 			showToast('تعذر الاتصال بالخادم', 'error');
 		}
 	}
+
+	// Sync all orders to Google Sheets
+	async function syncAllToSheets() {
+		if (isSyncingAll) return;
+		if (!confirm('هل تريد مزامنة جميع الطلبات المسجلة مع Google Sheets الآن؟')) return;
+		isSyncingAll = true;
+		try {
+			const res = await fetch('/api/orders/sync-sheets', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ syncAll: true })
+			});
+			const data = await res.json();
+			if (!res.ok || !data.success) {
+				showToast(data.error || 'تعذرت مزامنة الطلبات', 'error');
+			} else {
+				showToast(data.message || 'تمت مزامنة الطلبات بنجاح', 'success');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم', 'error');
+		} finally {
+			isSyncingAll = false;
+		}
+	}
+
+	// Sync single order to Google Sheets
+	async function syncSingleOrderToSheets(orderId: string) {
+		if (syncingOrderId === orderId) return;
+		syncingOrderId = orderId;
+		try {
+			const res = await fetch('/api/orders/sync-sheets', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ orderId })
+			});
+			const data = await res.json();
+			if (!res.ok || !data.success) {
+				showToast(data.error || 'تعذرت مزامنة الطلب', 'error');
+			} else {
+				showToast(data.message || 'تمت مزامنة الطلب بنجاح', 'success');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم', 'error');
+		} finally {
+			syncingOrderId = null;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -253,6 +302,18 @@
 		</div>
 
 		<div class="flex flex-wrap items-center gap-2">
+			<button
+				type="button"
+				onclick={syncAllToSheets}
+				disabled={isSyncingAll || orders.length === 0}
+				class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-950 px-4 text-xs sm:text-sm font-bold text-white shadow-2xs transition-all hover:bg-emerald-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+				title="مزامنة جميع الطلبات المسجلة مع Google Sheets"
+			>
+				<svg class={`h-4 w-4 text-emerald-400 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+				</svg>
+				{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة مع Google Sheets 🔄'}
+			</button>
 			{#if data.globalSheets}
 				<a
 					href={data.globalSheets}
@@ -534,6 +595,19 @@
 								<!-- Actions -->
 								<td class="py-3.5 ps-3 pe-5 text-center whitespace-nowrap">
 									<div class="flex items-center justify-center gap-1.5">
+										<!-- Sync to Google Sheets button -->
+										<button
+											type="button"
+											onclick={() => syncSingleOrderToSheets(order.id)}
+											disabled={syncingOrderId === order.id}
+											class="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-700 hover:bg-emerald-50 transition-colors disabled:opacity-50"
+											title="مزامنة هذا الطلب مع Google Sheets"
+											aria-label="مزامنة مع Google Sheets"
+										>
+											<svg class={`h-3.5 w-3.5 ${syncingOrderId === order.id ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+												<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+											</svg>
+										</button>
 										<!-- Copy button -->
 										<button
 											type="button"
@@ -629,6 +703,20 @@
 							</svg>
 							اتصال
 						</a>
+
+						<!-- Sync to Sheets -->
+						<button
+							type="button"
+							onclick={() => syncSingleOrderToSheets(order.id)}
+							disabled={syncingOrderId === order.id}
+							class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 active:scale-95 disabled:opacity-50"
+							title="مزامنة مع Google Sheets"
+							aria-label="مزامنة مع Google Sheets"
+						>
+							<svg class={`h-4 w-4 ${syncingOrderId === order.id ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+							</svg>
+						</button>
 
 						<!-- Copy -->
 						<button

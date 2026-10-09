@@ -283,10 +283,15 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 
 /** Dual-storage order submission: saves to in-app storage via /api/orders and Google Sheets in parallel. */
 export async function sendOrder(payload: Record<string, unknown>, sheetsUrl?: string): Promise<void> {
+	const enrichedPayload = {
+		...payload,
+		...(sheetsUrl ? { sheetsUrl } : {})
+	};
+
 	const inAppPromise = fetch('/api/orders', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(payload)
+		body: JSON.stringify(enrichedPayload)
 	})
 		.then((r) => r.json())
 		.catch((err) => {
@@ -299,7 +304,7 @@ export async function sendOrder(payload: Record<string, unknown>, sheetsUrl?: st
 				method: 'POST',
 				mode: 'no-cors',
 				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-			body: JSON.stringify(payload)
+				body: JSON.stringify(enrichedPayload)
 			})
 				.then(() => undefined)
 				.catch((err) => {
