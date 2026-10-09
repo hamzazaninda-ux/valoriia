@@ -203,8 +203,11 @@
 		// Product-specific URL takes priority over the global default
 		const sheetsUrl = (order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim();
 
-		const saveAndRedirect = () => {
+		const saveAndRedirect = async () => {
 			const calculatedTotal = orderData.price || 229;
+			const phone = orderData.phone || '';
+			const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
+
 			if (typeof window !== 'undefined' && (window as any).ttq) {
 				try {
 					(window as any).ttq.track('CompletePayment', {
@@ -216,16 +219,25 @@
 					console.warn('[Pixel] ttq CompletePayment error:', err);
 				}
 			}
-			const snapStorageKey = 'snap_tracked_' + orderId;
-			if (!sessionStorage.getItem(snapStorageKey) && typeof window !== 'undefined' && (window as any).snaptr) {
+			const snapKey = 'snap_tracked_' + orderId;
+			if (!sessionStorage.getItem(snapKey) && typeof window !== 'undefined' && (window as any).snaptr) {
 				try {
+					// 1. تمرير رقم الهاتف لمطابقة حساب الزبون في سناب شات (Advanced Matching)
+					if (formattedPhone && formattedPhone !== '+212') {
+						(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+							'user_phone_number': formattedPhone
+						});
+					}
+
+					// 2. إطلاق حدث الشراء الفوري
 					(window as any).snaptr('track', 'PURCHASE', {
 						currency: 'MAD',
 						price: calculatedTotal || 229,
-						transaction_id: orderId
+						transaction_id: orderId,
+						item_category: 'طقم التنظيم المنزلي'
 					});
-					sessionStorage.setItem(snapStorageKey, 'true');
-					localStorage.setItem(snapStorageKey, 'true');
+					sessionStorage.setItem(snapKey, 'true');
+					localStorage.setItem(snapKey, 'true');
 				} catch (err) {
 					console.warn('[Pixel] snap PURCHASE error:', err);
 				}
@@ -237,9 +249,10 @@
 
 			localStorage.setItem('latestOrder', JSON.stringify(orderData));
 			sessionStorage.setItem('latestOrder', JSON.stringify(orderData));
-			setTimeout(() => {
-				window.location.href = '/thank-you';
-			}, 200);
+
+			// Network Flush Buffer (400ms)
+			await new Promise((resolve) => setTimeout(resolve, 400));
+			window.location.href = '/thank-you';
 		};
 
 		sendOrder(orderData, sheetsUrl).finally(saveAndRedirect);

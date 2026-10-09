@@ -162,7 +162,7 @@ export function trackAddToCart(
 
 }
 
-export function trackPurchase(price: number, productTitle: string, transactionId?: string) {
+export function trackPurchase(price: number, productTitle: string, transactionId?: string, phoneNumber?: string) {
 	if (typeof window === 'undefined') return;
 	const numPrice = Number(price) || 0;
 	const title = (productTitle || '').trim();
@@ -214,10 +214,20 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	// 2. Snapchat Pixel
 	try {
 		if (typeof (window as any).snaptr === 'function') {
+			if (phoneNumber) {
+				const phoneClean = phoneNumber.trim();
+				const formattedPhone = phoneClean.startsWith('+') ? phoneClean : ('+212' + phoneClean.replace(/^0/, ''));
+				if (formattedPhone && formattedPhone !== '+212') {
+					(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+						'user_phone_number': formattedPhone
+					});
+				}
+			}
 			(window as any).snaptr('track', 'PURCHASE', {
 				price: numPrice,
 				currency: 'MAD',
-				transaction_id: txnId
+				transaction_id: txnId,
+				item_category: title || 'طقم التنظيم المنزلي'
 			});
 		}
 	} catch (err) {

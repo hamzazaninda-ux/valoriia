@@ -71,9 +71,11 @@
 		};
 
 		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
-			() => {
-				const orderId = payload.orderId as string;
+			async () => {
+				const orderId = (payload.orderId as string) || 'ORD-' + Date.now();
 				const calculatedTotal = (payload.price as number) || 229;
+				const phone = ((payload.phoneNumber as string) || (payload.phone as string) || '').trim();
+				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
 
 				// Instant Firing on API Success (Before Redirect to avoid mobile drop-off)
 				if (typeof window !== 'undefined' && (window as any).ttq) {
@@ -87,16 +89,26 @@
 						console.warn('[Pixel] ttq CompletePayment error:', err);
 					}
 				}
-				const snapStorageKey = 'snap_tracked_' + orderId;
-				if (!sessionStorage.getItem(snapStorageKey) && typeof window !== 'undefined' && (window as any).snaptr) {
+				const snapKey = 'snap_tracked_' + orderId;
+				if (!sessionStorage.getItem(snapKey) && typeof window !== 'undefined' && (window as any).snaptr) {
 					try {
+						// 1. تمرير رقم الهاتف لمطابقة حساب الزبون في سناب شات (Advanced Matching)
+						if (formattedPhone && formattedPhone !== '+212') {
+							(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+								'user_phone_number': formattedPhone
+							});
+						}
+
+						// 2. إطلاق حدث الشراء الفوري
 						(window as any).snaptr('track', 'PURCHASE', {
 							currency: 'MAD',
 							price: calculatedTotal || 229,
-							transaction_id: orderId
+							transaction_id: orderId,
+							item_category: 'طقم التنظيم المنزلي'
 						});
-						sessionStorage.setItem(snapStorageKey, 'true');
-						localStorage.setItem(snapStorageKey, 'true');
+
+						sessionStorage.setItem(snapKey, 'true');
+						localStorage.setItem(snapKey, 'true');
 					} catch (err) {
 						console.warn('[Pixel] snap PURCHASE error:', err);
 					}
@@ -110,15 +122,15 @@
 				sessionStorage.setItem('latestOrder', JSON.stringify({ ...payload, qte: payload.quantity }));
 				cart.clear();
 				loading = false;
+
+				// Network Flush Buffer (400ms) to allow pixel beacons to leave before redirect
+				await new Promise((resolve) => setTimeout(resolve, 400));
+
 				if (onDone) {
-					setTimeout(() => {
-						onDone(completed);
-					}, 200);
+					onDone(completed);
 				} else {
 					cartUi.resetAll();
-					setTimeout(() => {
-						window.location.href = '/thank-you';
-					}, 200);
+					window.location.href = '/thank-you';
 				}
 			},
 			() => {

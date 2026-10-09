@@ -133,10 +133,18 @@
 		const snapKey = 'snap_tracked_' + orderId;
 		if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(snapKey)) {
 			try {
+				const phone = ((order as any)?.phoneNumber || (order as any)?.phone || '').trim();
+				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
+				if (formattedPhone && formattedPhone !== '+212') {
+					(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+						'user_phone_number': formattedPhone
+					});
+				}
 				(window as any).snaptr('track', 'PURCHASE', {
 					currency: 'MAD',
 					price: totalPrice || 229,
-					transaction_id: String(orderId)
+					transaction_id: String(orderId),
+					item_category: 'طقم التنظيم المنزلي'
 				});
 				sessionStorage.setItem(snapKey, 'true');
 				localStorage.setItem(snapKey, 'true');
