@@ -119,7 +119,7 @@ export function trackAddToCart(
 			(window as any).snaptr('track', 'ADD_CART', {
 				currency: 'MAD',
 				price: numPrice || 229,
-				item_category: title || 'طقم التنظيم المنزلي',
+				item_category: title || 'منتج',
 				item_ids: [id]
 			});
 		}
@@ -176,7 +176,9 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 			localStorage.getItem(storageKey) ||
 			sessionStorage.getItem(`snap_tracked_${txnId}`) ||
 			sessionStorage.getItem(`snap_order_${txnId}`) ||
-			sessionStorage.getItem(`snap_purchased_${txnId}`)
+			sessionStorage.getItem(`snap_purchased_${txnId}`) ||
+			sessionStorage.getItem(`gads_tracked_${txnId}`) ||
+			localStorage.getItem(`gads_tracked_${txnId}`)
 		) {
 			console.log('[Tracking] Purchase already tracked for transaction:', txnId);
 			return; // Already tracked for this transaction
@@ -185,6 +187,8 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		localStorage.setItem(storageKey, 'true');
 		sessionStorage.setItem(`snap_tracked_${txnId}`, 'true');
 		sessionStorage.setItem(`snap_order_${txnId}`, 'true');
+		sessionStorage.setItem(`gads_tracked_${txnId}`, 'true');
+		localStorage.setItem(`gads_tracked_${txnId}`, 'true');
 	} catch {
 		// storage fallback
 	}
@@ -227,7 +231,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				price: numPrice,
 				currency: 'MAD',
 				transaction_id: txnId,
-				item_category: title || 'طقم التنظيم المنزلي'
+				item_category: title || 'منتج'
 			});
 		}
 	} catch (err) {

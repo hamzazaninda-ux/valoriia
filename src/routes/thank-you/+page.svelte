@@ -116,12 +116,16 @@
 			} catch {}
 		}
 
+		const orderProductName = (order?.productTitle || (order as any)?.title || rawOrder?.productTitle || 'منتج').trim();
+		const orderTotal = totalPrice || order?.price || 229;
+		const orderQuantity = order?.qte || (order as any)?.quantity || 1;
+
 		// Manual Direct TikTok CompletePayment Tracking (Fallback - Zero Duplication)
 		if (typeof window !== 'undefined' && (window as any).ttq && !sessionStorage.getItem('order_tracked_' + orderId)) {
 			(window as any).ttq.track('CompletePayment', {
-				content_name: 'طقم التنظيم المنزلي',
+				content_name: orderProductName,
 				currency: 'MAD',
-				value: totalPrice || 229
+				value: orderTotal
 			});
 			sessionStorage.setItem('order_tracked_' + orderId, 'true');
 			try {
@@ -142,14 +146,35 @@
 				}
 				(window as any).snaptr('track', 'PURCHASE', {
 					currency: 'MAD',
-					price: totalPrice || 229,
+					price: orderTotal,
 					transaction_id: String(orderId),
-					item_category: 'طقم التنظيم المنزلي'
+					item_category: orderProductName
 				});
 				sessionStorage.setItem(snapKey, 'true');
 				localStorage.setItem(snapKey, 'true');
 			} catch (err) {
 				console.warn('[Pixel] Snap PURCHASE fallback error:', err);
+			}
+		}
+
+		// Dynamic Google Ads PURCHASE Tracking (Fallback - Zero Duplication)
+		const gadsKey = 'gads_tracked_' + orderId;
+		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function' && !sessionStorage.getItem(gadsKey)) {
+			try {
+				(window as any).gtag('event', 'purchase', {
+					transaction_id: String(orderId),
+					value: orderTotal,
+					currency: 'MAD',
+					items: [{
+						item_name: orderProductName,
+						price: orderTotal,
+						quantity: orderQuantity
+					}]
+				});
+				sessionStorage.setItem(gadsKey, 'true');
+				localStorage.setItem(gadsKey, 'true');
+			} catch (err) {
+				console.warn('[Pixel] GAds purchase fallback error:', err);
 			}
 		}
 	});
@@ -206,7 +231,7 @@
 	const whatsappUrl = $derived.by(() => {
 		const orderId = order?.orderId || 'ORD-000000';
 		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
-		const msg = `سلام عليكم، قمت بطلب طقم التنظيم المنزلي من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
+		const msg = `سلام عليكم، قمت بطلب ${order?.productTitle || 'المنتج'} من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
 		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
 	});
 

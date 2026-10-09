@@ -73,7 +73,9 @@
 		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
 			async () => {
 				const orderId = (payload.orderId as string) || 'ORD-' + Date.now();
-				const calculatedTotal = (payload.price as number) || 229;
+				const orderTotal = (payload.price as number) || 229;
+				const orderProductName = ((payload.productTitle as string) || productTitle || 'منتج').trim();
+				const orderQuantity = (payload.quantity as number) || 1;
 				const phone = ((payload.phoneNumber as string) || (payload.phone as string) || '').trim();
 				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
 
@@ -81,9 +83,9 @@
 				if (typeof window !== 'undefined' && (window as any).ttq) {
 					try {
 						(window as any).ttq.track('CompletePayment', {
-							content_name: 'طقم التنظيم المنزلي',
+							content_name: orderProductName,
 							currency: 'MAD',
-							value: calculatedTotal || 229
+							value: orderTotal
 						});
 					} catch (err) {
 						console.warn('[Pixel] ttq CompletePayment error:', err);
@@ -102,15 +104,34 @@
 						// 2. إطلاق حدث الشراء الفوري
 						(window as any).snaptr('track', 'PURCHASE', {
 							currency: 'MAD',
-							price: calculatedTotal || 229,
+							price: orderTotal,
 							transaction_id: orderId,
-							item_category: 'طقم التنظيم المنزلي'
+							item_category: orderProductName
 						});
 
 						sessionStorage.setItem(snapKey, 'true');
 						localStorage.setItem(snapKey, 'true');
 					} catch (err) {
 						console.warn('[Pixel] snap PURCHASE error:', err);
+					}
+				}
+				const gadsKey = 'gads_tracked_' + orderId;
+				if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+					try {
+						(window as any).gtag('event', 'purchase', {
+							transaction_id: orderId,
+							value: orderTotal,
+							currency: 'MAD',
+							items: [{
+								item_name: orderProductName,
+								price: orderTotal,
+								quantity: orderQuantity
+							}]
+						});
+						sessionStorage.setItem(gadsKey, 'true');
+						localStorage.setItem(gadsKey, 'true');
+					} catch (err) {
+						console.warn('[Pixel] gtag purchase error:', err);
 					}
 				}
 				try {

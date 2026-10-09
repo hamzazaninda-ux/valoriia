@@ -162,14 +162,16 @@
 			isAddingToCart = false;
 		}, 2000);
 
-		const selectedPrice = activeOffer.price || 229;
+		const currentProductPrice = activeOffer.price || 229;
+		const currentProductName = (content?.title || (product as any)?.title || 'منتج').trim();
+		const currentQuantity = activeOffer.quantity || 1;
 
 		// Single Pure Manual TikTok AddToCart Trigger
 		if (typeof window !== 'undefined' && (window as any).ttq) {
 			(window as any).ttq.track('AddToCart', {
-				content_name: 'طقم التنظيم المنزلي',
+				content_name: currentProductName,
 				currency: 'MAD',
-				value: selectedPrice
+				value: currentProductPrice
 			});
 		}
 
@@ -178,11 +180,28 @@
 			try {
 				(window as any).snaptr('track', 'ADD_CART', {
 					currency: 'MAD',
-					price: selectedPrice || 229,
-					item_category: 'طقم التنظيم المنزلي',
-					item_ids: [String(activeOffer.id || 'kit-tandim')]
+					price: currentProductPrice,
+					item_category: currentProductName,
+					item_ids: [String(activeOffer.id || (product as any)?.slug || 'item')]
 				});
 			} catch {}
+		}
+
+		// Google Ads add_to_cart Trigger (Dynamic)
+		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+			try {
+				(window as any).gtag('event', 'add_to_cart', {
+					currency: 'MAD',
+					value: currentProductPrice,
+					items: [{
+						item_name: currentProductName,
+						price: currentProductPrice,
+						quantity: currentQuantity || 1
+					}]
+				});
+			} catch (err) {
+				console.warn('[Pixel] gtag add_to_cart error:', err);
+			}
 		}
 
 		cart.clear();
