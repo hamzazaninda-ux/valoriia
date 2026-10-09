@@ -23,6 +23,31 @@
 	let submitError = $state('');
 	let loading = $state(false);
 
+	$effect(() => {
+		if (cartUi.checkout && typeof window !== 'undefined') {
+			try {
+				if (typeof (window as any).gtag === 'function') {
+					const firstLine = cart.lines[0];
+					const itemPrice = Number(firstLine?.price || 229);
+					const itemName = firstLine?.title || productTitle || 'منتج المتجر';
+
+					(window as any).gtag('event', 'add_to_cart', {
+						currency: 'MAD',
+						value: itemPrice,
+						items: [{
+							item_id: sku || 'PROD-1',
+							item_name: itemName,
+							price: itemPrice,
+							quantity: 1
+						}]
+					});
+				}
+			} catch (e) {
+				console.warn('Non-blocking GAds add_to_cart error:', e);
+			}
+		}
+	});
+
 	function focusField(id: 'co-name' | 'co-phone') {
 		const el = document.getElementById(id);
 		if (!el) return;

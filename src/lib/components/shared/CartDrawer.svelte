@@ -205,7 +205,29 @@
 					{/if}
 					<button
 						type="button"
-						onclick={() => cartUi.openCheckout()}
+						onclick={() => {
+							try {
+								if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+									const firstLine = cart.lines[0];
+									const itemPrice = Number(firstLine?.price || cart.subtotal || 229);
+									const itemName = firstLine?.title || currentTitle || 'منتج المتجر';
+
+									(window as any).gtag('event', 'add_to_cart', {
+										currency: 'MAD',
+										value: itemPrice,
+										items: [{
+											item_id: currentSlug || 'PROD-1',
+											item_name: itemName,
+											price: itemPrice,
+											quantity: 1
+										}]
+									});
+								}
+							} catch (e) {
+								console.warn('Non-blocking GAds add_to_cart error:', e);
+							}
+							cartUi.openCheckout();
+						}}
 						class="inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-emerald-950 font-bold text-white shadow transition-all hover:bg-emerald-900 active:scale-[0.98]"
 					>
 						<span class="pointer-events-none" style="pointer-events: none;">أكمل الطلب ({cart.count})</span>

@@ -215,20 +215,24 @@
 			}
 
 			// Google Ads & GA4
-			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				try {
+			try {
+				if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+					const itemPrice = Number(activeOffer?.price || (product as any)?.price || 229);
+					const itemName = (product as any)?.title || (product as any)?.name || name || 'منتج المتجر';
+
 					(window as any).gtag('event', 'add_to_cart', {
 						currency: 'MAD',
-						value: price,
+						value: itemPrice,
 						items: [{
-							item_name: name,
-							price: price,
-							quantity: quantity
+							item_id: (product as any)?.id || productSlug || 'PROD-1',
+							item_name: itemName,
+							price: itemPrice,
+							quantity: quantity || 1
 						}]
 					});
-				} catch (gtagErr) {
-					console.warn('[Pixel] gtag add_to_cart warning:', gtagErr);
 				}
+			} catch (e) {
+				console.warn('Non-blocking GAds add_to_cart error:', e);
 			}
 		} catch (trackingErr) {
 			console.warn('Tracking non-blocking error:', trackingErr);
@@ -480,7 +484,28 @@
 										name="selectedPack-stacked"
 										value={offer.id}
 										checked={currentPackId === offer.id}
-										onchange={() => (selectedPack = offer.id)}
+										onchange={() => {
+											selectedPack = offer.id;
+											try {
+												if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+													const itemPrice = Number(offer?.price || (product as any)?.price || 229);
+													const itemName = (product as any)?.title || (product as any)?.name || 'منتج المتجر';
+
+													(window as any).gtag('event', 'add_to_cart', {
+														currency: 'MAD',
+														value: itemPrice,
+														items: [{
+															item_id: (product as any)?.id || 'PROD-1',
+															item_name: itemName,
+															price: itemPrice,
+															quantity: 1
+														}]
+													});
+												}
+											} catch (e) {
+												console.warn('Non-blocking GAds add_to_cart error:', e);
+											}
+										}}
 										class="sr-only"
 									/>
 									{#if offer.badge || offer.isPopular || offer.id === 2}

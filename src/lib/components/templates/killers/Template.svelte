@@ -518,7 +518,28 @@
 					{#each pricing.offers as offer}
 						<button
 							type="button"
-							onclick={() => selectedPack = offer.id}
+							onclick={() => {
+								selectedPack = offer.id;
+								try {
+									if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+										const itemPrice = Number(offer?.price || (product as any)?.price || 229);
+										const itemName = (product as any)?.title || (product as any)?.name || 'منتج المتجر';
+
+										(window as any).gtag('event', 'add_to_cart', {
+											currency: 'MAD',
+											value: itemPrice,
+											items: [{
+												item_id: (product as any)?.id || 'PROD-1',
+												item_name: itemName,
+												price: itemPrice,
+												quantity: 1
+											}]
+										});
+									}
+								} catch (e) {
+									console.warn('Non-blocking GAds add_to_cart error:', e);
+								}
+							}}
 							class="w-full text-right p-4 border transition-all duration-300 relative flex items-center justify-between {currentPackId === offer.id ? 'shadow-lg' : 'hover:border-stone-700'}"
 							style="
 								border-radius: {RADIUS_MAP[t.sections.advanced.borderRadius] || '16px'};

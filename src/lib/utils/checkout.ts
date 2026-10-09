@@ -152,6 +152,7 @@ export function trackAddToCart(
 					value: numPrice,
 					items: [
 						{
+							item_id: id,
 							item_name: title,
 							price: numPrice,
 							quantity: numberItems || 1
@@ -159,8 +160,8 @@ export function trackAddToCart(
 					]
 				});
 			}
-		} catch (err) {
-			console.warn('[Pixel] gtag add_to_cart error:', err);
+		} catch (e) {
+			console.warn('Non-blocking GAds add_to_cart error:', e);
 		}
 	} catch (globalErr) {
 		console.warn('trackAddToCart non-blocking error:', globalErr);

@@ -115,9 +115,29 @@
 		}
 
 		try {
-			trackAddToCart(price, name, pricing?.currency || 'MAD');
+			trackAddToCart(price, name, pricing?.currency || 'MAD', (product as any)?.id || productSlug);
 		} catch (trackErr) {
 			console.warn('[Pixel] trackAddToCart error in classic:', trackErr);
+		}
+
+		try {
+			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+				const itemPrice = Number(activeOffer?.price || (product as any)?.price || 229);
+				const itemName = (product as any)?.title || (product as any)?.name || name || 'منتج المتجر';
+
+				(window as any).gtag('event', 'add_to_cart', {
+					currency: 'MAD',
+					value: itemPrice,
+					items: [{
+						item_id: (product as any)?.id || 'PROD-1',
+						item_name: itemName,
+						price: itemPrice,
+						quantity: 1
+					}]
+				});
+			}
+		} catch (e) {
+			console.warn('Non-blocking GAds add_to_cart error:', e);
 		}
 	}
 
@@ -316,7 +336,28 @@
 			name={radioName}
 			value={offer.id}
 			checked={currentPackId === offer.id}
-			onchange={() => (selectedPack = offer.id)}
+			onchange={() => {
+				selectedPack = offer.id;
+				try {
+					if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+						const itemPrice = Number(offer?.price || (product as any)?.price || 229);
+						const itemName = (product as any)?.title || (product as any)?.name || 'منتج المتجر';
+
+						(window as any).gtag('event', 'add_to_cart', {
+							currency: 'MAD',
+							value: itemPrice,
+							items: [{
+								item_id: (product as any)?.id || 'PROD-1',
+								item_name: itemName,
+								price: itemPrice,
+								quantity: 1
+							}]
+						});
+					}
+				} catch (e) {
+					console.warn('Non-blocking GAds add_to_cart error:', e);
+				}
+			}}
 			class="sr-only"
 		/>
 		{#if offer.image}
