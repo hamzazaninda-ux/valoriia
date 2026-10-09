@@ -41,9 +41,10 @@
 							quantity: 1
 						}]
 					});
+					console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
 				}
 			} catch (e) {
-				console.warn('Non-blocking GAds add_to_cart error:', e);
+				console.warn('Gtag add_to_cart error:', e);
 			}
 		}
 	});
@@ -160,6 +161,7 @@
 								quantity: orderQuantity
 							}]
 						});
+						console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-17426876482/SmXBCMqzj5cdEMKQ5PVA', { orderId, orderTotal });
 						sessionStorage.setItem(gadsKey, 'true');
 						localStorage.setItem(gadsKey, 'true');
 					} catch (err) {

@@ -14,8 +14,33 @@
 			isFirstNav = false;
 			return;
 		}
-		if (typeof window !== 'undefined' && (window as any).snaptr && tracking?.snapchatPixelId) {
-			(window as any).snaptr('track', 'PAGE_VIEW');
+		if (typeof window !== 'undefined') {
+			try {
+				if (typeof (window as any).gtag === 'function') {
+					(window as any).gtag('event', 'page_view', {
+						page_path: window.location.pathname + window.location.search,
+						page_location: window.location.href,
+						page_title: document.title
+					});
+					console.log('📄 [GTAG SUCCESS] SPA page_view fired for', window.location.pathname);
+				}
+			} catch (e) {
+				console.warn('Gtag SPA page_view error:', e);
+			}
+
+			try {
+				if ((window as any).snaptr) {
+					(window as any).snaptr('track', 'PAGE_VIEW');
+					console.log('📄 [SNAP SUCCESS] SPA PAGE_VIEW fired');
+				}
+			} catch (e) {}
+
+			try {
+				if ((window as any).ttq) {
+					(window as any).ttq.page();
+					console.log('📄 [TIKTOK SUCCESS] SPA PageView fired');
+				}
+			} catch (e) {}
 		}
 	});
 </script>

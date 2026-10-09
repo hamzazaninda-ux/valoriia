@@ -120,22 +120,34 @@
 		const orderTotal = totalPrice || order?.price || 229;
 		const orderQuantity = order?.qte || (order as any)?.quantity || 1;
 
-		// Manual Direct TikTok CompletePayment Tracking (Fallback - Zero Duplication)
-		if (typeof window !== 'undefined' && (window as any).ttq && !sessionStorage.getItem('order_tracked_' + orderId)) {
-			(window as any).ttq.track('CompletePayment', {
-				content_name: orderProductName,
-				currency: 'MAD',
-				value: orderTotal
-			});
-			sessionStorage.setItem('order_tracked_' + orderId, 'true');
+		// 1. Google Ads Conversion Firing:
+		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 			try {
-				localStorage.setItem('order_tracked_' + orderId, 'true');
-			} catch {}
+				(window as any).gtag('event', 'conversion', {
+					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+					'value': orderTotal || 229,
+					'currency': 'MAD',
+					'transaction_id': orderId || ('ORD-' + Date.now())
+				});
+				(window as any).gtag('event', 'purchase', {
+					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+					transaction_id: orderId || ('ORD-' + Date.now()),
+					value: orderTotal || 229,
+					currency: 'MAD',
+					items: [{
+						item_name: orderProductName,
+						price: orderTotal || 229,
+						quantity: orderQuantity
+					}]
+				});
+				console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-17426876482/SmXBCMqzj5cdEMKQ5PVA', { orderId, orderTotal });
+			} catch (err) {
+				console.warn('[Pixel] GAds purchase error:', err);
+			}
 		}
 
-		// Manual Direct Snapchat PURCHASE Tracking (Fallback - Zero Duplication)
-		const snapKey = 'snap_tracked_' + orderId;
-		if (typeof window !== 'undefined' && (window as any).snaptr && !sessionStorage.getItem(snapKey)) {
+		// 2. Snapchat Purchase Firing:
+		if (typeof window !== 'undefined' && (window as any).snaptr) {
 			try {
 				const phone = ((order as any)?.phoneNumber || (order as any)?.phone || '').trim();
 				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
@@ -146,42 +158,26 @@
 				}
 				(window as any).snaptr('track', 'PURCHASE', {
 					currency: 'MAD',
-					price: orderTotal,
-					transaction_id: String(orderId),
-					item_category: orderProductName
+					price: orderTotal || 229,
+					transaction_id: orderId
 				});
-				sessionStorage.setItem(snapKey, 'true');
-				localStorage.setItem(snapKey, 'true');
+				console.log('✅ [SNAP SUCCESS] Purchase Fired', { orderId });
 			} catch (err) {
-				console.warn('[Pixel] Snap PURCHASE fallback error:', err);
+				console.warn('[Pixel] Snap PURCHASE error:', err);
 			}
 		}
 
-		// Dynamic Google Ads PURCHASE & Conversion Tracking (Fallback - Zero Duplication)
-		const gadsKey = 'gads_tracked_' + orderId;
-		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function' && !sessionStorage.getItem(gadsKey)) {
+		// 3. TikTok CompletePayment Firing:
+		if (typeof window !== 'undefined' && (window as any).ttq) {
 			try {
-				(window as any).gtag('event', 'conversion', {
-					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
-					'value': orderTotal || 229,
-					'currency': 'MAD',
-					'transaction_id': String(orderId)
-				});
-				(window as any).gtag('event', 'purchase', {
-					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
-					transaction_id: String(orderId),
+				(window as any).ttq.track('CompletePayment', {
+					content_type: 'product',
 					value: orderTotal || 229,
-					currency: 'MAD',
-					items: [{
-						item_name: orderProductName,
-						price: orderTotal || 229,
-						quantity: orderQuantity
-					}]
+					currency: 'MAD'
 				});
-				sessionStorage.setItem(gadsKey, 'true');
-				localStorage.setItem(gadsKey, 'true');
+				console.log('✅ [TIKTOK SUCCESS] CompletePayment Fired');
 			} catch (err) {
-				console.warn('[Pixel] GAds purchase fallback error:', err);
+				console.warn('[Pixel] TikTok CompletePayment error:', err);
 			}
 		}
 	});

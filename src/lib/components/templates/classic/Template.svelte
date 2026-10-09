@@ -52,6 +52,25 @@
 	// ──────────────────────────────────────────────────────────────
 
 	function scrollToForm() {
+		try {
+			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+				const itemPrice = Number(activeOffer?.price || (product as any)?.price || 229);
+				const itemName = (product as any)?.title || (product as any)?.name || content?.title || 'طقم التنظيم المنزلي';
+
+				(window as any).gtag('event', 'add_to_cart', {
+					currency: 'MAD',
+					value: itemPrice,
+					items: [{
+						item_name: itemName,
+						price: itemPrice,
+						quantity: 1
+					}]
+				});
+				console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
+			}
+		} catch (e) {
+			console.warn('Gtag add_to_cart error:', e);
+		}
 		const offersSection = document.getElementById('offers') || document.querySelector('[data-section="offers"]') || document.getElementById('checkout-form');
 		if (offersSection) {
 			offersSection.scrollIntoView({ behavior: 'smooth' });
@@ -123,7 +142,7 @@
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				const itemPrice = Number(activeOffer?.price || (product as any)?.price || 229);
-				const itemName = (product as any)?.title || (product as any)?.name || name || 'منتج المتجر';
+				const itemName = (product as any)?.title || (product as any)?.name || name || 'طقم التنظيم المنزلي';
 
 				(window as any).gtag('event', 'add_to_cart', {
 					currency: 'MAD',
@@ -135,9 +154,10 @@
 						quantity: 1
 					}]
 				});
+				console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
 			}
 		} catch (e) {
-			console.warn('Non-blocking GAds add_to_cart error:', e);
+			console.warn('Gtag add_to_cart error:', e);
 		}
 	}
 
@@ -353,9 +373,10 @@
 								quantity: 1
 							}]
 						});
+						console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
 					}
 				} catch (e) {
-					console.warn('Non-blocking GAds add_to_cart error:', e);
+					console.warn('Gtag add_to_cart error:', e);
 				}
 			}}
 			class="sr-only"

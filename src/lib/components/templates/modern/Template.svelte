@@ -45,6 +45,25 @@
 	let showStickyBtn = $state(true);
 
 	function scrollToForm() {
+		try {
+			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+				const itemPrice = Number(activeOffer?.price || 229);
+				const itemName = content?.title || 'طقم التنظيم المنزلي';
+
+				(window as any).gtag('event', 'add_to_cart', {
+					currency: 'MAD',
+					value: itemPrice,
+					items: [{
+						item_name: itemName,
+						price: itemPrice,
+						quantity: 1
+					}]
+				});
+				console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
+			}
+		} catch (e) {
+			console.warn('Gtag add_to_cart error:', e);
+		}
 		document.getElementById('order-form')?.scrollIntoView({ behavior: 'smooth' });
 	}
 
@@ -312,9 +331,10 @@
 											quantity: 1
 										}]
 									});
+									console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
 								}
 							} catch (e) {
-								console.warn('Non-blocking GAds add_to_cart error:', e);
+								console.warn('Gtag add_to_cart error:', e);
 							}
 						}}
 						class="w-full text-right p-5 border-2 transition-all duration-200 {currentPackId === offer.id ? 'shadow-md' : 'hover:border-gray-300'}"

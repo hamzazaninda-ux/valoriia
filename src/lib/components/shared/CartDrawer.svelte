@@ -222,9 +222,10 @@
 											quantity: 1
 										}]
 									});
+									console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
 								}
 							} catch (e) {
-								console.warn('Non-blocking GAds add_to_cart error:', e);
+								console.warn('Gtag add_to_cart error:', e);
 							}
 							cartUi.openCheckout();
 						}}
