@@ -157,17 +157,24 @@
 			}
 		}
 
-		// Dynamic Google Ads PURCHASE Tracking (Fallback - Zero Duplication)
+		// Dynamic Google Ads PURCHASE & Conversion Tracking (Fallback - Zero Duplication)
 		const gadsKey = 'gads_tracked_' + orderId;
 		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function' && !sessionStorage.getItem(gadsKey)) {
 			try {
+				(window as any).gtag('event', 'conversion', {
+					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+					'value': orderTotal || 229,
+					'currency': 'MAD',
+					'transaction_id': String(orderId)
+				});
 				(window as any).gtag('event', 'purchase', {
+					'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
 					transaction_id: String(orderId),
-					value: orderTotal,
+					value: orderTotal || 229,
 					currency: 'MAD',
 					items: [{
 						item_name: orderProductName,
-						price: orderTotal,
+						price: orderTotal || 229,
 						quantity: orderQuantity
 					}]
 				});

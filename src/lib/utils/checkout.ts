@@ -260,15 +260,22 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	// 4. Google Analytics / GA4 / Google Ads (gtag)
 	try {
 		if (typeof (window as any).gtag === 'function') {
+			(window as any).gtag('event', 'conversion', {
+				'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+				'value': numPrice,
+				'currency': 'MAD',
+				'transaction_id': txnId
+			});
 			(window as any).gtag('event', 'purchase', {
+				'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
 				currency: 'MAD',
 				value: numPrice,
 				transaction_id: txnId,
-				items: [{ item_name: title, price: numPrice, quantity: 1 }]
+				items: [{ item_name: title || 'منتج', price: numPrice, quantity: 1 }]
 			});
 		}
 	} catch (err) {
-		console.warn('[Pixel] gtag purchase error:', err);
+		console.warn('[Pixel] gtag conversion/purchase error:', err);
 	}
 }
 

@@ -154,20 +154,27 @@
 			const gadsKey = 'gads_tracked_' + orderId;
 			if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				try {
+					(window as any).gtag('event', 'conversion', {
+						'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+						'value': orderTotal || 229,
+						'currency': 'MAD',
+						'transaction_id': orderId
+					});
 					(window as any).gtag('event', 'purchase', {
+						'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
 						transaction_id: orderId,
-						value: orderTotal,
+						value: orderTotal || 229,
 						currency: 'MAD',
 						items: [{
 							item_name: orderProductName,
-							price: orderTotal,
+							price: orderTotal || 229,
 							quantity: orderQuantity
 						}]
 					});
 					sessionStorage.setItem(gadsKey, 'true');
 					localStorage.setItem(gadsKey, 'true');
 				} catch (err) {
-					console.warn('[Pixel] gtag purchase error:', err);
+					console.warn('[Pixel] gtag conversion/purchase error:', err);
 				}
 			}
 			try {
