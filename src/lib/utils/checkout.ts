@@ -21,11 +21,13 @@ export function buildOrderPayload(
 	customer: CheckoutCustomer,
 	lines: CartLine[],
 	ctx: CheckoutContext,
-	orderType: 'cart' | 'upsell' = 'cart',
+	orderType: 'cart' | 'upsell' | 'update' = 'cart',
 	parentOrderId?: string
 ) {
 	const orderId =
-		orderType === 'upsell' && parentOrderId
+		orderType === 'update' && parentOrderId
+			? parentOrderId
+			: orderType === 'upsell' && parentOrderId
 			? `${parentOrderId}-U1`
 			: 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
@@ -76,90 +78,93 @@ export function trackAddToCart(
 ) {
 	if (typeof window === 'undefined') return;
 
-	const cur = 'MAD';
-	const numPrice = Number(price) || 0;
-	const title = (productTitle || '').trim();
-	const id = String(itemId || 'kit-tandim');
-
-	// Deduplication guard: prevent duplicate events within 1500ms for identical item
-	const now = Date.now();
-	const key = `${id}:${numPrice}`;
-	if (now - lastAddToCartTime < 1500 && lastAddToCartKey === key) {
-		console.log('[Tracking] AddToCart debounced (duplicate suppressed):', key);
-		return;
-	}
-	lastAddToCartTime = now;
-	lastAddToCartKey = key;
-
-	// 1. Google Tag Manager / GA4 dataLayer event (Standard e-commerce schema)
 	try {
-		(window as any).dataLayer = (window as any).dataLayer || [];
-		(window as any).dataLayer.push({
-			event: 'add_to_cart',
-			ecommerce: {
-				currency: 'MAD',
-				value: numPrice,
-				items: [
-					{
-						item_id: id,
-						item_name: title,
-						price: numPrice,
-						quantity: numberItems || 1
-					}
-				]
+		const cur = 'MAD';
+		const numPrice = Number(price) || 0;
+		const title = (productTitle || '').trim();
+		const id = String(itemId || 'kit-tandim');
+
+		// Deduplication guard: prevent duplicate events within 1500ms for identical item
+		const now = Date.now();
+		const key = `${id}:${numPrice}`;
+		if (now - lastAddToCartTime < 1500 && lastAddToCartKey === key) {
+			console.log('[Tracking] AddToCart debounced (duplicate suppressed):', key);
+			return;
+		}
+		lastAddToCartTime = now;
+		lastAddToCartKey = key;
+
+		// 1. Google Tag Manager / GA4 dataLayer event (Standard e-commerce schema)
+		try {
+			(window as any).dataLayer = (window as any).dataLayer || [];
+			(window as any).dataLayer.push({
+				event: 'add_to_cart',
+				ecommerce: {
+					currency: 'MAD',
+					value: numPrice,
+					items: [
+						{
+							item_id: id,
+							item_name: title,
+							price: numPrice,
+							quantity: numberItems || 1
+						}
+					]
+				}
+			});
+		} catch (err) {
+			console.warn('[Tracking] dataLayer add_to_cart error:', err);
+		}
+
+		// 2. Snapchat Pixel (Single Source of Truth)
+		try {
+			if (typeof (window as any).snaptr === 'function') {
+				(window as any).snaptr('track', 'ADD_CART', {
+					currency: 'MAD',
+					price: numPrice || 229,
+					item_category: title || 'منتج',
+					item_ids: [id]
+				});
 			}
-		});
-	} catch (err) {
-		console.warn('[Tracking] dataLayer add_to_cart error:', err);
-	}
-
-	// 2. Snapchat Pixel (Single Source of Truth)
-	try {
-		if (typeof (window as any).snaptr === 'function') {
-			(window as any).snaptr('track', 'ADD_CART', {
-				currency: 'MAD',
-				price: numPrice || 229,
-				item_category: title || 'منتج',
-				item_ids: [id]
-			});
+		} catch (err) {
+			console.warn('[Pixel] Snap ADD_CART error:', err);
 		}
-	} catch (err) {
-		console.warn('[Pixel] Snap ADD_CART error:', err);
-	}
 
-	// 3. Meta / Facebook Pixel
-	try {
-		if (typeof (window as any).fbq === 'function') {
-			(window as any).fbq('track', 'AddToCart', {
-				content_name: title,
-				content_type: 'product',
-				value: numPrice,
-				currency: 'MAD'
-			});
+		// 3. Meta / Facebook Pixel
+		try {
+			if (typeof (window as any).fbq === 'function') {
+				(window as any).fbq('track', 'AddToCart', {
+					content_name: title,
+					content_type: 'product',
+					value: numPrice,
+					currency: 'MAD'
+				});
+			}
+		} catch (err) {
+			console.warn('[Pixel] Meta AddToCart error:', err);
 		}
-	} catch (err) {
-		console.warn('[Pixel] Meta AddToCart error:', err);
-	}
 
-	// 4. Google Analytics / GA4 / Google Ads (gtag)
-	try {
-		if (typeof (window as any).gtag === 'function') {
-			(window as any).gtag('event', 'add_to_cart', {
-				currency: 'MAD',
-				value: numPrice,
-				items: [
-					{
-						item_name: title,
-						price: numPrice,
-						quantity: numberItems || 1
-					}
-				]
-			});
+		// 4. Google Analytics / GA4 / Google Ads (gtag)
+		try {
+			if (typeof (window as any).gtag === 'function') {
+				(window as any).gtag('event', 'add_to_cart', {
+					currency: 'MAD',
+					value: numPrice,
+					items: [
+						{
+							item_name: title,
+							price: numPrice,
+							quantity: numberItems || 1
+						}
+					]
+				});
+			}
+		} catch (err) {
+			console.warn('[Pixel] gtag add_to_cart error:', err);
 		}
-	} catch (err) {
-		console.warn('[Pixel] gtag add_to_cart error:', err);
+	} catch (globalErr) {
+		console.warn('trackAddToCart non-blocking error:', globalErr);
 	}
-
 }
 
 export function trackPurchase(price: number, productTitle: string, transactionId?: string, phoneNumber?: string) {

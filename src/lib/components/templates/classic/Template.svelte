@@ -91,18 +91,34 @@
 	});
 
 	function addSelectedToCart() {
-		const offer = activeOffer as ProductOffer;
-		cart.clear();
-		cart.add({
-			slug: (product as any).slug || '',
-			title: content.title || 'منتج',
-			image: offer.image?.trim() || content.heroImage || content.gallery?.[0]?.src || content.carousel?.[0]?.image || '',
-			price: activeOffer.price || 0,
-			offerId: offer.id ?? 0,
-			offerTitle: activeOffer.title || ''
-		});
-		trackAddToCart(activeOffer.price || 0, content.title || 'منتج', pricing.currency || 'MAD');
-		cartUi.openDrawer();
+		const offer = (activeOffer as ProductOffer) || {};
+		const price = activeOffer?.price || (product as any)?.price || 0;
+		const name = (content?.title || (product as any)?.title || 'منتج').trim();
+		const image = offer?.image?.trim() || content?.heroImage || content?.gallery?.[0]?.src || content?.carousel?.[0]?.image || '';
+		const offerId = offer?.id ?? 0;
+		const offerTitle = activeOffer?.title || '';
+		const productSlug = (product as any)?.slug || '';
+
+		try {
+			cart.clear();
+			cart.add({
+				slug: productSlug,
+				title: name,
+				image: image,
+				price: price,
+				offerId: offerId,
+				offerTitle: offerTitle
+			});
+			cartUi.openDrawer();
+		} catch (cartErr) {
+			console.error('Cart action error in classic:', cartErr);
+		}
+
+		try {
+			trackAddToCart(price, name, pricing?.currency || 'MAD');
+		} catch (trackErr) {
+			console.warn('[Pixel] trackAddToCart error in classic:', trackErr);
+		}
 	}
 
 	onMount(() => {

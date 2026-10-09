@@ -152,68 +152,87 @@
 	let lastAddToCart = 0;
 	function addSelectedToCart(e?: MouseEvent) {
 		if (e) {
-			e.stopPropagation();
-		}
-		const now = Date.now();
-		if (isAddingToCart || now - lastAddToCart < 2000) return;
-		isAddingToCart = true;
-		lastAddToCart = now;
-		setTimeout(() => {
-			isAddingToCart = false;
-		}, 2000);
-
-		const currentProductPrice = activeOffer.price || 229;
-		const currentProductName = (content?.title || (product as any)?.title || 'منتج').trim();
-		const currentQuantity = activeOffer.quantity || 1;
-
-		// Single Pure Manual TikTok AddToCart Trigger
-		if (typeof window !== 'undefined' && (window as any).ttq) {
-			(window as any).ttq.track('AddToCart', {
-				content_name: currentProductName,
-				currency: 'MAD',
-				value: currentProductPrice
-			});
-		}
-
-		// Direct Snapchat tracking without dataLayer
-		if (typeof window !== 'undefined' && (window as any).snaptr) {
 			try {
-				(window as any).snaptr('track', 'ADD_CART', {
-					currency: 'MAD',
-					price: currentProductPrice,
-					item_category: currentProductName,
-					item_ids: [String(activeOffer.id || (product as any)?.slug || 'item')]
-				});
+				e.stopPropagation();
 			} catch {}
 		}
+		const now = Date.now();
+		if (now - lastAddToCart < 400) return;
+		lastAddToCart = now;
 
-		// Google Ads add_to_cart Trigger (Dynamic)
-		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-			try {
-				(window as any).gtag('event', 'add_to_cart', {
-					currency: 'MAD',
-					value: currentProductPrice,
-					items: [{
-						item_name: currentProductName,
-						price: currentProductPrice,
-						quantity: currentQuantity || 1
-					}]
-				});
-			} catch (err) {
-				console.warn('[Pixel] gtag add_to_cart error:', err);
-			}
+		// 1. Safe dynamic variable extraction with robust fallbacks
+		const price = activeOffer?.price || (product as any)?.price || 229;
+		const name = (content?.title || (product as any)?.title || 'طقم التنظيم المنزلي').trim();
+		const quantity = activeOffer?.quantity || 1;
+		const offerId = (activeOffer as ProductOffer)?.id ?? 0;
+		const offerTitle = activeOffer?.title || '';
+		const productSlug = (product as any)?.slug || '';
+		const productImage = slides?.[0]?.src || '';
+
+		// 2. PRIMARY ACTION: Safely update cart and open drawer IMMEDIATELY
+		try {
+			cart.clear();
+			cart.add({
+				slug: productSlug,
+				title: name,
+				image: productImage,
+				price: price,
+				offerId: offerId,
+				offerTitle: offerTitle
+			});
+			cartUi.openDrawer();
+		} catch (cartErr) {
+			console.error('Cart action error:', cartErr);
 		}
 
-		cart.clear();
-		cart.add({
-			slug: (product as any).slug || '',
-			title: content.title || 'منتج',
-			image: slides[0]?.src || '',
-			price: selectedPrice,
-			offerId: (activeOffer as ProductOffer).id ?? 0,
-			offerTitle: activeOffer.title || ''
-		});
-		cartUi.openDrawer();
+		// 3. SECONDARY ACTION: Non-blocking tracking isolated in try-catch
+		try {
+			// TikTok Pixel
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				try {
+					(window as any).ttq.track('AddToCart', {
+						content_name: name,
+						currency: 'MAD',
+						value: price
+					});
+				} catch (ttqErr) {
+					console.warn('[Pixel] ttq AddToCart warning:', ttqErr);
+				}
+			}
+
+			// Snapchat Pixel
+			if (typeof window !== 'undefined' && (window as any).snaptr) {
+				try {
+					(window as any).snaptr('track', 'ADD_CART', {
+						currency: 'MAD',
+						price: price,
+						item_category: name,
+						item_ids: [String(offerId || productSlug || 'item')]
+					});
+				} catch (snapErr) {
+					console.warn('[Pixel] snap ADD_CART warning:', snapErr);
+				}
+			}
+
+			// Google Ads & GA4
+			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+				try {
+					(window as any).gtag('event', 'add_to_cart', {
+						currency: 'MAD',
+						value: price,
+						items: [{
+							item_name: name,
+							price: price,
+							quantity: quantity
+						}]
+					});
+				} catch (gtagErr) {
+					console.warn('[Pixel] gtag add_to_cart warning:', gtagErr);
+				}
+			}
+		} catch (trackingErr) {
+			console.warn('Tracking non-blocking error:', trackingErr);
+		}
 	}
 
 	function scrollToOffers() {
