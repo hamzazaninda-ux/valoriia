@@ -27,8 +27,8 @@
 	<div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 			
-			<!-- Column 1 (Right in RTL): Text, Badges, Credibility Cards & CTA -->
-			<div class="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-start space-y-5 sm:space-y-6">
+			<!-- Column 1 (Right in RTL on Desktop, Below on Mobile): Text, Badges, Credibility Cards & CTA -->
+			<div class="order-2 lg:order-1 lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-start space-y-5 sm:space-y-6">
 				
 				<!-- a) Eyebrow Pill Tag -->
 				<div class="inline-flex items-center gap-2 rounded-full bg-white border border-[#1B4332]/15 px-4 py-1.5 shadow-2xs">
@@ -99,9 +99,9 @@
 
 			</div>
 
-			<!-- Column 2 (Left in RTL): Luxury Visual Container with 3 Jars Mockup -->
-			<div class="lg:col-span-5 flex justify-center w-full">
-				<div class="relative w-full max-w-md lg:max-w-none rounded-3xl bg-gradient-to-br from-[#EAEFEA] via-[#F4F7F4] to-[#FAF8F5] border border-[#1B4332]/10 shadow-lg p-6 sm:p-8 min-h-[420px] flex items-center justify-center overflow-hidden group">
+			<!-- Column 2 (Left in RTL on Desktop, Top on Mobile): Luxury Visual Container with 3 Jars Mockup -->
+			<div class="order-1 lg:order-2 lg:col-span-5 flex justify-center w-full">
+				<div class="relative w-full max-w-md lg:max-w-none rounded-3xl bg-gradient-to-br from-[#EAEFEA] via-[#F4F7F4] to-[#FAF8F5] border border-[#1B4332]/10 shadow-lg p-5 sm:p-8 min-h-[350px] sm:min-h-[420px] flex items-center justify-center overflow-hidden group">
 					
 					<!-- Natural organic background touches -->
 					<div class="absolute -top-12 -start-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
