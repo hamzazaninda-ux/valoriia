@@ -45,7 +45,7 @@
 					<button
 						type="button"
 						onclick={() => toggle(i)}
-						class="flex w-full items-center justify-between p-4 sm:p-5 text-start font-bold text-sm sm:text-base text-[#1F2937] hover:text-[#1B4332] transition-colors"
+						class="flex w-full items-center justify-between p-4 sm:p-5 text-start font-bold text-base sm:text-lg text-[#1F2937] hover:text-[#1B4332] transition-colors cursor-pointer"
 					>
 						<span>{faq.q}</span>
 						<span class={`text-lg font-bold transition-transform duration-200 text-[#1B4332] ${openIndex === i ? 'rotate-180' : ''}`}>
@@ -54,7 +54,7 @@
 					</button>
 
 					{#if openIndex === i}
-						<div class="px-4 pb-5 pt-1 text-xs sm:text-sm font-medium leading-relaxed text-stone-600 border-t border-stone-200/60">
+						<div class="px-5 pb-6 pt-2 text-base leading-relaxed text-gray-700 font-medium border-t border-stone-200/60">
 							{faq.a}
 						</div>
 					{/if}

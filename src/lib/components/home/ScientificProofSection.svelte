@@ -84,7 +84,7 @@
 			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332] leading-tight">
 				ليس مجرد حلوى.. بل تركيبة علاجية مثبتة بالجرعات الدقيقة
 			</h2>
-			<p class="text-sm sm:text-base text-stone-600 font-medium leading-relaxed">
+			<p class="text-base sm:text-lg leading-relaxed text-gray-700 font-medium">
 				صُنعت NOVAVITA في مختبرات عالمية معتمدة وفق أدق معايير السلامة، لنمنحك نتائج ملموسة تبدأ من الخلايا وتظهر على شعرك وبشرتك بنكهة لذيذة ومضغ مريح.
 			</p>
 			<div class="mx-auto h-1 w-20 rounded-full bg-[#1B4332]"></div>
@@ -97,18 +97,18 @@
 					<div class="space-y-3">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl">{cert.icon}</span>
-							<span class="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+							<span class="text-xs font-black text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
 								{cert.badge}
 							</span>
 						</div>
-						<h3 class="font-display text-base font-black text-[#1B4332]">
+						<h3 class="font-display text-base sm:text-lg font-black text-[#1B4332]">
 							{cert.title}
 						</h3>
-						<p class="text-xs text-stone-600 leading-relaxed font-medium">
+						<p class="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
 							{cert.desc}
 						</p>
 					</div>
-					<div class="pt-4 border-t border-stone-100 flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 mt-4">
+					<div class="pt-4 border-t border-stone-100 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 mt-4">
 						<span>✓</span>
 						<span>معتمد ومطابق للمواصفات</span>
 					</div>
@@ -120,11 +120,11 @@
 		<div class="rounded-3xl bg-white p-6 sm:p-10 border-2 border-emerald-950/10 shadow-xl space-y-10">
 			
 			<div class="text-center max-w-2xl mx-auto space-y-2">
-				<span class="text-xs font-black text-[#E86A7C] uppercase tracking-wider">Clinical Dosage Breakdown</span>
+				<span class="text-xs sm:text-sm font-black text-[#E86A7C] uppercase tracking-wider">Clinical Dosage Breakdown</span>
 				<h3 class="font-display text-xl sm:text-3xl font-black text-[#1B4332]">
 					الجرعات الصيدلانية الدقيقة في كل عبوة
 				</h3>
-				<p class="text-xs sm:text-sm text-stone-500 font-medium">
+				<p class="text-sm sm:text-base text-gray-600 font-medium leading-relaxed">
 					تحتوي كل عبوة على 25 علكة مركزة سهلة المضغ. الروتين الموصى به: علكتان يومياً مع إحدى الوجبات الرئيسية لامتصاص مثالي.
 				</p>
 			</div>
@@ -135,10 +135,10 @@
 						
 						<!-- Visual / Badge side (Switches on Even / Odd) -->
 						<div class={`lg:col-span-4 flex flex-col items-center justify-center text-center p-4 rounded-xl bg-white/80 shadow-xs border border-stone-200/60 ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
-							<span class="text-xs font-bold text-stone-500">{d.target}</span>
+							<span class="text-sm font-bold text-stone-600">{d.target}</span>
 							<span class="font-display text-xl sm:text-2xl font-black text-[#1B4332] mt-1" dir="ltr">{d.dose}</span>
-							<span class="text-xs font-extrabold text-[#E86A7C] mt-0.5">{d.synergy}</span>
-							<div class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
+							<span class="text-xs sm:text-sm font-extrabold text-[#E86A7C] mt-0.5">{d.synergy}</span>
+							<div class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
 								<span>💊 كورس 25 علكة مضغ</span>
 							</div>
 						</div>
@@ -149,17 +149,17 @@
 								<span class="flex h-6 w-6 items-center justify-center rounded-full bg-[#1B4332] text-white text-xs font-black">
 									{index + 1}
 								</span>
-								<h4 class="font-display text-lg font-black text-[#1F2937]">
+								<h4 class="font-display text-lg sm:text-xl font-black text-[#1F2937]">
 									{d.name}
 								</h4>
 							</div>
-							<p class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
+							<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-medium">
 								{d.details}
 							</p>
-							<div class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-stone-500 pt-1">
-								<span class="bg-white px-2.5 py-0.5 rounded-md border border-stone-200">امتصاص خلوى فوري</span>
-								<span class="bg-white px-2.5 py-0.5 rounded-md border border-stone-200">خالي من السكر الزائد</span>
-								<span class="bg-white px-2.5 py-0.5 rounded-md border border-stone-200">بدون إرهاق للمعدة</span>
+							<div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-bold text-stone-600 pt-1">
+								<span class="bg-white px-3 py-1 rounded-md border border-stone-200">امتصاص خلوى فوري</span>
+								<span class="bg-white px-3 py-1 rounded-md border border-stone-200">خالي من السكر الزائد</span>
+								<span class="bg-white px-3 py-1 rounded-md border border-stone-200">بدون إرهاق للمعدة</span>
 							</div>
 						</div>
 
@@ -172,7 +172,7 @@
 				<button
 					type="button"
 					onclick={handleAction}
-					class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-95 px-8 py-3 text-sm sm:text-base font-black text-white shadow-lg shadow-emerald-950/15 transition-all duration-300 cursor-pointer"
+					class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-95 px-8 py-3 text-base sm:text-lg font-bold text-white shadow-lg shadow-emerald-950/15 transition-all duration-300 cursor-pointer"
 				>
 					<span>اختاري روتينكِ العلاجي المعتمد الآن</span>
 					<span class="text-base">←</span>

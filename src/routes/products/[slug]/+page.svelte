@@ -141,10 +141,10 @@
 					<h1 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332] leading-tight">
 						{product.name}
 					</h1>
-					<p class="text-sm sm:text-base text-stone-600 font-medium leading-relaxed">
+					<p class="text-base sm:text-lg text-gray-700 font-medium leading-relaxed">
 						{product.headline}
 					</p>
-					<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200">
+					<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1 text-xs sm:text-sm font-bold text-emerald-800 border border-emerald-200">
 						<span>🍓 النكهة:</span>
 						<span>{product.flavor}</span>
 					</div>
@@ -265,12 +265,12 @@
 							<h4 class="font-display text-base font-black text-[#1B4332]">
 								ضمان المعاينة الكاملة عند باب دارك
 							</h4>
-							<p class="text-[11px] font-bold text-emerald-800">
+							<p class="text-xs sm:text-sm font-bold text-emerald-800">
 								حقكِ القانوني والأخلاقي محفوظ بالكامل قبل دفع أي درهم
 							</p>
 						</div>
 					</div>
-					<p class="text-xs sm:text-sm font-semibold text-stone-700 leading-relaxed border-t border-emerald-900/10 pt-2.5">
+					<p class="text-sm sm:text-base font-semibold text-gray-700 leading-relaxed border-t border-emerald-900/10 pt-2.5">
 						عند وصول الموزع، افتحي الطرد وعايني علب NOVAVITA وتأكدي من سلامتها وختم الأمان بنفسك قبل دفع أي درهم. ثقتكِ وراحتكِ هي أولويتنا الأولى.
 					</p>
 					<div class="grid grid-cols-3 gap-2 pt-1 text-center text-[10px] sm:text-xs font-black text-emerald-900">
@@ -345,12 +345,12 @@
 							<h3 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-tight">
 								علاش كيطيح ليك شعرك وخا كاديري الزيوت والشامبوانات الغالية؟
 							</h3>
-							<p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
+							<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-medium">
 								الماء القاسي الكلسي ("الكالكير") فمعظم المدن المغربية، السيشوار المتكرر والتوتر كيسد مسام الفروة وكيجفف الزغبة من برا. الزيوت كترطب غير القشرة الخارجية، ولكن البصيلة كتموت من الداخل بسبب نقص الكيراتين والبيوتين.
 							</p>
 							<div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-2">
 								<div class="font-black text-xs sm:text-sm text-[#1B4332]">الحل العلمي لـ NOVAVITA Biotin:</div>
-								<p class="text-xs text-stone-700 leading-relaxed">
+								<p class="text-sm sm:text-base text-gray-700 leading-relaxed font-medium">
 									جرعة صيدلانية دقيقة (3000 mcg بيوتين + زنك وفيتامين C) كتوصل عبر الدورة الدموية مباشرة لقاع البصيلة، كتوقف التساقط فظرف 3 أسابيع، وكتفرّخ البيبي هير فالفراغات بدون ما تزيد شعر الجسم.
 								</p>
 							</div>
@@ -374,12 +374,12 @@
 							<h3 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-tight">
 								علاش الكريمات السطحية ما كاتعطيكش نضارة دائمة؟
 							</h3>
-							<p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
+							<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-medium">
 								ابتداءً من سن 25 سنة، كيفقد جسم المرأة 1% من الكولاجين سنوياً. جزيئات الكريمات كتكون كبيرة بزاف وما كاتقدرش تخترق حاجز الأدمة العميقة، داكشي علاش النتيجة كتبقى مؤقتة والشحوب كيرجع.
 							</p>
 							<div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-2">
 								<div class="font-black text-xs sm:text-sm text-[#1B4332]">الحل العلمي لـ NOVAVITA Collagen:</div>
-								<p class="text-xs text-stone-700 leading-relaxed">
+								<p class="text-sm sm:text-base text-gray-700 leading-relaxed font-medium">
 									كولاجين بحري متحلل بجزيئات ببتيدية دقيقة كيمتصها الجهاز الهضمي بنسبة 95%، مدمجة بحمض الهيالورونيك باش تحبس الماء داخل خلايا الجلد، تملا الخطوط التعبيرية وتعطيك نضارة ملفتة من الداخل.
 								</p>
 							</div>
@@ -403,12 +403,12 @@
 							<h3 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-tight">
 								كيفاش تحافظي على طاقتك ونشاطك بدون أدوية ثقيلة على المعدة؟
 							</h3>
-							<p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
+							<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-medium">
 								الروتين السريع وتغذيتنا اليومية ما كاتغطيش كل الفيتامينات الأساسية. أغلب النساء كيكرهو الكبسولات الصيدلانية الضخمة اللي كتسبب غثيان وحرقة فالمعدة وكيقطعو الكورس من السيمانة الأولى.
 							</p>
 							<div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
 								<div class="font-black text-xs sm:text-sm text-amber-900">الحل العلمي لـ NOVAVITA Multivitamin:</div>
-								<p class="text-xs text-stone-700 leading-relaxed">
+								<p class="text-sm sm:text-base text-gray-700 leading-relaxed font-medium">
 									13 فيتامين ومعدن أساسي مع مجموعة B-Complex كاملة وحمض الفوليك، فـ 2 علكات فواكه لذيذة كتمضغيهم مع الصباح وكتعطي لجسمك طاقة ومناعة قوية طوال اليوم.
 								</p>
 							</div>
@@ -431,7 +431,7 @@
 					<h3 class="font-bold text-base sm:text-lg text-[#1B4332] flex items-center gap-2">
 						<span>✨</span> الفوائد المضمونة لـ {product.name}
 					</h3>
-					<ul class="space-y-3 text-xs sm:text-sm text-stone-700">
+					<ul class="space-y-3 text-sm sm:text-base text-stone-700">
 						{#each product.keyBenefits as b}
 							<li class="flex items-start gap-2.5">
 								<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">✓</span>

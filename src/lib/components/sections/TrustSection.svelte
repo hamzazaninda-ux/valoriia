@@ -28,7 +28,7 @@
 		<h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1E293B]">
 			علاش يختارونا المغاربة؟
 		</h2>
-		<p class="mx-auto max-w-lg text-xs sm:text-sm text-stone-500 leading-relaxed">
+		<p class="mx-auto max-w-lg text-base sm:text-lg text-stone-600 leading-relaxed font-medium">
 			تجربة تسوق آمنة ومريحة من البداية حتى كتوصلك السلعة وتجربها بيدك.
 		</p>
 		<div class="mx-auto mt-3 h-0.5 w-20 rounded-full bg-[#1B4332]"></div>
@@ -58,15 +58,15 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+					<h3 class="font-display text-lg sm:text-xl font-bold text-[#1E293B]">
 						فتح الكولية وقلّب عاد خلّص
 					</h3>
-					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
+					<p class="mt-2 text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
 						حق المعاينة مكفول قانونياً وأخلاقياً. تأكد من جودة المنتج وجميع قطعه قبل دفع أي درهم للموزع.
 					</p>
 				</div>
 			</div>
-			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-800">
+			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-emerald-800">
 				<svg class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 				</svg>
@@ -96,15 +96,15 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+					<h3 class="font-display text-lg sm:text-xl font-bold text-[#1E293B]">
 						توصيل مباشر حتى لباب دارك
 					</h3>
-					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
+					<p class="mt-2 text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
 						خدمة توصيل سريعة ومجانية تغطي كافة ربوع المملكة خلال 24 إلى 48 ساعة فقط.
 					</p>
 				</div>
 			</div>
-			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-800">
+			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-emerald-800">
 				<svg class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 				</svg>
@@ -134,15 +134,15 @@
 					</span>
 				</div>
 				<div>
-					<h3 class="font-display text-lg font-bold text-[#1E293B]">
+					<h3 class="font-display text-lg sm:text-xl font-bold text-[#1E293B]">
 						ضمان استبدال رسمي لمدة 14 يوماً
 					</h3>
-					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
+					<p class="mt-2 text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
 						خدمة ما بعد البيع رهن إشارتك؛ في حال وجود أي ملاحظة أو عيب نقوم باستبدال المنتج مجاناً وبدون تعقيدات.
 					</p>
 				</div>
 			</div>
-			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-800">
+			<div class="mt-5 pt-3 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-emerald-800">
 				<svg class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 				</svg>
@@ -178,15 +178,15 @@
 						<h3 class="font-display text-xl sm:text-2xl font-bold text-[#1E293B]">
 							فريق خدمة الزبناء في خدمتك
 						</h3>
-						<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+						<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
 							<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
 							متصلون الآن
 						</span>
 					</div>
-					<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-xl">
+					<p class="text-base sm:text-lg text-gray-700 leading-relaxed max-w-xl font-medium">
 						عندك أي استفسار على طريقة الاستعمال، المقاسات، تتبع الشحنة، أو خدمة ما بعد البيع؟ مستشارو الطلبات متواجدون لمساعدتك خطوة بخطوة.
 					</p>
-					<div class="flex items-center justify-center sm:justify-start gap-2 pt-1 text-xs font-semibold text-stone-500">
+					<div class="flex items-center justify-center sm:justify-start gap-2 pt-1 text-xs sm:text-sm font-semibold text-stone-500">
 						<svg class="h-4 w-4 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
 						</svg>

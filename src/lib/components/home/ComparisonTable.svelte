@@ -43,30 +43,30 @@
 
 		<!-- Comparison Table Responsive Wrapper -->
 		<div class="overflow-hidden rounded-3xl border-2 border-emerald-950/15 shadow-xl bg-[#FAF8F5]">
-			<table class="w-full text-start text-xs sm:text-sm border-collapse" dir="rtl">
+			<table class="w-full text-start text-sm sm:text-base border-collapse" dir="rtl">
 				<thead>
 					<tr class="border-b border-emerald-950/10 bg-white">
-						<th class="p-3.5 sm:p-5 text-start font-black text-stone-500 w-1/3">المعيار</th>
+						<th class="p-3.5 sm:p-5 text-start font-black text-stone-600 text-sm sm:text-base w-1/3">المعيار</th>
 						<th class="p-3.5 sm:p-5 text-center font-black text-[#1B4332] bg-emerald-50/70 border-x border-emerald-950/10 w-1/3">
-							<span class="block text-sm sm:text-base">حلوى NOVAVITA 🍓</span>
-							<span class="text-[10px] font-bold text-emerald-800">الحل الذكي الممتع</span>
+							<span class="block text-base sm:text-lg">حلوى NOVAVITA 🍓</span>
+							<span class="text-xs sm:text-sm font-bold text-emerald-800">الحل الذكي الممتع</span>
 						</th>
-						<th class="p-3.5 sm:p-5 text-center font-bold text-stone-400 w-1/3">
-							<span class="block text-sm sm:text-base">الحبوب العادية 💊</span>
-							<span class="text-[10px]">الروتين التقليدي</span>
+						<th class="p-3.5 sm:p-5 text-center font-bold text-stone-500 w-1/3">
+							<span class="block text-base sm:text-lg">الحبوب العادية 💊</span>
+							<span class="text-xs sm:text-sm">الروتين التقليدي</span>
 						</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-emerald-950/10 bg-white/60">
 					{#each points as point}
 						<tr class="hover:bg-white transition-colors">
-							<td class="p-3.5 sm:p-5 font-bold text-[#1F2937]">
+							<td class="p-3.5 sm:p-5 font-bold text-sm sm:text-base text-[#1F2937] leading-relaxed">
 								{point.title}
 							</td>
-							<td class="p-3.5 sm:p-5 text-center font-extrabold text-[#1B4332] bg-emerald-50/50 border-x border-emerald-950/10">
+							<td class="p-3.5 sm:p-5 text-center font-extrabold text-sm sm:text-base text-[#1B4332] bg-emerald-50/50 border-x border-emerald-950/10 leading-relaxed">
 								{point.novavita}
 							</td>
-							<td class="p-3.5 sm:p-5 text-center font-medium text-stone-500">
+							<td class="p-3.5 sm:p-5 text-center font-medium text-sm sm:text-base text-stone-600 leading-relaxed">
 								{point.traditional}
 							</td>
 						</tr>

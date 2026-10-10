@@ -34,13 +34,13 @@
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-10">
 		
 		<div class="text-center max-w-xl mx-auto space-y-3">
-			<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/5 px-3.5 py-1 text-xs font-bold text-[#1B4332]">
+			<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/5 px-3.5 py-1 text-xs sm:text-sm font-bold text-[#1B4332]">
 				⭐ تجارب حقيقية
 			</span>
 			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332]">
 				شنو كيقولو زبوناتنا في المغرب؟
 			</h2>
-			<p class="text-sm sm:text-base text-stone-600 font-medium">
+			<p class="text-base sm:text-lg text-stone-600 font-medium leading-relaxed">
 				أكثر من 1,450 سيدة مغربية اختارت NOVAVITA وحصلت على نتائج ملموسة
 			</p>
 			<div class="mx-auto h-1 w-20 rounded-full bg-[#1B4332]"></div>
@@ -59,22 +59,22 @@
 									</svg>
 								{/each}
 							</div>
-							<span class="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+							<span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
 								{review.badge}
 							</span>
 						</div>
 
-						<p class="text-xs sm:text-sm font-medium leading-relaxed text-[#1F2937]/90 text-start">
+						<p class="text-base sm:text-lg font-medium leading-relaxed text-gray-700 text-start">
 							"{review.text}"
 						</p>
 					</div>
 
 					<div class="pt-6 border-t border-stone-100 flex items-center justify-between text-xs mt-4">
 						<div class="flex flex-col text-start">
-							<span class="font-extrabold text-[#1B4332] text-sm">{review.name}</span>
-							<span class="text-stone-400 font-semibold">{review.city} ({review.age})</span>
+							<span class="font-extrabold text-[#1B4332] text-base">{review.name}</span>
+							<span class="text-stone-500 font-semibold text-xs sm:text-sm">{review.city} ({review.age})</span>
 						</div>
-						<span class="text-stone-400 font-medium text-[11px]">{review.date}</span>
+						<span class="text-stone-400 font-medium text-xs">{review.date}</span>
 					</div>
 				</div>
 			{/each}

@@ -32,18 +32,18 @@
 				
 				<!-- a) Eyebrow Pill Tag -->
 				<div class="inline-flex items-center gap-2 rounded-full bg-white border border-[#1B4332]/15 px-4 py-1.5 shadow-2xs">
-					<span class="text-xs sm:text-sm font-bold text-[#1B4332]">
+					<span class="text-xs sm:text-sm font-semibold text-[#1B4332]">
 						🌿 روتين الجمال والصحة الأكثر طلباً بالمغرب
 					</span>
 				</div>
 
 				<!-- b) H1 Headline -->
-				<h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-black text-[#1B4332] leading-[1.2] tracking-tight">
+				<h1 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-black text-[#1B4332] leading-[1.25] tracking-tight">
 					علكات متطورة لجمال يبدأ من الداخل
 				</h1>
 
 				<!-- c) Concise Description (2-3 lines only, no bullet points) -->
-				<p class="text-sm sm:text-base md:text-lg text-[#1F2937]/80 leading-relaxed font-medium max-w-2xl">
+				<p class="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed font-medium max-w-2xl">
 					ثلاث تركيبات مبتكرة بالكولاجين البحري، البيوتين المركز 3000mcg، والملتي فيتامين الشامل — تمنحكِ شعراً كثيفاً، بشرة نضرة، وطاقة يومية بنكهة فواكه طبيعية لذيذة بدون عناء الكبسولات المرة.
 				</p>
 
@@ -52,29 +52,29 @@
 					<!-- Card 1 -->
 					<div class="rounded-2xl bg-white border border-stone-200/90 p-3 shadow-2xs flex flex-col items-center justify-center text-center gap-1">
 						<span class="text-xl">🛡️</span>
-						<span class="font-black text-xs text-[#1B4332]">معاينة عند الباب</span>
-						<span class="text-[10px] text-stone-500 font-medium">فتحي وقلبي قبل الدفع</span>
+						<span class="font-bold text-sm sm:text-base text-gray-900">معاينة عند الباب</span>
+						<span class="text-xs sm:text-sm text-gray-600 font-medium">فتحي وقلبي قبل الدفع</span>
 					</div>
 
 					<!-- Card 2 -->
 					<div class="rounded-2xl bg-white border border-stone-200/90 p-3 shadow-2xs flex flex-col items-center justify-center text-center gap-1">
 						<span class="text-xl">🌿</span>
-						<span class="font-black text-xs text-[#1B4332]">حلال 100%</span>
-						<span class="text-[10px] text-stone-500 font-medium">بكتين فواكه نباتي</span>
+						<span class="font-bold text-sm sm:text-base text-gray-900">حلال 100%</span>
+						<span class="text-xs sm:text-sm text-gray-600 font-medium">بكتين فواكه نباتي</span>
 					</div>
 
 					<!-- Card 3 -->
 					<div class="rounded-2xl bg-white border border-stone-200/90 p-3 shadow-2xs flex flex-col items-center justify-center text-center gap-1">
 						<span class="text-xl">🔬</span>
-						<span class="font-black text-xs text-[#1B4332]">جودة GMP</span>
-						<span class="text-[10px] text-stone-500 font-medium">فحص مخبري للنقاء</span>
+						<span class="font-bold text-sm sm:text-base text-gray-900">جودة GMP</span>
+						<span class="text-xs sm:text-sm text-gray-600 font-medium">فحص مخبري للنقاء</span>
 					</div>
 
 					<!-- Card 4 -->
 					<div class="rounded-2xl bg-white border border-stone-200/90 p-3 shadow-2xs flex flex-col items-center justify-center text-center gap-1">
 						<span class="text-xl">🚚</span>
-						<span class="font-black text-xs text-[#1B4332]">توصيل سريع</span>
-						<span class="text-[10px] text-stone-500 font-medium">24-48 ساعة لدارك</span>
+						<span class="font-bold text-sm sm:text-base text-gray-900">توصيل سريع</span>
+						<span class="text-xs sm:text-sm text-gray-600 font-medium">24-48 ساعة لدارك</span>
 					</div>
 				</div>
 
@@ -84,14 +84,14 @@
 					<button
 						type="button"
 						onclick={scrollToOrder}
-						class="w-full sm:w-auto inline-flex min-h-13 sm:min-h-14 items-center justify-center gap-2.5 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] px-7 py-3 text-base sm:text-lg font-black text-white shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer group"
+						class="w-full sm:w-auto inline-flex min-h-13 sm:min-h-14 items-center justify-center gap-2.5 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] px-7 py-3 text-base sm:text-lg font-bold text-white shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer group"
 					>
 						<span>اكتشفي علكات NOVAVITA</span>
 						<span class="text-xl transition-transform group-hover:-translate-x-1">←</span>
 					</button>
 
 					<!-- Adjacent Reassurance Badge -->
-					<div class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white border border-stone-200/90 px-4 py-3 text-xs sm:text-sm font-bold text-[#1B4332] shadow-2xs w-full sm:w-auto">
+					<div class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white border border-stone-200/90 px-4 py-3 text-base sm:text-lg font-bold text-[#1B4332] shadow-2xs w-full sm:w-auto">
 						<span>🛡️</span>
 						<span>ضمان المعاينة الكاملة عند الباب</span>
 					</div>

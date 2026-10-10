@@ -79,7 +79,7 @@
 			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332] leading-tight">
 				علاجات دقيقة تعالج أسباب المشكلة من الجذور.. بنكهة فواكه تعشقينها
 			</h2>
-			<p class="text-sm sm:text-base text-stone-600 font-medium leading-relaxed">
+			<p class="text-base sm:text-lg leading-relaxed text-gray-700 font-medium">
 				فهمنا بعمق التحديات اليومية التي تواجه جمال وصحة المرأة المغربية، وابتكرنا روتيناً خلوياً متكاملاً يمنحك التغيير الحقيقي دون عناء الكبسولات الجافة.
 			</p>
 			<div class="mx-auto h-1 w-20 rounded-full bg-[#E86A7C]"></div>
@@ -98,7 +98,7 @@
 					<div class={`lg:col-span-6 space-y-4 sm:space-y-5 text-start ${index % 2 === 1 ? 'lg:order-2' : 'lg:order-1'}`}>
 						
 						<!-- Badge -->
-						<div class="inline-flex items-center gap-2 rounded-full bg-[#1B4332]/5 px-3.5 py-1 text-xs font-black text-[#1B4332] border border-[#1B4332]/10">
+						<div class="inline-flex items-center gap-2 rounded-full bg-[#1B4332]/5 px-3.5 py-1 text-xs sm:text-sm font-black text-[#1B4332] border border-[#1B4332]/10">
 							{item.badge}
 						</div>
 
@@ -110,12 +110,12 @@
 						</h3>
 
 						<!-- Pain Point Context (Moroccan Emotional Hook) -->
-						<p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-semibold bg-[#FAF8F5] p-3.5 rounded-2xl border border-stone-200/70">
+						<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-semibold bg-[#FAF8F5] p-4 rounded-2xl border border-stone-200/70">
 							{item.painPoint}
 						</p>
 
 						<!-- Scientific Solution -->
-						<p class="text-xs sm:text-sm text-stone-800 leading-relaxed font-medium">
+						<p class="text-base sm:text-lg text-gray-700 leading-relaxed font-medium">
 							{item.solution}
 						</p>
 
@@ -126,7 +126,7 @@
 									<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-black mt-0.5">
 										✓
 									</span>
-									<span class="text-xs sm:text-sm font-bold text-[#1F2937] leading-relaxed">
+									<span class="text-sm sm:text-base font-bold text-[#1F2937] leading-relaxed">
 										{benefit}
 									</span>
 								</div>
@@ -134,7 +134,7 @@
 						</div>
 
 						<!-- Dose Specs Pill -->
-						<div class="inline-flex items-center gap-2 text-[11px] font-extrabold text-stone-500 bg-stone-100 px-3 py-1 rounded-xl">
+						<div class="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-stone-600 bg-stone-100 px-3.5 py-1.5 rounded-xl">
 							<span>🔬 التركيبة:</span>
 							<span>{item.specs}</span>
 						</div>
