@@ -5,6 +5,11 @@ import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
 export const load: PageServerLoad = async ({ params }) => {
+  const gummieSlugs = ['gummies_collagen', 'gummies_biotine', 'gumies_vitamine'];
+  if (gummieSlugs.includes(params.slug)) {
+    throw redirect(301, `/products/${params.slug}`);
+  }
+
   const product = await readProduct(params.slug);
 
   if (!product || product.status !== 'published') {

@@ -84,27 +84,34 @@
 					
 					<!-- Visual Container (Desktop: switches sides on even/odd) -->
 					<div class={`lg:col-span-6 flex justify-center ${index % 2 === 1 ? 'lg:order-last' : 'lg:order-first'}`}>
-						<div class="relative w-full max-w-md aspect-square rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-lg border-2 {item.color} overflow-hidden group">
+						<a
+							href={`/products/${item.sku}`}
+							class="relative w-full max-w-md aspect-square rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-lg border-2 {item.color} overflow-hidden group block cursor-pointer transition-transform duration-300 hover:-translate-y-1"
+							aria-label={`عرض تفاصيل ${item.headline}`}
+						>
 							<!-- Background Circle Art -->
 							<div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/70 blur-xl"></div>
 							
-							<!-- Product Card Preview -->
+							<!-- Product Card Preview with SVG Image & Error Fallback -->
 							<div class="relative z-10 w-full h-full flex flex-col items-center justify-center space-y-4">
-								<div class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl bg-white shadow-md p-4 flex items-center justify-center border border-stone-200/60 transition-transform duration-500 group-hover:scale-105">
-									<svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<rect x="25" y="30" width="50" height="60" rx="12" fill="#FAF8F5" stroke="#1B4332" stroke-width="2.5"/>
-										<rect x="35" y="16" width="30" height="14" rx="4" fill="#1B4332"/>
-										<rect x="30" y="44" width="40" height="34" rx="6" fill="#1B4332"/>
-										<text x="50" y="60" text-anchor="middle" fill="#FFFFFF" font-size="7" font-weight="bold">NOVAVITA</text>
-										<circle cx="50" cy="70" r="4" fill="#E86A7C" />
-									</svg>
+								<div class="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl bg-white/80 shadow-md p-3 flex items-center justify-center border border-stone-200/60 backdrop-blur-xs transition-transform duration-500 group-hover:scale-105">
+									<img
+										src={`/images/products/${item.sku}.svg`}
+										alt={item.headline}
+										class="w-full h-full object-contain drop-shadow-md"
+										loading="lazy"
+										onerror={(e: any) => {
+											e.currentTarget.onerror = null;
+											e.currentTarget.src = '/images/products/gummies_collagen.svg';
+										}}
+									/>
 								</div>
 								
 								<div class="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1 text-xs font-black shadow-xs">
 									<span>{item.flavor}</span>
 								</div>
 							</div>
-						</div>
+						</a>
 					</div>
 
 					<!-- Text Content -->
@@ -114,7 +121,9 @@
 						</div>
 
 						<h3 class="font-display text-xl sm:text-3xl font-black text-[#1B4332] leading-snug">
-							{item.headline}
+							<a href={`/products/${item.sku}`} class="hover:text-[#E86A7C] transition-colors">
+								{item.headline}
+							</a>
 						</h3>
 
 						<p class="text-sm sm:text-base text-stone-600 leading-relaxed font-medium">
@@ -135,14 +144,20 @@
 							{/each}
 						</div>
 
-						<div class="pt-4">
-							<button
-								type="button"
-								onclick={() => handleAction(item.sku)}
-								class="inline-flex min-h-11 sm:min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-95 px-6 sm:px-8 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300"
+						<div class="pt-4 flex flex-wrap items-center gap-3 justify-center lg:justify-start">
+							<a
+								href={`/products/${item.sku}`}
+								class="inline-flex min-h-11 sm:min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-95 px-6 sm:px-8 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 no-underline"
 							>
 								<span>{item.buttonText}</span>
 								<span class="text-sm">←</span>
+							</a>
+							<button
+								type="button"
+								onclick={() => handleAction(item.sku)}
+								class="inline-flex min-h-11 sm:min-h-12 items-center justify-center gap-2 rounded-2xl bg-white border border-[#1B4332]/30 hover:bg-emerald-50 text-[#1B4332] text-xs sm:text-sm font-bold px-4 py-2 transition-colors cursor-pointer"
+							>
+								<span>طلب سريع من الصفحة ⚡</span>
 							</button>
 						</div>
 					</div>

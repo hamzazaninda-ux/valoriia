@@ -1,0 +1,527 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import Header from '$lib/components/shared/Header.svelte';
+	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
+	import TimedUpsellModal from '$lib/components/upsell/TimedUpsellModal.svelte';
+	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
+	import { PRICING_TIERS } from '$lib/constants/pricing';
+
+	let { data } = $props();
+
+	const product = $derived(data.product);
+	const brand = $derived(data.brand);
+
+	// Image Gallery State
+	let activeImage = $state(data.product.image);
+	$effect(() => {
+		activeImage = data.product.image;
+	});
+
+	// Drawer and Header States
+	let searchOpen = $state(false);
+	let menuOpen = $state(false);
+	let query = $state('');
+	let drawerOpen = $state(false);
+
+	// Tier Selection
+	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_2');
+	const currentTier = $derived(PRICING_TIERS[selectedTier]);
+
+	// COD Form inputs
+	let fullName = $state('');
+	let phone = $state('');
+	let phoneError = $state('');
+	let isSubmitting = $state(false);
+
+	// Timed Flash Upsell state
+	let isUpsellOpen = $state(false);
+	interface ActivePendingOrder {
+		orderId: string;
+		fullName: string;
+		phone: string;
+		tier: 'tier_1' | 'tier_2' | 'tier_3';
+		items: Array<{ sku: string; title: string; quantity: number; unitPrice: number }>;
+		subtotal: number;
+		shipping: number;
+		total: number;
+		hasUpsell: boolean;
+		createdAt: string;
+	}
+	let pendingOrder = $state<ActivePendingOrder | null>(null);
+
+	function validatePhone(input: string): boolean {
+		const cleaned = input.replace(/[\s\-\(\)]/g, '');
+		const regex = /^(?:(?:\+?212)|0)[67]\d{8}$/;
+		return regex.test(cleaned);
+	}
+
+	function scrollToOrder() {
+		const el = document.getElementById('product-order-box');
+		if (el) el.scrollIntoView({ behavior: 'smooth' });
+	}
+
+	function handleFormSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		phoneError = '';
+
+		if (!fullName.trim() || fullName.trim().length < 2) {
+			phoneError = 'يرجى إدخال اسمك الكامل بشكل صحيح.';
+			return;
+		}
+
+		if (!validatePhone(phone)) {
+			phoneError = 'يرجى كتابة رقم هاتف مغربي صحيح (يبدأ بـ 06 أو 07)';
+			return;
+		}
+
+		if (isSubmitting) return;
+
+		const tier = PRICING_TIERS[selectedTier];
+		const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
+
+		// Decompose selected product tier
+		const qty = selectedTier === 'tier_1' ? 1 : selectedTier === 'tier_2' ? 2 : 3;
+		const unitPrice = +(tier.price / qty).toFixed(2);
+
+		const items = [
+			{
+				sku: product.sku,
+				title: `${product.name} (${tier.label})`,
+				quantity: qty,
+				unitPrice
+			}
+		];
+
+		pendingOrder = {
+			orderId,
+			fullName: fullName.trim(),
+			phone: phone.trim().replace(/[\s\-\(\)]/g, ''),
+			tier: selectedTier,
+			items,
+			subtotal: tier.price,
+			shipping: tier.shipping,
+			total: tier.price + tier.shipping,
+			hasUpsell: false,
+			createdAt: new Date().toISOString()
+		};
+
+		// Launch 15s Timed Flash Upsell
+		isUpsellOpen = true;
+	}
+
+	function handleAcceptUpsell() {
+		if (!pendingOrder) return;
+		pendingOrder.hasUpsell = true;
+		pendingOrder.items.push({
+			sku: 'gummies_collagen',
+			title: 'علبة إضافية (عرض خاطف حصري)',
+			quantity: 1,
+			unitPrice: 99
+		});
+		pendingOrder.total += 99;
+		finalizeOrderSubmission();
+	}
+
+	function handleDeclineUpsell() {
+		finalizeOrderSubmission();
+	}
+
+	async function finalizeOrderSubmission() {
+		if (!pendingOrder || isSubmitting) return;
+		isSubmitting = true;
+
+		try {
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
+			}
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
+			}
+
+			// Server Dual Dispatch with keepalive
+			try {
+				await fetch('/api/orders', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(pendingOrder),
+					keepalive: true
+				});
+			} catch (postErr) {
+				console.warn('Orders API network notice:', postErr);
+			}
+
+			await goto(
+				`/thank-you?orderId=${encodeURIComponent(pendingOrder.orderId)}&total=${pendingOrder.total}&fullName=${encodeURIComponent(pendingOrder.fullName)}&phone=${encodeURIComponent(pendingOrder.phone)}&hasUpsell=${pendingOrder.hasUpsell}`
+			);
+		} catch (err) {
+			window.location.href = `/thank-you?orderId=${pendingOrder.orderId}&total=${pendingOrder.total}`;
+		} finally {
+			isSubmitting = false;
+		}
+	}
+</script>
+
+<svelte:head>
+	<title>{product.name} | NOVAVITA</title>
+	<meta name="description" content={product.headline} />
+</svelte:head>
+
+<div class="min-h-screen bg-[#FAF8F5] font-body text-[#1F2937] pb-20 md:pb-12" dir="rtl">
+	<!-- 1. Top Announcement Bar -->
+	<AnnouncementBar isStatic={false} />
+
+	<!-- 2. Sticky Header -->
+	<Header
+		brandName="NOVAVITA"
+		cartCount={0}
+		bind:searchOpen
+		bind:menuOpen
+		bind:query
+		onOpenCart={() => (drawerOpen = true)}
+	/>
+
+	<!-- 3. Main Product Showcase & Buying Box -->
+	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+			
+			<!-- Left Column (Desktop): Media & Thumbnail Gallery -->
+			<div class="lg:col-span-6 space-y-4">
+				<!-- Main Stage Viewport -->
+				<div class="relative aspect-square w-full rounded-3xl bg-white p-6 sm:p-10 shadow-xl border-2 border-emerald-950/10 flex items-center justify-center overflow-hidden group">
+					<img
+						src={activeImage}
+						alt={product.name}
+						class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+						onerror={(e: any) => {
+							e.currentTarget.onerror = null;
+							e.currentTarget.src = '/images/products/gummies_collagen.svg';
+						}}
+					/>
+					<div class="absolute top-4 end-4 bg-[#E86A7C] text-white text-xs font-black px-3.5 py-1.5 rounded-full shadow-md">
+						{product.badge}
+					</div>
+				</div>
+
+				<!-- Thumbnails Strip -->
+				<div class="flex items-center gap-3 overflow-x-auto pb-2">
+					{#each product.gallery as imgUrl}
+						<button
+							type="button"
+							onclick={() => (activeImage = imgUrl)}
+							class={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
+								activeImage === imgUrl ? 'border-[#1B4332] shadow-md ring-2 ring-[#1B4332]/20' : 'border-stone-200 hover:border-stone-300'
+							}`}
+						>
+							<img
+								src={imgUrl}
+								alt="معاينة"
+								class="w-full h-full object-contain"
+								onerror={(e: any) => {
+									e.currentTarget.onerror = null;
+									e.currentTarget.src = '/images/products/gummies_collagen.svg';
+								}}
+							/>
+						</button>
+					{/each}
+				</div>
+
+				<!-- Trust Value Micro-grid -->
+				<div class="grid grid-cols-3 gap-2.5 pt-2 text-center text-xs font-bold text-stone-700">
+					<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+						<span class="block text-lg mb-1">🌿</span>
+						<span>بكتين نباتي حلال 100%</span>
+					</div>
+					<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+						<span class="block text-lg mb-1">🚚</span>
+						<span>توصيل مجاني وسريع</span>
+					</div>
+					<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+						<span class="block text-lg mb-1">📦</span>
+						<span>معاينة قبل الدفع كاش</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column (Desktop): Pricing, Tier Selector & 1-Step COD Form -->
+			<div id="product-order-box" class="lg:col-span-6 space-y-6 scroll-mt-24">
+				
+				<!-- Heading & Rating -->
+				<div class="space-y-2">
+					<div class="flex items-center gap-2">
+						<div class="flex text-[#F59E0B] text-sm">★★★★★</div>
+						<span class="text-xs sm:text-sm font-bold text-stone-600">
+							<strong>{product.rating} / 5</strong> ({product.reviewCount} تقييم مغربية معتمدة)
+						</span>
+					</div>
+					<h1 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332] leading-tight">
+						{product.name}
+					</h1>
+					<p class="text-sm sm:text-base text-stone-600 font-medium leading-relaxed">
+						{product.headline}
+					</p>
+					<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200">
+						<span>🍓 النكهة:</span>
+						<span>{product.flavor}</span>
+					</div>
+				</div>
+
+				<!-- Interactive 3-Tier Bundle Selector -->
+				<div class="space-y-3 pt-2">
+					<span class="block text-xs font-black text-stone-700">اختاري باقتك المناسبة:</span>
+
+					<!-- Tier 1 -->
+					<button
+						type="button"
+						onclick={() => (selectedTier = 'tier_1')}
+						class={`w-full p-4 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+							selectedTier === 'tier_1'
+								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
+								: 'border-stone-200 hover:border-stone-300'
+						}`}
+					>
+						<div class="flex items-center gap-3">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_1'}
+									<div class="w-2 h-2 rounded-full bg-white"></div>
+								{/if}
+							</div>
+							<div>
+								<div class="font-bold text-sm text-[#1F2937]">باقة التجربة (علبة واحدة)</div>
+								<div class="text-[11px] text-stone-500">كورس شهر تجريبي (60 حبة)</div>
+							</div>
+						</div>
+						<div class="text-end">
+							<div class="font-black text-lg text-[#1B4332]">199 MAD</div>
+							<div class="text-[10px] text-stone-400 line-through">299 MAD</div>
+						</div>
+					</button>
+
+					<!-- Tier 2 (Preselected) -->
+					<button
+						type="button"
+						onclick={() => (selectedTier = 'tier_2')}
+						class={`relative w-full p-4 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+							selectedTier === 'tier_2'
+								? 'border-[#1B4332] ring-4 ring-[#1B4332]/20 shadow-xl -translate-y-0.5'
+								: 'border-[#1B4332]/50 hover:border-[#1B4332]'
+						}`}
+					>
+						<div class="absolute -top-3 end-4 bg-[#1B4332] text-white text-[10px] font-black px-3 py-0.5 rounded-full shadow-xs">
+							⭐ الأكثر طلباً - توفير 119 درهم
+						</div>
+						<div class="flex items-center gap-3">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_2'}
+									<div class="w-2 h-2 rounded-full bg-white"></div>
+								{/if}
+							</div>
+							<div>
+								<div class="font-bold text-sm text-[#1F2937]">باقة الثنائي (علبتان)</div>
+								<div class="text-[11px] text-emerald-700 font-bold">كورس شهرين + توصيل مجاني 🚚</div>
+							</div>
+						</div>
+						<div class="text-end">
+							<div class="font-black text-xl text-[#1B4332]">279 MAD</div>
+							<div class="text-[10px] text-stone-400 line-through">398 MAD</div>
+						</div>
+					</button>
+
+					<!-- Tier 3 -->
+					<button
+						type="button"
+						onclick={() => (selectedTier = 'tier_3')}
+						class={`w-full p-4 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+							selectedTier === 'tier_3'
+								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
+								: 'border-stone-200 hover:border-stone-300'
+						}`}
+					>
+						<div class="flex items-center gap-3">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_3'}
+									<div class="w-2 h-2 rounded-full bg-white"></div>
+								{/if}
+							</div>
+							<div>
+								<div class="font-bold text-sm text-[#1F2937]">التحول الشامل (3 علب)</div>
+								<div class="text-[11px] text-amber-700 font-bold">كورس 3 أشهر + هدايا مجانية 🎁</div>
+							</div>
+						</div>
+						<div class="text-end">
+							<div class="font-black text-lg text-[#1B4332]">349 MAD</div>
+							<div class="text-[10px] text-stone-400 line-through">597 MAD</div>
+						</div>
+					</button>
+				</div>
+
+				<!-- Streamlined 1-Step COD Form -->
+				<div class="rounded-3xl bg-white p-5 sm:p-7 border-2 border-emerald-950/15 shadow-xl space-y-4">
+					<div class="flex justify-between items-center border-b border-stone-100 pb-3">
+						<div>
+							<h3 class="font-bold text-sm sm:text-base text-[#1B4332]">استمارة الطلب السريع</h3>
+							<p class="text-[11px] text-stone-500">الدفع نقداً عند الاستلام بعد المعاينة</p>
+						</div>
+						<div class="text-end">
+							<span class="text-xs text-stone-400">المجموع:</span>
+							<div class="font-mono font-black text-xl text-[#E86A7C]">{currentTier.price} MAD</div>
+						</div>
+					</div>
+
+					{#if phoneError}
+						<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
+							⚠️ {phoneError}
+						</div>
+					{/if}
+
+					<form onsubmit={handleFormSubmit} class="space-y-3.5">
+						<div>
+							<label for="prod-name" class="block text-xs font-bold text-stone-700 mb-1">الاسم الكامل <span class="text-rose-500">*</span></label>
+							<input
+								id="prod-name"
+								type="text"
+								bind:value={fullName}
+								required
+								placeholder="مثال: هاجر العمراني"
+								class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none focus:border-[#1B4332] focus:bg-white transition-all"
+							/>
+						</div>
+
+						<div>
+							<label for="prod-tel" class="block text-xs font-bold text-stone-700 mb-1">رقم الهاتف (للتوصيل) <span class="text-rose-500">*</span></label>
+							<input
+								id="prod-tel"
+								type="tel"
+								bind:value={phone}
+								required
+								dir="ltr"
+								placeholder="06XXXXXXXX أو 07XXXXXXXX"
+								class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none focus:border-[#1B4332] focus:bg-white text-start transition-all"
+							/>
+						</div>
+
+						<button
+							type="submit"
+							disabled={isSubmitting}
+							class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-rose-900/15 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+						>
+							{#if isSubmitting}
+								<span>جاري المعالجة... ⏳</span>
+							{:else}
+								<span>تأكيد طلبي الآن (الدفع عند الاستلام) 🛍️</span>
+							{/if}
+						</button>
+
+						<p class="text-center text-[11px] font-bold text-stone-500 pt-1">
+							🔒 معلوماتك مشفرة ومحمية بالكامل • التوصيل خلال 24 إلى 48 ساعة
+						</p>
+					</form>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- 4. Key Benefits & Scientific Ingredients Section -->
+		<div class="mt-16 sm:mt-24 space-y-10 border-t border-stone-200/80 pt-12">
+			<div class="text-center max-w-2xl mx-auto space-y-2">
+				<h2 class="font-display text-2xl sm:text-3xl font-black text-[#1B4332]">
+					التركيبة العلمية والفوائد الملموسة
+				</h2>
+				<p class="text-xs sm:text-sm text-stone-600 font-medium">
+					جرعات صيدلانية دقيقة وبكتين نباتي طبيعي يضمن أسرع امتصاص بدون أي إزعاج للمعدة.
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Benefits Card -->
+				<div class="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200/80 shadow-md space-y-4">
+					<h3 class="font-bold text-base sm:text-lg text-[#1B4332] flex items-center gap-2">
+						<span>✨</span> الفوائد المضمونة لـ {product.name}
+					</h3>
+					<ul class="space-y-3 text-xs sm:text-sm text-stone-700">
+						{#each product.keyBenefits as b}
+							<li class="flex items-start gap-2.5">
+								<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mt-0.5">✓</span>
+								<span class="font-semibold leading-relaxed">{b}</span>
+							</li>
+						{/each}
+					</ul>
+				</div>
+
+				<!-- Ingredients Card -->
+				<div class="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200/80 shadow-md space-y-4">
+					<h3 class="font-bold text-base sm:text-lg text-[#1B4332] flex items-center gap-2">
+						<span>🔬</span> المكونات الفعالة النشطة
+					</h3>
+					<div class="flex flex-wrap gap-2 pt-2">
+						{#each product.ingredients as ing}
+							<span class="px-3.5 py-1.5 rounded-xl bg-emerald-950/5 border border-emerald-900/10 text-xs font-bold text-[#1B4332]">
+								{ing}
+							</span>
+						{/each}
+					</div>
+					<p class="text-xs text-stone-500 leading-relaxed pt-2">
+						خالٍ تماماً من المواد الحافظة الصناعية، الجيلاتين الحيواني، الجلوتين والسكريات المضافة المضرة.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 5. Product Specific FAQ Accordion -->
+		<div class="mt-16 sm:mt-20 max-w-3xl mx-auto space-y-6">
+			<h3 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] text-center">
+				أسئلة متكررة حول {product.name}
+			</h3>
+			<div class="space-y-3">
+				{#each product.faq as f}
+					<details class="group rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs">
+						<summary class="flex cursor-pointer items-center justify-between font-bold text-xs sm:text-sm text-stone-800 select-none">
+							<span>{f.question}</span>
+							<span class="transition-transform group-open:rotate-180 text-emerald-800 font-bold">▼</span>
+						</summary>
+						<p class="mt-3 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 pt-3 font-medium">
+							{f.answer}
+						</p>
+					</details>
+				{/each}
+			</div>
+		</div>
+
+	</main>
+
+	<!-- Sticky Mobile Bottom CTA Bar -->
+	<aside
+		class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 p-3 sm:hidden shadow-2xl flex items-center justify-between gap-3"
+		aria-label="شريط الشراء السريع"
+	>
+		<div>
+			<div class="text-[10px] text-stone-400 font-medium">المجموع (توصيل فابور):</div>
+			<div class="font-mono font-black text-lg text-[#1B4332]">{currentTier.price} MAD</div>
+		</div>
+		<button
+			type="button"
+			onclick={scrollToOrder}
+			class="flex-1 py-3 px-4 rounded-xl bg-[#E86A7C] font-black text-white text-xs shadow-lg active:scale-95 text-center cursor-pointer"
+		>
+			<span>اطلبي الآن كاش 🛍️</span>
+		</button>
+	</aside>
+
+	<!-- Timed Flash Upsell Modal (99 MAD) -->
+	<TimedUpsellModal
+		isOpen={isUpsellOpen}
+		upsellPrice={99}
+		onAccept={handleAcceptUpsell}
+		onDecline={handleDeclineUpsell}
+	/>
+
+	<!-- Cart Drawer -->
+	<CartDrawer
+		bind:open={drawerOpen}
+		items={{ [product.sku]: 1 }}
+		onClose={() => (drawerOpen = false)}
+		onProceedToCheckout={() => {
+			drawerOpen = false;
+			scrollToOrder();
+		}}
+	/>
+</div>

@@ -7,14 +7,14 @@
   "template": "killers",
   "published": {
     "content": {
-      "heroImage": "/images/products/multivitamin-hero.webp",
+      "heroImage": "/images/products/gumies_vitamine.svg",
       "title": "علكات الفيتامينات المتعددة (Multivitamin Gummies)",
       "subtitle": "تركيبة يومية متكاملة لتعزيز المناعة، النشاط والتوازن الصحي الكامل",
       "rating": 4.8,
       "reviewCount": 310,
       "gallery": [
-        { "src": "/images/products/multivitamin-1.webp", "alt": "علكات الفيتامينات المتعددة" },
-        { "src": "/images/products/multivitamin-2.webp", "alt": "مكونات الملتي فيتامين" }
+        { "src": "/images/products/gumies_vitamine.svg", "alt": "علكات الفيتامينات المتعددة" },
+        { "src": "/images/products/gummies_biotine.svg", "alt": "علكات البيوتين للشعر" }
       ],
       "faq": [
         {

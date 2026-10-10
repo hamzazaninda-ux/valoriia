@@ -75,7 +75,7 @@
 					<svg class="h-full w-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<circle cx="50" cy="50" r="46" stroke="#1B4332" stroke-width="5" fill="#FAF8F5" />
 						<circle cx="50" cy="50" r="40" stroke="#E86A7C" stroke-width="1.5" stroke-dasharray="4 3" fill="none" />
-						<path d="M33 68V32L67 68V32" stroke="#1B4332" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" />
+						<text x="50" y="67" text-anchor="middle" font-family="'Cairo', sans-serif" font-weight="900" font-size="52" fill="#1B4332">N</text>
 					</svg>
 				</div>
 

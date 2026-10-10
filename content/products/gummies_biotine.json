@@ -7,14 +7,14 @@
   "template": "killers",
   "published": {
     "content": {
-      "heroImage": "/images/products/biotin-hero.webp",
+      "heroImage": "/images/products/gummies_biotine.svg",
       "title": "علكات البيوتين والزنك (Biotin Gummies)",
       "subtitle": "بيوتين مركز مع الزنك وفيتامين C لإنبات الشعر وتقوية الأظافر",
       "rating": 4.9,
       "reviewCount": 580,
       "gallery": [
-        { "src": "/images/products/biotin-1.webp", "alt": "علكات بيوتين الشعر" },
-        { "src": "/images/products/biotin-2.webp", "alt": "مكونات البيوتين المركز" }
+        { "src": "/images/products/gummies_biotine.svg", "alt": "علكات بيوتين الشعر" },
+        { "src": "/images/products/gummies_collagen.svg", "alt": "علكات كولاجين البشرة" }
       ],
       "faq": [
         {

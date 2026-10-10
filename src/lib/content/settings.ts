@@ -30,16 +30,16 @@ export async function readBrandSettings(): Promise<BrandSettings> {
   const data = JSON.parse(content);
   checkBrandForSensitiveFields(data);
   return {
-    name: 'Lhamza Shop',
-    tagline: 'Lhamza Shop',
-    logo: 'https://lhamza.shop/favicon.svg',
+    name: 'NOVAVITA',
+    tagline: 'العناية بالجمال والصحة من الداخل',
+    logo: '/images/logo.svg',
     favicon: '/favicon.svg',
     heroImage: '',
-    whatsappNumber: '',
+    whatsappNumber: '212600000000',
     supportHours: '9:00 - 22:00',
     ...data,
-    ...(data.name === 'Valoriia' || !data.name ? { name: 'Lhamza Shop' } : {}),
-    ...(data.tagline === 'Valoriia' || !data.tagline ? { tagline: 'Lhamza Shop' } : {})
+    ...(data.name === 'Valoriia' || data.name === 'Lhamza Shop' || !data.name ? { name: 'NOVAVITA' } : {}),
+    ...(data.tagline === 'Valoriia' || data.tagline === 'Lhamza Shop' || !data.tagline ? { tagline: 'العناية بالجمال والصحة من الداخل' } : {})
   } as BrandSettings;
 }
 
@@ -95,16 +95,16 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
     const rawBrand = JSON.parse(brand);
     checkBrandForSensitiveFields(rawBrand);
     const brandData = {
-      name: 'Lhamza Shop',
-      tagline: 'Lhamza Shop',
-      logo: 'https://lhamza.shop/favicon.svg',
+      name: 'NOVAVITA',
+      tagline: 'العناية بالجمال والصحة من الداخل',
+      logo: '/images/logo.svg',
       favicon: '/favicon.svg',
       heroImage: '',
-      whatsappNumber: '',
+      whatsappNumber: '212600000000',
       supportHours: '9:00 - 22:00',
       ...rawBrand,
-      ...(rawBrand.name === 'Valoriia' || !rawBrand.name ? { name: 'Lhamza Shop' } : {}),
-      ...(rawBrand.tagline === 'Valoriia' || !rawBrand.tagline ? { tagline: 'Lhamza Shop' } : {})
+      ...(rawBrand.name === 'Valoriia' || rawBrand.name === 'Lhamza Shop' || !rawBrand.name ? { name: 'NOVAVITA' } : {}),
+      ...(rawBrand.tagline === 'Valoriia' || rawBrand.tagline === 'Lhamza Shop' || !rawBrand.tagline ? { tagline: 'العناية بالجمال والصحة من الداخل' } : {})
     };
     const commerceData = {
       currency: 'MAD',

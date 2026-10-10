@@ -7,14 +7,14 @@
   "template": "killers",
   "published": {
     "content": {
-      "heroImage": "/images/products/collagen-hero.webp",
+      "heroImage": "/images/products/gummies_collagen.svg",
       "title": "علكات الكولاجين البحري (Collagen Gummies)",
       "subtitle": "كولاجين بتركيبة متطورة لنضارة ومرونة البشرة وتخفيف التجاعيد",
       "rating": 4.9,
       "reviewCount": 420,
       "gallery": [
-        { "src": "/images/products/collagen-1.webp", "alt": "علكات كولاجين البشرة" },
-        { "src": "/images/products/collagen-2.webp", "alt": "مكونات الكولاجين البحري" }
+        { "src": "/images/products/gummies_collagen.svg", "alt": "علكات كولاجين البشرة" },
+        { "src": "/images/products/gummies_biotine.svg", "alt": "علكات البيوتين للشعر" }
       ],
       "faq": [
         {

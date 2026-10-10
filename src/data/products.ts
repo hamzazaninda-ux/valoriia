@@ -46,11 +46,11 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.9,
     reviewCount: 420,
     badge: 'الأفضل لنضارة البشرة',
-    image: '/images/products/collagen-hero.webp',
+    image: '/images/products/gummies_collagen.svg',
     gallery: [
-      '/images/products/collagen-1.webp',
-      '/images/products/collagen-2.webp',
-      '/images/products/collagen-3.webp'
+      '/images/products/gummies_collagen.svg',
+      '/images/products/gummies_biotine.svg',
+      '/images/products/gumies_vitamine.svg'
     ],
     faq: [
       {
@@ -84,11 +84,11 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.9,
     reviewCount: 580,
     badge: 'الأكثر مبيعاً للشعر',
-    image: '/images/products/biotin-hero.webp',
+    image: '/images/products/gummies_biotine.svg',
     gallery: [
-      '/images/products/biotin-1.webp',
-      '/images/products/biotin-2.webp',
-      '/images/products/biotin-3.webp'
+      '/images/products/gummies_biotine.svg',
+      '/images/products/gummies_collagen.svg',
+      '/images/products/gumies_vitamine.svg'
     ],
     faq: [
       {
@@ -122,11 +122,11 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.8,
     reviewCount: 310,
     badge: 'الحيوية والمناعة اليومية',
-    image: '/images/products/multivitamin-hero.webp',
+    image: '/images/products/gumies_vitamine.svg',
     gallery: [
-      '/images/products/multivitamin-1.webp',
-      '/images/products/multivitamin-2.webp',
-      '/images/products/multivitamin-3.webp'
+      '/images/products/gumies_vitamine.svg',
+      '/images/products/gummies_biotine.svg',
+      '/images/products/gummies_collagen.svg'
     ],
     faq: [
       {

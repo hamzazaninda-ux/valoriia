@@ -107,22 +107,16 @@
 						</span>
 
 						<!-- Mockup SVG Illustration -->
-						<div class="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-							<svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-2xl" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<!-- Bottle Body -->
-								<rect x="50" y="55" width="100" height="120" rx="20" fill="#FAF8F5" stroke="#E86A7C" stroke-width="4"/>
-								<!-- Bottle Cap -->
-								<rect x="70" y="30" width="60" height="25" rx="6" fill="#1B4332"/>
-								<!-- Bottle Label -->
-								<rect x="60" y="80" width="80" height="70" rx="10" fill="#1B4332"/>
-								<text x="100" y="105" text-anchor="middle" fill="#FAF8F5" font-size="14" font-weight="900" font-family="sans-serif">NOVAVITA</text>
-								<text x="100" y="122" text-anchor="middle" fill="#E86A7C" font-size="9" font-weight="700" font-family="sans-serif">BIOTIN + COLLAGEN</text>
-								<text x="100" y="137" text-anchor="middle" fill="#FFFFFF" font-size="8" font-weight="600" font-family="sans-serif">60 GUMMIES</text>
-								<!-- Gummy Sparkles -->
-								<circle cx="35" cy="140" r="14" fill="#E86A7C" opacity="0.9" />
-								<circle cx="165" cy="140" r="14" fill="#E86A7C" opacity="0.9" />
-								<circle cx="100" cy="185" r="12" fill="#E86A7C" opacity="0.9" />
-							</svg>
+						<div class="relative w-52 h-52 sm:w-64 sm:h-64 flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+							<img
+								src="/images/products/gummies_biotine.svg"
+								alt="NOVAVITA Gummies Trio"
+								class="w-full h-full object-contain drop-shadow-2xl"
+								onerror={(e: any) => {
+									e.currentTarget.onerror = null;
+									e.currentTarget.src = '/images/products/gummies_collagen.svg';
+								}}
+							/>
 						</div>
 
 						<!-- Bottom Sub-card -->
