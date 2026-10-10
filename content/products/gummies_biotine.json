@@ -1,0 +1,83 @@
+{
+  "id": "gummies_biotine",
+  "slug": "gummies_biotine",
+  "status": "published",
+  "createdAt": "2026-10-10T12:00:00.000Z",
+  "updatedAt": "2026-10-10T12:00:00.000Z",
+  "template": "killers",
+  "published": {
+    "content": {
+      "heroImage": "/images/products/biotin-hero.webp",
+      "title": "علكات البيوتين والزنك (Biotin Gummies)",
+      "subtitle": "بيوتين مركز مع الزنك وفيتامين C لإنبات الشعر وتقوية الأظافر",
+      "rating": 4.9,
+      "reviewCount": 580,
+      "gallery": [
+        { "src": "/images/products/biotin-1.webp", "alt": "علكات بيوتين الشعر" },
+        { "src": "/images/products/biotin-2.webp", "alt": "مكونات البيوتين المركز" }
+      ],
+      "faq": [
+        {
+          "question": "هل تسبب زيادة في شعر الجسم؟",
+          "answer": "لا، البيوتين يغذي بصيلات شعر الرأس والأظافر فقط ولا يؤثر على هرمونات شعر الجسم."
+        }
+      ],
+      "footerText": "NOVAVITA Maroc - جميع الحقوق محفوظة © 2026"
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "باقة التجربة (علبة واحدة)",
+          "subtitle": "كورس شهر واحد",
+          "price": 199,
+          "originalPrice": 299,
+          "quantity": 1,
+          "badge": "سعر التجربة",
+          "isPopular": false,
+          "image": "/images/products/biotin-hero.webp"
+        },
+        {
+          "id": 2,
+          "title": "باقة الثنائي (علبتان)",
+          "subtitle": "كورس شهرين + توصيل مجاني",
+          "price": 279,
+          "originalPrice": 398,
+          "quantity": 2,
+          "badge": "⭐ الأكثر طلباً - توفير 119 درهم",
+          "isPopular": true,
+          "image": "/images/products/biotin-hero.webp"
+        },
+        {
+          "id": 3,
+          "title": "باقة التحول الشامل (3 علب)",
+          "subtitle": "الروتين المتكامل + هدايا مجانية",
+          "price": 349,
+          "originalPrice": 597,
+          "quantity": 3,
+          "badge": "🏆 التحول الشامل - توفير 248 درهم",
+          "isPopular": false,
+          "image": "/images/products/biotin-hero.webp"
+        }
+      ]
+    },
+    "order": {
+      "sku": "gummies_biotine",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": "212600000000"
+    },
+    "seo": {
+      "metaTitle": "علكات البيوتين والزنك للشعر والأظافر | NOVAVITA",
+      "metaDescription": "بيوتين مركز 5000mcg لوقف تساقط الشعر وإنبات البيبي هير وتقوية الأظافر.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}

@@ -77,7 +77,6 @@ export async function sendOrderToGoogleSheets(
 		const fullName = String(order.fullName || order.name || '').trim();
 		const phone = String(order.phoneNumber || order.phone || '').trim();
 
-		// Resolve full selected offer title (detailed offer takes absolute precedence)
 		const productLabel = String(
 			order.selectedOfferTitle ||
 			(order.offer && order.productTitle && order.offer.trim() && order.offer.trim() !== order.productTitle.trim()
@@ -85,7 +84,7 @@ export async function sendOrderToGoogleSheets(
 				: order.offer) ||
 			order.productTitle ||
 			order.product ||
-			'طقم التنظيم المنزلي'
+			'NOVAVITA Gummies'
 		).trim();
 
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
@@ -107,7 +106,12 @@ export async function sendOrderToGoogleSheets(
 			qte: quantity,
 			total: finalTotal,
 			totalPrice: finalTotal,
-			price: finalTotal
+			price: finalTotal,
+			city: order.city || 'تحدد عند التأكيد',
+			address: order.address || '',
+			items: Array.isArray(order.items) ? order.items : [],
+			hasUpsell: !!order.hasUpsell,
+			status: 'طلب جديد - في انتظار التأكيد'
 		};
 
 		console.log('📦 Sent Sheets Payload:', sheetsPayload);

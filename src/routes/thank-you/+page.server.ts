@@ -5,11 +5,11 @@ export const load: PageServerLoad = async () => {
   try {
     const brand = await readBrandSettings().catch(() => null);
     return {
-      whatsappNumber: brand?.whatsappNumber || '212626558375'
+      whatsappNumber: brand?.whatsappNumber || '212600000000'
     };
   } catch {
     return {
-      whatsappNumber: '212626558375'
+      whatsappNumber: '212600000000'
     };
   }
 };

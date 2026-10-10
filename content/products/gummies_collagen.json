@@ -1,0 +1,83 @@
+{
+  "id": "gummies_collagen",
+  "slug": "gummies_collagen",
+  "status": "published",
+  "createdAt": "2026-10-10T12:00:00.000Z",
+  "updatedAt": "2026-10-10T12:00:00.000Z",
+  "template": "killers",
+  "published": {
+    "content": {
+      "heroImage": "/images/products/collagen-hero.webp",
+      "title": "علكات الكولاجين البحري (Collagen Gummies)",
+      "subtitle": "كولاجين بتركيبة متطورة لنضارة ومرونة البشرة وتخفيف التجاعيد",
+      "rating": 4.9,
+      "reviewCount": 420,
+      "gallery": [
+        { "src": "/images/products/collagen-1.webp", "alt": "علكات كولاجين البشرة" },
+        { "src": "/images/products/collagen-2.webp", "alt": "مكونات الكولاجين البحري" }
+      ],
+      "faq": [
+        {
+          "question": "متى تظهر نتائج كولاجين البشرة؟",
+          "answer": "تبدأ نتائج ترطيب ونضارة البشرة بالظهور بعد أسبوعين إلى 3 أسابيع من الاستعمال اليومي."
+        }
+      ],
+      "footerText": "NOVAVITA Maroc - جميع الحقوق محفوظة © 2026"
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "باقة التجربة (علبة واحدة)",
+          "subtitle": "كورس شهر واحد",
+          "price": 199,
+          "originalPrice": 299,
+          "quantity": 1,
+          "badge": "سعر التجربة",
+          "isPopular": false,
+          "image": "/images/products/collagen-hero.webp"
+        },
+        {
+          "id": 2,
+          "title": "باقة الثنائي (علبتان)",
+          "subtitle": "كورس شهرين + توصيل مجاني",
+          "price": 279,
+          "originalPrice": 398,
+          "quantity": 2,
+          "badge": "⭐ الأكثر طلباً - توفير 119 درهم",
+          "isPopular": true,
+          "image": "/images/products/collagen-hero.webp"
+        },
+        {
+          "id": 3,
+          "title": "باقة التحول الشامل (3 علب)",
+          "subtitle": "الروتين المتكامل + هدايا مجانية",
+          "price": 349,
+          "originalPrice": 597,
+          "quantity": 3,
+          "badge": "🏆 التحول الشامل - توفير 248 درهم",
+          "isPopular": false,
+          "image": "/images/products/collagen-hero.webp"
+        }
+      ]
+    },
+    "order": {
+      "sku": "gummies_collagen",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": "212600000000"
+    },
+    "seo": {
+      "metaTitle": "علكات الكولاجين البحري لنضارة البشرة | NOVAVITA",
+      "metaDescription": "كولاجين بحري متطور لمرونة ونضارة البشرة ومحاربة التجاعيد.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}

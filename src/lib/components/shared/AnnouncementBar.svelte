@@ -14,7 +14,7 @@
 	);
 
 	const announcementText =
-		'التوصيل مجاني وسريع لجميع المدن المغربية  ✦  الدفع نقداً بعد استلام ومعاينة طلبك  ✦  ضمان استبدال واسترجاع 14 يوماً  ✦  تأكيد فوري عبر الواتساب  ✦  ';
+		'✨ عرض خاص اليوم: توصيل فابور وسريع لجميع مدن المغرب + الدفع عند الاستلام بعد معاينة طلبيتك! ✦ 🌿 مكملات غذائية طبيعية وحلال 100% ✦ ';
 </script>
 
 {#if effectiveStatic}
@@ -26,20 +26,18 @@
 	>
 		<div class="flex items-center justify-center flex-wrap gap-x-2.5 sm:gap-x-3.5 gap-y-0.5 text-[11px] sm:text-xs font-bold text-center leading-tight">
 			<span class="inline-flex items-center gap-1 text-white">
-				<span>🚚</span>
-				<span class="sm:hidden">توصيل مجاني وفابور</span>
-				<span class="hidden sm:inline">توصيل مجاني وسريع لجميع المدن</span>
+				<span>✨</span>
+				<span>توصيل فابور وسريع لجميع مدن المغرب</span>
 			</span>
-			<span class="text-amber-400 font-extrabold select-none">✦</span>
+			<span class="text-amber-300 font-extrabold select-none">✦</span>
 			<span class="inline-flex items-center gap-1 text-white">
 				<span>📦</span>
-				<span class="sm:hidden">الدفع بعد المعاينة</span>
-				<span class="hidden sm:inline">الدفع نقداً بعد استلام ومعاينة طلبك</span>
+				<span>الدفع عند الاستلام بعد معاينة طلبيتك!</span>
 			</span>
-			<span class="text-amber-400 font-extrabold select-none hidden sm:inline">✦</span>
-			<span class="hidden sm:inline-flex items-center gap-1 text-white">
-				<span>🛡️</span>
-				<span>ضمان استبدال واسترجاع 14 يوماً</span>
+			<span class="text-amber-300 font-extrabold select-none hidden sm:inline">✦</span>
+			<span class="hidden sm:inline-flex items-center gap-1 text-emerald-200">
+				<span>🌿</span>
+				<span>100% طبيعي وحلال</span>
 			</span>
 		</div>
 	</aside>

@@ -1,243 +1,202 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Header from '$lib/components/shared/Header.svelte';
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
-	import BottomNav from '$lib/components/shared/BottomNav.svelte';
 	import TrustSection from '$lib/components/sections/TrustSection.svelte';
+	import HeroSection from '$lib/components/home/HeroSection.svelte';
+	import ZigZagShowcase from '$lib/components/home/ZigZagShowcase.svelte';
+	import BundlePricingSelector from '$lib/components/home/BundlePricingSelector.svelte';
+	import ComparisonTable from '$lib/components/home/ComparisonTable.svelte';
+	import ReviewsSection from '$lib/components/home/ReviewsSection.svelte';
+	import FaqAccordion from '$lib/components/home/FaqAccordion.svelte';
+	import StickyMobileCTA from '$lib/components/home/StickyMobileCTA.svelte';
+	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
+	import TimedUpsellModal from '$lib/components/upsell/TimedUpsellModal.svelte';
+	import { PRICING_TIERS } from '$lib/constants/pricing';
+
 	let { data } = $props();
 
-	const brand = $derived(data.settings.brand);
-	const commerce = $derived(data.settings.commerce);
-	const cur = $derived(commerce.currencySymbol || 'درهم');
-	const waNumber = $derived((brand.whatsappNumber || '').replace(/\D/g, ''));
-	const waBase = $derived(waNumber ? `https://wa.me/${waNumber}` : 'https://wa.me/');
+	const brand = $derived(data?.settings?.brand || {});
+	const waNumber = $derived((brand.whatsappNumber || '212600000000').replace(/\D/g, ''));
+	const waBase = $derived(waNumber ? `https://wa.me/${waNumber}` : 'https://wa.me/212600000000');
 
-	type Slot = {
-		slug: string;
-		title: string;
-		subtitle: string;
-		image: string;
-		price: number;
-		oldPrice: number | null;
-		discount: string | null;
-		rating: number;
-		reviews: number;
-		real: boolean;
-	};
-
-	const circularCategories = [
-		{
-			title: 'طقم الحمام الذكي',
-			image: '/images/col_a.png',
-			href: '/kit-tandim'
-		},
-		{
-			title: 'منظمات ومماسح ذكية',
-			image: '/images/col_b.png',
-			href: '/hamil-jidari-makanis'
-		},
-		{
-			title: 'أقفال وحلول الأمان',
-			image: '/images/child-safety-lock.webp',
-			href: '/qofl-al-aman'
-		}
-	];
-
-	// Fallback collection (3 slots) — disappears automatically once real products exist.
-	const placeholders: Slot[] = [
-		{
-			slug: 'kit-tandim',
-			title: 'طقم التنظيم المنزلي + هدية',
-			subtitle: 'المنظم الذكي للحمام (بدون حفر) + رشاش فابور',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png',
-			price: 229,
-			oldPrice: 299,
-			discount: null,
-			rating: 4.9,
-			reviews: 203,
-			real: true
-		},
-		{
-			slug: 'mimsahat-asyr',
-			title: 'ممسحة العصر الذكية',
-			subtitle: 'عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة',
-			image: 'https://placehold.co/800x800/fdf6e3/92400e?text=Lhamza+Shop',
-			price: 129,
-			oldPrice: 199,
-			discount: null,
-			rating: 4.7,
-			reviews: 89,
-			real: false
-		},
-		{
-			slug: 'monazzim-daki',
-			title: 'المنظم الذكي متعدد الاستعمال',
-			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب',
-			image: 'https://placehold.co/800x800/faf9f6/022c22?text=Lhamza+Shop',
-			price: 149,
-			oldPrice: 249,
-			discount: null,
-			rating: 4.8,
-			reviews: 127,
-			real: false
-		}
-	];
-
-	function toSlot(p: any): Slot {
-		const price = p.startingPrice || 229;
-		const oldPrice = p.oldPrice || (price === 229 ? 299 : Math.round(price * 1.3));
-		return {
-			slug: p.slug,
-			title: p.title,
-			subtitle: p.subtitle || '',
-			image: p.heroImage || '',
-			price,
-			oldPrice,
-			discount: null,
-			rating: p.rating || 4.9,
-			reviews: p.reviews || p.reviewCount || 203,
-			real: true
-		};
-	}
-
-	const real = $derived(
-		(data.products || [])
-			.filter(
-				(p: any) =>
-					p.slug !== 'hamil-jidari-makanis' &&
-					p.slug !== 'filter-baloua' &&
-					p.slug !== 'qofl-al-aman' &&
-					!p.heroImage?.includes('79')
-			)
-			.slice(0, 12)
-			.map(toSlot)
-	);
-	const catalog = $derived(
-		real.length >= 3 ? real : [...real, ...placeholders].slice(0, 3)
-	);
-
-	// --- Search (client-side filter over the visible catalog) ---
-	let query = $state('');
+	// --- Header & Drawer State ---
 	let searchOpen = $state(false);
-	const results = $derived(
-		query.trim()
-			? catalog.filter(
-					(s) =>
-						s.title.includes(query.trim()) || s.subtitle.includes(query.trim())
-				)
-			: catalog
-	);
-	let showAll = $state(false);
-	const visible = $derived(
-		query.trim() ? results : showAll ? catalog : catalog.slice(0, 3)
-	);
+	let menuOpen = $state(false);
+	let query = $state('');
+	let drawerOpen = $state(false);
 
-	// --- Mini cart (localStorage, COD flow ends on WhatsApp) ---
+	// --- Selected Pricing Tier State ---
+	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_2');
+	const currentTier = $derived(PRICING_TIERS[selectedTier]);
+
+	// --- Cart state ---
 	let cart = $state<Record<string, number>>({});
 	let cartReady = $state(false);
-	let drawerOpen = $state(false);
-	let menuOpen = $state(false);
 
 	$effect(() => {
 		if (!cartReady && typeof localStorage !== 'undefined') {
 			try {
-				cart = JSON.parse(localStorage.getItem('lhamza-cart') || localStorage.getItem('valoriia-cart') || '{}');
+				cart = JSON.parse(localStorage.getItem('novavita-cart') || '{}');
 			} catch {
 				cart = {};
 			}
 			cartReady = true;
 		}
 	});
+
 	$effect(() => {
 		if (cartReady && typeof localStorage !== 'undefined') {
-			localStorage.setItem('lhamza-cart', JSON.stringify(cart));
+			localStorage.setItem('novavita-cart', JSON.stringify(cart));
 		}
 	});
 
-	const bySlug = $derived(Object.fromEntries(catalog.map((s) => [s.slug || s.title, s])));
-	const cartCount = $derived(Object.keys(cart).length);
-	const cartTotal = $derived(
-		Object.keys(cart).reduce((sum, k) => sum + (bySlug[k]?.price || 0), 0)
+	const cartCount = $derived(
+		Object.values(cart).reduce((sum, qty) => sum + qty, 0)
 	);
 
-	function keyOf(s: Slot) {
-		return s.slug || s.title;
-	}
-	function addToCart(s: Slot) {
-		const k = keyOf(s);
-		if (!(k in cart)) cart[k] = 1;
-		drawerOpen = true;
-	}
-	function removeItem(k: string) {
-		const { [k]: _, ...rest } = cart;
-		cart = rest;
-	}
-	function orderViaWhatsApp() {
-		const lines = Object.keys(cart).map(
-			(k) => `• ${bySlug[k]?.title || k}`
-		);
-		const text = `السلام، بغيت نطلب من Lhamza Shop:\n${lines.join('\n')}\nالمجموع التقريبي: ${cartTotal} ${cur}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
-		window.open(`${waBase}?text=${encodeURIComponent(text)}`, '_blank');
+	// --- Flash Upsell Modal State ---
+	let isUpsellOpen = $state(false);
+	let isSubmitting = $state(false);
+
+	interface ActivePendingOrder {
+		orderId: string;
+		fullName: string;
+		phone: string;
+		tier: 'tier_1' | 'tier_2' | 'tier_3';
+		items: Array<{ sku: string; title: string; quantity: number; unitPrice: number }>;
+		subtotal: number;
+		shipping: number;
+		total: number;
+		hasUpsell: boolean;
+		createdAt: string;
 	}
 
+	let pendingOrder = $state<ActivePendingOrder | null>(null);
+
+	function scrollToOrder(sku?: string) {
+		const el = document.getElementById('order-section');
+		if (el) {
+			el.scrollIntoView({ behavior: 'smooth' });
+		}
+	}
+
+	// 1. COD Form Submission Handler -> Intercept with Timed Flash Upsell
+	function handleOrderInitiated(orderData: { fullName: string; phone: string; tier: 'tier_1' | 'tier_2' | 'tier_3' }) {
+		const tier = PRICING_TIERS[orderData.tier];
+		const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
+
+		// Decompose bundle SKUs
+		const items = [];
+		if (orderData.tier === 'tier_1') {
+			items.push({ sku: 'gummies_biotine', title: 'علكات البيوتين (علبة واحدة)', quantity: 1, unitPrice: 199 });
+		} else if (orderData.tier === 'tier_2') {
+			items.push(
+				{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 139.5 },
+				{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 139.5 }
+			);
+		} else {
+			items.push(
+				{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 116.33 },
+				{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 116.33 },
+				{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, unitPrice: 116.34 }
+			);
+		}
+
+		pendingOrder = {
+			orderId,
+			fullName: orderData.fullName,
+			phone: orderData.phone,
+			tier: orderData.tier,
+			items,
+			subtotal: tier.price,
+			shipping: tier.shipping,
+			total: tier.price + tier.shipping,
+			hasUpsell: false,
+			createdAt: new Date().toISOString()
+		};
+
+		// Launch the 15s Timed Flash Upsell Modal
+		isUpsellOpen = true;
+	}
+
+	// 2. Accept Upsell Handler (+99 MAD)
+	function handleAcceptUpsell() {
+		if (!pendingOrder) return;
+
+		pendingOrder.hasUpsell = true;
+		pendingOrder.items.push({
+			sku: 'gummies_collagen',
+			title: 'علبة إضافية (عرض خاطف حصري)',
+			quantity: 1,
+			unitPrice: 99
+		});
+		pendingOrder.total += 99;
+
+		finalizeOrderSubmission();
+	}
+
+	// 3. Decline Upsell Handler (Proceed with base order)
+	function handleDeclineUpsell() {
+		finalizeOrderSubmission();
+	}
+
+	// 4. Final Server Dispatch & Routing
+	async function finalizeOrderSubmission() {
+		if (!pendingOrder || isSubmitting) return;
+		isSubmitting = true;
+
+		try {
+			// Save in local storage for Thank You page & Pixel tracking
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
+			}
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
+			}
+
+			// Resilient server dispatch with keepalive
+			try {
+				await fetch('/api/orders', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(pendingOrder),
+					keepalive: true
+				});
+			} catch (postErr) {
+				console.warn('Orders API network error (proceeding to thank-you):', postErr);
+			}
+
+			// Direct smooth redirection to Thank You page
+			await goto(
+				`/thank-you?orderId=${encodeURIComponent(pendingOrder.orderId)}&total=${pendingOrder.total}&fullName=${encodeURIComponent(pendingOrder.fullName)}&phone=${encodeURIComponent(pendingOrder.phone)}&hasUpsell=${pendingOrder.hasUpsell}`
+			);
+		} catch (err) {
+			console.error('Redirection error:', err);
+			// Fallback direct redirection
+			window.location.href = `/thank-you?orderId=${pendingOrder.orderId}&total=${pendingOrder.total}`;
+		} finally {
+			isSubmitting = false;
+		}
+	}
 </script>
 
 <svelte:head>
-	<title>{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'} | متجر التنظيم والنظافة في المغرب</title>
+	<title>{brand.name || 'NOVAVITA'} | العناية بالجمال والصحة من الداخل</title>
 	<meta
 		name="description"
-		content="Lhamza Shop — متجر مغربي للتنظيم والنظافة المنزلية. التوصيل لجميع المدن والدفع عند الاستلام."
+		content="حلوى الفيتامينات والجمال الطبيعية رقم 1 في المغرب. بيوتين مركز للشعر، كولاجين بحري للبشرة، وملتي فيتامين للحيوية والنشاط اليومي."
 	/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </svelte:head>
 
-{#snippet stars(rating: number)}
-	<span class="inline-flex items-center gap-0.5" aria-label={`التقييم ${rating} من 5`}>
-		{#each [1, 2, 3, 4, 5] as i}
-			<svg
-				class={`h-3.5 w-3.5 ${i <= Math.round(rating) ? 'text-[#C99738]' : 'text-stone-200'}`}
-				viewBox="0 0 20 20"
-				fill="currentColor"
-				aria-hidden="true"
-			>
-				<path
-					d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z"
-				/>
-			</svg>
-		{/each}
-	</span>
-{/snippet}
-
-{#snippet sectionTitle(title: string, sub: string)}
-	<div class="text-center">
-		<h2 class="font-display text-2xl font-bold text-[#1E293B] md:text-3xl">{title}</h2>
-		{#if sub}
-			<p class="mt-1.5 text-sm text-stone-500">{sub}</p>
-		{/if}
-		<div class="mx-auto mt-3 h-0.5 w-24 rounded-full bg-[#1B4332]"></div>
-	</div>
-{/snippet}
-
-<div id="top" class="relative min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-20 md:pb-0" dir="rtl">
-	<!-- Ambient Moroccan Cultural Geometric Motif (<= 3% opacity, background only) -->
-	<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025]" aria-hidden="true">
-		<svg class="h-full w-full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-			<defs>
-				<pattern id="moroccan-khatam" width="60" height="60" patternUnits="userSpaceOnUse">
-					<path d="M30 0 L40 20 L60 30 L40 40 L30 60 L20 40 L0 30 L20 20 Z" fill="none" stroke="#1B4332" stroke-width="1.2" />
-					<circle cx="30" cy="30" r="8" fill="none" stroke="#C99738" stroke-width="0.8" />
-				</pattern>
-			</defs>
-			<rect width="100%" height="100%" fill="url(#moroccan-khatam)" />
-		</svg>
-	</div>
-
-	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
+<div id="top" class="relative min-h-screen bg-[#FAF8F5] font-body text-[#1F2937] pb-16 md:pb-0" dir="rtl">
+	<!-- 1. Top Announcement Bar -->
 	<AnnouncementBar isStatic={false} />
 
-
-	<!-- 2. Sticky header -->
+	<!-- 2. Sticky Header with circular "N" Logo -->
 	<Header
-		brandName={brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}
+		brandName={brand.name || 'NOVAVITA'}
 		cartCount={cartCount}
 		bind:searchOpen
 		bind:menuOpen
@@ -245,449 +204,106 @@
 		onOpenCart={() => (drawerOpen = true)}
 	/>
 
-	<!-- 3. Full-width Visual Branded Hero Banner -->
-	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-1 md:pt-4">
-		<div class="relative w-full aspect-[2/1] sm:aspect-[21/9] min-h-[180px] max-h-[220px] sm:max-h-none sm:min-h-[380px] overflow-hidden rounded-2xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)] mx-auto mb-3 mt-1 sm:my-2">
-			<!-- Background image with fallback -->
-			<img
-				src={brand.heroImage || '/images/hero-banner.webp'}
-				alt="رتّب دارك بأناقة وراحة بال - Lhamza Shop"
-				class="absolute inset-0 h-full w-full object-cover"
-				loading="eager"
-				onerror={(e) => {
-					(e.currentTarget as HTMLImageElement).src =
-						'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1600&q=80';
-				}}
-			/>
+	<!-- 3. Hero Section (Above the Fold CRO Powerhouse) -->
+	<HeroSection onCtaClick={() => scrollToOrder()} />
 
-			<!-- Dark Overlay for text contrast -->
-			<div class="absolute inset-0 bg-black/35 bg-gradient-to-t from-black/80 via-black/35 to-black/20" aria-hidden="true"></div>
+	<!-- 4. The 3 Core SKUs Zig-Zag Showcase -->
+	<ZigZagShowcase onSelectProduct={(sku) => scrollToOrder(sku)} />
 
-			<!-- Centered Content -->
-			<div class="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-6 text-center">
-				<div class="mx-auto max-w-2xl space-y-1.5 sm:space-y-3.5 px-2 mt-4 sm:mt-0">
-					<h1 class="font-display text-xl sm:text-4xl md:text-5xl font-extrabold leading-[1.3] text-white drop-shadow-md">
-						رتّب دارك بأناقة وراحة بال
-					</h1>
-					<p class="mx-auto max-w-lg text-[11px] sm:text-base md:text-lg font-medium leading-relaxed text-white/90 drop-shadow">
-						حلول ذكية للتنظيم المنزلي بدون حفر وبدون عناء
-					</p>
-					<div class="pt-1.5 sm:pt-3">
-						<a
-							href="#bestsellers"
-							class="inline-flex min-h-10 sm:min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-6 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
-						>
-							<span>اكتشف العروض الحصرية</span>
-							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-							</svg>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+	<!-- 5. Comparison Table: NOVAVITA vs Traditional Pills -->
+	<ComparisonTable />
 
-	<!-- 4. Collections: Circular Category Avatars directly below Hero -->
-	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-6 pb-2">
-		<div class="text-center mb-5 space-y-1.5">
-			<span class="inline-flex items-center gap-1.5 rounded-full border border-stone-200/80 bg-white/80 px-3 py-0.5 text-[11px] font-bold text-stone-600 shadow-2xs">
-				<svg class="h-3 w-3 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-				</svg>
-				تشكيلة مختارة بعناية
-			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-[#1E293B] tracking-tight">
-				تسوّق حسب المجموعة
-			</h2>
-			<div class="mx-auto h-0.5 w-16 rounded-full bg-[#1B4332]"></div>
-		</div>
+	<!-- 6. Bundle Pricing Selector & Embedded 1-Step COD Form (#order-section) -->
+	<BundlePricingSelector
+		bind:selectedTier
+		{isSubmitting}
+		onSelectTier={(tier) => (selectedTier = tier)}
+		onSubmitOrder={handleOrderInitiated}
+	/>
 
-		<div class="flex overflow-x-auto justify-start sm:justify-center gap-4 sm:gap-8 px-2 sm:px-4 py-2 scrollbar-none" dir="rtl">
-			{#each circularCategories as cat}
-				<a
-					href={cat.href}
-					class="group flex flex-col items-center gap-2.5 shrink-0 active:scale-95 transition-transform"
-					aria-label={cat.title}
-				>
-					<div
-						class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-stone-200 overflow-hidden shadow-sm bg-white p-1 flex items-center justify-center transition-all duration-300 group-hover:border-[#1B4332] group-hover:shadow-md"
-					>
-						<img
-							src={cat.image}
-							alt={cat.title}
-							class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-							loading="lazy"
-						/>
-					</div>
-					<span
-						class="text-xs sm:text-sm font-bold text-[#1E293B] text-center max-w-[100px] sm:max-w-[120px] leading-tight transition-colors group-hover:text-[#1B4332]"
-					>
-						{cat.title}
-					</span>
-				</a>
-			{/each}
-		</div>
-	</section>
+	<!-- 7. Verified Moroccan Customer Reviews -->
+	<ReviewsSection />
 
-	<!-- 5. Bestsellers -->
-	<section id="bestsellers" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-14">
-		<div class="text-center">
-			<div class="flex items-center justify-center gap-2">
-				<svg class="h-5 w-5 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.7-5.3-3.2-6.9-.4 1.1-1 2.1-2 2.9.1-2.8-1.2-5.3-3.1-6.8C10.4 3.3 9.4 2.5 8.5 2c.2 2.3-.3 4.3-1.3 6C5.9 9.7 4.5 11.9 4.5 14.8 4.5 19 7.6 22 12 22z" />
-				</svg>
-				<h2 class="font-display text-2xl font-bold text-[#1E293B] md:text-3xl">الأكثر مبيعاً</h2>
-				<svg class="h-5 w-5 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.7-5.3-3.2-6.9-.4 1.1-1 2.1-2 2.9.1-2.8-1.2-5.3-3.1-6.8C10.4 3.3 9.4 2.5 8.5 2c.2 2.3-.3 4.3-1.3 6C5.9 9.7 4.5 11.9 4.5 14.8 4.5 19 7.6 22 12 22z" />
-				</svg>
-			</div>
-			<div class="mx-auto mt-3 h-0.5 w-24 rounded-full bg-[#1B4332]"></div>
-			{#if query.trim()}
-				<p class="mt-2 text-sm text-stone-500">
-					نتائج البحث عن “{query.trim()}”: {visible.length}
-					<button type="button" onclick={() => (query = '')} class="font-bold text-[#1B4332] underline underline-offset-4">مسح البحث</button>
-				</p>
-			{/if}
-		</div>
+	<!-- 8. Interactive FAQ Accordion -->
+	<FaqAccordion />
 
-		{#if visible.length === 0}
-			<div class="mx-auto mt-8 max-w-sm rounded-3xl border border-dashed border-stone-300 bg-white/60 p-10 text-center">
-				<svg viewBox="0 0 120 90" class="mx-auto h-20 w-auto text-stone-300" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
-					<circle cx="52" cy="38" r="24" />
-					<line x1="70" y1="56" x2="96" y2="82" stroke-linecap="round" />
-					<path d="M38 34 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3 z" fill="currentColor" stroke="none" opacity="0.5" />
-				</svg>
-				<p class="mt-4 font-bold text-[#1E293B]">ما لقينا حتى منتج بهاد الاسم</p>
-				<p class="mt-1 text-sm text-stone-400">جرّب كلمة أخرى ولا شوف المجموعة كاملة</p>
-				<button
-					type="button"
-					onclick={() => (query = '')}
-					class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-[#1B4332] px-6 font-bold text-white transition-transform hover:scale-[1.02] hover:bg-[#143326] active:scale-[0.98]"
-				>
-					عرض كل المنتجات
-				</button>
-			</div>
-		{:else}
-			<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-				{#each visible as s}
-					<article
-						class="group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-3.5 sm:p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-[#1B4332]/30 active:scale-[0.99]"
-					>
-						<div class="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden rounded-2xl bg-stone-50 flex items-center justify-center">
-							<!-- Reassurance Floating Pill -->
-							<span class="absolute top-2.5 end-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-emerald-900 shadow-xs backdrop-blur-xs border border-emerald-100">
-								<svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-									<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-								</svg>
-								<span>توصيل مجاني</span>
-							</span>
-
-							{#if s.image}
-								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
-									<img
-										src={s.image}
-										alt={s.title}
-										loading="lazy"
-										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-									/>
-								</a>
-							{:else}
-								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full p-4" aria-label={s.title}>
-									<div class="flex h-full w-full items-center justify-center rounded-xl bg-stone-100 text-stone-400">
-										<svg class="h-12 w-12 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-											<path stroke-linecap="round" stroke-linejoin="round" d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4M2 7h20" />
-										</svg>
-									</div>
-								</a>
-							{/if}
-						</div>
-
-						<div class="flex flex-1 flex-col justify-between gap-3 pt-3 sm:pt-4 px-1 pb-1">
-							<div>
-								{#if s.real}
-									<a href={`/${s.slug}`} class="font-display text-base sm:text-lg font-bold leading-snug text-[#1E293B] transition-colors hover:text-[#1B4332]">
-										{s.title}
-									</a>
-								{:else}
-									<h3 class="font-display text-base sm:text-lg font-bold leading-snug text-[#1E293B]">{s.title}</h3>
-								{/if}
-								{#if s.subtitle}
-									<p class="mt-1 line-clamp-2 text-xs leading-relaxed text-stone-500">{s.subtitle}</p>
-								{/if}
-							</div>
-
-							<div class="flex items-baseline gap-2.5">
-								<span class="font-display text-xl sm:text-2xl font-black text-[#1E293B]">{s.price} DH</span>
-								{#if s.oldPrice}
-									<span class="text-xs sm:text-sm text-stone-400 line-through font-semibold">{s.oldPrice} DH</span>
-								{/if}
-							</div>
-
-							{#if s.reviews > 0}
-								<div class="flex items-center gap-1.5 text-xs text-stone-500">
-									{@render stars(s.rating)}
-									<span class="text-[11px] text-stone-400">({s.reviews} تقييم)</span>
-								</div>
-							{/if}
-
-							<div class="mt-auto space-y-2 pt-2">
-								<a
-									href={s.real ? `/${s.slug}` : '#offer'}
-									class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
-									style="background-color: #1B4332;"
-								>
-									<span>اطلب الآن • الدفع عند الاستلام</span>
-									<svg class="h-4 w-4 shrink-0 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-									</svg>
-								</a>
-								<div class="flex items-center justify-between text-[11px] text-stone-400 font-medium px-1">
-									<span class="flex items-center gap-1">
-										<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-											<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-										</svg>
-										معاينة قبل الدفع
-									</span>
-									<span class="flex items-center gap-1">
-										<svg class="h-3 w-3 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-											<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-										</svg>
-										ضمان 14 يوم
-									</span>
-								</div>
-							</div>
-						</div>
-					</article>
-				{/each}
-			</div>
-		{/if}
-
-		{#if !query.trim() && catalog.length > 3}
-			<div class="mt-8 text-center">
-				<button
-					type="button"
-					onclick={() => (showAll = !showAll)}
-					class="inline-flex min-h-12 items-center rounded-2xl bg-[#1B4332] px-10 text-sm font-bold text-white transition-all duration-300 hover:bg-[#143326] active:scale-[0.98]"
-				>
-					{showAll ? 'عرض أقل' : 'عرض الكل'}
-				</button>
-			</div>
-		{/if}
-	</section>
-
-	<!-- 6. Trust strip (Rich Moroccan COD guarantees stream) -->
-	<div class="mt-14 overflow-hidden border-y border-stone-200/70 bg-white/80 py-3.5" aria-hidden="true">
-		<div class="animate-store-marquee-fast flex w-max items-center gap-10 pe-10">
-			{#each [0, 1] as dup}
-				<div class="flex items-center gap-8" aria-hidden={dup === 1}>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
-						</svg>
-						أكثر من 1,000 عميل راضٍ بالمغرب
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-emerald-900">
-						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-						</svg>
-						حق المعاينة والتجربة قبل الدفع
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-						</svg>
-						توصيل مجاني وسريع 24h - 48h
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-						</svg>
-						ضمان استبدال رسمي 14 يوماً
-					</span>
-				</div>
-			{/each}
-		</div>
-	</div>
-
-	<!-- 7. Why us & Customer Service -->
+	<!-- 9. Customer Service & Guarantees Strip -->
 	<TrustSection
-		whatsappNumber={waNumber || '212626558375'}
-		brandName={brand.name || 'Lhamza Shop'}
+		whatsappNumber={waNumber}
+		brandName={brand.name || 'NOVAVITA'}
 		supportHours="طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً"
 	/>
 
-	<!-- 9. Footer -->
-	<footer id="contact" class="mt-14 scroll-mt-24 bg-[#0E261C] text-stone-300">
-		<div class="mx-auto grid max-w-5xl grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
+	<!-- 10. Global Footer -->
+	<footer id="contact" class="mt-10 scroll-mt-24 bg-[#143326] text-stone-300 border-t border-emerald-900/30">
+		<div class="mx-auto grid max-w-6xl grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
 			<div class="space-y-3">
 				<div class="flex items-center gap-2">
-					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-[#C99738]">L</span>
-					<span class="font-display text-xl font-bold text-white">{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}</span>
+					<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-[#E86A7C]">N</div>
+					<span class="font-display text-xl font-bold text-white">{brand.name || 'NOVAVITA'}</span>
 				</div>
 				<p class="text-xs leading-loose text-stone-300">
-					Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة
-					بعناية، توصيل سريع، والخلاص عند الاستلام.
+					NOVAVITA هي علامتك المغربية المتخصصة في المكملات الجمالية الطبيعية بنكهات لذيذة، مصممة للمرأة العصرية لتهتم بجمالها وصحتها بدون عناء الكبسولات المرة.
 				</p>
 			</div>
 			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">تسوّق</h4>
+				<h4 class="text-sm font-bold text-white">تسوّقي حسب روتينك</h4>
 				<div class="grid gap-2 text-xs">
-					<a href="#collections" class="transition-colors hover:text-[#C99738]">المجموعات</a>
-					<a href="#bestsellers" class="transition-colors hover:text-[#C99738]">الأكثر مبيعاً</a>
-					<a href="#offer" class="transition-colors hover:text-[#C99738]">العرض الحالي</a>
-					<a href="#why" class="transition-colors hover:text-[#C99738]">علاش حنا</a>
+					<a href="/collection" class="transition-colors hover:text-[#E86A7C]">المجموعة الكاملة</a>
+					<a href="/gummies_collagen" class="transition-colors hover:text-[#E86A7C]">كولاجين البشرة البحري</a>
+					<a href="/gummies_biotine" class="transition-colors hover:text-[#E86A7C]">بيوتين الشعر والإنبات</a>
+					<a href="/gumies_vitamine" class="transition-colors hover:text-[#E86A7C]">فيتامينات الحيوية والمناعة</a>
 				</div>
 			</div>
 			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">المساعدة</h4>
+				<h4 class="text-sm font-bold text-white">ضمانات الشراء والتوصيل</h4>
 				<div class="grid gap-2 text-xs">
-					<a href="#why" class="transition-colors hover:text-[#C99738]">الشحن والتوصيل</a>
-					<a href="#offer" class="transition-colors hover:text-[#C99738]">كيفاش نطلب</a>
-					<a href="#contact" class="transition-colors hover:text-[#C99738]">اتصل بنا</a>
+					<span class="text-stone-300">🇲🇦 الدفع نقداً بعد الاستلام</span>
+					<span class="text-stone-300">📦 فحص ومعاينة الطرد عند الباب</span>
+					<span class="text-stone-300">🚚 توصيل مجاني وسريع لكافة المدن</span>
+					<span class="text-stone-300">🌿 بكتين نباتي 100% حلال معتمد</span>
 				</div>
 			</div>
 			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">تواصل معانا</h4>
+				<h4 class="text-sm font-bold text-white">خدمة الزبناء بالمغرب</h4>
 				<a
-					href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، عندي استفسار')}`}
+					href={`${waBase}?text=${encodeURIComponent('السلام عليكم NOVAVITA، عندي استفسار بخصوص باقات العروض')}`}
 					target="_blank"
 					rel="noopener"
-					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 text-xs font-bold text-white transition-colors hover:border-[#C99738] hover:text-[#C99738]"
+					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 text-xs font-bold text-white transition-colors hover:border-[#E86A7C] hover:text-[#E86A7C]"
 				>
 					<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 						<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
 					</svg>
-					راسلنا على واتساب
+					تواصل عبر واتساب
 				</a>
 				<p class="text-[11px] text-stone-400">متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}</p>
 			</div>
 		</div>
 		<div class="border-t border-white/10 bg-black/30 py-5 text-center text-xs text-stone-400">
-			<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
+			<p>© {new Date().getFullYear()} NOVAVITA Maroc. جميع الحقوق محفوظة.</p>
 		</div>
 	</footer>
 
-	<!-- 10. Floating WhatsApp Action -->
-	<BottomNav
-		whatsappNumber={waNumber || '212626558375'}
-		{cartCount}
-		onSearch={() => {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			searchOpen = true;
-			setTimeout(() => document.getElementById('store-search-input')?.focus({ preventScroll: true }), 350);
-		}}
-		onOpenCart={() => (drawerOpen = true)}
+	<!-- 11. Sticky Mobile Bottom CTA Bar -->
+	<StickyMobileCTA
+		price={currentTier.price}
+		tierLabel={currentTier.title}
+		onCtaClick={() => scrollToOrder()}
 	/>
 
-<!-- 11. Cart drawer -->
-{#if drawerOpen}
-	<div class="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="سلة التسوق">
-		<button
-			type="button"
-			class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
-			onclick={() => (drawerOpen = false)}
-			aria-label="سد السلة"
-		></button>
-		<aside class="absolute bottom-0 left-0 top-0 flex w-[86%] max-w-sm flex-col bg-[#FAF9F6] shadow-2xl">
-			<div class="flex items-center justify-between border-b border-stone-200/70 bg-white px-5 py-4">
-				<h2 class="font-display text-lg font-bold text-[#1E293B]">السلة ({cartCount})</h2>
-				<button
-					type="button"
-					onclick={() => (drawerOpen = false)}
-					class="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition-colors hover:bg-stone-100"
-					aria-label="سد السلة"
-				>
-					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
-			{#if cartCount === 0}
-				<div class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-					<svg viewBox="0 0 120 100" class="h-24 w-auto text-stone-300" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M8 30h104l-9 48a10 10 0 01-10 8H27a10 10 0 01-10-8L8 30z" />
-						<path stroke-linecap="round" d="M40 30l6-14h28l6 14" />
-						<circle cx="48" cy="52" r="2.5" fill="currentColor" stroke="none" />
-						<circle cx="72" cy="52" r="2.5" fill="currentColor" stroke="none" />
-						<path stroke-linecap="round" d="M46 68c4 5 8 5 12 0s8-5 12 0" opacity="0.7" />
-					</svg>
-					<p class="font-bold text-[#1E293B]">السلة خاوية</p>
-					<p class="text-sm text-stone-400">زيد شي منتج وغادي يبان هنا</p>
-					<button
-						type="button"
-						onclick={() => {
-							drawerOpen = false;
-							document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' });
-						}}
-						class="mt-2 inline-flex min-h-11 items-center rounded-xl bg-[#1B4332] px-6 font-bold text-white transition-all hover:bg-[#143326] active:scale-[0.98]"
-					>
-						تسوّق دابا
-					</button>
-				</div>
-			{:else}
-				<div class="flex-1 space-y-3 overflow-y-auto p-4">
-					{#each Object.keys(cart) as k}
-						{@const item = bySlug[k]}
-						{#if item}
-							<div class="rounded-2xl border border-stone-200/60 bg-white p-3 shadow-2xs">
-								<div class="flex items-start justify-between gap-2">
-									<p class="min-w-0 flex-1 truncate text-sm font-bold text-[#1E293B]">{item.title}</p>
-									<button
-										type="button"
-										onclick={() => removeItem(k)}
-										class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500"
-										aria-label="حيد من السلة"
-									>
-										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916" />
-										</svg>
-									</button>
-								</div>
-								<span class="mt-2 block h-24 w-full overflow-hidden rounded-xl bg-stone-100">
-									{#if item.image}
-										<img src={item.image} alt={item.title} class="h-full w-full object-cover" />
-									{:else}
-										<span class="flex h-full w-full items-center justify-center">
-											<svg class="h-6 w-6 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-											</svg>
-										</span>
-									{/if}
-								</span>
-								<div class="mt-2 flex items-center justify-between gap-2">
-									<span class="truncate text-[11px] font-semibold text-stone-400">التوصيل مجاني</span>
-									<span class="shrink-0 text-sm font-black text-[#1E293B]">{item.price} {cur}</span>
-								</div>
-							</div>
-						{/if}
-					{/each}
-				</div>
-				<div class="space-y-3 border-t border-stone-200/70 bg-white p-4">
-					<div class="flex items-center justify-between font-black text-[#1E293B]">
-						<span>المجموع</span>
-						<span>{cartTotal} {cur}</span>
-					</div>
-					<button
-						type="button"
-						onclick={orderViaWhatsApp}
-						class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] font-bold text-white transition-all hover:bg-[#20ba56] active:scale-[0.98]"
-					>
-						أكّد الطلب عبر واتساب
-					</button>
-					<button
-						type="button"
-						onclick={() => (cart = {})}
-						class="w-full py-2 text-center text-xs text-stone-400 underline underline-offset-4 hover:text-stone-600"
-					>
-						إفراغ السلة
-					</button>
-				</div>
-			{/if}
-		</aside>
-		</div>
-	{/if}
+	<!-- 12. Interactive Slide-Out Cart Drawer -->
+	<CartDrawer
+		bind:open={drawerOpen}
+		bind:items={cart}
+		onProceedToCheckout={() => scrollToOrder()}
+	/>
+
+	<!-- 13. 15s Timed Flash Upsell Modal (99 MAD Offer) -->
+	<TimedUpsellModal
+		bind:open={isUpsellOpen}
+		orderTotal={pendingOrder?.total || 279}
+		onAccept={handleAcceptUpsell}
+		onDecline={handleDeclineUpsell}
+	/>
 </div>

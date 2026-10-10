@@ -1,0 +1,83 @@
+{
+  "id": "gumies_vitamine",
+  "slug": "gumies_vitamine",
+  "status": "published",
+  "createdAt": "2026-10-10T12:00:00.000Z",
+  "updatedAt": "2026-10-10T12:00:00.000Z",
+  "template": "killers",
+  "published": {
+    "content": {
+      "heroImage": "/images/products/multivitamin-hero.webp",
+      "title": "علكات الفيتامينات المتعددة (Multivitamin Gummies)",
+      "subtitle": "تركيبة يومية متكاملة لتعزيز المناعة، النشاط والتوازن الصحي الكامل",
+      "rating": 4.8,
+      "reviewCount": 310,
+      "gallery": [
+        { "src": "/images/products/multivitamin-1.webp", "alt": "علكات الفيتامينات المتعددة" },
+        { "src": "/images/products/multivitamin-2.webp", "alt": "مكونات الملتي فيتامين" }
+      ],
+      "faq": [
+        {
+          "question": "هل تناسب الاستعمال اليومي الدائم؟",
+          "answer": "نعم، مصممة كروتين يومي آمن ومفيد لتعويض الفيتامينات والمعادن الناقصة في التغذية اليومية."
+        }
+      ],
+      "footerText": "NOVAVITA Maroc - جميع الحقوق محفوظة © 2026"
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "باقة التجربة (علبة واحدة)",
+          "subtitle": "كورس شهر واحد",
+          "price": 199,
+          "originalPrice": 299,
+          "quantity": 1,
+          "badge": "سعر التجربة",
+          "isPopular": false,
+          "image": "/images/products/multivitamin-hero.webp"
+        },
+        {
+          "id": 2,
+          "title": "باقة الثنائي (علبتان)",
+          "subtitle": "كورس شهرين + توصيل مجاني",
+          "price": 279,
+          "originalPrice": 398,
+          "quantity": 2,
+          "badge": "⭐ الأكثر طلباً - توفير 119 درهم",
+          "isPopular": true,
+          "image": "/images/products/multivitamin-hero.webp"
+        },
+        {
+          "id": 3,
+          "title": "باقة التحول الشامل (3 علب)",
+          "subtitle": "الروتين المتكامل + هدايا مجانية",
+          "price": 349,
+          "originalPrice": 597,
+          "quantity": 3,
+          "badge": "🏆 التحول الشامل - توفير 248 درهم",
+          "isPopular": false,
+          "image": "/images/products/multivitamin-hero.webp"
+        }
+      ]
+    },
+    "order": {
+      "sku": "gumies_vitamine",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": "212600000000"
+    },
+    "seo": {
+      "metaTitle": "علكات الفيتامينات المتعددة للطاقة والمناعة | NOVAVITA",
+      "metaDescription": "13 فيتامين ومعدن أساسي لتعزيز الحيوية والمناعة اليومية بنكهات الفواكه اللذيذة.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": []
+  }
+}

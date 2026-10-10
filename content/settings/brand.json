@@ -1,9 +1,9 @@
 {
-  "name": "Lhamza Shop",
-  "tagline": "Lhamza Shop",
-  "logo": "https://lhamza.shop/favicon.svg",
+  "name": "NOVAVITA",
+  "tagline": "العناية بالجمال والصحة من الداخل",
+  "logo": "/images/logo.svg",
   "favicon": "/favicon.svg",
-  "heroImage": "",
-  "whatsappNumber": "",
+  "heroImage": "/images/hero-banner.webp",
+  "whatsappNumber": "212600000000",
   "supportHours": "9:00 - 22:00"
 }

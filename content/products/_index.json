@@ -1,68 +1,35 @@
 [
   {
-    "id": "prod_filter_baloua",
-    "slug": "filter-baloua",
-    "title": "تهنى نهائياً من ريحة المجاري والصراصير 🪳",
-    "subtitle": "صمام تصريف ذكي مضاد للروائح والحشرات",
-    "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png",
-    "startingPrice": 35,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-03T21:12:00.000Z"
-  },
-  {
-    "id": "prod_hamil_jidari_makanis",
-    "slug": "hamil-jidari-makanis",
-    "title": "حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات",
-    "subtitle": "حامل جداري عملي لتنظيم أدوات التنظيف في الحمام أو المطبخ. يستوعب حتى 5 أدوات في نفس الوقت. تركيب سهل بدون ثقب بفضل اللاصق القوي. حل مثالي لتوفير المساحة وترتيب المنزل.",
-    "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791059605/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%A3%D8%AF%D9%88%D8%A7%D8%AA_%D8%A7%D9%84%D8%AA%D9%86%D8%B8%D9%8A%D9%81_%D8%A8%D9%8079_%D8%AF%D8%B1%D9%87%D9%85.png",
-    "startingPrice": 99,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-03T20:44:56.469Z"
-  },
-  {
-    "id": "prod_1790890982690_tyj0qm",
-    "slug": "kit-tandim",
-    "title": "طقم التنظيم المنزلي + هدية",
-    "subtitle": "المنظم الذكي للحمام (بدون حفر) + رشاش فابور",
-    "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
-    "startingPrice": 229,
+    "id": "gummies_collagen",
+    "slug": "gummies_collagen",
+    "title": "علكات الكولاجين البحري (Collagen Gummies)",
+    "subtitle": "كولاجين بتركيبة متطورة لنضارة ومرونة البشرة وتخفيف التجاعيد",
+    "heroImage": "/images/products/collagen-hero.webp",
+    "startingPrice": 199,
     "status": "published",
-    "template": "stacked",
-    "updatedAt": "2026-10-03T16:54:57.634Z"
+    "template": "killers",
+    "updatedAt": "2026-10-10T12:00:00.000Z"
   },
   {
-    "id": "prod_1790890965295_0dqn8q",
-    "slug": "mimsahat-asyr",
-    "title": "ممسحة العصر الذكية",
-    "subtitle": "عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة",
-    "heroImage": "https://placehold.co/800x800/fdf6e3/92400e?text=Lhamza+Shop",
-    "startingPrice": 129,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-01T21:42:52.587Z"
+    "id": "gummies_biotine",
+    "slug": "gummies_biotine",
+    "title": "علكات البيوتين والزنك (Biotin Gummies)",
+    "subtitle": "بيوتين مركز مع الزنك وفيتامين C لإنبات الشعر وتقوية الأظافر",
+    "heroImage": "/images/products/biotin-hero.webp",
+    "startingPrice": 199,
+    "status": "published",
+    "template": "killers",
+    "updatedAt": "2026-10-10T12:00:00.000Z"
   },
   {
-    "id": "prod_1790890947662_sde57v",
-    "slug": "monazzim-daki",
-    "title": "المنظم الذكي متعدد الاستعمال",
-    "subtitle": "رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب",
-    "heroImage": "https://placehold.co/800x800/faf9f6/022c22?text=Lhamza+Shop",
-    "startingPrice": 149,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-01T21:42:35.352Z"
-  },
-  {
-    "id": "prod_qofl_al_aman",
-    "slug": "qofl-al-aman",
-    "title": "قفل الأمان للأطفال",
-    "subtitle": "حماية أكيدة لأطفالك من فتح الأدراج والثلاجة والخزانات",
-    "heroImage": "https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp",
-    "startingPrice": 50,
-    "status": "draft",
-    "template": "classic",
-    "updatedAt": "2026-10-03T12:00:00.000Z"
+    "id": "gumies_vitamine",
+    "slug": "gumies_vitamine",
+    "title": "علكات الفيتامينات المتعددة (Multivitamin Gummies)",
+    "subtitle": "تركيبة يومية متكاملة لتعزيز المناعة، النشاط والتوازن الصحي الكامل",
+    "heroImage": "/images/products/multivitamin-hero.webp",
+    "startingPrice": 199,
+    "status": "published",
+    "template": "killers",
+    "updatedAt": "2026-10-10T12:00:00.000Z"
   }
 ]
