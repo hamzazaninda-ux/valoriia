@@ -1,22 +1,5 @@
 [
   {
-    "id": "ORD-743025",
-    "createdAt": "2026-10-10T09:22:26.921Z",
-    "fullName": "Live Health Check",
-    "phone": "0600000000",
-    "city": "الدار البيضاء",
-    "address": "الدار البيضاء",
-    "product": "طقم التنظيم المنزلي",
-    "quantity": 1,
-    "totalPrice": 229,
-    "status": "جديد",
-    "sku": "kit-tandim",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "",
-    "notes": ""
-  },
-  {
     "id": "ORD-283962",
     "createdAt": "2026-10-10T09:22:20.006Z",
     "fullName": "Test",
