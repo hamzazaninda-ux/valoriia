@@ -26,10 +26,11 @@
 	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
 	function handleAddToCartAndOpenDrawer() {
+		const bundleName = currentTier.units === 1 ? 'علبة واحدة' : currentTier.units === 2 ? 'علبتان' : '3 علب';
 		cart.setMainItem({
 			slug: product.slug,
 			sku: product.sku,
-			title: `${product.name} (${currentTier.title})`,
+			title: `${product.name} - ${bundleName}`,
 			image: product.image,
 			price: currentTier.price,
 			tier: selectedTier,
@@ -238,6 +239,24 @@
 					</button>
 				</div>
 
+				<!-- Direct Action CTA Button (Immediately Under 3-Tier Selector) -->
+				<div class="space-y-3 pt-3">
+					<button
+						type="button"
+						onclick={handleAddToCartAndOpenDrawer}
+						class="w-full min-h-14 sm:min-h-16 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2.5 group"
+					>
+						<span>أضيفي إلى السلة واطلبي الآن 🚚</span>
+						<span class="text-xl transition-transform group-hover:-translate-x-1.5">←</span>
+					</button>
+
+					<div class="flex items-center justify-center gap-4 text-[11px] font-bold text-stone-500 pt-0.5">
+						<span class="flex items-center gap-1 text-emerald-800">🚚 توصيل فابور مجاني</span>
+						<span class="flex items-center gap-1 text-emerald-800">📦 معاينة قبل الدفع</span>
+						<span class="flex items-center gap-1 text-emerald-800">🌿 بكتين حلال 100%</span>
+					</div>
+				</div>
+
 				<!-- Doorstep Inspection Risk-Reversal Guarantee Card -->
 				<div class="rounded-3xl border-2 border-emerald-900/20 bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 p-5 sm:p-6 shadow-md space-y-3">
 					<div class="flex items-center gap-3">
@@ -258,47 +277,6 @@
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">📦 عايني الطرد أولاً</div>
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">💵 الدفع بعد التأكد</div>
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">🔄 إرجاع فوري مريح</div>
-					</div>
-				</div>
-
-				<!-- High-Converting Primary Action Box (Alpha Style -> Triggers Cart Drawer) -->
-				<div class="rounded-3xl bg-white p-5 sm:p-7 border-2 border-emerald-950/15 shadow-xl space-y-4">
-					<div class="flex justify-between items-center border-b border-stone-100 pb-3">
-						<div>
-							<h3 class="font-bold text-sm sm:text-base text-[#1B4332]">الباقة المختارة</h3>
-							<p class="text-[11px] text-stone-500">{currentTier.title}</p>
-						</div>
-						<div class="text-end">
-							<span class="text-xs text-stone-400">المجموع:</span>
-							<div class="font-mono font-black text-2xl text-[#E86A7C]">{currentTier.price} MAD</div>
-						</div>
-					</div>
-
-					<div class="space-y-2.5 pt-1">
-						<!-- Primary CTA Button -->
-						<button
-							type="button"
-							onclick={handleAddToCartAndOpenDrawer}
-							class="w-full min-h-14 sm:min-h-15 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group"
-						>
-							<span>اطلبي الآن • الدفع عند الاستلام 🛍️</span>
-							<span class="text-lg transition-transform group-hover:-translate-x-1">←</span>
-						</button>
-
-						<!-- Secondary / Upsell Hook Button -->
-						<button
-							type="button"
-							onclick={handleAddToCartAndOpenDrawer}
-							class="w-full min-h-11 rounded-xl bg-white border-2 border-[#E86A7C]/40 hover:bg-rose-50/50 active:scale-[0.98] font-black text-[#E86A7C] text-xs sm:text-sm transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
-						>
-							<span>+ أضيفي إلى السلة واستفيدي من عرض 99 DH 🛒</span>
-						</button>
-					</div>
-
-					<div class="flex items-center justify-center gap-4 text-[11px] font-bold text-stone-500 pt-2 border-t border-stone-100">
-						<span class="flex items-center gap-1">🚚 توصيل فابور</span>
-						<span class="flex items-center gap-1">📦 معاينة قبل الدفع</span>
-						<span class="flex items-center gap-1">🌿 بكتين حلال 100%</span>
 					</div>
 				</div>
 
@@ -521,7 +499,7 @@
 		<button
 			type="button"
 			onclick={handleAddToCartAndOpenDrawer}
-			class="flex-1 py-3 px-4 rounded-xl bg-[#E86A7C] font-black text-white text-xs shadow-lg active:scale-95 text-center cursor-pointer hover:bg-[#d95366] transition-colors"
+			class="flex-1 py-3 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143427] font-black text-white text-xs shadow-lg active:scale-95 text-center cursor-pointer transition-colors"
 		>
 			<span>اطلبي الآن كاش 🛍️</span>
 		</button>
