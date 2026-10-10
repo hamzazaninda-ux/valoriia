@@ -91,6 +91,9 @@
 
 	function handleSubmit(e: Event) {
 		e.preventDefault();
+		const lastSubmit = parseInt(sessionStorage.getItem('last_submit_time') || '0');
+		if (Date.now() - lastSubmit < 5000) return;
+		sessionStorage.setItem('last_submit_time', Date.now().toString());
 		errors = { fullName: '', city: '', phoneNumber: '' };
 		submitError = '';
 		shouldShakePhone = false;
@@ -415,7 +418,7 @@
 				>
 					{#if loading}
 						<div class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-						<span>{t.sections.orderForm.processingText}</span>
+						<span>جاري تأكيد طلبك...</span>
 					{:else}
 						<span>{t.sections.orderForm.submitText}</span>
 					{/if}

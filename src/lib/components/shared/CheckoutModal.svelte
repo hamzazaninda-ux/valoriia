@@ -58,6 +58,9 @@
 
 	function handleSubmit(e: Event) {
 		e.preventDefault();
+		const lastSubmit = parseInt(sessionStorage.getItem('last_submit_time') || '0');
+		if (Date.now() - lastSubmit < 5000) return;
+		sessionStorage.setItem('last_submit_time', Date.now().toString());
 		errors = { fullName: '', phoneNumber: '' };
 		submitError = '';
 
@@ -296,7 +299,7 @@
 					>
 						{#if loading}
 							<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent pointer-events-none" style="pointer-events: none;"></span>
-							<span class="pointer-events-none" style="pointer-events: none;">جاري إرسال الطلب…</span>
+							<span class="pointer-events-none" style="pointer-events: none;">جاري تأكيد طلبك...</span>
 						{:else}
 							<span class="pointer-events-none" style="pointer-events: none;">أكّد الطلب — {cart.subtotal} {currency}</span>
 						{/if}
