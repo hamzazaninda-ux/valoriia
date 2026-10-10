@@ -1,5 +1,22 @@
 [
   {
+    "id": "ORD-334492",
+    "createdAt": "2026-10-10T09:45:20.085Z",
+    "fullName": "Hamza",
+    "phone": "0666666666",
+    "city": "يُحدد عند التأكيد",
+    "address": "يُحدد عند التأكيد",
+    "product": "1x طقم التنظيم المنزلي + هدية (2 منظمات + 2 رشاشات هدية 🎁)",
+    "quantity": 1,
+    "totalPrice": 349,
+    "status": "جديد",
+    "sku": "kit-tandim",
+    "pageUrl": "https://lhamza.shop/cart",
+    "orderType": "cart",
+    "items": "[{\"slug\":\"kit-tandim\",\"title\":\"طقم التنظيم المنزلي + هدية\",\"offer\":\"2 منظمات + 2 رشاشات هدية 🎁\",\"price\":349,\"qty\":1}]",
+    "notes": ""
+  },
+  {
     "id": "ORD-582326",
     "createdAt": "2026-10-10T09:29:33.915Z",
     "fullName": "Hamza",
