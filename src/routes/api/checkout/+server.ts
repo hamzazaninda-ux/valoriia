@@ -5,7 +5,7 @@ import { sendOrderToGoogleSheets } from '$lib/server/sheets';
 
 const GOOGLE_SHEETS_WEBHOOK =
 	process.env.GOOGLE_SHEETS_URL ||
-	'https://script.google.com/macros/s/AKfycbzc4gOxOF95fqO9f0X0iEPhA_MRkqvF9hOV_xNI9W_B5TLFn6H89GY0l8_mks6nTIIYZg/exec';
+	'https://script.google.com/macros/s/AKfycbzAWD5-wSS8PYWxsvsWbzAnCbudmLJZd4_XhFQDBA5RBvYjg6v_yPJULMs4qdv5xUhwWA/exec';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
