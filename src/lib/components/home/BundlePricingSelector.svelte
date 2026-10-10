@@ -105,7 +105,7 @@
 
 				<div class="mt-4">
 					<h3 class="font-display text-lg font-black text-[#1F2937]">باقة التجربة (علبة واحدة)</h3>
-					<p class="text-xs text-stone-500 mt-1">كورس تجريبي (30 يوم / 60 حبة)</p>
+					<p class="text-xs text-stone-500 mt-1">كورس تجريبي (25 علكة مضغ شهية)</p>
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
@@ -119,7 +119,7 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 1 علبة من اختيارك</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 1 علبة من اختيارك (25 علكة)</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> تكفي شهراً كاملاً</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> الدفع عند الاستلام بعد المعاينة</li>
 				</ul>
@@ -167,7 +167,7 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-700 border-t border-emerald-950/10 pt-4">
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (120 حبة) لكورس شهرين</strong></li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (50 علكة) لكورس شهرين كامل</strong></li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
 					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة</li>
@@ -211,13 +211,35 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (180 حبة) — فقط 116 MAD للعلبة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 116 MAD للعلبة</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
 					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة + هدية إضافية</li>
 				</ul>
 			</button>
 
+		</div>
+
+		<!-- Prominent Doorstep Inspection Guarantee Card (Risk-Reversal) -->
+		<div class="rounded-3xl bg-[#143326] p-6 sm:p-8 text-white shadow-xl border-2 border-emerald-800/60 relative overflow-hidden">
+			<div class="pointer-events-none absolute -bottom-10 -right-10 w-44 h-44 rounded-full bg-[#E86A7C]/20 blur-2xl" aria-hidden="true"></div>
+			<div class="relative z-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-start">
+				<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-3xl border border-white/20 shadow-md">
+					🛡️
+				</div>
+				<div class="space-y-1.5 flex-1">
+					<h4 class="font-display text-lg sm:text-xl font-black text-amber-300">
+						ضمان المعاينة الكاملة عند باب دارك
+					</h4>
+					<p class="text-xs sm:text-sm text-stone-200 leading-relaxed font-medium">
+						حقكِ القانوني والأخلاقي محفوظ بالكامل. عند وصول الموزع، افتحي الطرد وعايني علب NOVAVITA وتأكدي من سلامتها بنفسك قبل دفع أي درهم. ثقتكِ وراحتكِ هي أولويتنا الأولى.
+					</p>
+				</div>
+				<div class="shrink-0 bg-emerald-900/60 border border-emerald-700/60 rounded-xl px-4 py-2 text-center">
+					<span class="block text-[11px] font-bold text-stone-300">الدفع نقداً</span>
+					<span class="block text-xs font-black text-white">بعد المعاينة 100%</span>
+				</div>
+			</div>
 		</div>
 
 		<!-- Streamlined 1-Step COD Form with strict field minimization -->

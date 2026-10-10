@@ -5,6 +5,7 @@
 	import TrustSection from '$lib/components/sections/TrustSection.svelte';
 	import HeroSection from '$lib/components/home/HeroSection.svelte';
 	import ZigZagShowcase from '$lib/components/home/ZigZagShowcase.svelte';
+	import ScientificProofSection from '$lib/components/home/ScientificProofSection.svelte';
 	import BundlePricingSelector from '$lib/components/home/BundlePricingSelector.svelte';
 	import ComparisonTable from '$lib/components/home/ComparisonTable.svelte';
 	import ReviewsSection from '$lib/components/home/ReviewsSection.svelte';
@@ -207,10 +208,13 @@
 	<!-- 3. Hero Section (Above the Fold CRO Powerhouse) -->
 	<HeroSection onCtaClick={() => scrollToOrder()} />
 
-	<!-- 4. The 3 Core SKUs Zig-Zag Showcase -->
+	<!-- 4. The 3 Core SKUs Zig-Zag Showcase (Emotional Resonance & Moroccan Pain Points) -->
 	<ZigZagShowcase onSelectProduct={(sku) => scrollToOrder(sku)} />
 
-	<!-- 5. Comparison Table: NOVAVITA vs Traditional Pills -->
+	<!-- 5. Scientific Proof & Clinical Rigor (GMP, Halal, Lab-Tested, Precise Dosages) -->
+	<ScientificProofSection onCtaClick={() => scrollToOrder()} />
+
+	<!-- 6. Comparison Table: NOVAVITA vs Traditional Pills -->
 	<ComparisonTable />
 
 	<!-- 6. Bundle Pricing Selector & Embedded 1-Step COD Form (#order-section) -->
@@ -250,9 +254,9 @@
 				<h4 class="text-sm font-bold text-white">تسوّقي حسب روتينك</h4>
 				<div class="grid gap-2 text-xs">
 					<a href="/collection" class="transition-colors hover:text-[#E86A7C]">المجموعة الكاملة</a>
-					<a href="/gummies_collagen" class="transition-colors hover:text-[#E86A7C]">كولاجين البشرة البحري</a>
-					<a href="/gummies_biotine" class="transition-colors hover:text-[#E86A7C]">بيوتين الشعر والإنبات</a>
-					<a href="/gumies_vitamine" class="transition-colors hover:text-[#E86A7C]">فيتامينات الحيوية والمناعة</a>
+					<a href="/products/gummies_collagen" class="transition-colors hover:text-[#E86A7C]">كولاجين البشرة البحري</a>
+					<a href="/products/gummies_biotine" class="transition-colors hover:text-[#E86A7C]">بيوتين الشعر والإنبات</a>
+					<a href="/products/gumies_vitamine" class="transition-colors hover:text-[#E86A7C]">فيتامينات الحيوية والمناعة</a>
 				</div>
 			</div>
 			<div class="space-y-3">

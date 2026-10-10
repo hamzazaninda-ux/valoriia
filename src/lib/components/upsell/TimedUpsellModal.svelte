@@ -138,8 +138,9 @@
 						<span class="text-xs text-stone-400 line-through">199 MAD</span>
 					</div>
 					<div class="flex items-center gap-2 mt-2">
-						<label class="text-[11px] font-bold text-stone-500">اختر النوع:</label>
+						<label for="upsell-flavor-select" class="text-[11px] font-bold text-stone-500">اختر النوع:</label>
 						<select
+							id="upsell-flavor-select"
 							bind:value={selectedFlavor}
 							class="text-xs font-bold rounded-lg border border-stone-200 bg-[#FAF8F5] px-2 py-1 outline-none focus:border-[#1B4332]"
 						>
