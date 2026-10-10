@@ -14,6 +14,12 @@
 	// Scroll State for Sticky Mobile Bottom Bar
 	let scrollY = $state(0);
 
+	// FAQ Accordion State
+	let openFaq = $state<number | null>(0);
+	function toggleFaq(idx: number) {
+		openFaq = openFaq === idx ? null : idx;
+	}
+
 	// Image Gallery State
 	let activeImage = $state('');
 	$effect(() => {
@@ -52,25 +58,25 @@
 		}
 	}
 
-	// Product-specific DTC Hero Content (Condensed & Fast CVR)
+	// Product-specific DTC Hero Content
 	const PRODUCT_HERO_DATA = {
 		gummies_collagen: {
 			tag: '✨ روتين النضارة السريري • حلال 100%',
 			h1: 'كتستعملي سيرومات غالية وبشرتك باقا باهتة وناشفة؟',
 			sub: 'الكريمات كتزوق من برا فقط.. كولاجين NOVAVITA البحري كيعوض النقص من الداخل لنضارة ولمعة زجاجية طبيعية.',
-			reviews: '480 تقييم مؤكد بالمغرب'
+			reviewCount: '480'
 		},
 		gummies_biotine: {
 			tag: '✨ روتين إنبات الشعر • حلال 100%',
 			h1: 'كتخافي تمشطي شعرك وتلقاي المشطة عامرة بالخصلات؟',
 			sub: 'الشامبوان كيغسل فقط.. بيوتين NOVAVITA المركز كيعوض النقص ويغذي البصيلات من الداخل لوقف التساقط وإنبات البيبي هير.',
-			reviews: '620 تقييم مؤكد بالمغرب'
+			reviewCount: '620'
 		},
 		gumies_vitamine: {
 			tag: '✨ روتين النشاط والمناعة • حلال 100%',
 			h1: 'كتفيقي في الصباح عيانة وسخفانة وخا نعستي 8 ساعات؟',
 			sub: 'القهوة كتعطي طاقة مؤقتة.. 13 فيتامين في علكات NOVAVITA كيعوضو النقص الغذائي لطاقة حقيقية ونشاط يدوم نهارك كامل.',
-			reviews: '350 تقييم مؤكد بالمغرب'
+			reviewCount: '350'
 		}
 	} as const;
 
@@ -87,6 +93,25 @@
 		}
 		return PRODUCT_HERO_DATA.gummies_collagen;
 	});
+
+	const faqs = [
+		{
+			q: 'إمتى كيبداو يبانو النتائج؟',
+			a: 'ترطيب البشرة ونعومة الأظافر تبدأ من أول 14 يوماً من الاستعمال اليومي، بينما توقف تساقط الشعر وبداية إنبات بصيلات البيبي هير تلاحظ بين 4 إلى 6 أسابيع من الالتزام المنتظم.'
+		},
+		{
+			q: 'كيفاش كنستعملها وشحال ناكل في النهار؟',
+			a: 'علكتان شهيتان يومياً (2 Gummies) في أي وقت تفضلينه أثناء اليوم، تمضغينها مثل الحلوى اللذيذة بنكهة التوت الطبيعية بدون الحاجة لشرب الماء أو ابتلاع كبسولات.'
+		},
+		{
+			q: 'واش فيها جيلاتين خنزيري أو سكر كيغلظ؟',
+			a: 'حلال 100% وخالية تماماً من الجيلاتين الخنزيري. تركيبتنا معتمدة على بكتين الفواكه النباتي النقي وبدون سكر مضاف يسبب زيادة الوزن أو يؤثر على رشاقتك.'
+		},
+		{
+			q: 'كيفاش كيدوز الطلب والتوصيل؟',
+			a: 'الطلب فوري وسهل بدون أداء مسبق. التوصيل مجاني وسريع لكافة مدن المغرب خلال 24 إلى 48 ساعة، والدفع نقداً عند الاستلام بعد فتح ومعاينة الطرد بنفسك والتأكد من أمانه.'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -94,6 +119,7 @@
 	<meta name="description" content={product.headline} />
 </svelte:head>
 
+<!-- Global scroll binding for scroll-triggered sticky mobile CTA -->
 <svelte:window bind:scrollY={scrollY} />
 
 <div class="min-h-screen bg-[#FAF8F5] font-body text-[#1F2937] pb-24 md:pb-16" dir="rtl">
@@ -104,7 +130,7 @@
 		<span>مكملات غذائية طبيعية وحلال 100% • مصادق عليها بالمغرب</span>
 	</div>
 
-	<!-- 2. Sticky Header with Circular Brand Logo -->
+	<!-- Sticky Header with Circular Brand Logo -->
 	<Header
 		brandName="NOVAVITA"
 		cartCount={cart.count}
@@ -114,7 +140,9 @@
 		onOpenCart={() => cartUi.openDrawer()}
 	/>
 
-	<!-- 3. Section: Hero Image & Buying Box -->
+	<!-- ========================================================================= -->
+	<!-- 1. Hero Section & Interactive Buying Box -->
+	<!-- ========================================================================= -->
 	<main class="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
 			
@@ -154,22 +182,22 @@
 					{heroData.sub}
 				</p>
 
-				<!-- 4. صف التقييم والنجوم الذهبية -->
+				<!-- 4. صف التقييم والنجوم الذهبية النظيفة -->
 				<div class="flex items-center gap-2 mb-4">
 					<span class="font-bold text-gray-900 text-sm">4.9</span>
-					<div class="flex text-[#F59E0B] gap-0.5">
+					<div class="flex text-[#F59E0B] gap-0.5" aria-label="تقييم 5 نجوم">
 						{#each Array(5) as _}
-							<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20">
+							<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20" aria-hidden="true">
 								<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
 							</svg>
 						{/each}
 					</div>
 					<span class="text-xs text-gray-600 font-medium">
-						({heroData.reviews})
+						({heroData.reviewCount} تقييم سيدة مغربية • مشتريات مؤكدة)
 					</span>
 				</div>
 
-				<!-- 2. محدد العروض والطلب (Clean & Focused) -->
+				<!-- محدد العروض والطلب (Clean & Focused) -->
 				<div id="bundle-selector" class="space-y-3 scroll-mt-24">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-base font-bold text-gray-900">اختاري باقتك:</span>
@@ -205,7 +233,7 @@
 						</div>
 					</button>
 
-					<!-- Tier 2 (Preselected - Benchmark Elevated) -->
+					<!-- Tier 2 (Preselected - Most Popular) -->
 					<button
 						type="button"
 						onclick={() => (selectedTier = 'tier_2')}
@@ -289,185 +317,421 @@
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 3. شريط المعاناة بالمغرب (Moroccan Pain Stat - بطاقة واحدة) -->
+		<!-- 2. قسم التحول البصري والمعاناة (Visual Transformation & Moroccan Context) -->
 		<!-- ========================================================================= -->
-		<div class="mt-10 sm:mt-16">
-			<div class="rounded-3xl bg-[#143427] text-white p-6 sm:p-8 shadow-xl border border-emerald-800/40 text-center sm:text-start flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-				<div class="font-display text-5xl sm:text-6xl font-black text-[#E86A7C] shrink-0">
-					78%
+		<div class="mt-12 sm:mt-18">
+			<div class="rounded-3xl bg-[#143427] text-white overflow-hidden shadow-2xl border border-emerald-800/40">
+				
+				<!-- Upper Stat Header with Background Lifestyle Layer -->
+				<div class="relative p-6 sm:p-8 bg-gradient-to-r from-emerald-950 via-[#143427] to-[#1B4332]">
+					<div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
+						<!-- Lifestyle transformation visual thumbnail -->
+						<div class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shrink-0 border-2 border-white/20 shadow-lg">
+							<img
+								src="/images/killers/imagewom1.png"
+								alt="واقع صحة وجمال المرأة بالمغرب"
+								class="w-full h-full object-cover"
+								onerror={(e: any) => {
+									e.currentTarget.style.display = 'none';
+								}}
+							/>
+							<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+							<span class="absolute bottom-1.5 inset-x-0 text-center text-[10px] font-bold text-white bg-black/40 py-0.5">
+								جمال طبيعي مستعاد ✨
+							</span>
+						</div>
+
+						<div class="space-y-2 text-center md:text-start">
+							<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-stone-200 border border-white/15">
+								🇲🇦 واقع المرأة المغربية ومياه الكالكير
+							</span>
+							<p class="text-sm sm:text-base lg:text-lg font-bold text-stone-100 leading-relaxed">
+								<strong class="text-[#E86A7C] font-black text-xl">78%</strong> من المغربيات كيعانيو من بهتان البشرة وتساقط الشعر بسبب ملوحة الماء (الكالكير) وضغوطات اليوم. الحل ماشي في الزيوت.. الحل في تغذية البصيلة والخلايا من الداخل.
+							</p>
+						</div>
+					</div>
 				</div>
-				<p class="text-sm sm:text-base font-bold text-stone-100 leading-relaxed">
-					78% من المغربيات كيعانيو من بهتان البشرة وتساقط الشعر بسبب ملوحة الماء (الكالكير) وضغوطات اليوم. الحل ماشي في الزيوت.. الحل في تغذية البصيلة والخلايا من الداخل.
+
+				<!-- Comparison Split Cards -->
+				<div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-white/10 bg-[#0F281E] p-4 sm:p-6 gap-4">
+					<!-- Old Surface Routine -->
+					<div class="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+						<div class="flex items-center gap-2 text-rose-400 text-xs font-black">
+							<span class="w-6 h-6 rounded-full bg-rose-500/20 flex items-center justify-center">✕</span>
+							<span>الروتين السطحي القديم</span>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
+							شامبوانات وسيرومات خارجية كتزوق المظهر لساعات وكتغسل فقط.. بدون ما توصل لجذور البصيلة أو تعوض فقدان الكولاجين الداخلي.
+						</p>
+					</div>
+
+					<!-- Inside-Out Cellular Nutrition -->
+					<div class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/20 space-y-2">
+						<div class="flex items-center gap-2 text-emerald-300 text-xs font-black">
+							<span class="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center">✓</span>
+							<span>التغذية الخلوية بـ NOVAVITA</span>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-200 leading-relaxed font-medium">
+							جرعات سريرية دقيقة (3000mcg بيوتين + كولاجين بحري) كتمتص في دقائق عبر بكتين الفواكه، لتغذي الخلايا وتوقف التساقط من الجذور.
+						</p>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 3. كروت المكونات الفعالة البصرية (Visual Clinical Ingredients Grid) -->
+		<!-- ========================================================================= -->
+		<div class="mt-12 sm:mt-18 space-y-4">
+			<div class="text-center space-y-1">
+				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1B4332]/10 text-xs font-bold text-[#1B4332]">
+					🔬 الدقة السريرية
+				</span>
+				<h2 class="font-display text-xl sm:text-2xl font-black text-[#1B4332]">
+					السرّ في التركيز.. ماشي في كثرة الأسماء
+				</h2>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<!-- Ingredient 1: Marine Collagen + HA -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+					<div class="space-y-3">
+						<div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl">
+							💧
+						</div>
+						<div>
+							<span class="text-[11px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full">تركيبة مزدوجة</span>
+							<h3 class="font-display text-base sm:text-lg font-bold text-[#1B4332] mt-1.5">
+								الكولاجين البحري + حمض الهيالورونيك
+							</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+							ببتيدات بحرية دقيقة كتمتص في دقائق لتعويض نقص الكولاجين بعد سن 25 وملء خلايا الجلد.
+						</p>
+					</div>
+					<div class="pt-3 border-t border-stone-100 text-xs font-bold text-blue-800 bg-blue-50/50 p-2.5 rounded-xl">
+						✨ رطوبة مائية عميقة ونضارة زجاجية من أول أسبوعين.
+					</div>
+				</div>
+
+				<!-- Ingredient 2: Biotin 3000mcg + Zinc -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+					<div class="space-y-3">
+						<div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-2xl">
+							🌿
+						</div>
+						<div>
+							<span class="text-[11px] font-black text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full">3000 ميكروغرام</span>
+							<h3 class="font-display text-base sm:text-lg font-bold text-[#1B4332] mt-1.5">
+								البيوتين المركز 3000mcg + الزنك
+							</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+							الجرعة السريرية المضبوطة التي توقف تساقط الشعر الناتج عن التوتر والماء القاصح، وتحفز إنبات البيبي هير.
+						</p>
+					</div>
+					<div class="pt-3 border-t border-stone-100 text-xs font-bold text-emerald-800 bg-emerald-50/50 p-2.5 rounded-xl">
+						✨ وقف تساقط الشعر وتصلب الأظافر.
+					</div>
+				</div>
+
+				<!-- Ingredient 3: Vitamin C & Antioxidants -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow">
+					<div class="space-y-3">
+						<div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-2xl">
+							🍊
+						</div>
+						<div>
+							<span class="text-[11px] font-black text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full">مضادات أكسدة نشطة</span>
+							<h3 class="font-display text-base sm:text-lg font-bold text-[#1B4332] mt-1.5">
+								فيتامين C ومضادات الأكسدة
+							</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+							يحمي الخلايا من الإجهاد التأكسدي ويضاعف قدرة الجسم على تصنيع الكولاجين الطبيعي مرتين.
+						</p>
+					</div>
+					<div class="pt-3 border-t border-stone-100 text-xs font-bold text-amber-900 bg-amber-50/50 p-2.5 rounded-xl">
+						✨ حماية خلوية وتفتيح طبيعي.
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 4. شبكة النقاء والشارات الرسمية (Regulatory Trust & Purity Grid) -->
+		<!-- ========================================================================= -->
+		<div class="mt-12 sm:mt-18">
+			<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm space-y-4">
+				<div class="text-center space-y-1">
+					<span class="inline-flex items-center gap-1 text-xs font-black text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full">
+						🛡️ سلامة ونقاء
+					</span>
+					<h2 class="font-display text-lg sm:text-xl font-black text-[#1B4332]">
+						نقاء سريري 100%
+					</h2>
+				</div>
+
+				<!-- 8 Regulatory & Purity Badges -->
+				<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs sm:text-sm font-bold text-stone-700">
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>بكتين فواكه نباتي حلال</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>بدون جيلاتين خنزيري</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>جودة تصنيع GMP معتمدة</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>فحص مخبري للنقاء</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>خالي من الغلوتين</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>بدون سكر مضاف ضار</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-[#FAF8F5] border border-stone-200/80 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-700">✓</span>
+						<span>بدون مواد حافظة</span>
+					</div>
+					<div class="p-3 rounded-2xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-center flex items-center justify-center gap-1.5">
+						<span class="text-emerald-800">✓</span>
+						<span>مطابق لمعايير السلامة</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 5. قسم السلطة والرأي الطبي المصور (Doctor Endorsement with Photo) -->
+		<!-- ========================================================================= -->
+		<div class="mt-12 sm:mt-18">
+			<div class="rounded-3xl bg-[#143427] text-white p-6 sm:p-8 shadow-xl border border-emerald-800/40 space-y-4">
+				
+				<div class="flex items-center gap-3">
+					<!-- Doctor Avatar Placeholder -->
+					<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-900 to-[#C99738]/30 border-2 border-[#C99738]/50 flex items-center justify-center shrink-0 shadow-md">
+						<span class="text-2xl sm:text-3xl">🩺</span>
+					</div>
+					<div>
+						<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#C99738]/20 text-[#C99738] text-[11px] font-black border border-[#C99738]/30">
+							رأي اختصاصي معتمد بالمغرب
+						</span>
+						<h3 class="font-display text-sm sm:text-base font-bold text-white mt-1">
+							د. غيثة التازي • أخصائية تغذية علاجية وصحة البشرة
+						</h3>
+					</div>
+				</div>
+
+				<blockquote class="text-xs sm:text-sm lg:text-base font-medium leading-relaxed text-stone-100 bg-white/5 p-4 rounded-2xl border border-white/10">
+					«تركيبة NOVAVITA المعتمدة على البكتين سريع الامتصاص والجرعات السريرية الدقيقة هي الحل العلمي الأنسب للمرأة في المغرب لعلاج مسببات تساقط الشعر وشحوب البشرة الناتجة عن ملوحة المياه والتوتر اليومي، بدون أي أثر سلبي على المعدة.»
+				</blockquote>
+
+			</div>
+		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 6. قسم آراء وتجارب العميلات الموثقة بالمغرب (UGC & Social Proof Section) -->
+		<!-- ========================================================================= -->
+		<div class="mt-12 sm:mt-18 space-y-4">
+			<div class="text-center space-y-1">
+				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1B4332]/10 text-xs font-bold text-[#1B4332]">
+					🌟 إثبات مجتمعي حقيقي
+				</span>
+				<h2 class="font-display text-xl sm:text-2xl font-black text-[#1B4332]">
+					تجارب حقيقية لعميلاتنا في المغرب 🇲🇦
+				</h2>
+				<p class="text-xs sm:text-sm text-stone-600 font-bold">
+					⭐ 4.9/5 بناءً على أكثر من 1,450 طلب مؤكد
 				</p>
 			</div>
-		</div>
 
-		<!-- ========================================================================= -->
-		<!-- 4. قسم المقارنة السريع (3 نقط مقتضبة جداً بدون جرائد) -->
-		<!-- ========================================================================= -->
-		<div class="mt-10 sm:mt-16 space-y-4">
-			<h2 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] text-center">
-				علاش الحل السطحي ما كافيش؟
-			</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				
+				<!-- Review 1: Salma -->
+				<div class="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm flex flex-col justify-between space-y-3">
+					<div class="space-y-2">
+						<div class="flex items-center justify-between">
+							<div class="flex text-[#F59E0B] gap-0.5">
+								{#each Array(5) as _}
+									<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+									</svg>
+								{/each}
+							</div>
+							<span class="text-[11px] text-stone-400">منذ 4 أيام</span>
+						</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-				<!-- Card 1 -->
-				<div class="rounded-2xl border border-stone-200 bg-white p-4.5 shadow-sm space-y-2.5">
-					<div class="text-xs font-bold text-rose-600 flex items-center gap-1.5">
-						<span>❌</span>
-						<span>شامبوانات وزيوت غالية</span>
+						<p class="text-xs sm:text-sm text-stone-800 leading-relaxed font-medium">
+							«بعد الولادة شعري ولا كيطيح بالخصلات وخلعني، جربت شحال من سيروم والو. مع NOVAVITA دابا كملت شهرين: التساقط حبس تماماً وخلف ليا البيبي هير، والمذاق ديال التوت كيحمق بحال شي حلوى كنسناها كل صباح!»
+						</p>
 					</div>
-					<div class="text-sm font-bold text-[#1B4332] flex items-start gap-1.5 pt-1 border-t border-stone-100">
-						<span class="text-base shrink-0">✅</span>
-						<span>تغذية البصيلة مباشرة بـ 3000mcg بيوتين لوقف التساقط.</span>
+
+					<div class="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+						<div>
+							<div class="font-bold text-[#1B4332]">سلمى العلمي</div>
+							<div class="text-[11px] text-stone-500">الدار البيضاء</div>
+						</div>
+						<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+							شراء مؤكد ✓
+						</span>
 					</div>
 				</div>
 
-				<!-- Card 2 -->
-				<div class="rounded-2xl border border-stone-200 bg-white p-4.5 shadow-sm space-y-2.5">
-					<div class="text-xs font-bold text-rose-600 flex items-center gap-1.5">
-						<span>❌</span>
-						<span>طبقات ماكياج وكونسيلر</span>
+				<!-- Review 2: Meryem -->
+				<div class="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm flex flex-col justify-between space-y-3">
+					<div class="space-y-2">
+						<div class="flex items-center justify-between">
+							<div class="flex text-[#F59E0B] gap-0.5">
+								{#each Array(5) as _}
+									<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+									</svg>
+								{/each}
+							</div>
+							<span class="text-[11px] text-stone-400">منذ أسبوع</span>
+						</div>
+
+						<p class="text-xs sm:text-sm text-stone-800 leading-relaxed font-medium">
+							«أحسن استثمار درتو في راسي هاذ العام. أظافري كانو كيتكسرو غير بوحدهم ودابا ولاو قاصحين، وبشرتي رجعات فيها واحد النضارة واللمعة زوينة بزاف. شكراً على التوصيل السريع لدارنا والمعاملة الراقية.»
+						</p>
 					</div>
-					<div class="text-sm font-bold text-[#1B4332] flex items-start gap-1.5 pt-1 border-t border-stone-100">
-						<span class="text-base shrink-0">✅</span>
-						<span>كولاجين وهيالورونيك لترطيب مائي ونضارة طبيعية.</span>
+
+					<div class="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+						<div>
+							<div class="font-bold text-[#1B4332]">مريم بنجلون</div>
+							<div class="text-[11px] text-stone-500">الرباط</div>
+						</div>
+						<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+							شراء مؤكد ✓
+						</span>
 					</div>
 				</div>
 
-				<!-- Card 3 -->
-				<div class="rounded-2xl border border-stone-200 bg-white p-4.5 shadow-sm space-y-2.5">
-					<div class="text-xs font-bold text-rose-600 flex items-center gap-1.5">
-						<span>❌</span>
-						<span>كبسولات كبار ومرار كيروعو المعدة</span>
+				<!-- Review 3: Kenza -->
+				<div class="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm flex flex-col justify-between space-y-3">
+					<div class="space-y-2">
+						<div class="flex items-center justify-between">
+							<div class="flex text-[#F59E0B] gap-0.5">
+								{#each Array(5) as _}
+									<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+									</svg>
+								{/each}
+							</div>
+							<span class="text-[11px] text-stone-400">منذ أسبوعين</span>
+						</div>
+
+						<p class="text-xs sm:text-sm text-stone-800 leading-relaxed font-medium">
+							«أول مرة كنقدر نستمر على مكمل بلا ما نحبس، حيت الكبسولات العادية كانو كيديرو ليا الحموضة وثقل المعدة. هادو خفاف ولذاذ، وفتحت الكولية فحصتها عاد خلصت الموزع. راحة بال تامة!»
+						</p>
 					</div>
-					<div class="text-sm font-bold text-[#1B4332] flex items-start gap-1.5 pt-1 border-t border-stone-100">
-						<span class="text-base shrink-0">✅</span>
-						<span>علكات فواكه لذيذة وخفيفة كتمتص 3 مرات أسرع.</span>
+
+					<div class="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+						<div>
+							<div class="font-bold text-[#1B4332]">كنزة المرابط</div>
+							<div class="text-[11px] text-stone-500">مراكش</div>
+						</div>
+						<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+							شراء مؤكد ✓
+						</span>
 					</div>
 				</div>
+
 			</div>
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 5. بطاقة النقاء (شبكة مقتضبة 4x2) -->
+		<!-- 7. أكورديون الأسئلة الشائعة (FAQ Accordion) -->
 		<!-- ========================================================================= -->
-		<div class="mt-10 sm:mt-16">
-			<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm space-y-4">
-				<h2 class="font-display text-lg sm:text-xl font-black text-[#1B4332] text-center">
-					نقاء سريري 100%
+		<div class="mt-12 sm:mt-18 space-y-4">
+			<div class="text-center space-y-1">
+				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1B4332]/10 text-xs font-bold text-[#1B4332]">
+					💬 إجابات واضحة
+				</span>
+				<h2 class="font-display text-xl sm:text-2xl font-black text-[#1B4332]">
+					الأسئلة الشائعة
 				</h2>
+			</div>
 
-				<!-- 8 Badges Grid (4x2 on tablet/desktop, 2 cols on mobile) -->
-				<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs sm:text-sm font-bold text-stone-700">
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بدون جيلاتين خنزيري
+			<div class="space-y-2.5 max-w-3xl mx-auto">
+				{#each faqs as item, idx}
+					<div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs transition-all">
+						<button
+							type="button"
+							onclick={() => toggleFaq(idx)}
+							class="w-full p-4 text-start font-bold text-sm sm:text-base text-[#1B4332] flex items-center justify-between gap-3 cursor-pointer hover:bg-stone-50/50"
+						>
+							<span>{item.q}</span>
+							<span class="text-xs transition-transform duration-300 {openFaq === idx ? 'rotate-180' : ''}">
+								▼
+							</span>
+						</button>
+						{#if openFaq === idx}
+							<div transition:slide={{ duration: 200 }} class="px-4 pb-4 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100">
+								{item.a}
+							</div>
+						{/if}
 					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بدون سكر مضاف
-					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بدون مواد حافظة
-					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بدون كحول
-					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ خالي من الغلوتين
-					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بكتين نباتي حلال
-					</div>
-					<div class="p-2.5 rounded-xl bg-[#FAF8F5] border border-stone-200/80 text-center">
-						✓ بدون ملونات صناعية
-					</div>
-					<div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200/80 text-center">
-						✓ جودة GMP صيدلانية
-					</div>
-				</div>
+				{/each}
 			</div>
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 6. المكونات الأساسية (بطاقات سريعة بدون حشو) -->
+		<!-- 8. كارت الحسم والطلب النهائي أسفل الصفحة (Final Bottom Purchase Card) -->
 		<!-- ========================================================================= -->
-		<div class="mt-10 sm:mt-16 space-y-3.5">
-			<h2 class="font-display text-lg sm:text-xl font-black text-[#1B4332] text-center">
-				المكونات الفعالة والسريرية
-			</h2>
-
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-				<div class="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
-					<div class="font-bold text-sm text-[#1B4332] flex items-center gap-2">
-						<span>✨</span>
-						<span>كولاجين بحري + هيالورونيك</span>
-					</div>
-					<p class="text-xs text-stone-600 leading-relaxed">
-						تعويض نقص الكولاجين بعد سن 25 وترطيب الجلد بعمق.
+		<div class="mt-12 sm:mt-18">
+			<div class="rounded-3xl bg-gradient-to-br from-[#143427] via-[#1B4332] to-[#143427] text-white p-6 sm:p-8 shadow-2xl border border-emerald-800/40 text-center space-y-4">
+				
+				<div class="space-y-1">
+					<span class="text-xs font-black text-[#C99738] bg-[#C99738]/20 px-3 py-1 rounded-full border border-[#C99738]/30 inline-block">
+						🚀 ابدئي خطوتك اليوم
+					</span>
+					<h3 class="font-display text-xl sm:text-2xl font-black text-white">
+						جاهزة تبداي روتين التحول الحقيقي؟
+					</h3>
+					<p class="text-xs sm:text-sm text-stone-300">
+						الباقة المحددة: <span class="font-bold text-white">{currentTier.title}</span> • <span class="font-bold text-[#E86A7C]">{currentTier.price} MAD</span>
 					</p>
 				</div>
 
-				<div class="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
-					<div class="font-bold text-sm text-[#1B4332] flex items-center gap-2">
-						<span>🌿</span>
-						<span>بيوتين مركز 3000mcg</span>
-					</div>
-					<p class="text-xs text-stone-600 leading-relaxed">
-						إنبات البيبي هير وتقوية الأظافر في 14 يوماً.
-					</p>
+				<!-- Big Action Button -->
+				<div class="max-w-md mx-auto">
+					<button
+						type="button"
+						onclick={handleAddToCartAndOpenDrawer}
+						class="w-full min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
+					>
+						<span>اطلبي باقتك الآن • الدفع بعد المعاينة عند الباب</span>
+						<span class="text-lg">←</span>
+					</button>
 				</div>
 
-				<div class="p-4 rounded-2xl bg-white border border-stone-200/90 shadow-2xs space-y-1.5">
-					<div class="font-bold text-sm text-[#1B4332] flex items-center gap-2">
-						<span>🍊</span>
-						<span>فيتامين C والزنك</span>
-					</div>
-					<p class="text-xs text-stone-600 leading-relaxed">
-						حماية الخلايا ومضاعفة إنتاج الكولاجين الطبيعي مرتين.
-					</p>
+				<!-- Triplet Reassurance Badges -->
+				<div class="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs font-bold text-stone-300">
+					<span class="flex items-center gap-1">🚚 توصيل فابور مجاني</span>
+					<span class="text-stone-500">•</span>
+					<span class="flex items-center gap-1">📦 معاينة الطرد قبل الدفع</span>
+					<span class="text-stone-500">•</span>
+					<span class="flex items-center gap-1">🛡️ ضمان الرضا 100%</span>
 				</div>
-			</div>
-		</div>
 
-		<!-- ========================================================================= -->
-		<!-- 7. شهادة الاعتماد والأرقام (مجتمعة في قسم واحد) -->
-		<!-- ========================================================================= -->
-		<div class="mt-10 sm:mt-16 space-y-4">
-			<!-- Doctor quote card -->
-			<div class="rounded-3xl bg-[#143427] text-white p-5 sm:p-7 shadow-lg border border-emerald-800/40 space-y-2.5">
-				<div class="flex items-center gap-2 text-[#C99738] text-xs font-black">
-					<span>🩺</span>
-					<span>رأي اختصاصي معتمد</span>
-				</div>
-				<blockquote class="text-xs sm:text-sm font-semibold leading-relaxed text-stone-100">
-					"تركيبة NOVAVITA تعتمد على التغذية الخلوية بالبكتين سريع الامتصاص.. الحل الأنسب لطبيعة مياه ونمط حياة المرأة بالمغرب."
-				</blockquote>
-				<div class="text-[11px] font-medium text-stone-300">
-					— د. غيثة التازي • أخصائية تغذية
-				</div>
-			</div>
-
-			<!-- Metrics row -->
-			<div class="grid grid-cols-3 gap-2.5 text-center">
-				<div class="p-3.5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-0.5">
-					<div class="font-black text-lg sm:text-xl text-[#1B4332]">+1,450</div>
-					<div class="text-[11px] text-stone-500 font-bold">سيدة راضية</div>
-				</div>
-				<div class="p-3.5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-0.5">
-					<div class="font-black text-lg sm:text-xl text-[#F59E0B]">4.9 / 5</div>
-					<div class="text-[11px] text-stone-500 font-bold">تقييم ممتاز</div>
-				</div>
-				<div class="p-3.5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-0.5">
-					<div class="font-black text-lg sm:text-xl text-emerald-800">مجاناً</div>
-					<div class="text-[11px] text-stone-500 font-bold">معاينة عند الباب</div>
-				</div>
 			</div>
 		</div>
 
 	</main>
 
 	<!-- ========================================================================= -->
-	<!-- 8. Sticky Mobile CTA Bar (Luxury Full-Pink, Scroll-Triggered) -->
+	<!-- 9. Sticky Mobile CTA Bar (Luxury Full-Pink, Scroll-Triggered) -->
 	<!-- ========================================================================= -->
 	{#if scrollY > 350}
 		<div
