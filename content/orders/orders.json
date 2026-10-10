@@ -1,22 +1,5 @@
 [
   {
-    "id": "NV-901382",
-    "createdAt": "2026-10-10T18:39:54.561Z",
-    "fullName": "Test",
-    "phone": "0646466463",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA - باقة التحول الشامل (3 علب) + علبة العرض الخاطف",
-    "quantity": 3,
-    "totalPrice": 547,
-    "status": "جديد",
-    "sku": "kit-tandim",
-    "pageUrl": "",
-    "orderType": "upsell",
-    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (Collagen Gummies) - 3 علب\",\"quantity\":1,\"unitPrice\":349,\"price\":349},{\"sku\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99},{\"sku\":\"gumies_vitamine\",\"title\":\"علكات الفيتامينات المتعددة (Multivitamin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99}]",
-    "notes": ""
-  },
-  {
     "id": "ORD-600716",
     "createdAt": "2026-10-10T10:13:47.134Z",
     "fullName": "Test",
