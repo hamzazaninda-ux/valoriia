@@ -4,11 +4,15 @@
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
 	import { PRICING_TIERS } from '$lib/constants/pricing';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
+	import { slide } from 'svelte/transition';
 
 	let { data } = $props();
 
 	const product = $derived(data.product);
 	const brand = $derived(data.brand);
+
+	// Scroll State for Sticky Mobile Bottom Bar
+	let scrollY = $state(0);
 
 	// Image Gallery State
 	let activeImage = $state('');
@@ -460,23 +464,36 @@
 
 	</main>
 
+	<!-- Window scroll binding for scroll-triggered sticky mobile CTA -->
+	<svelte:window bind:scrollY={scrollY} />
+
 	<!-- ========================================================================= -->
-	<!-- 8. Sticky Mobile CTA Bar (Fixed Bottom on Mobile) -->
+	<!-- 8. Sticky Mobile CTA Bar (Luxury Full-Pink, Scroll-Triggered) -->
 	<!-- ========================================================================= -->
-	<div class="fixed bottom-0 inset-x-0 z-40 bg-[#143427] text-white p-3 sm:hidden shadow-2xl border-t border-white/10 flex items-center justify-between gap-3 backdrop-blur-md">
-		<div class="flex flex-col text-start ps-1">
-			<span class="text-[11px] text-stone-300 font-semibold">باقة العناية المختارة</span>
-			<span class="font-black text-base text-[#FAF8F5]" dir="ltr">{currentTier.price} MAD</span>
-		</div>
-		<button
-			type="button"
-			onclick={handleAddToCartAndOpenDrawer}
-			class="flex-1 min-h-12 rounded-xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-95 text-white font-black text-sm px-4 shadow-md flex items-center justify-center gap-1.5 transition-all"
+	{#if scrollY > 350}
+		<div
+			transition:slide={{ duration: 300 }}
+			class="fixed bottom-0 inset-x-0 z-40 bg-gradient-to-r from-[#E86A7C] via-[#e5596e] to-[#d8485e] text-white p-3 sm:hidden shadow-[0_-10px_30px_rgba(232,106,124,0.35)] border-t border-white/25 flex items-center justify-between gap-3 backdrop-blur-md"
 		>
-			<span>اطلبي الآن ⚡</span>
-			<span>←</span>
-		</button>
-	</div>
+			<div class="flex flex-col text-start ps-1 text-white">
+				<span class="text-[10px] text-pink-100 font-bold">توصيل فابور مجاني 🚚</span>
+				<div class="flex items-baseline gap-1.5">
+					<span class="font-black text-base text-white font-display" dir="ltr">{currentTier.price} MAD</span>
+					{#if selectedTier === 'tier_2'}
+						<span class="text-[10px] text-pink-200 line-through" dir="ltr">398 MAD</span>
+					{/if}
+				</div>
+			</div>
+			<button
+				type="button"
+				onclick={handleAddToCartAndOpenDrawer}
+				class="flex-1 min-h-12 rounded-xl bg-white text-[#E86A7C] hover:bg-pink-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all"
+			>
+				<span>اطلبي الآن • الدفع عند الاستلام</span>
+				<span class="text-base">←</span>
+			</button>
+		</div>
+	{/if}
 
 	<!-- Slide-Out Cart Drawer & 99 MAD Upsell Funnel -->
 	<CartDrawer />
