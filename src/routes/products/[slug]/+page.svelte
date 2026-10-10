@@ -109,17 +109,17 @@
 	/>
 
 	<!-- 3. Section: Hero Image & Buying Box -->
-	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 sm:py-8">
+	<main class="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 py-3 sm:py-8">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
 			
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6">
-				<!-- Hero Image Container (Compact, Elegant, Mobile-Optimized) -->
-				<div class="w-full max-w-sm mx-auto h-[280px] sm:h-[340px] bg-[#FAF8F5] rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden flex items-center justify-center p-3 mb-4">
+				<!-- Hero Image Container (Full-Width Edge-to-Edge Mobile Container) -->
+				<div class="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-md mx-auto aspect-[4/4.5] sm:aspect-square bg-[#FAF8F5] rounded-[28px] overflow-hidden shadow-sm border border-black/5 relative mb-4">
 					<img
 						src={activeImage}
 						alt={product.name}
-						class="w-full h-full object-contain drop-shadow-md transition-transform duration-500 hover:scale-105"
+						class="w-full h-full object-cover block transition-transform duration-500 hover:scale-105"
 						onerror={(e: any) => {
 							e.currentTarget.onerror = null;
 							e.currentTarget.src = '/images/products/gummies_collagen.svg';
