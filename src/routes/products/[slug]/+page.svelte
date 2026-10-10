@@ -49,12 +49,10 @@
 		cartUi.openDrawer();
 	}
 
-	function scrollToBundleSelector() {
-		const el = document.getElementById('bundle-selector');
+	function scrollToOffers() {
+		const el = document.getElementById('offers');
 		if (el) {
-			el.scrollIntoView({ behavior: 'smooth' });
-		} else {
-			handleAddToCartAndOpenDrawer();
+			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 	}
 
@@ -197,9 +195,9 @@
 					</span>
 				</div>
 
-				<!-- محدد العروض والطلب (Clean & Focused) -->
-				<div id="bundle-selector" class="space-y-3 scroll-mt-24">
-					<div class="flex items-center justify-between mb-2">
+				<!-- محدد العروض والطلب (Strict RTL & Right Badges) -->
+				<div id="offers" class="space-y-3 scroll-mt-24" dir="rtl">
+					<div class="flex items-center justify-between mb-2" dir="rtl">
 						<span class="text-base font-bold text-gray-900">اختاري باقتك:</span>
 						<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
 							✨ نتيجة من العلبة الأولى
@@ -210,24 +208,27 @@
 					<button
 						type="button"
 						onclick={() => (selectedTier = 'tier_1')}
-						class={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+						class={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_1'
 								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
+						dir="rtl"
 					>
-						<div class="flex items-center gap-3">
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
 							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_1'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div>
-								<div class="font-bold text-sm sm:text-base text-[#1F2937]">علبة واحدة</div>
-								<div class="text-xs text-stone-500">شهر تجريبي</div>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937]">علبة واحدة • شهر تجريبي</div>
+								<div class="text-xs text-stone-500">بداية استعادة الحيوية والترطيب</div>
 							</div>
 						</div>
-						<div class="text-end">
+						<!-- Left: Price & savings -->
+						<div class="text-left shrink-0">
 							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">199 MAD</div>
 							<div class="text-[11px] text-stone-400 line-through" dir="ltr">299 MAD</div>
 						</div>
@@ -237,27 +238,31 @@
 					<button
 						type="button"
 						onclick={() => (selectedTier = 'tier_2')}
-						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_2'
 								? 'border-[#1B4332] ring-3 ring-[#1B4332]/20 shadow-md -translate-y-0.5'
 								: 'border-[#1B4332]/40 hover:border-[#1B4332]'
 						}`}
+						dir="rtl"
 					>
-						<div class="absolute -top-3 end-4 bg-[#C99738] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-[#C99738] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 z-10">
 							<span>الأكثر طلباً ⭐</span>
 						</div>
-						<div class="flex items-center gap-3">
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
 							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_2'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div>
-								<div class="font-bold text-sm sm:text-base text-[#1B4332]">علبتان</div>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1B4332]">علبتان • ثبّتي النتيجة</div>
 								<div class="text-xs text-emerald-800 font-bold">شهرين متواصلين + توصيل فابور 🚚</div>
 							</div>
 						</div>
-						<div class="text-end">
+						<!-- Left: Price & savings -->
+						<div class="text-left shrink-0">
 							<div class="font-black text-xl text-[#1B4332]" dir="ltr">279 MAD</div>
 							<div class="text-xs font-bold text-[#E86A7C]">وفّري 119 درهم</div>
 						</div>
@@ -267,32 +272,37 @@
 					<button
 						type="button"
 						onclick={() => (selectedTier = 'tier_3')}
-						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between text-start transition-all cursor-pointer bg-white ${
+						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_3'
 								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
+						dir="rtl"
 					>
-						<div class="absolute -top-3 end-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-							توفير 248 درهم 🎁
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
+							<span>توفير 248 درهم 🎁</span>
 						</div>
-						<div class="flex items-center gap-3">
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
 							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_3'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div>
-								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب</div>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب • كورس علاجي كامل</div>
 								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر + هدية 🎁</div>
 							</div>
 						</div>
-						<div class="text-end">
+						<!-- Left: Price & savings -->
+						<div class="text-left shrink-0">
 							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">349 MAD</div>
 							<div class="text-xs font-bold text-[#E86A7C]">وفّري 248 درهم</div>
 						</div>
 					</button>
 				</div>
+
 
 				<!-- زر الإجراء العريض وشارة الأمان المقتضبة -->
 				<div class="space-y-3 pt-3">
@@ -711,7 +721,7 @@
 						onclick={handleAddToCartAndOpenDrawer}
 						class="w-full min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
 					>
-						<span>اطلبي باقتك الآن • الدفع بعد المعاينة عند الباب</span>
+						<span>اطلبي الآن • الدفع عند الاستلام</span>
 						<span class="text-lg">←</span>
 					</button>
 				</div>
@@ -737,20 +747,21 @@
 		<div
 			transition:slide={{ duration: 300 }}
 			class="fixed bottom-0 inset-x-0 z-40 bg-gradient-to-r from-[#E86A7C] via-[#e5596e] to-[#d8485e] text-white p-3 sm:hidden shadow-[0_-10px_30px_rgba(232,106,124,0.35)] border-t border-white/25 flex items-center justify-between gap-3 backdrop-blur-md"
+			dir="rtl"
 		>
-			<div class="flex flex-col text-start ps-1 text-white">
+			<div class="flex flex-col text-right ps-1 text-white">
 				<span class="text-[10px] text-pink-100 font-bold">توصيل فابور مجاني 🚚</span>
-				<div class="flex items-baseline gap-1.5">
-					<span class="font-black text-base text-white font-display" dir="ltr">{currentTier.price} MAD</span>
+				<div class="flex items-baseline gap-1.5" dir="ltr">
+					<span class="font-black text-base text-white font-display">{currentTier.price} MAD</span>
 					{#if selectedTier === 'tier_2'}
-						<span class="text-[10px] text-pink-200 line-through" dir="ltr">398 MAD</span>
+						<span class="text-[10px] text-pink-200 line-through">398 MAD</span>
 					{/if}
 				</div>
 			</div>
 			<button
 				type="button"
-				onclick={handleAddToCartAndOpenDrawer}
-				class="flex-1 min-h-12 rounded-xl bg-white text-[#E86A7C] hover:bg-pink-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all"
+				onclick={scrollToOffers}
+				class="flex-1 min-h-12 rounded-xl bg-white text-[#E86A7C] hover:bg-pink-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
 			>
 				<span>اطلبي الآن • الدفع عند الاستلام</span>
 				<span class="text-base">←</span>
