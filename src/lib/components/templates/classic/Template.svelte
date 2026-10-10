@@ -782,8 +782,8 @@
 	</div>
 
 	<footer class="bg-muted/40 py-6 text-center text-xs text-muted-foreground border-t border-border/20 px-4 space-y-1.5" dir="rtl">
-		<p class="font-bold text-neutral-800">Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية</p>
-		<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
+		<p class="font-bold text-neutral-800">NOVAVITA - علامتكِ المتخصصة في المكملات الجمالية وحلوى الفيتامينات الطبيعية</p>
+		<p>جميع الحقوق محفوظة © NOVAVITA {new Date().getFullYear()}</p>
 		<div class="flex justify-center gap-4 mt-2">
 			<a href="#checkout-form" class="hover:underline">سياسة الخصوصية</a>
 			<span>•</span>

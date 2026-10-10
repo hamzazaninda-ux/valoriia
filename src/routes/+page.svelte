@@ -281,7 +281,7 @@
 			</div>
 		</div>
 		<div class="border-t border-white/10 bg-black/30 py-5 text-center text-xs text-stone-400">
-			<p>© {new Date().getFullYear()} NOVAVITA Maroc. جميع الحقوق محفوظة.</p>
+			<p>جميع الحقوق محفوظة © NOVAVITA {new Date().getFullYear()}</p>
 		</div>
 	</footer>
 

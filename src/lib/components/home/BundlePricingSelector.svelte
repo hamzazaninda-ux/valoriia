@@ -109,8 +109,8 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]">199 MAD</span>
-					<span class="text-sm text-stone-400 line-through">299 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">199 MAD</span>
+					<span class="text-sm text-stone-400 line-through" dir="ltr">299 MAD</span>
 				</div>
 
 				<div class="mt-3 text-xs font-semibold text-stone-500 flex items-center gap-1.5">
@@ -119,9 +119,9 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span>✓</span> 1 علبة من اختيارك</li>
-					<li class="flex items-center gap-2"><span>✓</span> تكفي شهراً كاملاً</li>
-					<li class="flex items-center gap-2"><span>✓</span> الدفع عند الاستلام بعد المعاينة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 1 علبة من اختيارك</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> تكفي شهراً كاملاً</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> الدفع عند الاستلام بعد المعاينة</li>
 				</ul>
 			</button>
 
@@ -157,8 +157,8 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]">279 MAD</span>
-					<span class="text-sm text-stone-400 line-through">398 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">279 MAD</span>
+					<span class="text-sm text-stone-400 line-through" dir="ltr">398 MAD</span>
 				</div>
 
 				<div class="mt-3 text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-max flex items-center gap-1">
@@ -167,10 +167,10 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-700 border-t border-emerald-950/10 pt-4">
-					<li class="flex items-center gap-2 text-emerald-900"><span>✓</span> <strong>علبتان (120 حبة) لكورس شهرين</strong></li>
-					<li class="flex items-center gap-2"><span>✓</span> إمكانية مزج البيوتين والكولاجين</li>
-					<li class="flex items-center gap-2"><span>✓</span> <strong>توصيل مجاني 100%</strong> لجميع المدن</li>
-					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية: فرشاة مساج الفروة</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (120 حبة) لكورس شهرين</strong></li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
+					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة</li>
 				</ul>
 			</button>
 
@@ -201,20 +201,20 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]">349 MAD</span>
-					<span class="text-sm text-stone-400 line-through">597 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">349 MAD</span>
+					<span class="text-sm text-stone-400 line-through" dir="ltr">597 MAD</span>
 				</div>
 
 				<div class="mt-3 text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-max flex items-center gap-1">
 					<span>🚚</span>
-					<span>توصيل فابور مجاني وفوري</span>
+					<span>توصيل فابور مجاني وسريع</span>
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span>✓</span> 3 علب (180 حبة) — فقط 116 MAD للعلبة</li>
-					<li class="flex items-center gap-2"><span>✓</span> روتين شامل متكامل</li>
-					<li class="flex items-center gap-2"><span>✓</span> توصيل مجاني وسريع</li>
-					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هديتان مجانيتان فاخرتان</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (180 حبة) — فقط 116 MAD للعلبة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
+					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة + هدية إضافية</li>
 				</ul>
 			</button>
 

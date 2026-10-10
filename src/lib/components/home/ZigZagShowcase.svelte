@@ -8,6 +8,7 @@
 	const items = [
 		{
 			sku: 'gummies_biotine',
+			image: '/images/products/gummies_biotine.svg',
 			tag: 'شعر كثيف وأظافر قوية 💇‍♀️',
 			headline: 'بيوتين مركز 5000mcg مع الزنك وفيتامين C',
 			description: 'الحل النهائي لمشكلة تساقط الشعر المزعجة. تركيبة غنية بالبيوتين النقي والزنك لتغذية البصيلات من الداخل وإنبات فراغات الرأس بفعالية وأمان.',
@@ -22,6 +23,7 @@
 		},
 		{
 			sku: 'gummies_collagen',
+			image: '/images/products/gummies_collagen.svg',
 			tag: 'نضارة وشباب البشرة ✨',
 			headline: 'كولاجين بحري متحلل لمرونة الجلد ومحاربة التجاعيد',
 			description: 'جددي خلايا بشرتك وأعيدي لها النضارة المفقودة. كولاجين بحري متحلل خفيف وسريع الامتصاص كيعوض نقص الكولاجين الطبيعي بعد سن 25 ويمنحك بشرة زجاجية مشدودة.',
@@ -36,6 +38,7 @@
 		},
 		{
 			sku: 'gumies_vitamine',
+			image: '/images/products/gumies_vitamine.svg',
 			tag: 'طاقة ومناعة يومية ⚡',
 			headline: 'فيتامينات متكاملة للنشاط والمناعة بدون تعب أو إرهاق',
 			description: 'الروتين اليومي الشامل لكل سيدة عاملة أو أم تبحث عن النشاط والتوازن. تركيبة متكاملة تجمع الفيتامينات والمعادن الناقصة في التغذية اليومية بدون ثقل في المعدة.',
@@ -77,13 +80,13 @@
 			<div class="mx-auto h-1 w-20 rounded-full bg-[#E86A7C]"></div>
 		</div>
 
-		<!-- Alternating Rows -->
+		<!-- Alternating Rows (Desktop: Image-Right/Text-Left on Even, Text-Right/Image-Left on Odd) -->
 		<div class="space-y-16 sm:space-y-24">
 			{#each items as item, index}
 				<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
 					
-					<!-- Visual Container (Desktop: switches sides on even/odd) -->
-					<div class={`lg:col-span-6 flex justify-center ${index % 2 === 1 ? 'lg:order-last' : 'lg:order-first'}`}>
+					<!-- Visual Mockup Container -->
+					<div class={`lg:col-span-6 flex justify-center ${index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'}`}>
 						<a
 							href={`/products/${item.sku}`}
 							class="relative w-full max-w-md aspect-square rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-lg border-2 {item.color} overflow-hidden group block cursor-pointer transition-transform duration-300 hover:-translate-y-1"
@@ -92,11 +95,11 @@
 							<!-- Background Circle Art -->
 							<div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/70 blur-xl"></div>
 							
-							<!-- Product Card Preview with SVG Image & Error Fallback -->
+							<!-- Product Card Preview with Mockup Image & Error Fallback -->
 							<div class="relative z-10 w-full h-full flex flex-col items-center justify-center space-y-4">
-								<div class="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl bg-white/80 shadow-md p-3 flex items-center justify-center border border-stone-200/60 backdrop-blur-xs transition-transform duration-500 group-hover:scale-105">
+								<div class="w-48 h-48 sm:w-60 sm:h-60 rounded-2xl bg-white/90 shadow-md p-2 flex items-center justify-center border border-stone-200/60 backdrop-blur-xs transition-transform duration-500 group-hover:scale-105">
 									<img
-										src={`/images/products/${item.sku}.svg`}
+										src={item.image}
 										alt={item.headline}
 										class="w-full h-full object-contain drop-shadow-md"
 										loading="lazy"
@@ -115,7 +118,7 @@
 					</div>
 
 					<!-- Text Content -->
-					<div class={`lg:col-span-6 space-y-4 sm:space-y-5 text-center lg:text-start ${index % 2 === 1 ? 'lg:order-first' : 'lg:order-last'}`}>
+					<div class={`lg:col-span-6 space-y-4 sm:space-y-5 text-center lg:text-start ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
 						<div class="inline-flex items-center gap-2 rounded-full bg-[#1B4332]/5 px-3.5 py-1 text-xs font-bold text-[#1B4332]">
 							{item.tag}
 						</div>

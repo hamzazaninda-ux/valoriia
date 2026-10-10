@@ -505,7 +505,7 @@
 
 	<footer class="py-8 bg-gray-900 text-center" dir="rtl">
 		<p class="text-gray-400 text-sm">
-			{content.footerText || `© ${new Date().getFullYear()} ${settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'Lhamza Shop'}. جميع الحقوق محفوظة.`}
+			{content.footerText || `جميع الحقوق محفوظة © NOVAVITA ${new Date().getFullYear()}`}
 		</p>
 	</footer>
 

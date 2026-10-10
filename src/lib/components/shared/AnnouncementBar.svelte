@@ -14,32 +14,19 @@
 	);
 
 	const announcementText =
-		'✨ عرض خاص اليوم: توصيل فابور وسريع لجميع مدن المغرب + الدفع عند الاستلام بعد معاينة طلبيتك! ✦ 🌿 مكملات غذائية طبيعية وحلال 100% ✦ ';
+		'✨ عرض خاص اليوم: توصيل فابور وسريع لجميع مدن المغرب + الدفع عند الاستلام بعد معاينة طلبيتك! ✦ مكملات غذائية طبيعية وحلال 100% ✦';
 </script>
 
 {#if effectiveStatic}
 	<!-- Static Banner for Product & Landing Pages (Centered, readable, zero movement) -->
 	<aside
-		class="relative z-40 flex min-h-8 sm:min-h-9 w-full items-center justify-center bg-[#1B4332] text-white px-3 py-1.5 shadow-2xs select-none border-b border-emerald-900/40 {className}"
+		class="relative z-40 flex min-h-8 sm:min-h-9 w-full items-center justify-center bg-[#1B4332] text-white px-4 py-1.5 shadow-2xs select-none border-b border-emerald-900/40 {className}"
 		aria-label="شريط الإعلانات"
 		dir="rtl"
 	>
-		<div class="flex items-center justify-center flex-wrap gap-x-2.5 sm:gap-x-3.5 gap-y-0.5 text-[11px] sm:text-xs font-bold text-center leading-tight">
-			<span class="inline-flex items-center gap-1 text-white">
-				<span>✨</span>
-				<span>توصيل فابور وسريع لجميع مدن المغرب</span>
-			</span>
-			<span class="text-amber-300 font-extrabold select-none">✦</span>
-			<span class="inline-flex items-center gap-1 text-white">
-				<span>📦</span>
-				<span>الدفع عند الاستلام بعد معاينة طلبيتك!</span>
-			</span>
-			<span class="text-amber-300 font-extrabold select-none hidden sm:inline">✦</span>
-			<span class="hidden sm:inline-flex items-center gap-1 text-emerald-200">
-				<span>🌿</span>
-				<span>100% طبيعي وحلال</span>
-			</span>
-		</div>
+		<p class="text-[11px] sm:text-xs font-bold text-center leading-tight tracking-wide text-white">
+			{announcementText}
+		</p>
 	</aside>
 {:else}
 	<!-- Infinite Marquee Ticker for Homepage -->
@@ -51,7 +38,7 @@
 		<div class="marquee-track flex items-center whitespace-nowrap">
 			{#each [0, 1, 2, 3] as i}
 				<div
-					class="flex shrink-0 items-center pe-8 text-[11px] sm:text-xs font-semibold tracking-wide text-white/95"
+					class="flex shrink-0 items-center px-10 sm:px-16 text-[11px] sm:text-xs font-semibold tracking-wide text-white/95"
 					aria-hidden={i > 0}
 					dir="rtl"
 				>

@@ -758,7 +758,7 @@
 	<!-- Footer -->
 	<footer class="py-8 border-t border-stone-800/80 bg-[#121212] text-stone-500 text-center text-xs">
 		<div class="max-w-4xl mx-auto px-4 space-y-2">
-			<p>© {new Date().getFullYear()} {content.title}. جميع الحقوق محفوظة.</p>
+			<p>جميع الحقوق محفوظة © NOVAVITA {new Date().getFullYear()}</p>
 			<p class="text-[10px] text-stone-600">هذا الموقع غير تابع لـ Facebook أو Google أو TikTok بأي شكل من الأشكال.</p>
 		</div>
 	</footer>
