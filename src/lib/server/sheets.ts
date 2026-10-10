@@ -1,7 +1,7 @@
 import { readSettings } from '$lib/content/settings';
 
 export const DEFAULT_SHEETS_WEBHOOK_URL =
-	'https://script.google.com/macros/s/AKfycbzAWD5-wSS8PYWxsvsWbzAnCbudmLJZd4_XhFQDBA5RBvYjg6v_yPJULMs4qdv5xUhwWA/exec';
+	'https://script.google.com/macros/s/AKfycbw_IupQuynkwQCrYJNyYdbDhq3R_Ab1DoMkcknXZ9C9vRKYVzJefYKUKN9RSJKOjWWLhQ/exec';
 
 /**
  * Resolves the active Google Sheets webhook URL in priority order:
@@ -72,23 +72,9 @@ export async function sendOrderToGoogleSheets(
 			date: dateStr,
 			fullName,
 			phoneNumber: phone,
-			city,
-			address,
 			productTitle,
 			quantity,
-			price,
-			// Aliases for 100% Google Apps Script compatibility
-			name: fullName,
-			phone,
-			product: productTitle,
-			totalPrice: price,
-			total: price,
-			qte: quantity,
-			status,
-			sku: order.sku || '',
-			pageUrl: order.pageUrl || '',
-			items: typeof order.items === 'string' ? order.items : JSON.stringify(order.items || []),
-			notes: order.notes || ''
+			price
 		};
 
 		const sheetsRes = await fetch(webhookUrl, {

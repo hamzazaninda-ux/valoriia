@@ -5,7 +5,7 @@ import { sendOrderToGoogleSheets } from '$lib/server/sheets';
 
 const GOOGLE_SHEETS_WEBHOOK =
 	process.env.GOOGLE_SHEETS_URL ||
-	'https://script.google.com/macros/s/AKfycbzAWD5-wSS8PYWxsvsWbzAnCbudmLJZd4_XhFQDBA5RBvYjg6v_yPJULMs4qdv5xUhwWA/exec';
+	'https://script.google.com/macros/s/AKfycbw_IupQuynkwQCrYJNyYdbDhq3R_Ab1DoMkcknXZ9C9vRKYVzJefYKUKN9RSJKOjWWLhQ/exec';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -39,8 +39,6 @@ export const POST: RequestHandler = async ({ request }) => {
 					date: body.date || casablancaDate,
 					fullName: fullName,
 					phoneNumber: phone,
-					city: String(body.city || '').trim(),
-					address: String(body.address || '').trim(),
 					productTitle: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
 					quantity: Number(body.quantity || body.qte || 1),
 					price: body.totalPrice || body.total || body.price || ''
