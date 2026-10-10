@@ -48,39 +48,46 @@ export async function sendOrderToGoogleSheets(
 			return { ok: false, status: 0, error: 'No webhook URL' };
 		}
 
-		const orderId = String(
+		const generatedOrderId = String(
 			order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
 
-		const casablancaDate = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const dateStr = order.date || casablancaDate;
+		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		const dateStr = order.date || order.orderDate || casablancaTime;
 
 		const fullName = String(order.fullName || order.name || '').trim();
 		const phone = String(order.phoneNumber || order.phone || '').trim();
-		const city = String(order.city || '').trim();
-		const address = String(order.address || '').trim();
-		const productTitle = String(
+		const product = String(
 			order.productTitle || order.product || order.offer || 'طقم التنظيم المنزلي'
 		).trim();
 
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
-		const price = order.totalPrice ?? order.total ?? order.price ?? 229;
-		const status = String(order.status || 'جديد').trim();
+		const finalTotal = Number(order.totalPrice ?? order.total ?? order.price ?? 0);
 
-		const payload = {
-			orderId,
+		const sheetsPayload = {
+			orderDate: dateStr,
 			date: dateStr,
-			fullName,
+			orderId: generatedOrderId,
+			id: generatedOrderId,
+			name: fullName,
+			fullName: fullName,
+			phone: phone,
 			phoneNumber: phone,
-			productTitle,
-			quantity,
-			price
+			product: product,
+			productTitle: product,
+			quantity: quantity,
+			qte: quantity,
+			total: finalTotal,
+			totalPrice: finalTotal,
+			price: finalTotal
 		};
+
+		console.log('📦 Sent Sheets Payload:', sheetsPayload);
 
 		const sheetsRes = await fetch(webhookUrl, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),
+			body: JSON.stringify(sheetsPayload),
 			redirect: 'follow'
 		});
 

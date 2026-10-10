@@ -23,32 +23,42 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Ensure consistent orderId across both internal storage and Google Sheets
-		const orderId = String(
+		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		const generatedOrderId = String(
 			body.orderId || body.id || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
-		body.orderId = orderId;
-		body.id = orderId;
+		body.orderId = generatedOrderId;
+		body.id = generatedOrderId;
+		const finalTotal = Number(body.totalPrice || body.total || body.price || 0);
+
+		const sheetsPayload = {
+			orderDate: casablancaTime,
+			date: casablancaTime,
+			orderId: generatedOrderId,
+			id: generatedOrderId,
+			name: fullName,
+			fullName: fullName,
+			phone: phone,
+			phoneNumber: phone,
+			product: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
+			productTitle: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
+			quantity: Number(body.quantity || body.qte || 1),
+			qte: Number(body.quantity || body.qte || 1),
+			total: finalTotal,
+			totalPrice: finalTotal,
+			price: finalTotal
+		};
 
 		// Parallel dual-storage: In-app DB + Google Sheets
 		const [saveResult, sheetSyncResult] = await Promise.allSettled([
 			saveOrder(body),
 			(async () => {
-				const casablancaDate = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-				const payload = {
-					orderId: body.orderId,
-					date: body.date || casablancaDate,
-					fullName: fullName,
-					phoneNumber: phone,
-					productTitle: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
-					quantity: Number(body.quantity || body.qte || 1),
-					price: body.totalPrice || body.total || body.price || ''
-				};
-
 				const webhookUrl = body.sheetsUrl || GOOGLE_SHEETS_WEBHOOK;
+				console.log('📦 Sent Sheets Payload:', sheetsPayload);
 				const sheetRes = await fetch(webhookUrl, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload),
+					body: JSON.stringify(sheetsPayload),
 					redirect: 'follow'
 				});
 				console.log('✅ Google Sheets Sync Response:', sheetRes.status);
