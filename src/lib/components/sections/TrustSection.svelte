@@ -7,12 +7,12 @@
 
 	let {
 		whatsappNumber = '212626558375',
-		brandName = 'Lhamza Shop',
+		brandName = 'NOVAVITA',
 		supportHours = 'طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً'
 	}: Props = $props();
 
 	const cleanWa = $derived(whatsappNumber.replace(/\D/g, '') || '212626558375');
-	const defaultWaMessage = 'السلام عليكم Lhamza Shop، بغيت نستفسر على المنتجات وعندي سؤال لخدمة الزبناء';
+	const defaultWaMessage = 'السلام عليكم NOVAVITA، بغيت نستفسر على المنتجات وعندي سؤال لخدمة الزبناء';
 	const waUrl = $derived(`https://wa.me/${cleanWa}?text=${encodeURIComponent(defaultWaMessage)}`);
 </script>
 

@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>خطأ - Lhamza Shop</title>
+	<title>خطأ - NOVAVITA</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
