@@ -9,12 +9,13 @@
     "product": "1x طقم التنظيم المنزلي + هدية (1 قطعة + رشاشة هدية 🎁)",
     "quantity": 1,
     "totalPrice": 229,
-    "status": "جديد",
+    "status": "مؤكد",
     "sku": "kit-tandim",
     "pageUrl": "https://lhamza.shop/cart",
     "orderType": "cart",
     "items": "[{\"slug\":\"kit-tandim\",\"title\":\"طقم التنظيم المنزلي + هدية\",\"offer\":\"1 قطعة + رشاشة هدية 🎁\",\"price\":229,\"qty\":1}]",
-    "notes": ""
+    "notes": "",
+    "updatedAt": "2026-10-10T09:13:11.535Z"
   },
   {
     "id": "ORD-148374",
