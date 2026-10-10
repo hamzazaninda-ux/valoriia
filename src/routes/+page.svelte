@@ -11,6 +11,7 @@
 	import FaqAccordion from '$lib/components/home/FaqAccordion.svelte';
 	import StickyMobileCTA from '$lib/components/home/StickyMobileCTA.svelte';
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
+	import { cart, cartUi } from '$lib/stores/cart.svelte';
 
 	let { data } = $props();
 
@@ -18,36 +19,10 @@
 	const waNumber = $derived((brand.whatsappNumber || '212600000000').replace(/\D/g, ''));
 	const waBase = $derived(waNumber ? `https://wa.me/${waNumber}` : 'https://wa.me/212600000000');
 
-	// --- Header & Drawer State ---
+	// --- Header State ---
 	let searchOpen = $state(false);
 	let menuOpen = $state(false);
 	let query = $state('');
-	let drawerOpen = $state(false);
-
-	// --- Cart state ---
-	let cart = $state<Record<string, number>>({});
-	let cartReady = $state(false);
-
-	$effect(() => {
-		if (!cartReady && typeof localStorage !== 'undefined') {
-			try {
-				cart = JSON.parse(localStorage.getItem('novavita-cart') || '{}');
-			} catch {
-				cart = {};
-			}
-			cartReady = true;
-		}
-	});
-
-	$effect(() => {
-		if (cartReady && typeof localStorage !== 'undefined') {
-			localStorage.setItem('novavita-cart', JSON.stringify(cart));
-		}
-	});
-
-	const cartCount = $derived(
-		Object.values(cart).reduce((sum, qty) => sum + qty, 0)
-	);
 
 	function scrollToProducts(sku?: string) {
 		if (sku) {
@@ -79,11 +54,11 @@
 	<!-- 2. Sticky Header with circular "N" Logo -->
 	<Header
 		brandName={brand.name || 'NOVAVITA'}
-		cartCount={cartCount}
+		cartCount={cart.count}
 		bind:searchOpen
 		bind:menuOpen
 		bind:query
-		onOpenCart={() => (drawerOpen = true)}
+		onOpenCart={() => cartUi.openDrawer()}
 	/>
 
 	<!-- 3. Hero Section (Above the Fold CRO Powerhouse) -->
@@ -170,9 +145,5 @@
 	/>
 
 	<!-- 12. Interactive Slide-Out Cart Drawer -->
-	<CartDrawer
-		bind:open={drawerOpen}
-		bind:items={cart}
-		onProceedToCheckout={() => goto('/products/gummies_biotine')}
-	/>
+	<CartDrawer />
 </div>

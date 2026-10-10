@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import Header from '$lib/components/shared/Header.svelte';
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
-	import TimedUpsellModal from '$lib/components/upsell/TimedUpsellModal.svelte';
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
 	import { PRICING_TIERS } from '$lib/constants/pricing';
+	import { cart, cartUi } from '$lib/stores/cart.svelte';
 
 	let { data } = $props();
 
@@ -21,143 +20,22 @@
 	let searchOpen = $state(false);
 	let menuOpen = $state(false);
 	let query = $state('');
-	let drawerOpen = $state(false);
 
 	// Tier Selection
 	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_2');
 	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
-	// COD Form inputs
-	let fullName = $state('');
-	let phone = $state('');
-	let phoneError = $state('');
-	let isSubmitting = $state(false);
-
-	// Timed Flash Upsell state
-	let isUpsellOpen = $state(false);
-	interface ActivePendingOrder {
-		orderId: string;
-		fullName: string;
-		phone: string;
-		tier: 'tier_1' | 'tier_2' | 'tier_3';
-		items: Array<{ sku: string; title: string; quantity: number; unitPrice: number }>;
-		subtotal: number;
-		shipping: number;
-		total: number;
-		hasUpsell: boolean;
-		createdAt: string;
-	}
-	let pendingOrder = $state<ActivePendingOrder | null>(null);
-
-	function validatePhone(input: string): boolean {
-		const cleaned = input.replace(/[\s\-\(\)]/g, '');
-		const regex = /^(?:(?:\+?212)|0)[67]\d{8}$/;
-		return regex.test(cleaned);
-	}
-
-	function scrollToOrder() {
-		const el = document.getElementById('product-order-box');
-		if (el) el.scrollIntoView({ behavior: 'smooth' });
-	}
-
-	function handleFormSubmit(e: SubmitEvent) {
-		e.preventDefault();
-		phoneError = '';
-
-		if (!fullName.trim() || fullName.trim().length < 2) {
-			phoneError = 'يرجى إدخال اسمك الكامل بشكل صحيح.';
-			return;
-		}
-
-		if (!validatePhone(phone)) {
-			phoneError = 'يرجى كتابة رقم هاتف مغربي صحيح (يبدأ بـ 06 أو 07)';
-			return;
-		}
-
-		if (isSubmitting) return;
-
-		const tier = PRICING_TIERS[selectedTier];
-		const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
-
-		// Decompose selected product tier
-		const qty = selectedTier === 'tier_1' ? 1 : selectedTier === 'tier_2' ? 2 : 3;
-		const unitPrice = +(tier.price / qty).toFixed(2);
-
-		const items = [
-			{
-				sku: product.sku,
-				title: `${product.name} (${tier.title})`,
-				quantity: qty,
-				unitPrice
-			}
-		];
-
-		pendingOrder = {
-			orderId,
-			fullName: fullName.trim(),
-			phone: phone.trim().replace(/[\s\-\(\)]/g, ''),
+	function handleAddToCartAndOpenDrawer() {
+		cart.setMainItem({
+			slug: product.slug,
+			sku: product.sku,
+			title: `${product.name} (${currentTier.title})`,
+			image: product.image,
+			price: currentTier.price,
 			tier: selectedTier,
-			items,
-			subtotal: tier.price,
-			shipping: tier.shipping,
-			total: tier.price + tier.shipping,
-			hasUpsell: false,
-			createdAt: new Date().toISOString()
-		};
-
-		// Launch 15s Timed Flash Upsell
-		isUpsellOpen = true;
-	}
-
-	function handleAcceptUpsell() {
-		if (!pendingOrder) return;
-		pendingOrder.hasUpsell = true;
-		pendingOrder.items.push({
-			sku: 'gummies_collagen',
-			title: 'علبة إضافية (عرض خاطف حصري)',
-			quantity: 1,
-			unitPrice: 99
+			tierTitle: currentTier.title
 		});
-		pendingOrder.total += 99;
-		finalizeOrderSubmission();
-	}
-
-	function handleDeclineUpsell() {
-		finalizeOrderSubmission();
-	}
-
-	async function finalizeOrderSubmission() {
-		if (!pendingOrder || isSubmitting) return;
-		isSubmitting = true;
-
-		try {
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
-			}
-			if (typeof sessionStorage !== 'undefined') {
-				sessionStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
-			}
-
-			// Server Dual Dispatch with keepalive
-			try {
-				await fetch('/api/orders', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(pendingOrder),
-					keepalive: true
-				});
-			} catch (postErr) {
-				console.warn('Orders API network notice:', postErr);
-			}
-
-			await goto(
-				`/thank-you?orderId=${encodeURIComponent(pendingOrder.orderId)}&total=${pendingOrder.total}&fullName=${encodeURIComponent(pendingOrder.fullName)}&phone=${encodeURIComponent(pendingOrder.phone)}&hasUpsell=${pendingOrder.hasUpsell}`
-			);
-		} catch (err) {
-			window.location.href = `/thank-you?orderId=${pendingOrder.orderId}&total=${pendingOrder.total}`;
-		} finally {
-			isSubmitting = false;
-		}
+		cartUi.openDrawer();
 	}
 </script>
 
@@ -173,11 +51,11 @@
 	<!-- 2. Sticky Header -->
 	<Header
 		brandName="NOVAVITA"
-		cartCount={0}
+		cartCount={cart.count}
 		bind:searchOpen
 		bind:menuOpen
 		bind:query
-		onOpenCart={() => (drawerOpen = true)}
+		onOpenCart={() => cartUi.openDrawer()}
 	/>
 
 	<!-- 3. Main Product Showcase & Buying Box -->
@@ -383,67 +261,45 @@
 					</div>
 				</div>
 
-				<!-- Streamlined 1-Step COD Form -->
+				<!-- High-Converting Primary Action Box (Alpha Style -> Triggers Cart Drawer) -->
 				<div class="rounded-3xl bg-white p-5 sm:p-7 border-2 border-emerald-950/15 shadow-xl space-y-4">
 					<div class="flex justify-between items-center border-b border-stone-100 pb-3">
 						<div>
-							<h3 class="font-bold text-sm sm:text-base text-[#1B4332]">استمارة الطلب السريع</h3>
-							<p class="text-[11px] text-stone-500">الدفع نقداً عند الاستلام بعد المعاينة</p>
+							<h3 class="font-bold text-sm sm:text-base text-[#1B4332]">الباقة المختارة</h3>
+							<p class="text-[11px] text-stone-500">{currentTier.title}</p>
 						</div>
 						<div class="text-end">
 							<span class="text-xs text-stone-400">المجموع:</span>
-							<div class="font-mono font-black text-xl text-[#E86A7C]">{currentTier.price} MAD</div>
+							<div class="font-mono font-black text-2xl text-[#E86A7C]">{currentTier.price} MAD</div>
 						</div>
 					</div>
 
-					{#if phoneError}
-						<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
-							⚠️ {phoneError}
-						</div>
-					{/if}
-
-					<form onsubmit={handleFormSubmit} class="space-y-3.5">
-						<div>
-							<label for="prod-name" class="block text-xs font-bold text-stone-700 mb-1">الاسم الكامل <span class="text-rose-500">*</span></label>
-							<input
-								id="prod-name"
-								type="text"
-								bind:value={fullName}
-								required
-								placeholder="مثال: هاجر العمراني"
-								class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none focus:border-[#1B4332] focus:bg-white transition-all"
-							/>
-						</div>
-
-						<div>
-							<label for="prod-tel" class="block text-xs font-bold text-stone-700 mb-1">رقم الهاتف (للتوصيل) <span class="text-rose-500">*</span></label>
-							<input
-								id="prod-tel"
-								type="tel"
-								bind:value={phone}
-								required
-								dir="ltr"
-								placeholder="06XXXXXXXX أو 07XXXXXXXX"
-								class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none focus:border-[#1B4332] focus:bg-white text-start transition-all"
-							/>
-						</div>
-
+					<div class="space-y-2.5 pt-1">
+						<!-- Primary CTA Button -->
 						<button
-							type="submit"
-							disabled={isSubmitting}
-							class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-rose-900/15 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
+							type="button"
+							onclick={handleAddToCartAndOpenDrawer}
+							class="w-full min-h-14 sm:min-h-15 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group"
 						>
-							{#if isSubmitting}
-								<span>جاري المعالجة... ⏳</span>
-							{:else}
-								<span>تأكيد طلبي الآن (الدفع عند الاستلام) 🛍️</span>
-							{/if}
+							<span>اطلبي الآن • الدفع عند الاستلام 🛍️</span>
+							<span class="text-lg transition-transform group-hover:-translate-x-1">←</span>
 						</button>
 
-						<p class="text-center text-[11px] font-bold text-stone-500 pt-1">
-							🔒 معلوماتك مشفرة ومحمية بالكامل • التوصيل خلال 24 إلى 48 ساعة
-						</p>
-					</form>
+						<!-- Secondary / Upsell Hook Button -->
+						<button
+							type="button"
+							onclick={handleAddToCartAndOpenDrawer}
+							class="w-full min-h-11 rounded-xl bg-white border-2 border-[#E86A7C]/40 hover:bg-rose-50/50 active:scale-[0.98] font-black text-[#E86A7C] text-xs sm:text-sm transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+						>
+							<span>+ أضيفي إلى السلة واستفيدي من عرض 99 DH 🛒</span>
+						</button>
+					</div>
+
+					<div class="flex items-center justify-center gap-4 text-[11px] font-bold text-stone-500 pt-2 border-t border-stone-100">
+						<span class="flex items-center gap-1">🚚 توصيل فابور</span>
+						<span class="flex items-center gap-1">📦 معاينة قبل الدفع</span>
+						<span class="flex items-center gap-1">🌿 بكتين حلال 100%</span>
+					</div>
 				</div>
 
 			</div>
@@ -664,29 +520,13 @@
 		</div>
 		<button
 			type="button"
-			onclick={scrollToOrder}
-			class="flex-1 py-3 px-4 rounded-xl bg-[#E86A7C] font-black text-white text-xs shadow-lg active:scale-95 text-center cursor-pointer"
+			onclick={handleAddToCartAndOpenDrawer}
+			class="flex-1 py-3 px-4 rounded-xl bg-[#E86A7C] font-black text-white text-xs shadow-lg active:scale-95 text-center cursor-pointer hover:bg-[#d95366] transition-colors"
 		>
 			<span>اطلبي الآن كاش 🛍️</span>
 		</button>
 	</aside>
 
-	<!-- Timed Flash Upsell Modal (99 MAD) -->
-	<TimedUpsellModal
-		bind:open={isUpsellOpen}
-		orderTotal={currentTier.price}
-		onAccept={handleAcceptUpsell}
-		onDecline={handleDeclineUpsell}
-	/>
-
 	<!-- Cart Drawer -->
-	<CartDrawer
-		bind:open={drawerOpen}
-		items={{ [product.sku]: 1 }}
-		onClose={() => (drawerOpen = false)}
-		onProceedToCheckout={() => {
-			drawerOpen = false;
-			scrollToOrder();
-		}}
-	/>
+	<CartDrawer />
 </div>

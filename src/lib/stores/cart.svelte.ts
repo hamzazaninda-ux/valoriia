@@ -1,41 +1,62 @@
-// Shared cart store (Svelte 5 runes) — used by product-page templates.
-// Persisted in localStorage under its own key (homepage mini-cart uses another one).
-// All UI state (drawer / checkout / upsell) lives here so any component can open it.
+// Shared cart store (Svelte 5 runes) — NOVAVITA DTC Conversion Engine.
+// Single source of truth for cart drawer, 99 MAD AOV upsell toggles, and COD checkout.
 
 export interface CartLine {
 	key: string;
 	slug: string;
+	sku: string;
 	title: string;
 	image: string;
 	price: number;
-	offerId: number;
-	offerTitle: string;
+	tier?: 'tier_1' | 'tier_2' | 'tier_3';
+	tierTitle?: string;
+	isUpsell?: boolean;
 	qty: number;
 }
 
 export interface CompletedOrder {
 	orderId: string;
 	fullName: string;
-	phoneNumber: string;
+	phone: string;
 	lines: CartLine[];
 	subtotal: number;
-	currency: string;
+	shipping: number;
+	total: number;
+	hasUpsell: boolean;
+	createdAt: string;
 }
 
-const STORAGE_KEY = 'lhamza-cart-v2';
+const STORAGE_KEY = 'novavita-cart-v3';
 
 function load(): CartLine[] {
 	if (typeof localStorage === 'undefined') return [];
 	try {
-		const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem('valoriia-cart-v2') || '[]');
+		const raw = JSON.parse(
+			localStorage.getItem(STORAGE_KEY) ||
+			localStorage.getItem('novavita-cart') ||
+			'[]'
+		);
 		if (!Array.isArray(raw)) return [];
-		// No quantities in this store: every line counts once.
 		return raw
 			.filter(
 				(l) =>
-					l && typeof l.slug === 'string' && typeof l.title === 'string' && Number(l.price) >= 0
+					l &&
+					typeof (l.sku || l.slug) === 'string' &&
+					typeof l.title === 'string' &&
+					Number(l.price) >= 0
 			)
-			.map((l) => ({ ...l, qty: 1 }));
+			.map((l) => ({
+				key: l.key || `${l.sku || l.slug}_${l.isUpsell ? 'up' : 'main'}`,
+				slug: l.slug || l.sku || 'gummies_biotine',
+				sku: l.sku || l.slug || 'gummies_biotine',
+				title: l.title,
+				image: l.image || '/images/products/gummies_biotine.svg',
+				price: Number(l.price) || 199,
+				tier: l.tier,
+				tierTitle: l.tierTitle,
+				isUpsell: Boolean(l.isUpsell),
+				qty: Number(l.qty) || 1
+			}));
 	} catch {
 		return [];
 	}
@@ -48,7 +69,7 @@ function persist() {
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
 	} catch {
-		// storage full / private mode — cart simply won't persist
+		// Private browsing or storage limit
 	}
 }
 
@@ -57,15 +78,73 @@ export const cart = {
 		return lines;
 	},
 	get count() {
-		return lines.reduce((a, l) => a + l.qty, 0);
+		return lines.reduce((a, l) => a + (l.qty || 1), 0);
 	},
 	get subtotal() {
-		return lines.reduce((a, l) => a + l.qty * l.price, 0);
+		return lines.reduce((a, l) => a + (l.qty || 1) * l.price, 0);
 	},
-	add(entry: Omit<CartLine, 'key' | 'qty'>) {
-		const key = `${entry.slug}#${entry.offerId}`;
-		if (lines.some((l) => l.key === key)) return;
-		lines = [...lines, { ...entry, key, qty: 1 }];
+	getMainItem(): CartLine | undefined {
+		return lines.find((l) => !l.isUpsell);
+	},
+	getUpsellItems(): CartLine[] {
+		return lines.filter((l) => l.isUpsell);
+	},
+	hasSku(sku: string): boolean {
+		return lines.some((l) => l.sku === sku);
+	},
+	isUpsellActive(sku: string): boolean {
+		return lines.some((l) => l.sku === sku && l.isUpsell);
+	},
+	setMainItem(entry: {
+		slug: string;
+		sku: string;
+		title: string;
+		image: string;
+		price: number;
+		tier?: 'tier_1' | 'tier_2' | 'tier_3';
+		tierTitle?: string;
+	}) {
+		const existingUpsells = lines.filter((l) => l.isUpsell && l.sku !== entry.sku);
+		const mainLine: CartLine = {
+			key: `main_${entry.sku}`,
+			slug: entry.slug,
+			sku: entry.sku,
+			title: entry.title,
+			image: entry.image,
+			price: entry.price,
+			tier: entry.tier,
+			tierTitle: entry.tierTitle,
+			isUpsell: false,
+			qty: 1
+		};
+		lines = [mainLine, ...existingUpsells];
+		persist();
+	},
+	toggleUpsell(product: {
+		slug: string;
+		sku: string;
+		name: string;
+		image: string;
+		headline?: string;
+	}) {
+		const upsellKey = `upsell_${product.sku}`;
+		if (lines.some((l) => l.key === upsellKey || (l.sku === product.sku && l.isUpsell))) {
+			// Remove upsell
+			lines = lines.filter((l) => l.key !== upsellKey && !(l.sku === product.sku && l.isUpsell));
+		} else {
+			// Add 99 MAD upsell item
+			const newUpsell: CartLine = {
+				key: upsellKey,
+				slug: product.slug,
+				sku: product.sku,
+				title: `${product.name} (عرض سري حصري)`,
+				image: product.image,
+				price: 99,
+				isUpsell: true,
+				qty: 1
+			};
+			lines = [...lines, newUpsell];
+		}
 		persist();
 	},
 	remove(key: string) {
@@ -78,19 +157,9 @@ export const cart = {
 	}
 };
 
-// --- Single purchase-flow state -------------------------------------------
-// Exactly ONE flow surface is active at a time: null | 'cart' | 'checkout' |
-// 'upsell'. Combinations like cart+checkout are structurally impossible —
-// every transition closes the previous surface before opening the next one.
-export type FlowStep = null | 'cart' | 'checkout' | 'upsell';
+// UI Drawer Control
+let drawerOpen = $state(false);
 
-let flow = $state<FlowStep>(null);
-let upsellOrder = $state<CompletedOrder | null>(null);
-let returnUrl = '';
-
-// Lock body scroll while any flow surface is open; released on close/reset.
-// (Managed explicitly in the transitions below — a module-level $effect
-// is not allowed here and throws effect_orphan at runtime.)
 function lockScroll() {
 	if (typeof document !== 'undefined') document.body.style.overflow = 'hidden';
 }
@@ -98,84 +167,22 @@ function unlockScroll() {
 	if (typeof document !== 'undefined') document.body.style.overflow = '';
 }
 
-if (typeof window !== 'undefined') {
-	window.addEventListener('popstate', () => {
-		if (flow === 'cart') {
-			cartUi.closeDrawer(false);
-		} else if (flow === 'checkout') {
-			flow = null;
-			unlockScroll();
-		}
-	});
-}
-
 export const cartUi = {
-	/** Current active surface (single source of truth). */
-	get flow(): FlowStep {
-		return flow;
-	},
 	get drawer() {
-		return flow === 'cart';
+		return drawerOpen;
 	},
-	get checkout() {
-		return flow === 'checkout';
-	},
-	get upsell() {
-		return flow === 'upsell' ? upsellOrder : null;
+	set drawer(val: boolean) {
+		drawerOpen = val;
+		if (val) lockScroll();
+		else unlockScroll();
 	},
 	openDrawer() {
-		upsellOrder = null;
-		flow = 'cart';
-		lockScroll();
-		if (typeof window !== 'undefined') {
-			if (window.location.pathname !== '/cart') {
-				returnUrl = window.location.pathname + window.location.search + window.location.hash;
-				window.history.pushState({ step: 'cart', returnUrl }, '', '/cart');
-			}
-		}
-	},
-	closeDrawer(revertHistory = true) {
-		if (flow === 'cart') flow = null;
-		unlockScroll();
-		if (revertHistory && typeof window !== 'undefined' && window.location.pathname === '/cart') {
-			if (window.history.state?.step === 'cart') {
-				window.history.back();
-			} else if (returnUrl) {
-				window.history.replaceState({}, '', returnUrl);
-			}
-		}
-	},
-	openCheckout() {
-		if (lines.length === 0) return;
-		flow = 'checkout';
+		drawerOpen = true;
 		lockScroll();
 	},
-	closeCheckout() {
-		if (flow === 'checkout') flow = null;
-		unlockScroll();
-		if (typeof window !== 'undefined' && window.location.pathname === '/cart') {
-			if (window.history.state?.step === 'cart') {
-				window.history.back();
-			} else if (returnUrl) {
-				window.history.replaceState({}, '', returnUrl);
-			}
-		}
-	},
-	/** Called after a successful order: checkout closes, upsell opens alone. */
-	beginUpsell(order: CompletedOrder) {
-		flow = 'upsell';
-		upsellOrder = order;
-		lockScroll();
-	},
-	endUpsell() {
-		flow = null;
-		upsellOrder = null;
-		unlockScroll();
-	},
-	/** Full reset (e.g. before leaving to the Thank You page). */
-	resetAll() {
-		flow = null;
-		upsellOrder = null;
+	closeDrawer() {
+		drawerOpen = false;
 		unlockScroll();
 	}
 };
+
