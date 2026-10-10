@@ -6,14 +6,11 @@
 	import HeroSection from '$lib/components/home/HeroSection.svelte';
 	import ZigZagShowcase from '$lib/components/home/ZigZagShowcase.svelte';
 	import ScientificProofSection from '$lib/components/home/ScientificProofSection.svelte';
-	import BundlePricingSelector from '$lib/components/home/BundlePricingSelector.svelte';
 	import ComparisonTable from '$lib/components/home/ComparisonTable.svelte';
 	import ReviewsSection from '$lib/components/home/ReviewsSection.svelte';
 	import FaqAccordion from '$lib/components/home/FaqAccordion.svelte';
 	import StickyMobileCTA from '$lib/components/home/StickyMobileCTA.svelte';
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
-	import TimedUpsellModal from '$lib/components/upsell/TimedUpsellModal.svelte';
-	import { PRICING_TIERS } from '$lib/constants/pricing';
 
 	let { data } = $props();
 
@@ -26,10 +23,6 @@
 	let menuOpen = $state(false);
 	let query = $state('');
 	let drawerOpen = $state(false);
-
-	// --- Selected Pricing Tier State ---
-	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_2');
-	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
 	// --- Cart state ---
 	let cart = $state<Record<string, number>>({});
@@ -56,128 +49,16 @@
 		Object.values(cart).reduce((sum, qty) => sum + qty, 0)
 	);
 
-	// --- Flash Upsell Modal State ---
-	let isUpsellOpen = $state(false);
-	let isSubmitting = $state(false);
-
-	interface ActivePendingOrder {
-		orderId: string;
-		fullName: string;
-		phone: string;
-		tier: 'tier_1' | 'tier_2' | 'tier_3';
-		items: Array<{ sku: string; title: string; quantity: number; unitPrice: number }>;
-		subtotal: number;
-		shipping: number;
-		total: number;
-		hasUpsell: boolean;
-		createdAt: string;
-	}
-
-	let pendingOrder = $state<ActivePendingOrder | null>(null);
-
-	function scrollToOrder(sku?: string) {
-		const el = document.getElementById('order-section');
+	function scrollToProducts(sku?: string) {
+		if (sku) {
+			goto(`/products/${sku}`);
+			return;
+		}
+		const el = document.getElementById('showcase');
 		if (el) {
 			el.scrollIntoView({ behavior: 'smooth' });
-		}
-	}
-
-	// 1. COD Form Submission Handler -> Intercept with Timed Flash Upsell
-	function handleOrderInitiated(orderData: { fullName: string; phone: string; tier: 'tier_1' | 'tier_2' | 'tier_3' }) {
-		const tier = PRICING_TIERS[orderData.tier];
-		const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
-
-		// Decompose bundle SKUs
-		const items = [];
-		if (orderData.tier === 'tier_1') {
-			items.push({ sku: 'gummies_biotine', title: 'علكات البيوتين (علبة واحدة)', quantity: 1, unitPrice: 199 });
-		} else if (orderData.tier === 'tier_2') {
-			items.push(
-				{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 139.5 },
-				{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 139.5 }
-			);
 		} else {
-			items.push(
-				{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 116.33 },
-				{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 116.33 },
-				{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, unitPrice: 116.34 }
-			);
-		}
-
-		pendingOrder = {
-			orderId,
-			fullName: orderData.fullName,
-			phone: orderData.phone,
-			tier: orderData.tier,
-			items,
-			subtotal: tier.price,
-			shipping: tier.shipping,
-			total: tier.price + tier.shipping,
-			hasUpsell: false,
-			createdAt: new Date().toISOString()
-		};
-
-		// Launch the 15s Timed Flash Upsell Modal
-		isUpsellOpen = true;
-	}
-
-	// 2. Accept Upsell Handler (+99 MAD)
-	function handleAcceptUpsell() {
-		if (!pendingOrder) return;
-
-		pendingOrder.hasUpsell = true;
-		pendingOrder.items.push({
-			sku: 'gummies_collagen',
-			title: 'علبة إضافية (عرض خاطف حصري)',
-			quantity: 1,
-			unitPrice: 99
-		});
-		pendingOrder.total += 99;
-
-		finalizeOrderSubmission();
-	}
-
-	// 3. Decline Upsell Handler (Proceed with base order)
-	function handleDeclineUpsell() {
-		finalizeOrderSubmission();
-	}
-
-	// 4. Final Server Dispatch & Routing
-	async function finalizeOrderSubmission() {
-		if (!pendingOrder || isSubmitting) return;
-		isSubmitting = true;
-
-		try {
-			// Save in local storage for Thank You page & Pixel tracking
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
-			}
-			if (typeof sessionStorage !== 'undefined') {
-				sessionStorage.setItem('latestOrder', JSON.stringify(pendingOrder));
-			}
-
-			// Resilient server dispatch with keepalive
-			try {
-				await fetch('/api/orders', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(pendingOrder),
-					keepalive: true
-				});
-			} catch (postErr) {
-				console.warn('Orders API network error (proceeding to thank-you):', postErr);
-			}
-
-			// Direct smooth redirection to Thank You page
-			await goto(
-				`/thank-you?orderId=${encodeURIComponent(pendingOrder.orderId)}&total=${pendingOrder.total}&fullName=${encodeURIComponent(pendingOrder.fullName)}&phone=${encodeURIComponent(pendingOrder.phone)}&hasUpsell=${pendingOrder.hasUpsell}`
-			);
-		} catch (err) {
-			console.error('Redirection error:', err);
-			// Fallback direct redirection
-			window.location.href = `/thank-you?orderId=${pendingOrder.orderId}&total=${pendingOrder.total}`;
-		} finally {
-			isSubmitting = false;
+			goto('/products/gummies_biotine');
 		}
 	}
 </script>
@@ -206,24 +87,16 @@
 	/>
 
 	<!-- 3. Hero Section (Above the Fold CRO Powerhouse) -->
-	<HeroSection onCtaClick={() => scrollToOrder()} />
+	<HeroSection onCtaClick={() => scrollToProducts()} />
 
 	<!-- 4. The 3 Core SKUs Zig-Zag Showcase (Emotional Resonance & Moroccan Pain Points) -->
-	<ZigZagShowcase onSelectProduct={(sku) => scrollToOrder(sku)} />
+	<ZigZagShowcase onSelectProduct={(sku) => scrollToProducts(sku)} />
 
 	<!-- 5. Scientific Proof & Clinical Rigor (GMP, Halal, Lab-Tested, Precise Dosages) -->
-	<ScientificProofSection onCtaClick={() => scrollToOrder()} />
+	<ScientificProofSection onCtaClick={() => scrollToProducts()} />
 
 	<!-- 6. Comparison Table: NOVAVITA vs Traditional Pills -->
 	<ComparisonTable />
-
-	<!-- 6. Bundle Pricing Selector & Embedded 1-Step COD Form (#order-section) -->
-	<BundlePricingSelector
-		bind:selectedTier
-		{isSubmitting}
-		onSelectTier={(tier) => (selectedTier = tier)}
-		onSubmitOrder={handleOrderInitiated}
-	/>
 
 	<!-- 7. Verified Moroccan Customer Reviews -->
 	<ReviewsSection />
@@ -271,7 +144,7 @@
 			<div class="space-y-3">
 				<h4 class="text-sm font-bold text-white">خدمة الزبناء بالمغرب</h4>
 				<a
-					href={`${waBase}?text=${encodeURIComponent('السلام عليكم NOVAVITA، عندي استفسار بخصوص باقات العروض')}`}
+					href={`${waBase}?text=${encodeURIComponent('السلام عليكم NOVAVITA، عندي استفسار بخصوص منتجات العناية')}`}
 					target="_blank"
 					rel="noopener"
 					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 text-xs font-bold text-white transition-colors hover:border-[#E86A7C] hover:text-[#E86A7C]"
@@ -291,23 +164,15 @@
 
 	<!-- 11. Sticky Mobile Bottom CTA Bar -->
 	<StickyMobileCTA
-		price={currentTier.price}
-		tierLabel={currentTier.title}
-		onCtaClick={() => scrollToOrder()}
+		price={199}
+		tierLabel="علكات الفيتامينات الطبيعية"
+		onCtaClick={() => scrollToProducts()}
 	/>
 
 	<!-- 12. Interactive Slide-Out Cart Drawer -->
 	<CartDrawer
 		bind:open={drawerOpen}
 		bind:items={cart}
-		onProceedToCheckout={() => scrollToOrder()}
-	/>
-
-	<!-- 13. 15s Timed Flash Upsell Modal (99 MAD Offer) -->
-	<TimedUpsellModal
-		bind:open={isUpsellOpen}
-		orderTotal={pendingOrder?.total || 279}
-		onAccept={handleAcceptUpsell}
-		onDecline={handleDeclineUpsell}
+		onProceedToCheckout={() => goto('/products/gummies_biotine')}
 	/>
 </div>

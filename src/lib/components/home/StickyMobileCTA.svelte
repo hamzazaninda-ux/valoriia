@@ -30,9 +30,11 @@
 			onCtaClick();
 			return;
 		}
-		const el = document.getElementById('order-section');
+		const el = document.getElementById('showcase');
 		if (el) {
 			el.scrollIntoView({ behavior: 'smooth' });
+		} else {
+			window.location.href = '/products/gummies_biotine';
 		}
 	}
 </script>

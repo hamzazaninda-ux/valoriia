@@ -63,8 +63,7 @@
 		if (onSelectProduct) {
 			onSelectProduct(sku);
 		} else {
-			const el = document.getElementById('order-section');
-			if (el) el.scrollIntoView({ behavior: 'smooth' });
+			window.location.href = `/products/${sku}`;
 		}
 	}
 </script>

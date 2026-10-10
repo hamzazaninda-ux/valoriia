@@ -10,8 +10,12 @@
 			onCtaClick();
 			return;
 		}
-		const el = document.getElementById('order-section');
-		if (el) el.scrollIntoView({ behavior: 'smooth' });
+		const el = document.getElementById('showcase');
+		if (el) {
+			el.scrollIntoView({ behavior: 'smooth' });
+		} else {
+			window.location.href = '/products/gummies_biotine';
+		}
 	}
 
 	const certifications = [
