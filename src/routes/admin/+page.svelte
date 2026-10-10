@@ -42,11 +42,65 @@
 		);
 		return `https://wa.me/${clean}?text=${greeting}`;
 	}
+
+	let isSyncingAll = $state(false);
+	let toastMessage = $state<string | null>(null);
+	let toastType = $state<'success' | 'error'>('success');
+	let toastTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	function showToast(msg: string, type: 'success' | 'error' = 'success') {
+		if (toastTimeout) clearTimeout(toastTimeout);
+		toastMessage = msg;
+		toastType = type;
+		toastTimeout = setTimeout(() => {
+			toastMessage = null;
+		}, 3000);
+	}
+
+	async function syncAllToSheets() {
+		if (isSyncingAll) return;
+		if (!confirm('هل تريد مزامنة جميع الطلبات المسجلة مع Google Sheets الآن؟')) return;
+		isSyncingAll = true;
+		try {
+			const res = await fetch('/api/orders/sync-sheets', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ syncAll: true })
+			});
+			const data = await res.json();
+			if (!res.ok || !data.success) {
+				showToast(data.error || 'تعذرت مزامنة الطلبات', 'error');
+			} else {
+				showToast(data.message || 'تمت مزامنة الطلبات بنجاح', 'success');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم', 'error');
+		} finally {
+			isSyncingAll = false;
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>لوحة التحكم - Lhamza Shop</title>
 </svelte:head>
+
+<!-- Toast Notification -->
+{#if toastMessage}
+	<div class="fixed top-5 left-1/2 z-50 -translate-x-1/2 transform transition-all duration-300">
+		<div
+			class={`flex items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold shadow-xl ${
+				toastType === 'success'
+					? 'bg-emerald-950 text-emerald-200 border border-emerald-800'
+					: 'bg-rose-950 text-rose-200 border border-rose-800'
+			}`}
+			dir="rtl"
+		>
+			<span>{toastType === 'success' ? '✓' : '⚠️'}</span>
+			<span>{toastMessage}</span>
+		</div>
+	</div>
+{/if}
 
 <div class="space-y-6" dir="rtl">
 	<!-- Greeting -->
@@ -58,6 +112,18 @@
 			<p class="mt-1 text-sm text-neutral-500">{today} — نظرة شاملة على نشاط المتجر والمبيعات</p>
 		</div>
 		<div class="flex items-center gap-2">
+			<button
+				type="button"
+				onclick={syncAllToSheets}
+				disabled={isSyncingAll}
+				class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-emerald-800 bg-emerald-950 px-3 sm:px-4 text-xs sm:text-sm font-bold text-white shadow-2xs transition-all hover:bg-emerald-900 active:scale-[0.98] disabled:opacity-50"
+				title="مزامنة جميع الطلبات مع Google Sheets"
+			>
+				<svg class={`h-4 w-4 text-emerald-400 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+				</svg>
+				{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة جميع الطلبات مع Google Sheets 🔄'}
+			</button>
 			<a
 				href="/admin/orders"
 				class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-4 text-sm font-bold text-neutral-700 shadow-2xs transition-all hover:bg-neutral-50 active:scale-[0.98]"
@@ -161,10 +227,24 @@
 						<span class="text-[11px] text-neutral-400">آخر 5 طلبيات مسجلة</span>
 					</div>
 				</div>
-				<a href="/admin/orders" class="text-xs font-bold text-emerald-700 hover:underline underline-offset-4 flex items-center gap-1">
-					عرض الكل
-					<span>←</span>
-				</a>
+				<div class="flex items-center gap-2">
+					<button
+						type="button"
+						onclick={syncAllToSheets}
+						disabled={isSyncingAll}
+						class="flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+						title="مزامنة جميع الطلبات مع Google Sheets"
+					>
+						<svg class={`h-3 w-3 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+						</svg>
+						مزامنة مع Sheets 🔄
+					</button>
+					<a href="/admin/orders" class="text-xs font-bold text-emerald-700 hover:underline underline-offset-4 flex items-center gap-1">
+						عرض الكل
+						<span>←</span>
+					</a>
+				</div>
 			</div>
 
 			{#if data.recentOrders.length === 0}

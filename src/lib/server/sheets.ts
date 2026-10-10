@@ -1,12 +1,12 @@
 import { readSettings } from '$lib/content/settings';
 
 export const DEFAULT_SHEETS_WEBHOOK_URL =
-	'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
+	'https://script.google.com/macros/s/AKfycbzc4gOxOF95fqO9f0X0iEPhA_MRkqvF9hOV_xNI9W_B5TLFn6H89GY0l8_mks6nTIIYZg/exec';
 
 /**
  * Resolves the active Google Sheets webhook URL in priority order:
  * 1. Explicit customUrl parameter
- * 2. Environment variable GOOGLE_SHEET_WEBHOOK_URL / GOOGLE_SHEETS_URL
+ * 2. Environment variable GOOGLE_SHEETS_URL / GOOGLE_SHEET_WEBHOOK_URL
  * 3. Settings commerce.googleSheetsUrl
  * 4. Production fallback default constant
  */
@@ -15,7 +15,7 @@ export async function getSheetsWebhookUrl(customUrl?: string): Promise<string> {
 		return customUrl.trim();
 	}
 
-	const envUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || process.env.GOOGLE_SHEETS_URL;
+	const envUrl = process.env.GOOGLE_SHEETS_URL || process.env.GOOGLE_SHEET_WEBHOOK_URL;
 	if (envUrl && envUrl.trim().startsWith('http')) {
 		return envUrl.trim();
 	}
@@ -49,39 +49,42 @@ export async function sendOrderToGoogleSheets(
 		}
 
 		const orderId = String(
-			order.id || order.orderId || 'ORD-' + Math.floor(100000 + Math.random() * 900000)
+			order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
 
-		const nowIso = new Date().toISOString();
-		const dateStr = order.createdAt || order.date || nowIso;
+		const casablancaDate = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		const dateStr = order.date || casablancaDate;
 
-		const fullName = String(order.fullName || order.name || 'زبون').trim();
-		const phone = String(order.phone || order.phoneNumber || '').trim();
-		const city = String(order.city || 'يُحدد عند التأكيد').trim();
-		const address = String(order.address || order.city || 'يُحدد عند التأكيد').trim();
-		const product = String(order.product || order.productTitle || order.offer || 'منتج المتجر').trim();
+		const fullName = String(order.fullName || order.name || '').trim();
+		const phone = String(order.phoneNumber || order.phone || '').trim();
+		const city = String(order.city || '').trim();
+		const address = String(order.address || '').trim();
+		const productTitle = String(
+			order.productTitle || order.product || order.offer || 'طقم التنظيم المنزلي'
+		).trim();
 
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
-		const total = Number(order.totalPrice ?? order.price ?? order.total ?? 229) || 229;
+		const price = order.totalPrice ?? order.total ?? order.price ?? 229;
 		const status = String(order.status || 'جديد').trim();
 
 		const payload = {
 			orderId,
 			date: dateStr,
-			name: fullName,
-			phone,
-			city,
-			address,
-			product,
-			quantity,
-			total,
-			status,
-			// Aliases for maximum Google Apps Script compatibility
 			fullName,
 			phoneNumber: phone,
-			totalPrice: total,
-			price: total,
+			city,
+			address,
+			productTitle,
+			quantity,
+			price,
+			// Aliases for 100% Google Apps Script compatibility
+			name: fullName,
+			phone,
+			product: productTitle,
+			totalPrice: price,
+			total: price,
 			qte: quantity,
+			status,
 			sku: order.sku || '',
 			pageUrl: order.pageUrl || '',
 			items: typeof order.items === 'string' ? order.items : JSON.stringify(order.items || []),
@@ -95,11 +98,11 @@ export async function sendOrderToGoogleSheets(
 			redirect: 'follow'
 		});
 
-		console.log('📊 Google Sheets Sync Response:', sheetsRes.status);
+		console.log('✅ Google Sheets Sync Response:', sheetsRes.status);
 
 		return { ok: sheetsRes.ok, status: sheetsRes.status };
 	} catch (err: any) {
-		console.error('❌ Failed to sync order to Google Sheets:', err);
+		console.error('❌ Google Sheets sync failed:', err);
 		return { ok: false, status: 500, error: err?.message || String(err) };
 	}
 }
