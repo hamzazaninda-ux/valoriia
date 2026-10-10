@@ -94,6 +94,8 @@
 	<meta name="description" content={product.headline} />
 </svelte:head>
 
+<svelte:window bind:scrollY={scrollY} />
+
 <div class="min-h-screen bg-[#FAF8F5] font-body text-[#1F2937] pb-24 md:pb-16" dir="rtl">
 	
 	<!-- Top Sub-Bar Announcement -->
@@ -463,9 +465,6 @@
 		</div>
 
 	</main>
-
-	<!-- Window scroll binding for scroll-triggered sticky mobile CTA -->
-	<svelte:window bind:scrollY={scrollY} />
 
 	<!-- ========================================================================= -->
 	<!-- 8. Sticky Mobile CTA Bar (Luxury Full-Pink, Scroll-Triggered) -->
