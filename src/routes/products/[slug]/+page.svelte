@@ -108,59 +108,24 @@
 		onOpenCart={() => cartUi.openDrawer()}
 	/>
 
-	<!-- 3. Section: Edge-to-Edge Hero Image & Buying Box -->
-	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+	<!-- 3. Section: Hero Image & Buying Box -->
+	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 sm:py-8">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
 			
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
-			<div class="lg:col-span-6 space-y-3 sm:space-y-4">
-				<!-- Hero Image Placeholder / Container -->
-				<div class="w-full max-w-md mx-auto aspect-[4/5] sm:aspect-square bg-[#FAF8F5] rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden flex items-center justify-center p-4">
+			<div class="lg:col-span-6">
+				<!-- Hero Image Container (Compact, Elegant, Mobile-Optimized) -->
+				<div class="w-full max-w-sm mx-auto h-[280px] sm:h-[340px] bg-[#FAF8F5] rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden flex items-center justify-center p-3 mb-4">
 					<img
 						src={activeImage}
 						alt={product.name}
-						class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 hover:scale-105"
+						class="w-full h-full object-contain drop-shadow-md transition-transform duration-500 hover:scale-105"
 						onerror={(e: any) => {
 							e.currentTarget.onerror = null;
 							e.currentTarget.src = '/images/products/gummies_collagen.svg';
 						}}
 					/>
-					<!-- Corner Floating Badge -->
-					{#if product.badge}
-						<div class="absolute top-4 end-4 bg-[#E86A7C] text-white text-xs font-black px-3.5 py-1.5 rounded-full shadow-md">
-							{product.badge}
-						</div>
-					{/if}
-					<!-- Clinical Purity Floating Badge -->
-					<div class="absolute bottom-4 start-4 bg-white/95 backdrop-blur-xs text-[#1B4332] text-[11px] font-black px-3 py-1 rounded-full shadow-xs border border-emerald-950/10">
-						✓ بكتين فواكه نباتي 100% حلال
-					</div>
 				</div>
-
-				<!-- Thumbnails Strip (Desktop / Tablet) -->
-				{#if product.gallery && product.gallery.length > 1}
-					<div class="flex items-center gap-2.5 overflow-x-auto pb-1 justify-center sm:justify-start">
-						{#each product.gallery as imgUrl}
-							<button
-								type="button"
-								onclick={() => (activeImage = imgUrl)}
-								class={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
-									activeImage === imgUrl ? 'border-[#1B4332] shadow-md ring-2 ring-[#1B4332]/20' : 'border-stone-200 hover:border-stone-300'
-								}`}
-							>
-								<img
-									src={imgUrl}
-									alt="معاينة"
-									class="w-full h-full object-contain"
-									onerror={(e: any) => {
-										e.currentTarget.onerror = null;
-										e.currentTarget.src = '/images/products/gummies_collagen.svg';
-									}}
-								/>
-							</button>
-						{/each}
-					</div>
-				{/if}
 
 				<!-- Trust Value Micro-grid (Desktop) -->
 				<div class="hidden lg:grid grid-cols-3 gap-2.5 pt-2 text-center text-xs font-bold text-stone-700">
@@ -182,25 +147,25 @@
 			<!-- Right Column (Desktop) / Below (Mobile): Emotional Headline, Bundle Selector & Buying Flow -->
 			<div id="product-order-box" class="lg:col-span-6 scroll-mt-24">
 				
-				<!-- أ) الشارة العلوية المصغرة (Pill Tag) -->
+				<!-- 1. الشارة العلوية (Pill Tag) -->
 				<div>
-					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold mb-3">
+					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold mb-2">
 						<span>{heroData.tag}</span>
 					</div>
 				</div>
 
-				<!-- ب) العنوان الرئيسي العاطفي (H1) -->
-				<h1 class="text-2xl sm:text-3xl font-extrabold text-[#1B4332] leading-tight mb-2.5">
+				<!-- 2. العنوان العاطفي الصادم (H1) -->
+				<h1 class="text-xl sm:text-2xl font-black text-[#1B4332] leading-snug mb-2">
 					{heroData.h1}
 				</h1>
 
-				<!-- ج) النص الفرعي التفسيري (سطران فقط) -->
-				<p class="text-sm sm:text-base text-gray-700 leading-relaxed mb-3.5 font-medium">
+				<!-- 3. النص الفرعي التفسيري (سطران واضحان بخط مريح) -->
+				<p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3 font-medium">
 					{heroData.sub}
 				</p>
 
-				<!-- د) صف التقييم والنجوم -->
-				<div class="flex items-center gap-2 mb-5">
+				<!-- 4. صف التقييم والنجوم الذهبية -->
+				<div class="flex items-center gap-2 mb-4">
 					<span class="font-bold text-gray-900 text-sm">4.9</span>
 					<div class="flex text-[#F59E0B] gap-0.5">
 						{#each Array(5) as _}
@@ -214,10 +179,10 @@
 					</span>
 				</div>
 
-				<!-- هـ) يليه مباشرة قسم "اختاري العرض:" وكروت الباقات الثلاث (199 / 279 / 349 MAD) -->
+				<!-- 5. عنوان قسم الباقات والكروت الثلاثة -->
 				<div id="bundle-selector" class="space-y-3.5 scroll-mt-24">
-					<div class="flex items-center justify-between">
-						<span class="text-sm font-black text-stone-900">اختاري العرض:</span>
+					<div class="flex items-center justify-between mb-3">
+						<span class="text-base font-bold text-gray-900">اختاري العرض:</span>
 						<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
 							✨ نتيجة من العلبة الأولى
 						</span>
