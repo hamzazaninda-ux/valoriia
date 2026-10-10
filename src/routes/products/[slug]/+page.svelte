@@ -48,15 +48,40 @@
 		}
 	}
 
-	// Dynamic Emotional Shock Headline per product
-	const emotionalHeadline = $derived.by(() => {
-		if (product.sku === 'gummies_collagen') {
-			return 'كتستعملي أغلى السيرومات وبشرتك باقا باهتة ومجففة؟';
+	// Product-specific DTC Hero Content (Exact Benchmark Specifications)
+	const PRODUCT_HERO_DATA = {
+		gummies_collagen: {
+			tag: '✨ روتين النضارة • حلال 100% • كولاجين بحري + هيالورونيك',
+			h1: 'كتستعملي أغلى السيرومات وبشرتك باقا شاحبة وناشفة؟',
+			sub: 'السبب ماشي في الكريمات.. بعد سن 25 الكولاجين كينقص في جلدك من الداخل. علكتين بالكولاجين البحري والهيالورونيك كيعوضو النقص وكيرجعو للبشرة نضارتها ولمعتها الطبيعية.',
+			reviews: 480
+		},
+		gummies_biotine: {
+			tag: '✨ روتين إنبات الشعر • حلال 100% • بيوتين 3000mcg + زنك',
+			h1: 'كتخافي تمشطي شعرك وتلقاي المشطة عامرة بالخصلات؟',
+			sub: 'السبب مو الشامبوان.. ملوحة الماء والتوتر كيخنقو بصيلات الشعر. علكتين ببيوتين مركز 3000mcg والزنك كيغذيو الجذور من الداخل، كيحبسو التساقط ويحفزو البيبي هير.',
+			reviews: 620
+		},
+		gumies_vitamine: {
+			tag: '✨ روتين النشاط والمناعة • حلال 100% • بكتين فواكه نباتي',
+			h1: 'كتفيقي في الصباح عيانة وسخفانة وخا نعستي 8 ساعات؟',
+			sub: 'السبب مو قلة النعاس.. جسمك كيعاني من نقص الفيتامينات الأساسية في التغذية. علكتين بـ 13 فيتامين وبكتين فواكه خفيف كيعطيوك طاقة نقية ومناعة تدوم نهارك كامل بلا ثقل في المعدة.',
+			reviews: 350
 		}
-		if (product.sku === 'gummies_biotine') {
-			return 'كتخافي تمشطي شعرك وتلقاي المشطة عامرة بالخصلات؟';
+	} as const;
+
+	const heroData = $derived.by(() => {
+		const key = (product.slug || product.sku || '') as string;
+		if (key.includes('collagen')) {
+			return PRODUCT_HERO_DATA.gummies_collagen;
 		}
-		return 'كتفيقي في الصباح عيانة وسخفانة وخا نعستي 8 ساعات؟';
+		if (key.includes('biotine')) {
+			return PRODUCT_HERO_DATA.gummies_biotine;
+		}
+		if (key.includes('vitamine')) {
+			return PRODUCT_HERO_DATA.gumies_vitamine;
+		}
+		return PRODUCT_HERO_DATA.gummies_collagen;
 	});
 </script>
 
@@ -84,26 +109,28 @@
 	/>
 
 	<!-- 3. Section: Edge-to-Edge Hero Image & Buying Box -->
-	<main class="mx-auto max-w-6xl px-0 sm:px-6 lg:px-8 py-0 sm:py-8">
+	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
 		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
 			
-			<!-- Left Column (Desktop) / Top (Mobile): Edge-to-Edge Hero Image -->
+			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6 space-y-3 sm:space-y-4">
-				<!-- Hero Image Viewport: Full Width Edge-to-edge on mobile with soft rounded bottom -->
-				<div class="relative w-full max-w-full aspect-square bg-[#FAF8F5] rounded-b-3xl shadow-sm sm:rounded-3xl sm:bg-white sm:border-2 sm:border-emerald-950/10 sm:shadow-xl p-6 sm:p-10 flex items-center justify-center overflow-hidden group">
+				<!-- Hero Image Placeholder / Container -->
+				<div class="w-full max-w-md mx-auto aspect-[4/5] sm:aspect-square bg-[#FAF8F5] rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden flex items-center justify-center p-4">
 					<img
 						src={activeImage}
 						alt={product.name}
-						class="w-full h-full max-w-full aspect-square object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+						class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 hover:scale-105"
 						onerror={(e: any) => {
 							e.currentTarget.onerror = null;
 							e.currentTarget.src = '/images/products/gummies_collagen.svg';
 						}}
 					/>
 					<!-- Corner Floating Badge -->
-					<div class="absolute top-4 end-4 bg-[#E86A7C] text-white text-xs font-black px-3.5 py-1.5 rounded-full shadow-md">
-						{product.badge}
-					</div>
+					{#if product.badge}
+						<div class="absolute top-4 end-4 bg-[#E86A7C] text-white text-xs font-black px-3.5 py-1.5 rounded-full shadow-md">
+							{product.badge}
+						</div>
+					{/if}
 					<!-- Clinical Purity Floating Badge -->
 					<div class="absolute bottom-4 start-4 bg-white/95 backdrop-blur-xs text-[#1B4332] text-[11px] font-black px-3 py-1 rounded-full shadow-xs border border-emerald-950/10">
 						✓ بكتين فواكه نباتي 100% حلال
@@ -111,27 +138,29 @@
 				</div>
 
 				<!-- Thumbnails Strip (Desktop / Tablet) -->
-				<div class="flex items-center gap-2.5 overflow-x-auto pb-1 px-4 sm:px-0 justify-center sm:justify-start">
-					{#each product.gallery as imgUrl}
-						<button
-							type="button"
-							onclick={() => (activeImage = imgUrl)}
-							class={`w-18 h-18 sm:w-22 sm:h-22 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
-								activeImage === imgUrl ? 'border-[#1B4332] shadow-md ring-2 ring-[#1B4332]/20' : 'border-stone-200 hover:border-stone-300'
-							}`}
-						>
-							<img
-								src={imgUrl}
-								alt="معاينة"
-								class="w-full h-full object-contain"
-								onerror={(e: any) => {
-									e.currentTarget.onerror = null;
-									e.currentTarget.src = '/images/products/gummies_collagen.svg';
-								}}
-							/>
-						</button>
-					{/each}
-				</div>
+				{#if product.gallery && product.gallery.length > 1}
+					<div class="flex items-center gap-2.5 overflow-x-auto pb-1 justify-center sm:justify-start">
+						{#each product.gallery as imgUrl}
+							<button
+								type="button"
+								onclick={() => (activeImage = imgUrl)}
+								class={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
+									activeImage === imgUrl ? 'border-[#1B4332] shadow-md ring-2 ring-[#1B4332]/20' : 'border-stone-200 hover:border-stone-300'
+								}`}
+							>
+								<img
+									src={imgUrl}
+									alt="معاينة"
+									class="w-full h-full object-contain"
+									onerror={(e: any) => {
+										e.currentTarget.onerror = null;
+										e.currentTarget.src = '/images/products/gummies_collagen.svg';
+									}}
+								/>
+							</button>
+						{/each}
+					</div>
+				{/if}
 
 				<!-- Trust Value Micro-grid (Desktop) -->
 				<div class="hidden lg:grid grid-cols-3 gap-2.5 pt-2 text-center text-xs font-bold text-stone-700">
@@ -151,49 +180,42 @@
 			</div>
 
 			<!-- Right Column (Desktop) / Below (Mobile): Emotional Headline, Bundle Selector & Buying Flow -->
-			<div id="product-order-box" class="lg:col-span-6 space-y-6 scroll-mt-24 px-4 sm:px-0">
+			<div id="product-order-box" class="lg:col-span-6 scroll-mt-24">
 				
-				<!-- Heading, Shock Headline & Ratings -->
-				<div class="space-y-3">
-					
-					<!-- Top Eyebrow Tag -->
-					<div class="inline-flex items-center gap-1.5 rounded-full bg-[#1B4332]/10 border border-[#1B4332]/20 px-3.5 py-1 text-xs font-bold text-[#1B4332]">
-						<span>روتين العناية المركزة • NOVAVITA Clinical</span>
-					</div>
-
-					<!-- Emotional Shock Headline (Tailored per SKU) -->
-					<h1 class="font-display text-2xl sm:text-3xl lg:text-[2.2rem] font-black text-[#1B4332] leading-snug">
-						{emotionalHeadline}
-					</h1>
-
-					<!-- Rating Row -->
-					<div class="flex items-center gap-2 pt-0.5">
-						<div class="flex text-[#F59E0B] gap-0.5">
-							{#each Array(5) as _}
-								<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20">
-									<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-								</svg>
-							{/each}
-						</div>
-						<span class="text-xs sm:text-sm font-bold text-stone-600">
-							<strong>4.9 / 5</strong> (أزيد من 1,450 تقييم سيدة مغربية • مشتريات مؤكدة)
-						</span>
-					</div>
-
-					<!-- Persuasive Explanatory Copy (2 High-Impact Lines) -->
-					<p class="text-base sm:text-lg text-gray-700 font-medium leading-relaxed bg-white/70 p-4 rounded-2xl border border-stone-200/70">
-						السبب ماشي من برا. الكريمات والشامبوان كيزوقو المظهر فقط.. الحل الجذري كيبدا من تغذية الخلايا بجرعات سريرية دقيقة وبكتين فواكه كيمتص 3 مرات أسرع وبدون ثقل على المعدة.
-					</p>
-
-					<!-- Flavor Badge -->
-					<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1 text-xs sm:text-sm font-bold text-emerald-800 border border-emerald-200">
-						<span>🍓 النكهة الطبيعية:</span>
-						<span>{product.flavor}</span>
+				<!-- أ) الشارة العلوية المصغرة (Pill Tag) -->
+				<div>
+					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold mb-3">
+						<span>{heroData.tag}</span>
 					</div>
 				</div>
 
-				<!-- 4. Interactive 3-Tier Bundle Selector (Benchmark Match) -->
-				<div id="bundle-selector" class="space-y-3.5 pt-2 scroll-mt-24">
+				<!-- ب) العنوان الرئيسي العاطفي (H1) -->
+				<h1 class="text-2xl sm:text-3xl font-extrabold text-[#1B4332] leading-tight mb-2.5">
+					{heroData.h1}
+				</h1>
+
+				<!-- ج) النص الفرعي التفسيري (سطران فقط) -->
+				<p class="text-sm sm:text-base text-gray-700 leading-relaxed mb-3.5 font-medium">
+					{heroData.sub}
+				</p>
+
+				<!-- د) صف التقييم والنجوم -->
+				<div class="flex items-center gap-2 mb-5">
+					<span class="font-bold text-gray-900 text-sm">4.9</span>
+					<div class="flex text-[#F59E0B] gap-0.5">
+						{#each Array(5) as _}
+							<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20">
+								<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+							</svg>
+						{/each}
+					</div>
+					<span class="text-xs text-gray-600 font-medium">
+						({heroData.reviews} تقييم مغربي • مشتريات مؤكدة)
+					</span>
+				</div>
+
+				<!-- هـ) يليه مباشرة قسم "اختاري العرض:" وكروت الباقات الثلاث (199 / 279 / 349 MAD) -->
+				<div id="bundle-selector" class="space-y-3.5 scroll-mt-24">
 					<div class="flex items-center justify-between">
 						<span class="text-sm font-black text-stone-900">اختاري العرض:</span>
 						<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
