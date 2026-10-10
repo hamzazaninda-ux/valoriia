@@ -4,7 +4,7 @@
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import TrustSection from '$lib/components/sections/TrustSection.svelte';
 	import HeroSection from '$lib/components/home/HeroSection.svelte';
-	import ZigZagShowcase from '$lib/components/home/ZigZagShowcase.svelte';
+	import ProductsGrid from '$lib/components/home/ProductsGrid.svelte';
 	import ScientificProofSection from '$lib/components/home/ScientificProofSection.svelte';
 	import ComparisonTable from '$lib/components/home/ComparisonTable.svelte';
 	import ReviewsSection from '$lib/components/home/ReviewsSection.svelte';
@@ -64,8 +64,8 @@
 	<!-- 3. Hero Section (Above the Fold CRO Powerhouse) -->
 	<HeroSection onCtaClick={() => scrollToProducts()} />
 
-	<!-- 4. The 3 Core SKUs Zig-Zag Showcase (Emotional Resonance & Moroccan Pain Points) -->
-	<ZigZagShowcase onSelectProduct={(sku) => scrollToProducts(sku)} />
+	<!-- 4. Ultra-Converting 3-Product Grid Showcase (Desktop 3-Cols, Mobile 1-Col) -->
+	<ProductsGrid />
 
 	<!-- 5. Scientific Proof & Clinical Rigor (GMP, Halal, Lab-Tested, Precise Dosages) -->
 	<ScientificProofSection onCtaClick={() => scrollToProducts()} />

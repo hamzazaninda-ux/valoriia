@@ -60,17 +60,17 @@
 	/>
 
 	<!-- 3. Main Product Showcase & Buying Box -->
-	<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+	<main class="mx-auto max-w-6xl px-0 sm:px-6 lg:px-8 py-0 sm:py-12">
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
 			
 			<!-- Left Column (Desktop): Media & Thumbnail Gallery -->
-			<div class="lg:col-span-6 space-y-4">
-				<!-- Main Stage Viewport -->
-				<div class="relative aspect-square w-full rounded-3xl bg-white p-6 sm:p-10 shadow-xl border-2 border-emerald-950/10 flex items-center justify-center overflow-hidden group">
+			<div class="lg:col-span-6 space-y-3 sm:space-y-4">
+				<!-- Main Stage Viewport (Edge-to-edge full width on mobile) -->
+				<div class="relative w-full max-w-full aspect-square bg-[#FAF8F5] rounded-b-3xl shadow-sm sm:rounded-3xl sm:bg-white sm:border-2 sm:border-emerald-950/10 sm:shadow-xl p-6 sm:p-10 flex items-center justify-center overflow-hidden group">
 					<img
 						src={activeImage}
 						alt={product.name}
-						class="w-full h-full object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+						class="w-full h-full max-w-full aspect-square object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
 						onerror={(e: any) => {
 							e.currentTarget.onerror = null;
 							e.currentTarget.src = '/images/products/gummies_collagen.svg';
@@ -82,12 +82,12 @@
 				</div>
 
 				<!-- Thumbnails Strip -->
-				<div class="flex items-center gap-3 overflow-x-auto pb-2">
+				<div class="flex items-center gap-2.5 overflow-x-auto pb-1 px-4 sm:px-0 justify-center sm:justify-start">
 					{#each product.gallery as imgUrl}
 						<button
 							type="button"
 							onclick={() => (activeImage = imgUrl)}
-							class={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
+							class={`w-18 h-18 sm:w-24 sm:h-24 rounded-2xl bg-white border-2 p-2 shrink-0 transition-all cursor-pointer ${
 								activeImage === imgUrl ? 'border-[#1B4332] shadow-md ring-2 ring-[#1B4332]/20' : 'border-stone-200 hover:border-stone-300'
 							}`}
 						>
@@ -104,8 +104,8 @@
 					{/each}
 				</div>
 
-				<!-- Trust Value Micro-grid -->
-				<div class="grid grid-cols-3 gap-2.5 pt-2 text-center text-xs font-bold text-stone-700">
+				<!-- Trust Value Micro-grid (Desktop) -->
+				<div class="hidden lg:grid grid-cols-3 gap-2.5 pt-2 text-center text-xs font-bold text-stone-700">
 					<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
 						<span class="block text-lg mb-1">🌿</span>
 						<span>بكتين نباتي حلال 100%</span>
@@ -122,10 +122,10 @@
 			</div>
 
 			<!-- Right Column (Desktop): Pricing, Tier Selector & 1-Step COD Form -->
-			<div id="product-order-box" class="lg:col-span-6 space-y-6 scroll-mt-24">
+			<div id="product-order-box" class="lg:col-span-6 space-y-5 sm:space-y-6 scroll-mt-24 px-4 sm:px-0">
 				
-				<!-- Heading & Rating -->
-				<div class="space-y-2">
+				<!-- Heading, Stars & Short Punchy Benefits -->
+				<div class="space-y-2.5">
 					<div class="flex items-center gap-2">
 						<div class="flex text-[#F59E0B] gap-0.5">
 							{#each Array(5) as _}
@@ -138,12 +138,25 @@
 							<strong>{product.rating} / 5</strong> ({product.reviewCount} تقييم مغربية معتمدة)
 						</span>
 					</div>
+
 					<h1 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332] leading-tight">
 						{product.name}
 					</h1>
+
 					<p class="text-base sm:text-lg text-gray-700 font-medium leading-relaxed">
 						{product.headline}
 					</p>
+
+					<!-- Short Punchy Benefits Checklist -->
+					<div class="space-y-2 pt-1 pb-1">
+						{#each product.keyBenefits.slice(0, 3) as benefit}
+							<div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold text-stone-800">
+								<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-xs font-black">✓</span>
+								<span>{benefit}</span>
+							</div>
+						{/each}
+					</div>
+
 					<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1 text-xs sm:text-sm font-bold text-emerald-800 border border-emerald-200">
 						<span>🍓 النكهة:</span>
 						<span>{product.flavor}</span>
@@ -277,6 +290,19 @@
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">📦 عايني الطرد أولاً</div>
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">💵 الدفع بعد التأكد</div>
 						<div class="p-2 rounded-xl bg-white/90 border border-emerald-900/10">🔄 إرجاع فوري مريح</div>
+					<div class="grid grid-cols-3 gap-2.5 pt-1 text-center text-xs font-bold text-stone-700 lg:hidden">
+						<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+							<span class="block text-lg mb-1">🌿</span>
+							<span>بكتين نباتي 100%</span>
+						</div>
+						<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+							<span class="block text-lg mb-1">🚚</span>
+							<span>توصيل مجاني</span>
+						</div>
+						<div class="p-3 bg-white rounded-2xl border border-stone-200/80 shadow-2xs">
+							<span class="block text-lg mb-1">📦</span>
+							<span>معاينة قبل الدفع</span>
+						</div>
 					</div>
 				</div>
 
