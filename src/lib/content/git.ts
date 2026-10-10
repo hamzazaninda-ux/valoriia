@@ -92,12 +92,16 @@ async function listLocalFiles(path: string): Promise<string[]> {
 }
 
 export async function gitReadFile(branch: string, path: string): Promise<string> {
+  try {
+    return await readLocalFile(path);
+  } catch {
+    // continue to github
+  }
+
+  const targetBranch = branch === 'main' ? (env.GITHUB_BRANCH || 'novavita') : branch;
+
   if (!env.GITHUB_TOKEN) {
-    try {
-      return await readLocalFile(path);
-    } catch {
-      throw new Error(`GITHUB_TOKEN is not configured and local file missing: ${path}`);
-    }
+    throw new Error(`GITHUB_TOKEN is not configured and local file missing: ${path}`);
   }
 
   try {
@@ -107,14 +111,14 @@ export async function gitReadFile(branch: string, path: string): Promise<string>
         owner: env.GITHUB_OWNER,
         repo: env.GITHUB_REPO,
         path,
-        ref: branch
+        ref: targetBranch
       });
 
       if ('content' in data && typeof data.content === 'string') {
         return Buffer.from(data.content, 'base64').toString('utf8');
       }
-      throw new Error(`File not found: ${path} on branch ${branch}`);
-    }, `gitReadFile(${branch}, ${path})`);
+      throw new Error(`File not found: ${path} on branch ${targetBranch}`);
+    }, `gitReadFile(${targetBranch}, ${path})`);
   } catch (err) {
     try {
       return await readLocalFile(path);
@@ -244,12 +248,17 @@ export async function gitDeleteFile(
 }
 
 export async function gitListFiles(branch: string, path: string): Promise<string[]> {
+  try {
+    const local = await listLocalFiles(path);
+    if (local && local.length > 0) return local;
+  } catch {
+    // continue to github
+  }
+
+  const targetBranch = branch === 'main' ? (env.GITHUB_BRANCH || 'novavita') : branch;
+
   if (!env.GITHUB_TOKEN) {
-    try {
-      return await listLocalFiles(path);
-    } catch {
-      return [];
-    }
+    return [];
   }
 
   try {
@@ -259,14 +268,14 @@ export async function gitListFiles(branch: string, path: string): Promise<string
         owner: env.GITHUB_OWNER,
         repo: env.GITHUB_REPO,
         path,
-        ref: branch
+        ref: targetBranch
       });
 
       if (Array.isArray(data)) {
         return data.map(f => f.name);
       }
       return [];
-    }, `gitListFiles(${branch}, ${path})`);
+    }, `gitListFiles(${targetBranch}, ${path})`);
   } catch (err) {
     try {
       return await listLocalFiles(path);
