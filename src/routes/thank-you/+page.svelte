@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { buildOrderPayload, sendOrder } from '$lib/utils/checkout';
 
-	let { data }: { data?: { sheetsUrl?: string; whatsappNumber?: string } } = $props();
+	let { data }: { data?: { whatsappNumber?: string } } = $props();
 
 	interface OrderData {
 		orderId: string;
@@ -211,24 +210,6 @@
 		isEditingPhone = false;
 		phoneUpdateSuccess = true;
 		setTimeout(() => { phoneUpdateSuccess = false; }, 4000);
-
-		// Send phone update to Google Sheets
-		try {
-			const fallbackSheetsUrl =
-				'https://script.google.com/macros/s/AKfycbyQVUxZSp39uvD07JYBhuQLChWPwRRyyOhXT9iGoHvoJ1ge_SjPk0rqtIwPcF6_ksO7iQ/exec';
-			const targetSheetsUrl = data?.sheetsUrl || fallbackSheetsUrl;
-
-			const payload = buildOrderPayload(
-				{ fullName: order.fullName, phoneNumber: order.phoneNumber, city: order.address },
-				[{ key: 'phone-update', slug: 'phone-update', title: 'تعديل رقم الهاتف', price: 0, offerId: 0, qty: 1, image: '', offerTitle: '' }],
-				{ productTitle: 'تعديل رقم الهاتف', sku: 'PHONE-UPDATE', currency: 'DH', pageUrl: typeof window !== 'undefined' ? window.location.href : '' },
-				'update',
-				order.orderId
-			);
-			sendOrder(payload as Record<string, unknown>, targetSheetsUrl).catch(() => {});
-		} catch (e) {
-			console.error(e);
-		}
 	}
 
 	const whatsappUrl = $derived.by(() => {

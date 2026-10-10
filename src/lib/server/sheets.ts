@@ -33,32 +33,59 @@ export async function getSheetsWebhookUrl(customUrl?: string): Promise<string> {
 	return DEFAULT_SHEETS_WEBHOOK_URL;
 }
 
+// In-memory deduplication set to guarantee zero duplicate Google Sheets dispatches per order
+const syncedOrderIds = new Set<string>();
+
 /**
  * Sends an order to Google Sheets via the Apps Script Webhook.
- * Guaranteed follow-redirects, zero crashing, with structured dual-contract payload.
+ * Guaranteed single-dispatch, zero-duplication, with full payload contract.
  */
 export async function sendOrderToGoogleSheets(
 	order: Record<string, any>,
 	customUrl?: string
-): Promise<{ ok: boolean; status: number; error?: string }> {
+): Promise<{ ok: boolean; status: number; error?: string; skipped?: boolean }> {
 	try {
+		const orderId = String(
+			order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
+		).trim();
+
+		// STRICT DEDUPLICATION GUARD: If already synced or marked as synced, skip immediately
+		if (order.sheetsSynced || (orderId && syncedOrderIds.has(orderId))) {
+			console.log(`🛡️ [Google Sheets Deduplication] Order ${orderId} already synced. Skipping duplicate dispatch.`);
+			return { ok: true, status: 200, skipped: true };
+		}
+
 		const webhookUrl = await getSheetsWebhookUrl(customUrl);
 		if (!webhookUrl) {
 			console.warn('⚠️ Google Sheets Sync Skipped: No webhook URL configured');
 			return { ok: false, status: 0, error: 'No webhook URL' };
 		}
 
-		const generatedOrderId = String(
-			order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
-		).trim();
+		// Lock this orderId immediately before network call to prevent concurrent race conditions
+		if (orderId) {
+			syncedOrderIds.add(orderId);
+			if (syncedOrderIds.size > 3000) {
+				const toPrune = Array.from(syncedOrderIds).slice(0, 1000);
+				for (const id of toPrune) syncedOrderIds.delete(id);
+			}
+		}
+		order.sheetsSynced = true;
 
 		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
 		const dateStr = order.date || order.orderDate || casablancaTime;
 
 		const fullName = String(order.fullName || order.name || '').trim();
 		const phone = String(order.phoneNumber || order.phone || '').trim();
-		const product = String(
-			order.productTitle || order.product || order.offer || 'طقم التنظيم المنزلي'
+
+		// Resolve full selected offer title (detailed offer takes absolute precedence)
+		const productLabel = String(
+			order.selectedOfferTitle ||
+			(order.offer && order.productTitle && order.offer.trim() && order.offer.trim() !== order.productTitle.trim()
+				? `${order.productTitle} (${order.offer})`
+				: order.offer) ||
+			order.productTitle ||
+			order.product ||
+			'طقم التنظيم المنزلي'
 		).trim();
 
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
@@ -67,15 +94,16 @@ export async function sendOrderToGoogleSheets(
 		const sheetsPayload = {
 			orderDate: dateStr,
 			date: dateStr,
-			orderId: generatedOrderId,
-			id: generatedOrderId,
+			orderId,
+			id: orderId,
 			name: fullName,
-			fullName: fullName,
-			phone: phone,
+			fullName,
+			phone,
 			phoneNumber: phone,
-			product: product,
-			productTitle: product,
-			quantity: quantity,
+			product: productLabel,
+			productTitle: productLabel,
+			selectedOfferTitle: productLabel,
+			quantity,
 			qte: quantity,
 			total: finalTotal,
 			totalPrice: finalTotal,

@@ -36,6 +36,9 @@ export function buildOrderPayload(
 	const totalQty = lines.reduce((a, l) => a + l.qty, 0);
 	const now = new Date();
 
+	const offerDetail = titles.join(' + ');
+	const fullProductLabel = offerDetail ? `${ctx.productTitle} (${offerDetail})` : ctx.productTitle;
+
 	return {
 		orderId,
 		fullName: customer.fullName.trim(),
@@ -43,12 +46,14 @@ export function buildOrderPayload(
 		// City is collected on the confirmation call for popup orders.
 		address: customer.city?.trim() || 'يُحدد عند التأكيد',
 		city: customer.city?.trim() || 'يُحدد عند التأكيد',
-		offer: titles.join(' + '),
+		offer: offerDetail,
+		selectedOfferTitle: fullProductLabel,
 		price: subtotal,
 		quantity: totalQty,
 		qte: totalQty,
 		sku: ctx.sku,
-		productTitle: ctx.productTitle,
+		productTitle: fullProductLabel,
+		product: fullProductLabel,
 		pageUrl: ctx.pageUrl,
 		date: now.toLocaleDateString('ar-MA', {
 			year: 'numeric',
@@ -281,37 +286,34 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	}
 }
 
-/** Dual-storage order submission: saves to in-app storage via /api/orders and Google Sheets in parallel. */
+/** Single-source order submission: sends order to server endpoint (/api/checkout) ONLY.
+ * ZERO direct client-side fetch to Google Sheets to eliminate duplicate entries.
+ */
 export async function sendOrder(payload: Record<string, unknown>, sheetsUrl?: string): Promise<void> {
 	const enrichedPayload = {
 		...payload,
 		...(sheetsUrl ? { sheetsUrl } : {})
 	};
 
-	const inAppPromise = fetch('/api/orders', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(enrichedPayload)
-	})
-		.then((r) => r.json())
-		.catch((err) => {
-			console.warn('[Orders] In-app save warning:', err);
-			return null;
+	try {
+		const res = await fetch('/api/checkout', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(enrichedPayload)
 		});
-
-	const sheetsPromise = sheetsUrl
-		? fetch(sheetsUrl, {
+		if (!res.ok) {
+			console.warn('[Orders] /api/checkout returned status:', res.status);
+		}
+	} catch (err) {
+		console.warn('[Orders] /api/checkout failed, attempting fallback to /api/orders:', err);
+		try {
+			await fetch('/api/orders', {
 				method: 'POST',
-				mode: 'no-cors',
-				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(enrichedPayload)
-			})
-				.then(() => undefined)
-				.catch((err) => {
-					console.warn('[Orders] Sheets webhook warning:', err);
-					return undefined;
-				})
-		: Promise.resolve();
-
-	await Promise.allSettled([inAppPromise, sheetsPromise]);
+			});
+		} catch (fallbackErr) {
+			console.error('[Orders] In-app save fallback failed:', fallbackErr);
+		}
+	}
 }

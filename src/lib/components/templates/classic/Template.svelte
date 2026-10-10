@@ -239,7 +239,9 @@
 
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		const productSku = (product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL';
-		const productTitle = content.title || 'منتج';
+		const fullSelectedTitle = activeOffer?.title
+			? `${productTitle} (${activeOffer.title})`
+			: productTitle;
 
 		const orderData = {
 			orderId,
@@ -248,11 +250,13 @@
 			address: city.trim(),
 			city: city.trim(),
 			offer: activeOffer?.title || '',
+			selectedOfferTitle: fullSelectedTitle,
 			price: activeOffer?.price || 0,
 			quantity: activeOffer?.quantity || 1,
 			qte: activeOffer?.quantity || 1,
 			sku: productSku,
-			productTitle,
+			productTitle: fullSelectedTitle,
+			product: fullSelectedTitle,
 			pageUrl: typeof window !== 'undefined' ? window.location.href : '',
 			date: new Date().toLocaleDateString('ar-MA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
 			timestamp: new Date().toISOString()

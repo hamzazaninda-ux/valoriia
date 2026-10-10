@@ -23,47 +23,22 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Ensure consistent orderId across both internal storage and Google Sheets
-		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const generatedOrderId = String(
+		const orderId = String(
 			body.orderId || body.id || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
-		body.orderId = generatedOrderId;
-		body.id = generatedOrderId;
-		const finalTotal = Number(body.totalPrice || body.total || body.price || 0);
+		body.orderId = orderId;
+		body.id = orderId;
 
-		const sheetsPayload = {
-			orderDate: casablancaTime,
-			date: casablancaTime,
-			orderId: generatedOrderId,
-			id: generatedOrderId,
-			name: fullName,
-			fullName: fullName,
-			phone: phone,
-			phoneNumber: phone,
-			product: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
-			productTitle: String(body.productTitle || body.product || body.offer || 'طقم التنظيم المنزلي').trim(),
-			quantity: Number(body.quantity || body.qte || 1),
-			qte: Number(body.quantity || body.qte || 1),
-			total: finalTotal,
-			totalPrice: finalTotal,
-			price: finalTotal
-		};
+		// Deduplication check: if order has already been marked as synced
+		if (body.sheetsSynced) {
+			console.log(`🛡️ [Checkout API] Order ${orderId} already marked as synced. Skipping duplicate dispatch.`);
+			return json({ success: true, order: body, sheetsSynced: true }, { status: 200 });
+		}
 
-		// Parallel dual-storage: In-app DB + Google Sheets
+		// Parallel dual-storage: In-app DB + Google Sheets (via single unified deduplicated dispatcher)
 		const [saveResult, sheetSyncResult] = await Promise.allSettled([
 			saveOrder(body),
-			(async () => {
-				const webhookUrl = body.sheetsUrl || GOOGLE_SHEETS_WEBHOOK;
-				console.log('📦 Sent Sheets Payload:', sheetsPayload);
-				const sheetRes = await fetch(webhookUrl, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(sheetsPayload),
-					redirect: 'follow'
-				});
-				console.log('✅ Google Sheets Sync Response:', sheetRes.status);
-				return sheetRes.ok;
-			})()
+			sendOrderToGoogleSheets(body, body.sheetsUrl)
 		]);
 
 		const order = saveResult.status === 'fulfilled' ? saveResult.value : null;
@@ -76,11 +51,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'حدث خطأ أثناء حفظ الطلب' }, { status: 500 });
 		}
 
-		const sheetsSynced = sheetSyncResult.status === 'fulfilled' && sheetSyncResult.value;
+		const sheetsSynced = sheetSyncResult.status === 'fulfilled' && sheetSyncResult.value.ok;
 
 		return json({ success: true, order, sheetsSynced }, { status: 201 });
 	} catch (err) {
-		console.error('❌ Google Sheets sync failed:', err);
+		console.error('❌ Checkout processing failed:', err);
 		return json({ error: 'حدث خطأ أثناء معالجة الطلب' }, { status: 500 });
 	}
 };

@@ -28,6 +28,11 @@ export const POST: RequestHandler = async ({ request }) => {
     body.orderId = orderId;
     body.id = orderId;
 
+    if (body.sheetsSynced) {
+      console.log(`🛡️ [Orders API] Order ${orderId} already marked as synced. Skipping duplicate dispatch.`);
+      return json({ success: true, order: body, sheetsSynced: true }, { status: 200 });
+    }
+
     // Dual-Storage: Save to internal Git DB and Google Sheets simultaneously (parallel non-blocking)
     const [saveResult, sheetsResult] = await Promise.allSettled([
       saveOrder(body),
