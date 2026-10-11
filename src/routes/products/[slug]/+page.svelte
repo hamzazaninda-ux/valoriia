@@ -37,7 +37,6 @@
 
 	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
 		selectedTier = tierId;
-		// If cart already contains a main item, immediately synchronize it
 		if (cart.getMainItem()) {
 			const tier = PRICING_TIERS[tierId];
 			const bundleName = tier.units === 1 ? 'علبة واحدة' : tier.units === 2 ? 'علبتان' : '3 علب';
@@ -207,19 +206,19 @@
 				
 				<!-- 1. الشارة العلوية (Pill Tag) -->
 				<div>
-					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#174B38]/10 text-[#174B38] text-xs font-bold mb-2">
+					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold mb-2">
 						<span>{heroData.tag}</span>
 					</div>
 				</div>
 
-				<!-- 2. عنوان المنتج الواضح والمختصر (Concise Title) -->
-				<h1 class="font-display text-xl sm:text-2xl lg:text-3xl font-black text-[#174B38] leading-snug mb-1.5">
-					{product.name.replace(/\s*\([^)]*\)/g, '').trim()}
+				<!-- 2. العنوان العاطفي الصادم (H1) -->
+				<h1 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-snug mb-2">
+					{heroData.h1}
 				</h1>
 
-				<!-- 3. الوصف المختصر للميزة الأساسية (Primary Benefit) -->
-				<p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3 font-medium">
-					{product.headline}
+				<!-- 3. النص الفرعي التفسيري (جملة واحدة فقط) -->
+				<p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3 font-medium">
+					{heroData.sub}
 				</p>
 
 				<!-- 4. صف التقييم والنجوم الذهبية النظيفة -->
@@ -232,181 +231,134 @@
 							</svg>
 						{/each}
 					</div>
-					<span class="text-xs text-stone-500 font-medium">
-						({product.reviewCount || 420}+ تقييم مشتريات مؤكدة بالمغرب)
+					<span class="text-xs text-gray-600 font-medium">
+						({heroData.reviewCount} تقييم سيدة مغربية • مشتريات مؤكدة)
 					</span>
 				</div>
 
-				<!-- محدد العروض والطلب (Strict RTL & Dynamic Pricing Cards) -->
+				<!-- محدد العروض والطلب (Strict RTL & Right Badges) -->
 				<div id="offers" class="space-y-3 scroll-mt-24" dir="rtl">
-					<div class="flex items-center justify-between mb-2">
-						<span class="text-sm sm:text-base font-bold text-gray-900">اختاري باقتك المناسبة:</span>
-						<span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-							🚚 توصيل فابور لكافة المدن
+					<div class="flex items-center justify-between mb-2" dir="rtl">
+						<span class="text-base font-bold text-gray-900">اختاري باقتك:</span>
+						<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+							✨ نتيجة من العلبة الأولى
 						</span>
 					</div>
 
-					<!-- Tier 1 Card: 1 علبة -->
+					<!-- Tier 1 -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_1')}
-						class={`w-full p-3 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer bg-white text-right flex items-center justify-between gap-3 ${
+						class={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_1'
-								? 'border-[#174B38] ring-2 ring-[#174B38]/15 shadow-sm bg-emerald-50/20'
+								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
+						dir="rtl"
 					>
-						<!-- Right: Radio Indicator + Bundle Info -->
-						<div class="flex items-center gap-3 min-w-0">
-							<div
-								class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-									selectedTier === 'tier_1' ? 'border-[#174B38] bg-[#174B38]' : 'border-stone-300 bg-white'
-								}`}
-							>
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_1'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div class="min-w-0">
-								<div class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
-									{PRICING_TIERS.tier_1.units} علبة • شهر تجريبي
-								</div>
-								<p class="text-[11px] sm:text-xs text-stone-500 font-medium mt-0.5">
-									{PRICING_TIERS.tier_1.subtitle}
-								</p>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937]">علبة واحدة • شهر تجريبي</div>
+								<div class="text-xs text-stone-500">بداية استعادة الحيوية والترطيب</div>
 							</div>
 						</div>
-
-						<!-- Left: Price & Original Reference -->
+						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
-							<div class="font-display font-black text-base sm:text-lg text-[#174B38]" dir="ltr">
-								{PRICING_TIERS.tier_1.price} MAD
-							</div>
-							{#if PRICING_TIERS.tier_1.originalPrice > PRICING_TIERS.tier_1.price}
-								<div class="text-[11px] text-stone-400 line-through font-mono" dir="ltr">
-									{PRICING_TIERS.tier_1.originalPrice} MAD
-								</div>
-							{/if}
+							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">199 MAD</div>
+							<div class="text-[11px] text-stone-400 line-through" dir="ltr">299 MAD</div>
 						</div>
 					</button>
 
-					<!-- Tier 2 Card: 2 علب (Preselected & Only Recommended Bundle) -->
+					<!-- Tier 2 (Preselected - Most Popular) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_2')}
-						class={`relative w-full p-3 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer bg-white text-right flex items-center justify-between gap-3 ${
+						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_2'
-								? 'border-[#174B38] ring-2 ring-[#174B38]/20 shadow-md bg-emerald-50/20 -translate-y-0.5'
-								: 'border-[#174B38]/40 hover:border-[#174B38]'
+								? 'border-[#1B4332] ring-3 ring-[#1B4332]/20 shadow-md -translate-y-0.5'
+								: 'border-[#1B4332]/40 hover:border-[#1B4332]'
 						}`}
+						dir="rtl"
 					>
-						<!-- Single Bestseller Recommendation Ribbon -->
-						<div class="absolute -top-3 right-4 bg-[#174B38] text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 z-10">
-							<span>⭐ الأكثر طلباً</span>
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-[#C99738] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 z-10">
+							<span>الأكثر طلباً ⭐</span>
 						</div>
-
-						<!-- Right: Radio Indicator + Bundle Info -->
-						<div class="flex items-center gap-3 min-w-0">
-							<div
-								class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-									selectedTier === 'tier_2' ? 'border-[#174B38] bg-[#174B38]' : 'border-stone-300 bg-white'
-								}`}
-							>
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_2'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div class="min-w-0">
-								<div class="flex items-center gap-2 flex-wrap">
-									<span class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
-										{PRICING_TIERS.tier_2.units} علب • كورس متواصل
-									</span>
-									<span class="text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
-										وفّري {PRICING_TIERS.tier_2.savings} درهم
-									</span>
-								</div>
-								<p class="text-[11px] sm:text-xs text-stone-600 font-medium mt-0.5">
-									{PRICING_TIERS.tier_2.subtitle}
-								</p>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1B4332]">علبتان • ثبّتي النتيجة</div>
+								<div class="text-xs text-emerald-800 font-bold">شهرين متواصلين + توصيل فابور 🚚</div>
 							</div>
 						</div>
-
-						<!-- Left: Price & Original Reference -->
+						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
-							<div class="font-display font-black text-lg sm:text-xl text-[#174B38]" dir="ltr">
-								{PRICING_TIERS.tier_2.price} MAD
-							</div>
-							<div class="text-[11px] text-stone-400 line-through font-mono" dir="ltr">
-								{PRICING_TIERS.tier_2.originalPrice} MAD
-							</div>
+							<div class="font-black text-xl text-[#1B4332]" dir="ltr">279 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C]">وفّري 119 درهم</div>
 						</div>
 					</button>
 
-					<!-- Tier 3 Card: 3 علب (Full Course) -->
+					<!-- Tier 3 -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_3')}
-						class={`relative w-full p-3 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer bg-white text-right flex items-center justify-between gap-3 ${
+						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_3'
-								? 'border-[#174B38] ring-2 ring-[#174B38]/15 shadow-sm bg-emerald-50/20'
+								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
+						dir="rtl"
 					>
-						<!-- Right: Radio Indicator + Bundle Info -->
-						<div class="flex items-center gap-3 min-w-0">
-							<div
-								class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-									selectedTier === 'tier_3' ? 'border-[#174B38] bg-[#174B38]' : 'border-stone-300 bg-white'
-								}`}
-							>
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
+							<span>توفير 248 درهم 🎁</span>
+						</div>
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_3'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div class="min-w-0">
-								<div class="flex items-center gap-2 flex-wrap">
-									<span class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
-										{PRICING_TIERS.tier_3.units} علب • كورس علاجي كامل
-									</span>
-									<span class="text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
-										وفّري {PRICING_TIERS.tier_3.savings} درهم
-									</span>
-								</div>
-								<p class="text-[11px] sm:text-xs text-stone-600 font-medium mt-0.5">
-									{PRICING_TIERS.tier_3.subtitle}
-								</p>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب • كورس علاجي كامل</div>
+								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر + هدية 🎁</div>
 							</div>
 						</div>
-
-						<!-- Left: Price & Original Reference -->
+						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
-							<div class="font-display font-black text-base sm:text-lg text-[#174B38]" dir="ltr">
-								{PRICING_TIERS.tier_3.price} MAD
-							</div>
-							<div class="text-[11px] text-stone-400 line-through font-mono" dir="ltr">
-								{PRICING_TIERS.tier_3.originalPrice} MAD
-							</div>
+							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">349 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C]">وفّري 248 درهم</div>
 						</div>
 					</button>
 				</div>
 
-				<!-- In-Page CTA Button & COD Reassurance -->
-				<div class="space-y-2.5 pt-3">
+
+				<!-- زر الإجراء العريض وشارة الأمان المقتضبة -->
+				<div class="space-y-3 pt-3">
 					<button
 						type="button"
 						onclick={handleAddToCartAndOpenDrawer}
-						class="w-full h-13 sm:h-14 rounded-2xl bg-[#174B38] hover:bg-[#123d2e] active:scale-[0.98] font-bold text-white text-base sm:text-lg shadow-lg shadow-emerald-950/15 flex items-center justify-center gap-2 transition-all cursor-pointer"
+						class="bg-[#1B4332] text-white py-4 px-6 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 shadow-md hover:bg-[#153427] transition-all w-full cursor-pointer"
 					>
-						<span>أضيفي للسلة وتابعي الطلب — DH {currentTier.price}</span>
-						<span class="text-lg">←</span>
+						<span>أضيفي العرض للسلة • DH {currentTier.price} 🛒</span>
 					</button>
 
-					<!-- Reassurance Line -->
-					<div class="text-center pt-0.5">
-						<p class="text-xs sm:text-sm font-semibold text-stone-600 bg-white/80 py-2.5 px-3 rounded-xl border border-stone-200 text-center flex items-center justify-center gap-2">
-							<span>🚚 توصيل سريع 24/48h</span>
-							<span>•</span>
-							<span>📦 الدفع عند الاستلام بعد المعاينة</span>
+					<!-- شارة أمان واحدة مقتضبة تحت الزر -->
+					<div class="text-center pt-1">
+						<p class="text-xs sm:text-sm font-bold text-[#1B4332] bg-emerald-50/80 py-2.5 px-4 rounded-xl border border-emerald-900/10 inline-block w-full">
+							📦 فتحي الكولية وقلبيها عاد تخلصي • التوصيل فابور 24/48h
 						</p>
 					</div>
 				</div>
@@ -694,28 +646,29 @@
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 5. ميثاق الجودة والنقاء الغذائي (NOVAVITA Purity & Safety Standard)       -->
+		<!-- 5. قسم السلطة والرأي الطبي المصور (Doctor Endorsement with Photo) -->
 		<!-- ========================================================================= -->
 		<div class="mt-12 sm:mt-18">
-			<div class="rounded-3xl bg-[#174B38] text-white p-6 sm:p-8 shadow-xl border border-emerald-800/40 space-y-4">
+			<div class="rounded-3xl bg-[#143427] text-white p-6 sm:p-8 shadow-xl border border-emerald-800/40 space-y-4">
 				
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-md text-2xl">
-						🌿
+					<!-- Doctor Avatar Placeholder -->
+					<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-900 to-[#C99738]/30 border-2 border-[#C99738]/50 flex items-center justify-center shrink-0 shadow-md">
+						<span class="text-2xl sm:text-3xl">🩺</span>
 					</div>
 					<div>
-						<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 text-[11px] font-bold border border-emerald-300/30">
-							معايير الجودة والرقابة بالمغرب
+						<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#C99738]/20 text-[#C99738] text-[11px] font-black border border-[#C99738]/30">
+							رأي اختصاصي معتمد بالمغرب
 						</span>
-						<h3 class="font-display text-base sm:text-lg font-bold text-white mt-1">
-							ميثاق NOVAVITA للنقاء والأمان الصحي
+						<h3 class="font-display text-sm sm:text-base font-bold text-white mt-1">
+							د. غيثة التازي • أخصائية تغذية علاجية وصحة البشرة
 						</h3>
 					</div>
 				</div>
 
-				<p class="text-xs sm:text-sm lg:text-base font-medium leading-relaxed text-stone-100 bg-white/5 p-4 rounded-2xl border border-white/10">
-					نلتزم بتقديم مكملات غذائية مبنية على خلاصات نباتية طبيعية وبكتين الفواكه الحلال، بدون جيلاتين خنزيري وبدون أي مواد حافظة ضارة. هدفنا دعم حيويتك وجمالك بروتين يومي شهي وآمن 100%، مع التوصيل المجاني والدفع عند الاستلام بعد معاينة طلبك بنفسك.
-				</p>
+				<blockquote class="text-xs sm:text-sm lg:text-base font-medium leading-relaxed text-stone-100 bg-white/5 p-4 rounded-2xl border border-white/10">
+					«تركيبة NOVAVITA المعتمدة على البكتين سريع الامتصاص والجرعات السريرية الدقيقة هي الحل العلمي الأنسب للمرأة في المغرب لعلاج مسببات تساقط الشعر وشحوب البشرة الناتجة عن ملوحة المياه والتوتر اليومي، بدون أي أثر سلبي على المعدة.»
+				</blockquote>
 
 			</div>
 		</div>
@@ -880,8 +833,8 @@
 					<h3 class="font-display text-xl sm:text-2xl font-black text-white">
 						جاهزة تبداي روتين التحول الحقيقي؟
 					</h3>
-					<p class="text-xs sm:text-sm text-stone-200">
-						الباقة المحددة: <span class="font-bold text-white">{currentTier.title}</span> • <span class="font-bold text-emerald-300">DH {currentTier.price}</span>
+					<p class="text-xs sm:text-sm text-stone-300">
+						الباقة المحددة: <span class="font-bold text-white">{currentTier.title}</span> • <span class="font-bold text-[#E86A7C]">DH {currentTier.price}</span>
 					</p>
 				</div>
 
@@ -890,7 +843,7 @@
 					<button
 						type="button"
 						onclick={handleAddToCartAndOpenDrawer}
-						class="w-full h-14 rounded-2xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-[0.98] font-bold text-base sm:text-lg shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
+						class="w-full min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
 					>
 						<span>اطلبي الآن • الدفع عند الاستلام</span>
 						<span class="text-lg">←</span>
@@ -924,17 +877,17 @@
 				<span class="text-[10px] text-emerald-200 font-bold">توصيل فابور مجاني 🚚</span>
 				<div class="flex items-baseline gap-1.5" dir="ltr">
 					<span class="font-black text-base text-white font-display">DH {currentTier.price}</span>
-					{#if currentTier.originalPrice && currentTier.originalPrice > currentTier.price}
-						<span class="text-[10px] text-emerald-300/70 line-through font-mono">DH {currentTier.originalPrice}</span>
+					{#if selectedTier === 'tier_2'}
+						<span class="text-[10px] text-emerald-300/70 line-through">DH 398</span>
 					{/if}
 				</div>
 			</div>
 			<button
 				type="button"
 				onclick={scrollToOffers}
-				class="flex-1 min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-bold text-xs sm:text-sm px-3 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+				class="flex-1 min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
 			>
-				<span>اختاري باقتك واطلبي الآن</span>
+				<span>اطلبي الآن • الدفع عند الاستلام</span>
 				<span class="text-base">←</span>
 			</button>
 		</div>
