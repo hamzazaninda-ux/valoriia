@@ -181,13 +181,13 @@
 			if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				try {
 					(window as any).gtag('event', 'conversion', {
-						'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+						'send_to': 'AW-18405009405',
 						'value': orderTotal || 229,
 						'currency': 'MAD',
 						'transaction_id': orderId
 					});
 					(window as any).gtag('event', 'purchase', {
-						'send_to': 'AW-17426876482/SmXBCMqzj5cdEMKQ5PVA',
+						'send_to': 'AW-18405009405',
 						transaction_id: orderId,
 						value: orderTotal || 229,
 						currency: 'MAD',
