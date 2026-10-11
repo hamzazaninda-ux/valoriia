@@ -127,7 +127,7 @@
 		if (key.includes('biotine')) {
 			return PRODUCT_HERO_DATA.gummies_biotine;
 		}
-		if (key.includes('vitamine')) {
+		if (key.includes('vitamine') || key.includes('multivit')) {
 			return PRODUCT_HERO_DATA.gumies_vitamine;
 		}
 		return PRODUCT_HERO_DATA.gummies_collagen;
@@ -202,6 +202,16 @@
 						<img 
 							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
 							alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
+							class="w-full h-full object-cover object-center block"
+							loading="eager"
+							fetchpriority="high"
+						/>
+					</div>
+				{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
+					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center mb-4">
+						<img 
+							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
+							alt="نتائج علكات ملتي فيتامين نوفافيتا قبل وبعد - التخلص من الخمول والنشاط اليومي" 
 							class="w-full h-full object-cover object-center block"
 							loading="eager"
 							fetchpriority="high"
@@ -400,6 +410,13 @@
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 				/>
+			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748847/%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%AA%D8%B9%D8%A8_%D8%AD%D9%88%D9%84_%D8%A7%D9%84%D9%82%D9%87%D9%88%D8%A9.png" 
+					alt="معاناة الإرهاق الصباحي والسخفة والاعتماد على المنبهات والقهوة" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
 			{:else}
 				<img 
 					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
@@ -482,6 +499,13 @@
 				<img 
 					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748630/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%85%D8%B4%D8%B1%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%81%D9%8A_%D8%A7%D9%84%D8%AD%D9%85%D9%91%D8%A7%D9%85.png" 
 					alt="الحل الجذري: شعر كثيف وصحي وتوقف التساقط مع علكات بيوتين نوفافيتا" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
+			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748884/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%81%D9%8A%D8%AA%D8%A7%D9%85%D9%8A%D9%86%D8%A7%D8%AA.png" 
+					alt="الحل الجذري: طاقة طبيعية ونشاط مستمر مع علكات ملتي فيتامين نوفافيتا" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 				/>

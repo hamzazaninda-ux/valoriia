@@ -5,7 +5,7 @@ import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
 export const load: PageServerLoad = async ({ params }) => {
-  const gummieSlugs = ['gummies_collagen', 'gummies_biotine', 'gumies_vitamine'];
+  const gummieSlugs = ['gummies_collagen', 'gummies_biotine', 'gumies_vitamine', 'gummies_multivitamines', 'multivitamines', 'gummies-multivitamines'];
   if (gummieSlugs.includes(params.slug)) {
     throw redirect(301, `/products/${params.slug}`);
   }

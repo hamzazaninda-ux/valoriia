@@ -171,6 +171,16 @@ export const PRODUCTS: CatalogProduct[] = [
 ];
 
 export function getProductBySlug(slug: string): CatalogProduct | undefined {
+  const normalized = (slug || '').toLowerCase();
+  if (
+    normalized === 'gummies_multivitamines' ||
+    normalized === 'gummies-multivitamines' ||
+    normalized === 'multivitamines' ||
+    normalized === 'multivitamin' ||
+    normalized === 'gummies_multivitamin'
+  ) {
+    return PRODUCTS.find((p) => p.id === 'gumies_vitamine');
+  }
   return PRODUCTS.find((p) => p.slug === slug || p.id === slug);
 }
 
