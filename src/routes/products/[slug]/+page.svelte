@@ -197,6 +197,16 @@
 							fetchpriority="high"
 						/>
 					</div>
+				{:else if (product.slug || '').includes('biotine')}
+					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center mb-4">
+						<img 
+							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
+							alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
+							class="w-full h-full object-cover object-center block"
+							loading="eager"
+							fetchpriority="high"
+						/>
+					</div>
 				{:else}
 					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 mb-4">
 						<img
@@ -383,12 +393,21 @@
 		<!-- 1. مساحة الصورة الأولى (صورة الواقع / المشكلة) -->
 		<!-- ========================================================================= -->
 		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
-			<img 
-				src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
-				alt="معاناة تساقط الشعر وشحوب البشرة بسبب الماء الكلسي والتعب" 
-				class="w-full h-full object-cover object-center block"
-				loading="lazy"
-			/>
+			{#if (product.slug || '').includes('biotine')}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748575/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_2.png" 
+					alt="معاناة تساقط الشعر وظهور الفراغات بسبب الماء الكلسي وضعف البصيلات" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
+			{:else}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
+					alt="معاناة تساقط الشعر وشحوب البشرة بسبب الماء الكلسي والتعب" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
+			{/if}
 		</div>
 
 		<!-- ========================================================================= -->
@@ -459,12 +478,21 @@
 		<!-- 3. مساحة الصورة الثانية (صورة المنتج بالمميزات) -->
 		<!-- ========================================================================= -->
 		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
-			<img 
-				src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747975/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%88%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86.png" 
-				alt="الحل الجذري: شعر صحي وبشرة مشرقة بفضل علكات كولاجين نوفافيتا" 
-				class="w-full h-full object-cover object-center block"
-				loading="lazy"
-			/>
+			{#if (product.slug || '').includes('biotine')}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748630/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%85%D8%B4%D8%B1%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%81%D9%8A_%D8%A7%D9%84%D8%AD%D9%85%D9%91%D8%A7%D9%85.png" 
+					alt="الحل الجذري: شعر كثيف وصحي وتوقف التساقط مع علكات بيوتين نوفافيتا" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
+			{:else}
+				<img 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747975/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%88%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86.png" 
+					alt="الحل الجذري: شعر صحي وبشرة مشرقة بفضل علكات كولاجين نوفافيتا" 
+					class="w-full h-full object-cover object-center block"
+					loading="lazy"
+				/>
+			{/if}
 		</div>
 
 		<!-- ========================================================================= -->
