@@ -123,60 +123,16 @@
 
 			</div>
 
-			<!-- Column 2 (Left in RTL on Desktop, Top on Mobile): Luxury Visual Container with 3 Jars Mockup -->
+			<!-- Column 2 (Left in RTL on Desktop, Top on Mobile): Luxury Visual Container with Unified 3-Jar Cluster -->
 			<div class="order-1 lg:order-2 lg:col-span-5 flex justify-center w-full">
-				<div class="relative w-full max-w-md lg:max-w-none rounded-3xl bg-gradient-to-br from-[#EAEFEA] via-[#F4F7F4] to-[#FAF8F5] border border-[#1B4332]/10 shadow-lg p-5 sm:p-8 min-h-[350px] sm:min-h-[420px] flex items-center justify-center overflow-hidden group">
-					
-					<!-- Natural organic background touches -->
-					<div class="absolute -top-12 -start-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-					<div class="absolute -bottom-12 -end-12 w-48 h-48 bg-[#E86A7C]/10 rounded-full blur-3xl pointer-events-none"></div>
-
-					<!-- Botanical Leaf SVG accents in background -->
-					<svg class="absolute top-4 end-4 w-20 h-20 text-emerald-800/10 pointer-events-none" viewBox="0 0 100 100" fill="currentColor">
-						<path d="M50 10 C30 30, 20 60, 50 90 C80 60, 70 30, 50 10 Z" />
-					</svg>
-					<svg class="absolute bottom-12 start-4 w-16 h-16 text-emerald-800/8 pointer-events-none -rotate-45" viewBox="0 0 100 100" fill="currentColor">
-						<path d="M50 10 C30 30, 20 60, 50 90 C80 60, 70 30, 50 10 Z" />
-					</svg>
-
-					<!-- Trio Jars Mockup Stage -->
-					<div class="relative z-10 w-full max-w-[340px] sm:max-w-[380px] h-72 sm:h-80 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
-						
-						<!-- Left Jar: Marine Collagen (Wild Berry) -->
-						<div class="absolute start-0 bottom-4 w-36 sm:w-44 aspect-square -rotate-6 transition-transform duration-500 group-hover:-translate-x-2 z-10">
-							<img
-								src="/images/products/gummies_collagen.svg"
-								alt="علكات الكولاجين البحري"
-								class="w-full h-full object-contain drop-shadow-xl"
-							/>
-						</div>
-
-						<!-- Right Jar: Multivitamin (Citrus) -->
-						<div class="absolute end-0 bottom-4 w-36 sm:w-44 aspect-square rotate-6 transition-transform duration-500 group-hover:translate-x-2 z-10">
-							<img
-								src="/images/products/gumies_vitamine.svg"
-								alt="علكات الفيتامينات المتعددة"
-								class="w-full h-full object-contain drop-shadow-xl"
-							/>
-						</div>
-
-						<!-- Center Jar (Front & Prominent): Biotin (Hair & Nails) -->
-						<div class="relative w-44 sm:w-52 aspect-square z-20 -translate-y-2 transition-transform duration-500 group-hover:-translate-y-3">
-							<img
-								src="/images/products/gummies_biotine.svg"
-								alt="علكات البيوتين المركزة"
-								class="w-full h-full object-contain drop-shadow-2xl"
-							/>
-						</div>
-
-					</div>
-
-					<!-- Floating Pill Badge (Bottom Corner) -->
-					<div class="absolute bottom-4 start-4 sm:bottom-6 sm:start-6 bg-white/95 backdrop-blur-xs rounded-full px-4 py-2 border border-[#1B4332]/10 shadow-md flex items-center gap-1.5 text-xs font-black text-[#1B4332] z-30">
-						<span class="text-emerald-700">✓</span>
-						<span>بكتين نباتي طبيعي 100% حلال</span>
-					</div>
-
+				<div class="relative w-full max-w-md mx-auto aspect-square bg-[#FAF8F5] rounded-[28px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center">
+					<img 
+						src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791746077/%D8%B9%D8%A8%D9%88%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7_%D9%85%D8%B9_%D9%81%D9%88%D8%A7%D9%83%D9%87_%D8%B7%D8%A7%D8%B2%D8%AC%D8%A9ugburu.png" 
+						alt="تشكيلة علكات نوفافيتا مع الفواكه الطبيعية" 
+						class="w-full h-full object-cover object-center block"
+						loading="eager"
+						fetchpriority="high"
+					/>
 				</div>
 			</div>
 
