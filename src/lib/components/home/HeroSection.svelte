@@ -127,12 +127,17 @@
 			<div class="order-1 lg:order-2 lg:col-span-5 flex justify-center w-full">
 				<div class="relative w-full max-w-md mx-auto aspect-square bg-[#FAF8F5] rounded-[28px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center">
 					<img 
-						src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791746077/%D8%B9%D8%A8%D9%88%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7_%D9%85%D8%B9_%D9%81%D9%88%D8%A7%D9%83%D9%87_%D8%B7%D8%A7%D8%B2%D8%AC%D8%A9ugburu.png" 
-						alt="تشكيلة علكات نوفافيتا مع الفواكه الطبيعية" 
+						src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791751038/%D8%AB%D9%84%D8%A7%D8%AB_%D8%B9%D8%A8%D9%88%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7_%D9%85%D8%B9_%D8%A7%D9%84%D8%AA%D9%88%D8%AA_%D9%88%D8%A7%D9%84%D9%81%D8%A7%D9%83%D9%87%D8%A9.png" 
+						alt="عائلة مكملات نوفافيتا الطبيعية - كولاجين، بيوتين، وملتي فيتامين" 
 						class="w-full h-full object-cover object-center block"
 						loading="eager"
 						fetchpriority="high"
 					/>
+					<!-- Signature confidence badge at the bottom of the card -->
+					<div class="absolute bottom-3 start-3 sm:bottom-4 sm:start-4 bg-white/95 backdrop-blur-xs rounded-full px-3.5 py-1.5 border border-[#1B4332]/10 shadow-md flex items-center gap-1.5 text-xs font-bold text-[#1B4332] z-10">
+						<span class="text-emerald-700 font-black">✓</span>
+						<span>بكتين نباتي طبيعي 100% حلال</span>
+					</div>
 				</div>
 			</div>
 
