@@ -607,7 +607,7 @@
 												<h4 class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
 													{itemTitle}
 												</h4>
-												<div class="font-display font-black text-xs sm:text-sm text-[#1B4332] shrink-0" dir="ltr">
+												<div class="font-display font-black text-xs sm:text-sm text-[#174B38] shrink-0" dir="ltr">
 													DH {item.price}
 												</div>
 											</div>
@@ -652,7 +652,7 @@
 								</div>
 								<div class="border-t border-stone-200/80 pt-2 flex items-center justify-between">
 									<span class="font-display font-black text-sm sm:text-base text-gray-900">المجموع النهائي:</span>
-									<div class="font-display font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">
+									<div class="font-display font-black text-lg sm:text-xl text-[#174B38]" dir="ltr">
 										DH {subtotal}
 									</div>
 								</div>
@@ -678,7 +678,7 @@
 									class={`w-full h-12 rounded-xl sm:rounded-2xl border bg-white px-4 text-sm font-semibold outline-none transition-all text-right ${
 										nameError
 											? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
-											: 'border-stone-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
+											: 'border-stone-200 focus:border-[#174B38] focus:ring-2 focus:ring-[#174B38]/10'
 									}`}
 								/>
 								{#if nameError}
@@ -704,10 +704,11 @@
 										oninput={() => (phoneError = '')}
 										placeholder="06XXXXXXXX"
 										autocomplete="tel"
+										style="text-align: right;"
 										class={`w-full h-12 rounded-xl sm:rounded-2xl border bg-white px-4 text-sm font-semibold outline-none text-right transition-all font-mono tracking-wider ${
 											phoneError
 												? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
-												: 'border-stone-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
+												: 'border-stone-200 focus:border-[#174B38] focus:ring-2 focus:ring-[#174B38]/10'
 										}`}
 									/>
 								</div>
@@ -727,19 +728,18 @@
 							<button
 								type="submit"
 								disabled={isSubmitting || cart.count === 0}
-								class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#1B4332] hover:bg-[#153427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 mt-4"
+								class="w-full h-[52px] rounded-xl sm:rounded-2xl bg-[#174B38] hover:bg-[#123d2e] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#174B38] font-bold text-white text-base sm:text-lg shadow-md shadow-emerald-950/15 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center mt-4 select-none"
 							>
 								{#if isSubmitting}
-									<span class="inline-flex items-center gap-2">
+									<span class="inline-flex items-center justify-center gap-2">
 										<svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
 											<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
 											<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
 										</svg>
-										<span>جاري تأكيد الطلب... ⏳</span>
+										<span>تأكيد الطلب</span>
 									</span>
 								{:else}
-									<span>أكّدي الطلب — DH {subtotal}</span>
-									<span class="text-lg">←</span>
+									<span>تأكيد الطلب</span>
 								{/if}
 							</button>
 

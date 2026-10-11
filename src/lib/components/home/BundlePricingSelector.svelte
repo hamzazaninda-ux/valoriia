@@ -283,11 +283,13 @@
 					<input
 						id="order-phone"
 						type="tel"
+						inputmode="tel"
 						bind:value={phone}
 						required
-						placeholder="06XXXXXXXX أو 07XXXXXXXX"
-						class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none transition-all focus:border-[#1B4332] focus:bg-white text-start"
+						placeholder="06XXXXXXXX"
+						class="w-full h-12 rounded-xl border border-stone-200 bg-[#FAF8F5] px-4 text-sm font-semibold outline-none transition-all focus:border-[#174B38] focus:bg-white text-right"
 						dir="ltr"
+						style="text-align: right;"
 					/>
 				</div>
 
@@ -296,12 +298,18 @@
 					<button
 						type="submit"
 						disabled={localSubmitting || isSubmitting}
-						class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+						class="w-full h-[52px] rounded-xl sm:rounded-2xl bg-[#174B38] hover:bg-[#123d2e] active:scale-[0.99] font-bold text-white text-base sm:text-lg shadow-md shadow-emerald-950/15 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer select-none"
 					>
 						{#if localSubmitting || isSubmitting}
-							<span>جاري تأكيد طلبك بأمان... ⏳</span>
+							<span class="inline-flex items-center justify-center gap-2">
+								<svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								<span>تأكيد الطلب</span>
+							</span>
 						{:else}
-							<span>تأكيد الطلب الآن (الدفع عند الاستلام) 🛍️</span>
+							<span>تأكيد الطلب</span>
 						{/if}
 					</button>
 				</div>

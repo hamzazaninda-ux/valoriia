@@ -443,10 +443,12 @@
 						>
 							<input
 								type="tel"
+								inputmode="tel"
 								bind:value={newPhone}
 								dir="ltr"
-								placeholder="06/07 xxxxxxxx"
-								class="flex-1 px-3 py-1.5 text-xs sm:text-sm font-mono border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B4332]"
+								placeholder="06XXXXXXXX"
+								style="text-align: right;"
+								class="flex-1 px-3 py-1.5 text-xs sm:text-sm font-mono border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#174B38] text-right"
 							/>
 							<button
 								type="button"

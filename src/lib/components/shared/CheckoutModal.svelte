@@ -282,9 +282,9 @@
 							oninput={() => {
 								if (errors.phoneNumber) errors.phoneNumber = '';
 							}}
-							placeholder="06xxxxxxxx"
+							placeholder="06XXXXXXXX"
 							autocomplete="tel"
-							class="h-12 w-full rounded-xl border border-neutral-300 bg-white px-3.5 text-right text-sm font-medium text-neutral-900 outline-none transition-all placeholder:text-neutral-400 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600"
+							class="h-12 w-full rounded-xl border border-neutral-300 bg-white px-3.5 text-right text-sm font-medium text-neutral-900 outline-none transition-all placeholder:text-neutral-400 focus:border-[#174B38] focus:ring-1 focus:ring-[#174B38]"
 							dir="ltr"
 							style="text-align: right;"
 						/>
@@ -295,13 +295,13 @@
 					<button
 						type="submit"
 						disabled={loading}
-						class="inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 font-black text-white shadow-lg transition-all hover:bg-emerald-900 active:scale-[0.98] disabled:opacity-60"
+						class="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-xl sm:rounded-2xl bg-[#174B38] hover:bg-[#123d2e] active:scale-[0.99] font-bold text-white text-base shadow-md shadow-emerald-950/15 transition-all disabled:opacity-50 select-none cursor-pointer"
 					>
 						{#if loading}
 							<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent pointer-events-none" style="pointer-events: none;"></span>
-							<span class="pointer-events-none" style="pointer-events: none;">جاري تأكيد طلبك...</span>
+							<span class="pointer-events-none" style="pointer-events: none;">تأكيد الطلب</span>
 						{:else}
-							<span class="pointer-events-none" style="pointer-events: none;">أكّد الطلب — {cart.subtotal} {currency}</span>
+							<span class="pointer-events-none" style="pointer-events: none;">تأكيد الطلب</span>
 						{/if}
 					</button>
 					{#if submitError}
