@@ -171,7 +171,7 @@
 				</div>
 
 				<!-- 2. العنوان العاطفي الصادم (H1) -->
-				<h1 class="text-xl sm:text-2xl font-black text-[#1B4332] leading-snug mb-2">
+				<h1 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-snug mb-2">
 					{heroData.h1}
 				</h1>
 
