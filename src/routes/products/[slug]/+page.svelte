@@ -43,9 +43,10 @@
 				? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
 				: '3 علب • كورس علاجي كامل 3 أشهر 🎁';
 
+		const cleanName = product.name.replace(/\s*\([^)]*\)/g, '').trim();
 		const displayTitle = currentTier.units === 2
-			? `${product.name} + هدية 🎁`
-			: `${product.name} (${bundleName})`;
+			? `${cleanName} + هدية 🎁`
+			: `${cleanName} (${bundleName})`;
 
 		cart.setMainItem({
 			slug: product.slug,
