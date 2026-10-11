@@ -57,9 +57,12 @@
 			</button>
 
 			<!-- Trust Tagline on Desktop -->
-			<div class="hidden lg:flex items-center gap-1.5 text-xs font-semibold text-[#1B4332]/80 bg-emerald-950/5 px-2.5 py-1 rounded-full border border-emerald-900/10">
-				<span>🌿</span>
-				<span>100% طبيعي وحلال</span>
+			<div class="hidden lg:flex items-center gap-1.5 text-xs font-semibold text-[#1B4332]/80 bg-emerald-950/5 px-3 py-1 rounded-full border border-emerald-900/10">
+				<svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+					<path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+				</svg>
+				<span>100% طبيعي وحلال معتمد</span>
 			</div>
 		</div>
 

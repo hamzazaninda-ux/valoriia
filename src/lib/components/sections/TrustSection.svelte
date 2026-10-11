@@ -154,12 +154,12 @@
 	<!-- 2. Professional Customer Service & Advisory Card -->
 	<div id="offer" class="mt-8 scroll-mt-24 relative overflow-hidden rounded-3xl border border-stone-200/80 bg-white p-6 sm:p-8 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.06)]">
 		<!-- Subtle decorative background gradient -->
-		<div class="pointer-events-none absolute -left-20 -top-20 h-56 w-56 rounded-full bg-[#1B4332]/5 blur-3xl" aria-hidden="true"></div>
-		<div class="pointer-events-none absolute -right-20 -bottom-20 h-56 w-56 rounded-full bg-[#C99738]/10 blur-3xl" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute -start-20 -top-20 h-56 w-56 rounded-full bg-[#1B4332]/5 blur-3xl" aria-hidden="true"></div>
+		<div class="pointer-events-none absolute -end-20 -bottom-20 h-56 w-56 rounded-full bg-[#C99738]/10 blur-3xl" aria-hidden="true"></div>
 
 		<div class="relative flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
 			<!-- Info & Details -->
-			<div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-right gap-4 sm:gap-5 flex-1">
+			<div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-start gap-4 sm:gap-5 flex-1">
 				<div class="relative">
 					<div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#1B4332] text-white shadow-md">
 						<svg class="h-8 w-8 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -167,7 +167,7 @@
 						</svg>
 					</div>
 					<!-- Online pulse dot -->
-					<span class="absolute -top-1 -right-1 flex h-4 w-4">
+					<span class="absolute -top-1 -end-1 flex h-4 w-4">
 						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
 						<span class="relative inline-flex h-4 w-4 rounded-full border-2 border-white bg-emerald-500"></span>
 					</span>

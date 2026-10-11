@@ -2,40 +2,46 @@
 	const reviews = [
 		{
 			name: 'سلمى العلمي',
+			initials: 'س.ع',
 			city: 'الدار البيضاء',
 			age: '28 سنة',
 			stars: 5,
-			badge: 'شراء مؤكد ✓',
+			badge: 'شراء مؤكد',
 			date: 'منذ أسبوعين',
 			text: 'بعد الولادة شعري ولا كيطيح بالخصلات وتخلعت بزاااف. جربت شحال د المكملات وكانو كيروعو ليا المعدة. مع NOVAVITA تغير كلشي، المذاق بحال شي بونبون كيحمق، ودابا كملت شهرين: التساقط حبس تماماً وخلف ليا البيبي هير بكثافة! كنصح بيهم كل بنت.'
 		},
 		{
 			name: 'مريم بنجلون',
+			initials: 'م.ب',
 			city: 'الرباط',
 			age: '34 سنة',
 			stars: 5,
-			badge: 'شراء مؤكد ✓',
+			badge: 'شراء مؤكد',
 			date: 'منذ 3 أسابيع',
 			text: 'أحسن استثمار درتو في راسي هاد العام. أظافري كانو كيتهرسو غير بوحدهم ودابا ولاو قاصحين، وبشرتي ولات فيها واحد النضارة كاع صحاباتي في الخدمة سولوني على السر ديالها. شكراً على سرعة التوصيل والمعاملة الراقية.'
 		},
 		{
 			name: 'كنزة المرابط',
+			initials: 'ك.م',
 			city: 'مراكش',
 			age: '25 سنة',
 			stars: 5,
-			badge: 'شراء مؤكد ✓',
+			badge: 'شراء مؤكد',
 			date: 'منذ شهر',
 			text: 'الكونسيبت واعر بزاف! عمري قدرت نتبع كورس ديال الفيتامينات حتى لهاد المرة حيت الطعم كيشهي ومكتحسيش براسك مريضة كتشربي دوا. التوصيل وصلني في 24 ساعة لدارنا وفحصت الطرد قبل ما نخلص.'
 		}
 	];
 </script>
 
-<section class="py-12 sm:py-20 bg-[#FAF8F5] border-b border-emerald-950/10">
-	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-10">
+<section class="py-14 sm:py-24 bg-[#FAF8F5] border-b border-emerald-950/10" dir="rtl">
+	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
 		
 		<div class="text-center max-w-xl mx-auto space-y-3">
-			<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/5 px-3.5 py-1 text-xs sm:text-sm font-bold text-[#1B4332]">
-				⭐ تجارب حقيقية
+			<span class="inline-flex items-center gap-2 rounded-full bg-emerald-950/5 px-4 py-1.5 text-xs font-black text-[#1B4332] border border-emerald-900/10">
+				<svg class="w-3.5 h-3.5 text-[#C99738]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+					<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+				</svg>
+				<span>تجارب حقيقية موثقة</span>
 			</span>
 			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332]">
 				شنو كيقولو زبوناتنا في المغرب؟
@@ -54,13 +60,16 @@
 						<div class="flex items-center justify-between">
 							<div class="flex text-[#F59E0B] gap-1">
 								{#each Array(review.stars) as _}
-									<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20">
+									<svg class="w-4 h-4 fill-current text-[#F59E0B]" viewBox="0 0 20 20" aria-hidden="true">
 										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
 									</svg>
 								{/each}
 							</div>
-							<span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-								{review.badge}
+							<span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+								<svg class="w-3 h-3 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+								</svg>
+								<span>{review.badge}</span>
 							</span>
 						</div>
 
@@ -69,10 +78,15 @@
 						</p>
 					</div>
 
-					<div class="pt-6 border-t border-stone-100 flex items-center justify-between text-xs mt-4">
-						<div class="flex flex-col text-start">
-							<span class="font-extrabold text-[#1B4332] text-base">{review.name}</span>
-							<span class="text-stone-500 font-semibold text-xs sm:text-sm">{review.city} ({review.age})</span>
+					<div class="pt-5 border-t border-stone-100 flex items-center justify-between text-xs mt-4">
+						<div class="flex items-center gap-3 text-start">
+							<div class="w-9 h-9 rounded-full bg-[#1B4332] text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
+								{review.initials}
+							</div>
+							<div class="flex flex-col">
+								<span class="font-extrabold text-[#1B4332] text-sm sm:text-base">{review.name}</span>
+								<span class="text-stone-500 font-semibold text-xs">{review.city} ({review.age})</span>
+							</div>
 						</div>
 						<span class="text-stone-400 font-medium text-xs">{review.date}</span>
 					</div>
@@ -82,3 +96,4 @@
 
 	</div>
 </section>
+

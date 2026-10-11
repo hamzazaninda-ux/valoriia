@@ -109,12 +109,34 @@
 			</div>
 			<div class="space-y-3">
 				<h4 class="text-sm font-bold text-white">ضمانات الشراء والتوصيل</h4>
-				<div class="grid gap-2 text-xs">
-					<span class="text-stone-300">🇲🇦 الدفع نقداً بعد الاستلام</span>
-					<span class="text-stone-300">📦 فحص ومعاينة الطرد عند الباب</span>
-					<span class="text-stone-300">🚚 توصيل مجاني وسريع لكافة المدن</span>
-					<span class="text-stone-300">🌿 بكتين نباتي 100% حلال معتمد</span>
+				<div class="grid gap-2.5 text-xs">
+					<span class="flex items-center gap-2 text-stone-300">
+						<svg class="h-4 w-4 text-[#C99738] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v8.25m0 0a60.11 60.11 0 0 0 15.797 2.101c.727.198 1.453-.342 1.453-1.096V14.25m-17.25 0h17.25"/>
+						</svg>
+						الدفع نقداً بعد الاستلام
+					</span>
+					<span class="flex items-center gap-2 text-stone-300">
+						<svg class="h-4 w-4 text-[#C99738] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+						</svg>
+						فحص ومعاينة الطرد عند الباب
+					</span>
+					<span class="flex items-center gap-2 text-stone-300">
+						<svg class="h-4 w-4 text-[#C99738] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
+						</svg>
+						توصيل مجاني وسريع لكافة المدن
+					</span>
+					<span class="flex items-center gap-2 text-stone-300">
+						<svg class="h-4 w-4 text-[#C99738] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/>
+							<path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"/>
+						</svg>
+						بكتين نباتي 100% حلال معتمد
+					</span>
 				</div>
+
 			</div>
 			<div class="space-y-3">
 				<h4 class="text-sm font-bold text-white">خدمة الزبناء بالمغرب</h4>
