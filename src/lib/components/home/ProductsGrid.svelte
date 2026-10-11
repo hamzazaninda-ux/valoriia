@@ -2,6 +2,7 @@
 	interface ProductCard {
 		slug: string;
 		image: string;
+		alt: string;
 		tag: string;
 		tagColor: string;
 		title: string;
@@ -14,7 +15,8 @@
 	const products: ProductCard[] = [
 		{
 			slug: 'gummies_collagen',
-			image: '/images/products/gummies_collagen.svg',
+			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-collagen_gummies-main_1.png',
+			alt: 'علكات كولاجين نوفافيتا البحري وحمض الهيالورونيك',
 			tag: 'روتين النضارة • Glow',
 			tagColor: 'bg-emerald-50 text-[#1B4332] border-emerald-200/80',
 			title: 'علكات الكولاجين البحري وحمض الهيالورونيك',
@@ -25,7 +27,8 @@
 		},
 		{
 			slug: 'gummies_biotine',
-			image: '/images/products/gummies_biotine.svg',
+			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png',
+			alt: 'علكات بيوتين نوفافيتا المركز 3000mcg والزنك لتساقط الشعر',
 			tag: 'روتين الشعر • Hair Rescue',
 			tagColor: 'bg-rose-50 text-[#E86A7C] border-rose-200/80',
 			title: 'علكات البيوتين المركز 3000mcg والزنك',
@@ -36,7 +39,8 @@
 		},
 		{
 			slug: 'gumies_vitamine',
-			image: '/images/products/gumies_vitamine.svg',
+			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-Melatonine_Gummies-main.png',
+			alt: 'علكات ملتي فيتامين نوفافيتا الشاملة للطاقة والنشاط اليومي',
 			tag: 'روتين الحيوية • Daily Energy',
 			tagColor: 'bg-amber-50 text-amber-800 border-amber-200/80',
 			title: 'علكات الفيتامينات المتعددة وحمض الفوليك',
@@ -82,26 +86,24 @@
 							</span>
 						</div>
 
-						<!-- Product Image: Edge-to-edge inside rounded card area -->
+						<!-- Product Image: Clean luxury DTC container -->
 						<a
 							href={`/products/${p.slug}`}
-							class="block w-full aspect-square rounded-2xl bg-[#FAF8F5]/80 p-4 relative overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]"
+							class="block focus:outline-none"
 							aria-label={`عرض ${p.title}`}
 						>
-							<img
-								src={p.image}
-								alt={p.title}
-								class="w-full h-full object-contain drop-shadow-md"
-								loading="lazy"
-								onerror={(e: any) => {
-									e.currentTarget.onerror = null;
-									e.currentTarget.src = '/images/products/gummies_collagen.svg';
-								}}
-							/>
+							<div class="relative w-full aspect-square bg-[#FAF8F5] rounded-[22px] overflow-hidden border border-black/5 flex items-center justify-center p-3 mb-4 group">
+								<img 
+									src={p.image} 
+									alt={p.alt} 
+									class="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+									loading="lazy"
+								/>
+							</div>
 						</a>
 
 						<!-- Title -->
-						<h3 class="text-lg sm:text-xl font-bold text-[#1B4332] mt-4 mb-2 leading-snug group-hover:text-[#E86A7C] transition-colors">
+						<h3 class="text-lg sm:text-xl font-bold text-[#1B4332] mb-2 leading-snug group-hover:text-[#E86A7C] transition-colors">
 							<a href={`/products/${p.slug}`}>
 								{p.title}
 							</a>
