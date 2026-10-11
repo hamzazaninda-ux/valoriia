@@ -327,68 +327,152 @@
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 2. قسم التحول البصري والمعاناة (Visual Transformation & Moroccan Context) -->
+		<!-- 1. مساحة الصورة الأولى (صورة الواقع / المشكلة) -->
 		<!-- ========================================================================= -->
-		<div class="mt-12 sm:mt-18">
-			<div class="rounded-3xl bg-[#143427] text-white overflow-hidden shadow-2xl border border-emerald-800/40">
-				
-				<!-- Upper Stat Header with Background Lifestyle Layer -->
-				<div class="relative p-6 sm:p-8 bg-gradient-to-r from-emerald-950 via-[#143427] to-[#1B4332]">
-					<div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
-						<!-- Lifestyle transformation visual thumbnail -->
-						<div class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shrink-0 border-2 border-white/20 shadow-lg">
-							<img
-								src="/images/killers/imagewom1.png"
-								alt="واقع صحة وجمال المرأة بالمغرب"
-								class="w-full h-full object-cover"
-								onerror={(e: any) => {
-									e.currentTarget.style.display = 'none';
-								}}
-							/>
-							<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-							<span class="absolute bottom-1.5 inset-x-0 text-center text-[10px] font-bold text-white bg-black/40 py-0.5">
-								جمال طبيعي مستعاد ✨
-							</span>
-						</div>
+		<div class="w-full max-w-md mx-auto aspect-[4/3] sm:aspect-video bg-[#FAF8F5] rounded-3xl border-2 border-dashed border-[#1B4332]/20 flex flex-col items-center justify-center p-6 my-6 text-center shadow-sm relative overflow-hidden" dir="rtl">
+			<span class="text-3xl mb-2">📸</span>
+			<p class="text-sm sm:text-base font-bold text-[#1B4332] mb-1.5">مساحة مخصصة لصورة المشكلة / الواقع اليومي</p>
+			<span class="bg-white/80 px-3 py-1 rounded-full text-xs text-gray-500 font-medium shadow-2xs">
+				واقع المياه الكلسية وتساقط الشعر بالمغرب
+			</span>
+		</div>
 
-						<div class="space-y-2 text-center md:text-start">
-							<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-stone-200 border border-white/15">
-								🇲🇦 واقع المرأة المغربية ومياه الكالكير
-							</span>
-							<p class="text-sm sm:text-base lg:text-lg font-bold text-stone-100 leading-relaxed">
-								<strong class="text-[#E86A7C] font-black text-xl">78%</strong> من المغربيات كيعانيو من بهتان البشرة وتساقط الشعر بسبب ملوحة الماء (الكالكير) وضغوطات اليوم. الحل ماشي في الزيوت.. الحل في تغذية البصيلة والخلايا من الداخل.
-							</p>
+		<!-- ========================================================================= -->
+		<!-- 2. قسم تشخيص المشاكل (The Pain Points) -->
+		<!-- ========================================================================= -->
+		<div class="mt-8 sm:mt-12 space-y-6" dir="rtl">
+			<div class="text-center max-w-2xl mx-auto space-y-2">
+				<h2 class="font-display text-xl sm:text-2xl lg:text-3xl font-black text-[#1B4332]">
+					علاش المنتجات العادية ما كتوقفش المشكل؟
+				</h2>
+				<p class="text-xs sm:text-sm md:text-base text-gray-700 font-medium leading-relaxed">
+					90% من الحلول كتزوق المظهر فقط من برا، وكتتجاهل السبب الحقيقي اللي لداخل:
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+				<!-- Card 1 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-rose-200 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-rose-50 text-rose-500 font-bold flex items-center justify-center shrink-0 text-sm">❌</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1F2937]">ملوحة ماء الروبيني (الكالكير)</h3>
 						</div>
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							في أغلب مدن المغرب، الماء القاصح كينشف الزغبة وكيقتل حيوية البشرة، وأي شامبوان أو صابون كيبقى تأثيره سطحي.
+						</p>
+					</div>
+					<div class="pt-2 text-[11px] font-bold text-rose-600 bg-rose-50/60 py-1 px-2.5 rounded-lg inline-block w-fit">
+						تأثير سطحي مؤقت
 					</div>
 				</div>
 
-				<!-- Comparison Split Cards -->
-				<div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-white/10 bg-[#0F281E] p-4 sm:p-6 gap-4">
-					<!-- Old Surface Routine -->
-					<div class="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2">
-						<div class="flex items-center gap-2 text-rose-400 text-xs font-black">
-							<span class="w-6 h-6 rounded-full bg-rose-500/20 flex items-center justify-center">✕</span>
-							<span>الروتين السطحي القديم</span>
+				<!-- Card 2 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-rose-200 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-rose-50 text-rose-500 font-bold flex items-center justify-center shrink-0 text-sm">❌</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1F2937]">نقص التغذية الخلوية وضعف الامتصاص</h3>
 						</div>
-						<p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
-							شامبوانات وسيرومات خارجية كتزوق المظهر لساعات وكتغسل فقط.. بدون ما توصل لجذور البصيلة أو تعوض فقدان الكولاجين الداخلي.
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							ضغوطات اليوم وتغير الهرمونات كيمنعو وصول الفيتامينات لجذور الشعر وطبقات الجلد العميقة.
 						</p>
 					</div>
-
-					<!-- Inside-Out Cellular Nutrition -->
-					<div class="p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500/20 space-y-2">
-						<div class="flex items-center gap-2 text-emerald-300 text-xs font-black">
-							<span class="w-6 h-6 rounded-full bg-emerald-500/30 flex items-center justify-center">✓</span>
-							<span>التغذية الخلوية بـ NOVAVITA</span>
-						</div>
-						<p class="text-xs sm:text-sm text-stone-200 leading-relaxed font-medium">
-							جرعات سريرية دقيقة (3000mcg بيوتين + كولاجين بحري) كتمتص في دقائق عبر بكتين الفواكه، لتغذي الخلايا وتوقف التساقط من الجذور.
-						</p>
+					<div class="pt-2 text-[11px] font-bold text-rose-600 bg-rose-50/60 py-1 px-2.5 rounded-lg inline-block w-fit">
+						جذور ضعيفة ومحرومة
 					</div>
 				</div>
 
+				<!-- Card 3 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-rose-200 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-rose-50 text-rose-500 font-bold flex items-center justify-center shrink-0 text-sm">❌</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1F2937]">عذاب الأقراص الصيدلانية المرة</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							كبسولات كبار وريحتهم مجهدة كيديرو الغثيان وثقل المعدة، ومعظم السيدات كيقطعو العلاج قبل ما يبدا يعطي مفعول.
+						</p>
+					</div>
+					<div class="pt-2 text-[11px] font-bold text-rose-600 bg-rose-50/60 py-1 px-2.5 rounded-lg inline-block w-fit">
+						صعوبة الالتزام والاستمرار
+					</div>
+				</div>
 			</div>
 		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 3. مساحة الصورة الثانية (صورة المنتج بالمميزات) -->
+		<!-- ========================================================================= -->
+		<div class="w-full max-w-md mx-auto aspect-[4/3] sm:aspect-video bg-[#FAF8F5] rounded-3xl border-2 border-dashed border-[#1B4332]/20 flex flex-col items-center justify-center p-6 my-6 text-center shadow-sm relative overflow-hidden" dir="rtl">
+			<span class="text-3xl mb-2">🌿</span>
+			<p class="text-sm sm:text-base font-bold text-[#1B4332] mb-1.5">مساحة مخصصة لصورة المنتج والمميزات البصرية (Feature Callouts)</p>
+			<span class="bg-white/80 px-3 py-1 rounded-full text-xs text-[#1B4332] font-semibold shadow-2xs">
+				موك-آب وتفاصيل التركيبة الفريدة
+			</span>
+		</div>
+
+		<!-- ========================================================================= -->
+		<!-- 4. قسم الحل الجذري من الداخل (The Root Solution) -->
+		<!-- ========================================================================= -->
+		<div class="mt-4 sm:mt-8 space-y-6" dir="rtl">
+			<div class="text-center max-w-2xl mx-auto space-y-2">
+				<h2 class="font-display text-xl sm:text-2xl lg:text-3xl font-black text-[#1B4332]">
+					الحل الجذري: تغذية مركزة من الجذور للخلايا
+				</h2>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+				<!-- Solution Card 1 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-100/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-[#1B4332]/30 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-sm">✅</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1B4332]">علاج أصل المشكل ماشي الأعراض</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							جرعات سريرية مضبوطة (بيوتين 3000mcg / كولاجين بحري متحلل) كتدخل لمجرى الدم مباشرة وكتغذي البصيلة من الداخل.
+						</p>
+					</div>
+					<div class="pt-2 text-[11px] font-bold text-emerald-800 bg-emerald-50 py-1 px-2.5 rounded-lg inline-block w-fit">
+						تغذية خلوية مستمرة
+					</div>
+				</div>
+
+				<!-- Solution Card 2 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-100/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-[#1B4332]/30 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-sm">✅</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1B4332]">امتصاص أسرع بـ 3 مرات ببكتين الفواكه</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							تركيبة نباتية خفيفة على المعدة كتمتص في دقائق معدودة، بدون مواد كيميائية وبدون أي ثقل هضمي.
+						</p>
+					</div>
+					<div class="pt-2 text-[11px] font-bold text-emerald-800 bg-emerald-50 py-1 px-2.5 rounded-lg inline-block w-fit">
+						هضم خفيف وسلس
+					</div>
+				</div>
+
+				<!-- Solution Card 3 -->
+				<div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-100/80 shadow-sm space-y-2.5 flex flex-col justify-between hover:border-[#1B4332]/30 transition-colors">
+					<div class="space-y-2">
+						<div class="flex items-center gap-2">
+							<span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-sm">✅</span>
+							<h3 class="font-display text-base sm:text-lg font-black text-[#1B4332]">روتين شهي كتعشقي تداومي عليه</h3>
+						</div>
+						<p class="text-xs sm:text-sm text-gray-700 leading-relaxed font-medium">
+							نكهة فواكه وتوت طبيعية لذيذة وسهلة المضغ، كتحول العناية اليومية من واجب ممل إلى أحسن لحظة في صباحك.
+						</p>
+					</div>
+					<div class="pt-2 text-[11px] font-bold text-emerald-800 bg-emerald-50 py-1 px-2.5 rounded-lg inline-block w-fit">
+						التزام يومي ممتع
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 		<!-- ========================================================================= -->
 		<!-- 3. كروت المكونات الفعالة البصرية (Visual Clinical Ingredients Grid) -->
