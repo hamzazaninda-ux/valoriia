@@ -22,16 +22,16 @@ export const load: PageServerLoad = async ({ params }) => {
   // Other published products for cart cross-sell / post-purchase upsell:
   // Active upsell sequence strictly contains ONLY:
   // قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
-  let others: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
-	others = [
-		{
-			slug: 'qofl-al-aman',
-			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-			heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-			startingPrice: 49
-		}
-	].filter(p => p.slug !== product.slug);
+  const allProducts = await listProducts();
+  const others = allProducts
+    .filter(p => p.slug !== product.slug && p.status === 'published')
+    .map(p => ({
+      slug: p.slug,
+      title: p.title,
+      subtitle: p.subtitle,
+      heroImage: p.heroImage,
+      startingPrice: p.startingPrice
+    }));
 
   return {
     product,
