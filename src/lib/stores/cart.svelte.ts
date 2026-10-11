@@ -6,6 +6,7 @@ export interface CartLine {
 	slug: string;
 	sku: string;
 	title: string;
+	subtitle?: string;
 	image: string;
 	price: number;
 	tier?: 'tier_1' | 'tier_2' | 'tier_3';
@@ -50,6 +51,7 @@ function load(): CartLine[] {
 				slug: l.slug || l.sku || 'gummies_biotine',
 				sku: l.sku || l.slug || 'gummies_biotine',
 				title: l.title,
+				subtitle: l.subtitle || '',
 				image: l.image || '/images/products/gummies_biotine.svg',
 				price: Number(l.price) || 199,
 				tier: l.tier,
@@ -99,6 +101,7 @@ export const cart = {
 		slug: string;
 		sku: string;
 		title: string;
+		subtitle?: string;
 		image: string;
 		price: number;
 		tier?: 'tier_1' | 'tier_2' | 'tier_3';
@@ -110,6 +113,7 @@ export const cart = {
 			slug: entry.slug,
 			sku: entry.sku,
 			title: entry.title,
+			subtitle: entry.subtitle,
 			image: entry.image,
 			price: entry.price,
 			tier: entry.tier,

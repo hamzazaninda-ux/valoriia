@@ -37,10 +37,21 @@
 
 	function handleAddToCartAndOpenDrawer() {
 		const bundleName = currentTier.units === 1 ? 'علبة واحدة' : currentTier.units === 2 ? 'علبتان' : '3 علب';
+		const bundleSubtitle = currentTier.units === 1
+			? 'علبة واحدة • شهر تجريبي'
+			: currentTier.units === 2
+				? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
+				: '3 علب • كورس علاجي كامل 3 أشهر 🎁';
+
+		const displayTitle = currentTier.units === 2
+			? `${product.name} + هدية 🎁`
+			: `${product.name} (${bundleName})`;
+
 		cart.setMainItem({
 			slug: product.slug,
 			sku: product.sku,
-			title: `${product.name} - ${bundleName}`,
+			title: displayTitle,
+			subtitle: bundleSubtitle,
 			image: product.image,
 			price: currentTier.price,
 			tier: selectedTier,
@@ -309,10 +320,9 @@
 					<button
 						type="button"
 						onclick={handleAddToCartAndOpenDrawer}
-						class="w-full min-h-14 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 group"
+						class="bg-[#1B4332] text-white py-4 px-6 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 shadow-md hover:bg-[#153427] transition-all w-full cursor-pointer"
 					>
-						<span>اطلبي الآن • الدفع عند الاستلام</span>
-						<span class="text-xl transition-transform group-hover:-translate-x-1">←</span>
+						<span>أضيفي العرض للسلة • DH {currentTier.price} 🛒</span>
 					</button>
 
 					<!-- شارة أمان واحدة مقتضبة تحت الزر -->
@@ -794,7 +804,7 @@
 						جاهزة تبداي روتين التحول الحقيقي؟
 					</h3>
 					<p class="text-xs sm:text-sm text-stone-300">
-						الباقة المحددة: <span class="font-bold text-white">{currentTier.title}</span> • <span class="font-bold text-[#E86A7C]">{currentTier.price} MAD</span>
+						الباقة المحددة: <span class="font-bold text-white">{currentTier.title}</span> • <span class="font-bold text-[#E86A7C]">DH {currentTier.price}</span>
 					</p>
 				</div>
 
@@ -836,9 +846,9 @@
 			<div class="flex flex-col text-right ps-1 text-white">
 				<span class="text-[10px] text-pink-100 font-bold">توصيل فابور مجاني 🚚</span>
 				<div class="flex items-baseline gap-1.5" dir="ltr">
-					<span class="font-black text-base text-white font-display">{currentTier.price} MAD</span>
+					<span class="font-black text-base text-white font-display">DH {currentTier.price}</span>
 					{#if selectedTier === 'tier_2'}
-						<span class="text-[10px] text-pink-200 line-through">398 MAD</span>
+						<span class="text-[10px] text-pink-200 line-through">DH 398</span>
 					{/if}
 				</div>
 			</div>
