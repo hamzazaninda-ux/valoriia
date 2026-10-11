@@ -9,7 +9,6 @@
 	import ComparisonTable from '$lib/components/home/ComparisonTable.svelte';
 	import ReviewsSection from '$lib/components/home/ReviewsSection.svelte';
 	import FaqAccordion from '$lib/components/home/FaqAccordion.svelte';
-	import StickyMobileCTA from '$lib/components/home/StickyMobileCTA.svelte';
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 
@@ -159,13 +158,6 @@
 		</div>
 	</footer>
 
-	<!-- 11. Sticky Mobile Bottom CTA Bar -->
-	<StickyMobileCTA
-		price={199}
-		tierLabel="علكات الفيتامينات الطبيعية"
-		onCtaClick={() => scrollToProducts()}
-	/>
-
-	<!-- 12. Interactive Slide-Out Cart Drawer -->
+	<!-- Interactive Slide-Out Cart Drawer -->
 	<CartDrawer />
 </div>

@@ -836,27 +836,27 @@
 	</main>
 
 	<!-- ========================================================================= -->
-	<!-- 9. Sticky Mobile CTA Bar (Luxury Full-Pink, Scroll-Triggered) -->
+	<!-- 9. Sticky Mobile CTA Bar (Dark Green Brand Color, Scroll-Triggered)       -->
 	<!-- ========================================================================= -->
 	{#if scrollY > 350}
 		<div
 			transition:slide={{ duration: 300 }}
-			class="fixed bottom-0 inset-x-0 z-40 bg-gradient-to-r from-[#E86A7C] via-[#e5596e] to-[#d8485e] text-white p-3 sm:hidden shadow-[0_-10px_30px_rgba(232,106,124,0.35)] border-t border-white/25 flex items-center justify-between gap-3 backdrop-blur-md"
+			class="fixed bottom-0 inset-x-0 z-40 bg-[#174B38] text-white p-3 sm:hidden shadow-[0_-10px_30px_rgba(23,75,56,0.35)] border-t border-emerald-800/50 flex items-center justify-between gap-3 backdrop-blur-md"
 			dir="rtl"
 		>
 			<div class="flex flex-col text-right ps-1 text-white">
-				<span class="text-[10px] text-pink-100 font-bold">توصيل فابور مجاني 🚚</span>
+				<span class="text-[10px] text-emerald-200 font-bold">توصيل فابور مجاني 🚚</span>
 				<div class="flex items-baseline gap-1.5" dir="ltr">
 					<span class="font-black text-base text-white font-display">DH {currentTier.price}</span>
 					{#if selectedTier === 'tier_2'}
-						<span class="text-[10px] text-pink-200 line-through">DH 398</span>
+						<span class="text-[10px] text-emerald-300/70 line-through">DH 398</span>
 					{/if}
 				</div>
 			</div>
 			<button
 				type="button"
 				onclick={scrollToOffers}
-				class="flex-1 min-h-12 rounded-xl bg-white text-[#E86A7C] hover:bg-pink-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+				class="flex-1 min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
 			>
 				<span>اطلبي الآن • الدفع عند الاستلام</span>
 				<span class="text-base">←</span>
