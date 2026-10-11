@@ -107,6 +107,20 @@
 		};
 	}
 
+	// Ordered items for Step 2 checkout: Main item first, then upsells in exact added order
+	const checkoutOrderedItems = $derived.by(() => {
+		const main = cart.getMainItem();
+		const upsells = cart.getUpsellItems();
+		const list: Array<{ item: typeof cart.lines[0]; isUpsell: boolean }> = [];
+		if (main) {
+			list.push({ item: main, isUpsell: false });
+		}
+		for (const up of upsells) {
+			list.push({ item: up, isUpsell: true });
+		}
+		return list.length > 0 ? list : cart.lines.map((l) => ({ item: l, isUpsell: Boolean(l.isUpsell) }));
+	});
+
 	// Click debouncing to prevent rapid duplicate toggles
 	let togglingSku = $state<string | null>(null);
 
@@ -514,16 +528,16 @@
 					{/if}
 
 				<!-- ======================================================== -->
-				<!-- STEP 2: نافذة "تأكيد الطلب" (CHECKOUT VIEW)                -->
+				<!-- STEP 2: نافذة "تأكيد الطلب" (RESTRUCTURED CHECKOUT VIEW)     -->
 				<!-- ======================================================== -->
 				{:else if currentStep === 'checkout'}
 
-					<!-- 1. Header (تأكيد الطلب) -->
+					<!-- 1. Header (تأكيد الطلب with Back Button & Close) -->
 					<div class="flex items-center justify-between border-b border-gray-150 bg-white px-4 py-3 sm:px-5 sm:py-3.5 shrink-0">
 						<button
 							type="button"
 							onclick={() => (currentStep = 'cart')}
-							class="flex items-center gap-1 text-xs font-bold text-[#1B4332] hover:text-emerald-950 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
+							class="flex items-center gap-1.5 text-xs font-bold text-[#1B4332] hover:text-emerald-950 bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
 							aria-label="الرجوع إلى السلة"
 						>
 							<span class="text-sm">→</span>
@@ -545,46 +559,114 @@
 					</div>
 
 					<!-- 2. Scrollable Body -->
-					<div class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 pb-8">
+					<div class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 pb-8">
 						
-						<!-- A. Order Summary Card -->
-						<div class="bg-[#FAF8F5] rounded-2xl p-3.5 sm:p-4 border border-gray-200 mb-3 space-y-2.5">
-							<!-- Top Line: Title + Cart Items Thumbnails -->
+						<!-- A. Redesigned Premium Vertically Stacked Order Summary -->
+						<div class="space-y-3">
+							
+							<!-- Summary Heading -->
 							<div class="flex items-center justify-between">
-								<span class="font-bold text-xs sm:text-sm text-gray-800">
-									ملخص الطلب ({cart.count})
+								<h3 class="font-display font-bold text-sm sm:text-base text-gray-900 flex items-center gap-2">
+									<span>ملخص الطلب</span>
+									<span class="text-xs font-semibold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-full">
+										({cart.count} {cart.count === 1 ? 'منتج' : 'منتجات'})
+									</span>
+								</h3>
+								<span class="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+									توصيل مجاني 🚚
 								</span>
-								<div class="flex items-center gap-1.5">
-									{#each cart.lines as item (item.key)}
-										<div class="w-8 h-8 rounded-lg bg-white border border-stone-200 p-0.5 overflow-hidden shrink-0 flex items-center justify-center" title={item.title}>
+							</div>
+
+							<!-- Vertically Stacked Product Rows: Main Product First, Upsells in exact order -->
+							<div class="space-y-2.5">
+								{#each checkoutOrderedItems as { item, isUpsell } (item.key)}
+									{@const meta = getProductMeta(item.sku)}
+									{@const upsellInfo = UPSELL_DETAILS[item.sku]}
+									{@const itemTitle = isUpsell ? (upsellInfo?.shortTitle || item.title) : item.title}
+									{@const itemDesc = isUpsell ? upsellInfo?.benefitDescription : meta?.headline}
+
+									<div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-stone-200/90 shadow-2xs flex items-start gap-3">
+										
+										<!-- Large, Clear Product Image on the RIGHT (64-80px Square) -->
+										<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-[#FAF8F5] border border-stone-100 p-1.5 shrink-0 flex items-center justify-center overflow-hidden">
 											<img
 												src={item.image}
-												alt={item.title}
+												alt={itemTitle}
 												class="w-full h-full object-contain"
+												onerror={(e: any) => {
+													e.currentTarget.onerror = null;
+													e.currentTarget.src = '/images/products/gummies_collagen.svg';
+												}}
 											/>
 										</div>
-									{/each}
+
+										<!-- Product Information next to image, natural RTL alignment -->
+										<div class="flex-1 min-w-0 text-right">
+											<!-- Title & Individual Price -->
+											<div class="flex items-start justify-between gap-2">
+												<h4 class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
+													{itemTitle}
+												</h4>
+												<div class="font-display font-black text-xs sm:text-sm text-[#1B4332] shrink-0" dir="ltr">
+													DH {item.price}
+												</div>
+											</div>
+
+											<!-- Quantity & Distinctive Variant/Offer Badge -->
+											<div class="flex items-center gap-1.5 mt-1 flex-wrap">
+												<span class="text-[10px] sm:text-[11px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-md">
+													الكمية: {item.qty || 1}
+												</span>
+												{#if !isUpsell}
+													<span class="text-[10px] sm:text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+														{mainItemSubtitle}
+													</span>
+												{:else}
+													<span class="text-[10px] sm:text-[11px] font-bold text-[#E86A7C] bg-rose-50 px-2 py-0.5 rounded-md">
+														عرض سري مخفض 🎁
+													</span>
+												{/if}
+											</div>
+
+											<!-- Short Description (Relevant & Readable, No Ellipses) -->
+											{#if itemDesc}
+												<p class="text-[11px] sm:text-xs text-stone-500 font-medium leading-relaxed mt-1">
+													{itemDesc}
+												</p>
+											{/if}
+										</div>
+
+									</div>
+								{/each}
+							</div>
+
+							<!-- Price Breakdown & Prominent Final Total -->
+							<div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-stone-200/90 shadow-2xs space-y-2">
+								<div class="flex items-center justify-between text-xs sm:text-sm text-gray-600">
+									<span class="font-medium">مجموع المنتجات:</span>
+									<span class="font-mono font-bold text-gray-900" dir="ltr">DH {subtotal}</span>
+								</div>
+								<div class="flex items-center justify-between text-xs sm:text-sm text-gray-600">
+									<span class="font-medium">التوصيل لكافة المدن المغربية:</span>
+									<span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">مجاني (0 DH) 🚚</span>
+								</div>
+								<div class="border-t border-stone-200/80 pt-2 flex items-center justify-between">
+									<span class="font-display font-black text-sm sm:text-base text-gray-900">المجموع النهائي:</span>
+									<div class="font-display font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">
+										DH {subtotal}
+									</div>
 								</div>
 							</div>
 
-							<!-- Bottom Line: Total with Free Shipping -->
-							<div class="flex items-center justify-between border-t border-stone-200/80 pt-2">
-								<span class="text-xs sm:text-sm font-bold text-gray-700">
-									المجموع (التوصيل مجاني)
-								</span>
-								<span class="font-display font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">
-									DH {subtotal}
-								</span>
-							</div>
 						</div>
 
-						<!-- B. Fast Clean COD Form -->
+						<!-- B. Fast Clean COD Form with Right-Aligned Phone Input -->
 						<form onsubmit={handleOrderSubmit} class="space-y-3.5">
 							
 							<!-- Field 1: الاسم الكامل -->
 							<div>
-								<label for="checkout-name" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">
-									الاسم الكامل
+								<label for="checkout-name" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5 text-right">
+									الاسم الكامل <span class="text-rose-500">*</span>
 								</label>
 								<input
 									id="checkout-name"
@@ -592,51 +674,60 @@
 									bind:value={fullName}
 									oninput={() => (nameError = '')}
 									placeholder="مثال: مريم العلمي"
-									class={`w-full h-11 sm:h-12 rounded-xl sm:rounded-2xl border bg-white px-3.5 sm:px-4 text-sm font-semibold outline-none transition-all ${
+									autocomplete="name"
+									class={`w-full h-12 rounded-xl sm:rounded-2xl border bg-white px-4 text-sm font-semibold outline-none transition-all text-right ${
 										nameError
 											? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
-											: 'border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
+											: 'border-stone-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
 									}`}
 								/>
 								{#if nameError}
-									<p class="text-xs font-bold text-rose-600 mt-1 flex items-center gap-1">
+									<p class="text-xs font-bold text-rose-600 mt-1 flex items-center gap-1 text-right">
 										<span>⚠️</span>
 										<span>{nameError}</span>
 									</p>
 								{/if}
 							</div>
 
-							<!-- Field 2: رقم الهاتف -->
+							<!-- Field 2: رقم الهاتف (Fixed RTL Alignment, Natural Number Entry) -->
 							<div>
-								<label for="checkout-phone" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">
-									رقم الهاتف (غادي نعيطو ليك نأكدو)
+								<label for="checkout-phone" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1.5 text-right">
+									رقم الهاتف (ضروري لتأكيد الطلب) <span class="text-rose-500">*</span>
 								</label>
-								<input
-									id="checkout-phone"
-									type="tel"
-									bind:value={phone}
-									oninput={() => (phoneError = '')}
-									dir="ltr"
-									placeholder="06xxxxxxxx"
-									class={`w-full h-11 sm:h-12 rounded-xl sm:rounded-2xl border bg-white px-3.5 sm:px-4 text-sm font-semibold outline-none text-start transition-all ${
-										phoneError
-											? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
-											: 'border-gray-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
-									}`}
-								/>
+								<div class="relative">
+									<input
+										id="checkout-phone"
+										type="tel"
+										inputmode="tel"
+										dir="ltr"
+										bind:value={phone}
+										oninput={() => (phoneError = '')}
+										placeholder="06XXXXXXXX"
+										autocomplete="tel"
+										class={`w-full h-12 rounded-xl sm:rounded-2xl border bg-white px-4 text-sm font-semibold outline-none text-right transition-all font-mono tracking-wider ${
+											phoneError
+												? 'border-rose-400 focus:ring-2 focus:ring-rose-200'
+												: 'border-stone-200 focus:border-[#1B4332] focus:ring-2 focus:ring-[#1B4332]/10'
+										}`}
+									/>
+								</div>
 								{#if phoneError}
-									<p class="text-xs font-bold text-rose-600 mt-1 flex items-center gap-1">
+									<p class="text-xs font-bold text-rose-600 mt-1 flex items-center gap-1 text-right">
 										<span>⚠️</span>
 										<span>{phoneError}</span>
+									</p>
+								{:else}
+									<p class="text-[11px] text-stone-500 font-medium mt-1 text-right">
+										غادي نتاصلو بيك عبر الواتساب أو اتصال لتأكيد عنوان الإرسال
 									</p>
 								{/if}
 							</div>
 
-							<!-- Final Submit Button -->
+							<!-- Final Order Confirmation Button -->
 							<button
 								type="submit"
 								disabled={isSubmitting || cart.count === 0}
-								class="w-full min-h-12 sm:min-h-13 rounded-xl sm:rounded-2xl bg-[#1B4332] hover:bg-[#153427] active:scale-[0.98] font-black text-white text-base shadow-xl shadow-emerald-950/20 transition-all duration-300 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 mt-3"
+								class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#1B4332] hover:bg-[#153427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 mt-4"
 							>
 								{#if isSubmitting}
 									<span class="inline-flex items-center gap-2">
@@ -648,12 +739,13 @@
 									</span>
 								{:else}
 									<span>أكّدي الطلب — DH {subtotal}</span>
+									<span class="text-lg">←</span>
 								{/if}
 							</button>
 
-							<!-- Trust and Terms Note -->
-							<p class="text-center text-[10px] text-stone-400 font-medium pt-0.5 pb-1">
-								الدفع نقداً عند استلام ومعاينة الطلب • التوصيل مجاني وسريع 24/48h
+							<!-- Short Reassurance Note below Confirmation Button -->
+							<p class="text-center text-[11px] text-stone-500 font-medium pt-1 pb-3">
+								الدفع عند الاستلام — ما تخلصي حتى توصلك السلعة وتعاينيها 📦
 							</p>
 						</form>
 
