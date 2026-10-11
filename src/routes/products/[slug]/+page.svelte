@@ -937,25 +937,24 @@
 	{#if scrollY > 350}
 		<div
 			transition:slide={{ duration: 300 }}
-			class="fixed bottom-0 inset-x-0 z-40 bg-[#174B38] text-white p-3 sm:hidden shadow-[0_-10px_30px_rgba(23,75,56,0.35)] border-t border-emerald-800/50 flex items-center justify-between gap-3 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
+			class="fixed bottom-0 inset-x-0 z-40 bg-[#174B38]/95 text-white px-4 py-2.5 sm:hidden shadow-[0_-10px_30px_rgba(23,75,56,0.35)] border-t border-emerald-800/50 flex flex-col items-center gap-1.5 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
 			dir="rtl"
 		>
-			<div class="flex flex-col text-right ps-1 text-white shrink-0">
-				<span class="text-[10px] text-emerald-200 font-bold">توصيل فابور مجاني 🚚</span>
-				<div class="flex items-baseline gap-1.5" dir="ltr">
-					<span class="font-black text-base text-white font-display">DH {currentTier.price}</span>
-					{#if selectedTier === 'tier_2'}
-						<span class="text-[10px] text-emerald-300/70 line-through">DH 398</span>
-					{/if}
-				</div>
+			<!-- Centered High-Converting Trust Hook -->
+			<div class="flex items-center justify-center gap-2 text-[11px] font-bold text-emerald-200">
+				<span>🚚 توصيل فابور لكافة المدن</span>
+				<span class="text-emerald-400/60">•</span>
+				<span>📦 فحص ومعاينة الطرد عند الباب</span>
 			</div>
+
+			<!-- Full-Width Centered High-Converting CTA Button -->
 			<button
 				type="button"
 				onclick={scrollToOffers}
-				class="flex-1 min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-black text-xs sm:text-sm px-4 shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+				class="w-full min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-black text-sm px-4 shadow-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
 			>
 				<span>اطلبي الآن • الدفع عند الاستلام</span>
-				<span class="text-base">←</span>
+				<span class="text-base font-bold">←</span>
 			</button>
 		</div>
 	{/if}

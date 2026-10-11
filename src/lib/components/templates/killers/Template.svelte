@@ -765,20 +765,20 @@
 
 	<!-- Sticky Order Button -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-0 inset-x-0 p-4 bg-[#121212]/90 border-t border-stone-850 backdrop-blur-md z-45 flex items-center justify-between sm:hidden">
-			<div class="text-right">
-				<span class="block text-[10px] text-stone-400">السعر الحالي:</span>
-				<span class="text-base font-black" style="color: var(--t-primary, #c8a96e);">{formatPrice(activeOffer.price, pricing.currency === 'SAR' ? 'ر.س' : 'د.م')}</span>
-			</div>
+		<div class="fixed bottom-0 inset-x-0 p-3 bg-[#121212]/95 border-t border-stone-800 backdrop-blur-md z-45 flex flex-col items-center gap-1.5 sm:hidden" dir="rtl">
+			<span class="text-[10px] font-bold text-stone-300 flex items-center gap-1">
+				🚚 توصيل مجاني وسريع • الدفع عند الاستلام
+			</span>
 			<button
 				onclick={scrollToForm}
-				class="px-6 py-3 text-stone-950 font-black text-sm rounded-xl shadow-lg transition-transform active:scale-95"
+				class="w-full min-h-12 py-3 text-stone-950 font-black text-sm rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
 				style="
 					background: linear-gradient(to right, var(--t-cta, #c8a96e), var(--t-cta-hover, #b8985e));
 					border-radius: {RADIUS_MAP[t.sections.advanced.borderRadius] || '12px'};
 				"
 			>
-				{t.sections.pricing.stickyCtaText}
+				<span>{t.sections.pricing.stickyCtaText || 'اطلبي الآن • الدفع عند الاستلام'}</span>
+				<span>←</span>
 			</button>
 		</div>
 	{/if}
