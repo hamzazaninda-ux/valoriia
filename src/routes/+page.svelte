@@ -104,6 +104,7 @@
 					<a href="/products/gummies_collagen" class="transition-colors hover:text-[#E86A7C]">كولاجين البشرة البحري</a>
 					<a href="/products/gummies_biotine" class="transition-colors hover:text-[#E86A7C]">بيوتين الشعر والإنبات</a>
 					<a href="/products/gumies_vitamine" class="transition-colors hover:text-[#E86A7C]">فيتامينات الحيوية والمناعة</a>
+					<a href="/contact" class="transition-colors hover:text-[#E86A7C]">اتصل بنا</a>
 				</div>
 			</div>
 			<div class="space-y-3">
