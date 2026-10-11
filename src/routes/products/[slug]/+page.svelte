@@ -187,18 +187,31 @@
 			
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6">
-				<!-- Hero Image Container (Full-Width Edge-to-Edge Mobile Container) -->
-				<div class="w-full max-w-[calc(100vw-1.5rem)] sm:max-w-md mx-auto aspect-[4/4.5] sm:aspect-square bg-[#FAF8F5] rounded-[28px] overflow-hidden shadow-sm border border-black/5 relative mb-4">
-					<img
-						src={activeImage}
-						alt={product.name}
-						class="w-full h-full object-cover block transition-transform duration-500 hover:scale-105"
-						onerror={(e: any) => {
-							e.currentTarget.onerror = null;
-							e.currentTarget.src = '/images/products/gummies_collagen.svg';
-						}}
-					/>
-				</div>
+				{#if (product.slug || '').includes('collagen')}
+					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 mb-4">
+						<img 
+							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791746888/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86_%D8%A8%D9%86%D9%85%D8%B7_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF.png" 
+							alt="نتائج كولاجين نوفافيتا قبل وبعد - نضارة البشرة وكثافة الشعر" 
+							class="w-full h-full object-cover object-center block"
+							loading="eager"
+							fetchpriority="high"
+						/>
+					</div>
+				{:else}
+					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 mb-4">
+						<img
+							src={activeImage}
+							alt={product.name}
+							class="w-full h-full object-cover block transition-transform duration-500 hover:scale-105"
+							onerror={(e: any) => {
+								e.currentTarget.onerror = null;
+								e.currentTarget.src = '/images/products/gummies_collagen.svg';
+							}}
+							loading="eager"
+							fetchpriority="high"
+						/>
+					</div>
+				{/if}
 			</div>
 
 			<!-- Right Column (Desktop) / Below (Mobile): Emotional Headline, Bundle Selector & Buying Flow -->
@@ -369,12 +382,13 @@
 		<!-- ========================================================================= -->
 		<!-- 1. مساحة الصورة الأولى (صورة الواقع / المشكلة) -->
 		<!-- ========================================================================= -->
-		<div class="w-full max-w-md mx-auto aspect-[4/3] sm:aspect-video bg-[#FAF8F5] rounded-3xl border-2 border-dashed border-[#1B4332]/20 flex flex-col items-center justify-center p-6 my-6 text-center shadow-sm relative overflow-hidden" dir="rtl">
-			<span class="text-3xl mb-2">📸</span>
-			<p class="text-sm sm:text-base font-bold text-[#1B4332] mb-1.5">مساحة مخصصة لصورة المشكلة / الواقع اليومي</p>
-			<span class="bg-white/80 px-3 py-1 rounded-full text-xs text-gray-500 font-medium shadow-2xs">
-				واقع المياه الكلسية وتساقط الشعر بالمغرب
-			</span>
+		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
+			<img 
+				src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
+				alt="معاناة تساقط الشعر وشحوب البشرة بسبب الماء الكلسي والتعب" 
+				class="w-full h-full object-cover object-center block"
+				loading="lazy"
+			/>
 		</div>
 
 		<!-- ========================================================================= -->
@@ -444,12 +458,13 @@
 		<!-- ========================================================================= -->
 		<!-- 3. مساحة الصورة الثانية (صورة المنتج بالمميزات) -->
 		<!-- ========================================================================= -->
-		<div class="w-full max-w-md mx-auto aspect-[4/3] sm:aspect-video bg-[#FAF8F5] rounded-3xl border-2 border-dashed border-[#1B4332]/20 flex flex-col items-center justify-center p-6 my-6 text-center shadow-sm relative overflow-hidden" dir="rtl">
-			<span class="text-3xl mb-2">🌿</span>
-			<p class="text-sm sm:text-base font-bold text-[#1B4332] mb-1.5">مساحة مخصصة لصورة المنتج والمميزات البصرية (Feature Callouts)</p>
-			<span class="bg-white/80 px-3 py-1 rounded-full text-xs text-[#1B4332] font-semibold shadow-2xs">
-				موك-آب وتفاصيل التركيبة الفريدة
-			</span>
+		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
+			<img 
+				src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747975/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%88%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86.png" 
+				alt="الحل الجذري: شعر صحي وبشرة مشرقة بفضل علكات كولاجين نوفافيتا" 
+				class="w-full h-full object-cover object-center block"
+				loading="lazy"
+			/>
 		</div>
 
 		<!-- ========================================================================= -->
