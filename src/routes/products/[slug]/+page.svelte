@@ -936,25 +936,34 @@
 	<!-- ========================================================================= -->
 	{#if scrollY > 350}
 		<div
-			transition:slide={{ duration: 300 }}
-			class="fixed bottom-0 inset-x-0 z-40 bg-[#174B38]/95 text-white px-4 py-2.5 sm:hidden shadow-[0_-10px_30px_rgba(23,75,56,0.35)] border-t border-emerald-800/50 flex flex-col items-center gap-1.5 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
+			transition:slide={{ duration: 250 }}
+			class="fixed bottom-3.5 inset-x-3.5 z-40 max-w-md mx-auto sm:hidden pointer-events-none pb-[env(safe-area-inset-bottom,0px)]"
 			dir="rtl"
 		>
-			<!-- Centered High-Converting Trust Hook -->
-			<div class="flex items-center justify-center gap-2 text-[11px] font-bold text-emerald-200">
-				<span>🚚 توصيل فابور لكافة المدن</span>
-				<span class="text-emerald-400/60">•</span>
-				<span>📦 فحص ومعاينة الطرد عند الباب</span>
-			</div>
-
-			<!-- Full-Width Centered High-Converting CTA Button -->
 			<button
 				type="button"
 				onclick={scrollToOffers}
-				class="w-full min-h-12 rounded-xl bg-white text-[#174B38] hover:bg-emerald-50 active:scale-95 font-black text-sm px-4 shadow-xl flex items-center justify-center gap-2 transition-all cursor-pointer"
+				class="pointer-events-auto w-full min-h-[52px] rounded-2xl bg-gradient-to-r from-[#143427] via-[#1B4332] to-[#143427] text-white px-4 py-2.5 shadow-[0_10px_28px_rgba(20,52,39,0.45)] border border-emerald-500/25 active:scale-[0.98] transition-all flex items-center justify-between gap-3 cursor-pointer group"
 			>
-				<span>اطلبي الآن • الدفع عند الاستلام</span>
-				<span class="text-base font-bold">←</span>
+				<!-- Action Title + Micro Trust Reassurance -->
+				<div class="flex flex-col text-start leading-tight">
+					<div class="flex items-center gap-1.5">
+						<span class="font-display font-black text-sm text-white">
+							اطلبي الآن • الدفع عند الاستلام
+						</span>
+						<span class="text-xs">🛍️</span>
+					</div>
+					<span class="text-[10px] text-emerald-200/90 font-semibold mt-0.5 flex items-center gap-1">
+						<span>🚚 توصيل فابور</span>
+						<span class="text-emerald-400/50">•</span>
+						<span>📦 معاينة عند الباب</span>
+					</span>
+				</div>
+
+				<!-- Sleek Arrow Pill Button Icon -->
+				<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white border border-white/20 text-xs font-bold transition-transform group-hover:-translate-x-0.5">
+					←
+				</div>
 			</button>
 		</div>
 	{/if}

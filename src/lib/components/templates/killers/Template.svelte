@@ -765,20 +765,20 @@
 
 	<!-- Sticky Order Button -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-0 inset-x-0 p-3 bg-[#121212]/95 border-t border-stone-800 backdrop-blur-md z-45 flex flex-col items-center gap-1.5 sm:hidden" dir="rtl">
-			<span class="text-[10px] font-bold text-stone-300 flex items-center gap-1">
-				🚚 توصيل مجاني وسريع • الدفع عند الاستلام
-			</span>
+		<div class="fixed bottom-3.5 inset-x-3.5 z-45 max-w-md mx-auto sm:hidden pointer-events-none pb-[env(safe-area-inset-bottom,0px)]" dir="rtl">
 			<button
 				onclick={scrollToForm}
-				class="w-full min-h-12 py-3 text-stone-950 font-black text-sm rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
+				class="pointer-events-auto w-full min-h-[50px] px-4 py-2.5 text-stone-950 font-black text-sm rounded-2xl shadow-xl transition-transform active:scale-95 flex items-center justify-between gap-2"
 				style="
 					background: linear-gradient(to right, var(--t-cta, #c8a96e), var(--t-cta-hover, #b8985e));
-					border-radius: {RADIUS_MAP[t.sections.advanced.borderRadius] || '12px'};
+					border-radius: {RADIUS_MAP[t.sections.advanced.borderRadius] || '16px'};
 				"
 			>
-				<span>{t.sections.pricing.stickyCtaText || 'اطلبي الآن • الدفع عند الاستلام'}</span>
-				<span>←</span>
+				<div class="flex flex-col text-start leading-tight">
+					<span class="font-bold text-stone-950 text-sm">{t.sections.pricing.stickyCtaText || 'اطلبي الآن • الدفع عند الاستلام'}</span>
+					<span class="text-[10px] text-stone-800 font-semibold">🚚 توصيل مجاني • معاينة عند الباب</span>
+				</div>
+				<span class="flex h-7 w-7 items-center justify-center rounded-lg bg-black/10 text-xs font-bold">←</span>
 			</button>
 		</div>
 	{/if}
