@@ -37,7 +37,7 @@
 			} catch (e) {}
 
 			try {
-				if (typeof (window as any).ttq) {
+				if ((window as any).ttq && typeof (window as any).ttq.page === 'function') {
 					(window as any).ttq.page();
 					console.log('📄 [TIKTOK SUCCESS] SPA PageView fired');
 				}

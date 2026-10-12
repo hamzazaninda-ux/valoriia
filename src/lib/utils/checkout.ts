@@ -169,6 +169,24 @@ export function trackAddToCart(
 		} catch (e) {
 			console.warn('Gtag add_to_cart error:', e);
 		}
+
+		// 5. TikTok Pixel
+		try {
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				(window as any).ttq.track('AddToCart', {
+					content_id: String(id || 'novavita-bundle'),
+					content_type: 'product',
+					content_name: String(title || 'NOVAVITA Gummies'),
+					quantity: numberItems || 1,
+					price: numPrice || 249,
+					value: numPrice || 249,
+					currency: 'MAD'
+				});
+				console.log('🛒 [TIKTOK SUCCESS] AddToCart fired');
+			}
+		} catch (err) {
+			console.warn('[Pixel] TikTok AddToCart error:', err);
+		}
 	} catch (globalErr) {
 		console.warn('trackAddToCart non-blocking error:', globalErr);
 	}
@@ -285,6 +303,26 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		}
 	} catch (err) {
 		console.warn('[Pixel] gtag conversion/purchase error:', err);
+	}
+
+	// 5. TikTok Pixel
+	try {
+		if (typeof window !== 'undefined' && (window as any).ttq) {
+			const ttqPayload = {
+				content_id: String(title || 'novavita-bundle'),
+				content_type: 'product',
+				content_name: String(title || 'NOVAVITA Order'),
+				quantity: 1,
+				price: numPrice,
+				value: numPrice,
+				currency: 'MAD'
+			};
+			(window as any).ttq.track('CompletePayment', ttqPayload, { event_id: String(txnId) });
+			(window as any).ttq.track('PlaceAnOrder', ttqPayload, { event_id: String(txnId) });
+			console.log('💰 [TIKTOK SUCCESS] CompletePayment & PlaceAnOrder fired');
+		}
+	} catch (err) {
+		console.warn('[Pixel] TikTok CompletePayment error:', err);
 	}
 }
 

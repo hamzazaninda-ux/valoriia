@@ -75,7 +75,7 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
   const tracking = {
     gtmContainerId: 'GTM-TNFHPGTV',
     facebookPixelId: '2180716089518389',
-    tiktokPixelId: 'DB3521RC77UF35MHURFG',
+    tiktokPixelId: 'DB60A23C77U074LG47QG',
     snapchatPixelId: '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce',
     googleAnalyticsId: '',
     googleAdsId: 'AW-17426876482',
@@ -148,7 +148,7 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
     const trackingData = {
       gtmContainerId: 'GTM-TNFHPGTV',
       facebookPixelId: '2180716089518389',
-      tiktokPixelId: 'DB3521RC77UF35MHURFG',
+      tiktokPixelId: 'DB60A23C77U074LG47QG',
       snapchatPixelId: '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce',
       googleAnalyticsId: '',
       googleAdsId: 'AW-17426876482',
