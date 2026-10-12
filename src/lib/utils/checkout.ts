@@ -87,7 +87,7 @@ export function trackAddToCart(
 		const cur = 'MAD';
 		const numPrice = Number(price) || 0;
 		const title = (productTitle || '').trim();
-		const id = String(itemId || 'kit-tandim');
+		const id = String(itemId || 'gummies_collagen');
 
 		// Deduplication guard: prevent duplicate events within 1500ms for identical item
 		const now = Date.now();

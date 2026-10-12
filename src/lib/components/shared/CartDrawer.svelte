@@ -37,19 +37,16 @@
 		currentTitle?: string;
 		currentImage?: string;
 	} = $props();
-	export const CHILD_LOCK_IMAGE =
-		'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp';
-
 	const crossSells = $derived.by(() => {
-		const childLock: CrossSell = {
-			slug: 'qofl-al-aman',
-			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-			heroImage: CHILD_LOCK_IMAGE,
-			startingPrice: 49
-		};
-
-		return [childLock].filter((p) => !cart.lines.some((l) => l.slug === p.slug));
+		return others
+			.filter((p) => !cart.lines.some((l) => l.slug === p.slug) && p.slug !== currentSlug)
+			.map((p) => ({
+				slug: p.slug,
+				title: p.title,
+				subtitle: p.subtitle,
+				heroImage: p.heroImage || '/images/products/collagen-hero.webp',
+				startingPrice: p.startingPrice || 199
+			}));
 	});
 
 	let isAddingCrossSell = false;

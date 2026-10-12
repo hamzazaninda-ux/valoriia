@@ -48,10 +48,10 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     input.product ||
     input.offer ||
     input.productTitle ||
-    'طقم التنظيم المنزلي + هدية'
+    'علكات الكولاجين البحري'
   ).trim();
 
-  const price = Number(input.totalPrice ?? input.price ?? 229);
+  const price = Number(input.totalPrice ?? input.price ?? 249);
   const qty = Number(input.quantity ?? input.qte ?? 1);
 
   const newOrder: StoredOrder = {
@@ -63,9 +63,9 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     address: (input.address || input.city || '').trim(),
     product: productTitle,
     quantity: isNaN(qty) || qty <= 0 ? 1 : qty,
-    totalPrice: isNaN(price) || price <= 0 ? 229 : price,
+    totalPrice: isNaN(price) || price <= 0 ? 249 : price,
     status: 'جديد',
-    sku: input.sku || 'kit-tandim',
+    sku: input.sku || 'gummies_collagen',
     pageUrl: input.pageUrl || '',
     orderType: input.orderType || 'direct',
     items: input.items || '',

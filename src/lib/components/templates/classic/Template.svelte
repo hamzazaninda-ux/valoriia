@@ -81,32 +81,17 @@
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
-	// Canonical definition of Child Safety Lock product (UPSELL)
-	const childLockProduct = {
-		slug: 'qofl-al-aman',
-		title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-		subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-		startingPrice: 49
-	};
-
-	// Active upsell list contains ONLY Child Safety Lock:
-	// UPSELL: قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
+	// Canonical definition of NOVAVITA upsell products
 	const cartUpsells = $derived.by(() => {
-		const foundLock = others.find(
-			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
-		);
-
-		return [
-			{
-				...childLockProduct,
-				...(foundLock || {}),
-				title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-				subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-				startingPrice: 49,
-				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
-			}
-		];
+		return others
+			.filter((p) => p.slug !== (product as any)?.slug)
+			.map((p) => ({
+				slug: p.slug,
+				title: p.title,
+				subtitle: p.subtitle,
+				heroImage: p.heroImage || '/images/products/collagen-hero.webp',
+				startingPrice: p.startingPrice || 199
+			}));
 	});
 
 	function addSelectedToCart() {

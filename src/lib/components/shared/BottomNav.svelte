@@ -6,9 +6,9 @@
 		onOpenCart?: () => void;
 	}
 
-	let { whatsappNumber = '212626558375', cartCount = 0, onSearch, onOpenCart }: Props = $props();
+	let { whatsappNumber = '212600000000', cartCount = 0, onSearch, onOpenCart }: Props = $props();
 
-	const cleanWa = $derived(whatsappNumber.replace(/\D/g, '') || '212626558375');
+	const cleanWa = $derived(whatsappNumber.replace(/\D/g, '') || '212600000000');
 	const defaultMessage = 'السلام عليكم NOVAVITA، عندي استفسار بخصوص منتجات العناية';
 	const waUrl = $derived(`https://wa.me/${cleanWa}?text=${encodeURIComponent(defaultMessage)}`);
 

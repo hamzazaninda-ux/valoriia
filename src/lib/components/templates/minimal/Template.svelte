@@ -469,7 +469,7 @@
 	{/if}
 
 	<footer class="py-6 text-center text-xs text-gray-500 border-t border-gray-100" dir="rtl">
-		{content.footerText || `© ${new Date().getFullYear()} ${settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'Lhamza Shop'}`}
+		{content.footerText || `© ${new Date().getFullYear()} ${settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'NOVAVITA'}`}
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}

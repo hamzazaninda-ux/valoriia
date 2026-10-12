@@ -173,7 +173,7 @@ function doOptions(e) {
 </script>
 
 <svelte:head>
-	<title>الإعدادات العامة - Lhamza Shop Admin</title>
+	<title>الإعدادات العامة - NOVAVITA Admin</title>
 </svelte:head>
 
 <div class="space-y-6">

@@ -20,8 +20,6 @@ export const load: PageServerLoad = async ({ params }) => {
   const theme = await readTemplateTheme(product.template || 'classic');
 
   // Other published products for cart cross-sell / post-purchase upsell:
-  // Active upsell sequence strictly contains ONLY:
-  // قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
   const allProducts = await listProducts();
   const others = allProducts
     .filter(p => p.slug !== product.slug && p.status === 'published')

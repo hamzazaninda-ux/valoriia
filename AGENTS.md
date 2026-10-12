@@ -21,5 +21,5 @@ Every task MUST end with:
 1. `git add .`
 2. `git commit -m "..."`
 3. `git push origin main`
-4. Deploy and verify production on Vercel (`lhamza.shop`).
+4. Deploy and verify production on Vercel (`novavita.store`).
 No task is complete until changes are live in production. Never stop at Localhost.

@@ -29,18 +29,30 @@ export async function readBrandSettings(): Promise<BrandSettings> {
   const content = await gitReadFile('main', `${SETTINGS_PATH}/brand.json`);
   const data = JSON.parse(content);
   checkBrandForSensitiveFields(data);
-  return {
+  const brand = {
     name: 'NOVAVITA',
     tagline: 'العناية بالجمال والصحة من الداخل',
     logo: '/images/logo.svg',
     favicon: '/favicon.svg',
-    heroImage: '',
+    heroImage: '/images/hero-banner.webp',
     whatsappNumber: '212600000000',
     supportHours: '9:00 - 22:00',
-    ...data,
-    ...(data.name === 'Valoriia' || data.name === 'Lhamza Shop' || !data.name ? { name: 'NOVAVITA' } : {}),
-    ...(data.tagline === 'Valoriia' || data.tagline === 'Lhamza Shop' || !data.tagline ? { tagline: 'العناية بالجمال والصحة من الداخل' } : {})
-  } as BrandSettings;
+    ...data
+  };
+
+  if (!brand.name || brand.name.includes('Lhamza') || brand.name.includes('Valoriia')) {
+    brand.name = 'NOVAVITA';
+  }
+  if (!brand.tagline || brand.tagline.includes('Lhamza') || brand.tagline.includes('Valoriia')) {
+    brand.tagline = 'العناية بالجمال والصحة من الداخل';
+  }
+  if (!brand.logo || brand.logo.includes('lhamza.shop') || brand.logo.includes('valoriia')) {
+    brand.logo = '/images/logo.svg';
+  }
+  if (!brand.whatsappNumber || brand.whatsappNumber.includes('626558375')) {
+    brand.whatsappNumber = '212600000000';
+  }
+  return brand as BrandSettings;
 }
 
 export async function readCommerceSettings(): Promise<CommerceSettings> {
@@ -60,7 +72,7 @@ export async function readCommerceSettings(): Promise<CommerceSettings> {
 export async function readTrackingSettings(): Promise<TrackingSettings> {
   const content = await gitReadFile('main', `${SETTINGS_PATH}/tracking.json`);
   const data = JSON.parse(content);
-  return {
+  const tracking = {
     gtmContainerId: 'GTM-TNFHPGTV',
     facebookPixelId: '2180716089518389',
     tiktokPixelId: 'DB3521RC77UF35MHURFG',
@@ -72,7 +84,13 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
     customHeadScripts: '',
     customBodyScripts: '',
     ...data
-  } as TrackingSettings;
+  };
+
+  tracking.facebookPixelId = '2180716089518389';
+  if (!tracking.siteUrl || tracking.siteUrl.includes('lhamza.shop') || tracking.siteUrl.includes('valoriia')) {
+    tracking.siteUrl = 'https://novavita.store';
+  }
+  return tracking as TrackingSettings;
 }
 
 export async function readSettings(): Promise<GlobalSettings> {
@@ -99,13 +117,24 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
       tagline: 'العناية بالجمال والصحة من الداخل',
       logo: '/images/logo.svg',
       favicon: '/favicon.svg',
-      heroImage: '',
+      heroImage: '/images/hero-banner.webp',
       whatsappNumber: '212600000000',
       supportHours: '9:00 - 22:00',
-      ...rawBrand,
-      ...(rawBrand.name === 'Valoriia' || rawBrand.name === 'Lhamza Shop' || !rawBrand.name ? { name: 'NOVAVITA' } : {}),
-      ...(rawBrand.tagline === 'Valoriia' || rawBrand.tagline === 'Lhamza Shop' || !rawBrand.tagline ? { tagline: 'العناية بالجمال والصحة من الداخل' } : {})
+      ...rawBrand
     };
+    if (!brandData.name || brandData.name.includes('Lhamza') || brandData.name.includes('Valoriia')) {
+      brandData.name = 'NOVAVITA';
+    }
+    if (!brandData.tagline || brandData.tagline.includes('Lhamza') || brandData.tagline.includes('Valoriia')) {
+      brandData.tagline = 'العناية بالجمال والصحة من الداخل';
+    }
+    if (!brandData.logo || brandData.logo.includes('lhamza.shop') || brandData.logo.includes('valoriia')) {
+      brandData.logo = '/images/logo.svg';
+    }
+    if (!brandData.whatsappNumber || brandData.whatsappNumber.includes('626558375')) {
+      brandData.whatsappNumber = '212600000000';
+    }
+
     const commerceData = {
       currency: 'MAD',
       currencySymbol: 'د.م',
@@ -115,19 +144,24 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
       postOrderUpsellImage: '',
       ...JSON.parse(commerce)
     };
+    const parsedTracking = JSON.parse(tracking);
     const trackingData = {
-      gtmContainerId: '',
-      facebookPixelId: '',
-      tiktokPixelId: '',
+      gtmContainerId: 'GTM-TNFHPGTV',
+      facebookPixelId: '2180716089518389',
+      tiktokPixelId: 'DB3521RC77UF35MHURFG',
       snapchatPixelId: '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce',
       googleAnalyticsId: '',
-      googleAdsId: '',
+      googleAdsId: 'AW-17426876482',
       defaultOgImage: '',
-      siteUrl: '',
+      siteUrl: 'https://novavita.store',
       customHeadScripts: '',
       customBodyScripts: '',
-      ...JSON.parse(tracking)
+      ...parsedTracking
     };
+    trackingData.facebookPixelId = '2180716089518389';
+    if (!trackingData.siteUrl || trackingData.siteUrl.includes('lhamza.shop')) {
+      trackingData.siteUrl = 'https://novavita.store';
+    }
     return { brand: brandData, commerce: commerceData, tracking: trackingData };
   } catch {
     return readSettings();

@@ -86,7 +86,7 @@
 </script>
 
 <svelte:head>
-	<title>تخصيص القالب {theme.name} — Lhamza Shop CMS</title>
+	<title>تخصيص القالب {theme.name} — NOVAVITA CMS</title>
 </svelte:head>
 
 <div class="h-[calc(100vh-5rem)] flex flex-col -mx-4 -my-8 sm:-mx-6 lg:-mx-8">

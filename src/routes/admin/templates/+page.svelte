@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<title>القوالب — Lhamza Shop CMS</title>
+	<title>القوالب — NOVAVITA CMS</title>
 </svelte:head>
 
 <div class="space-y-8">

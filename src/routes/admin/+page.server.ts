@@ -47,7 +47,7 @@ export const load: PageServerLoad = async () => {
     health: {
       sheets: !!(settings?.commerce?.googleSheetsUrl || '').trim(),
       whatsapp: !!(settings?.brand?.whatsappNumber || '').trim(),
-      brandName: settings?.brand?.name || 'Lhamza Shop'
+      brandName: settings?.brand?.name || 'NOVAVITA'
     }
   };
 };

@@ -22,48 +22,59 @@
 	const defaultOffers: ProductOffer[] = [
 		{
 			id: 1,
-			title: '1 قطعة + رشاشة هدية 🎁',
+			title: 'علبة واحدة (شهر تجريبي)',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 229,
-			originalPrice: 299,
+			price: 199,
+			originalPrice: 249,
 			quantity: 1,
 			badge: null,
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png',
+			image: '/images/products/collagen-hero.webp',
 			isPopular: false
 		},
 		{
 			id: 2,
-			title: '2 منظمات + 2 رشاشات هدية 🎁',
-			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 349,
-			originalPrice: 458,
+			title: 'علبتان (كورس شهرين متكامل) 🎁',
+			subtitle: 'توصيل مجاني + خصم خاص',
+			price: 299,
+			originalPrice: 398,
 			quantity: 2,
 			badge: '⭐ الأكثر طلباً',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png',
+			image: '/images/products/collagen-hero.webp',
 			isPopular: true
+		},
+		{
+			id: 3,
+			title: '3 علب (كورس 3 أشهر كامل) 🎁',
+			subtitle: 'أفضل قيمة + نتائج علاجية قصوى',
+			price: 399,
+			originalPrice: 597,
+			quantity: 3,
+			badge: '🎁 توفير أكبر',
+			image: '/images/products/collagen-hero.webp',
+			isPopular: false
 		}
 	];
 
 	const defaultFaq = [
 		{
-			question: 'واش كيركب على أي علو ديال السقف؟',
-			answer: 'نعم! العمود مصمم بتقنية تلسكوبية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار، يعني كيركب في أي حمام كيفما كان علو السقف ديالو.'
+			question: 'إمتى كيبداو يبانو النتائج؟',
+			answer: 'النتائج كتبدا تبان من الأسابيع الأولى على مستوى رطوبة ونضارة البشرة وحيوية الشعر. ومع الالتزام لمدة شهرين إلى 3 أشهر كتوصل للنتيجة العلاجية القصوى.'
 		},
 		{
-			question: 'واش كيقدر يطيح إلى تقلت عليه بالسلعة؟',
-			answer: 'أبداً. الحامل مزود بـ Ressort داخلي قوي وجلدات مانعة للانزلاق في الأعلى والأسفل، كيتحمل وزن كيوصل حتى لـ 15-20 كيلوغرام بكل أمان وثبات.'
+			question: 'واش العلكات حلال وبدون جيلاتين خنزير؟',
+			answer: 'نعم! علكات NOVAVITA مصنعة 100% من البكتين النباتي الطبيعي (Pectin)، خالية تماماً من أي جيلاتين حيواني وحلال معتمدة ومطابقة للمعايير الصحية.'
 		},
 		{
-			question: 'واش كيتصدى مع الما والرطوبة ديال الحمام؟',
-			answer: 'المنظم مصنوع من الفولاذ المقاوم للصدأ (Inox) عالي الجودة مع رفوف بلاستيكية متينة من نوع ABS، مصمم خصيصاً ليقاوم الماء والرطوبة وسنوات من الاستعمال بدون صدأ.'
+			question: 'طريقة الاستعمال الصحيحة؟',
+			answer: 'حبتان (علكتان) يومياً، يُفضل صباحاً مع أو بعد وجبة الفطور لمذاق لذيذ وامتصاص غذائي مثالي.'
 		},
 		{
 			question: 'واش نقدر نقلب السلعة عاد نخلص؟',
-			answer: 'أكيد! حق المعاينة مضمون 100%. ملي يوصلك الموزع، فتح الكولية ديالك وتأكد من السلعة والجودة ديالها عاد خلص ثمن طلبك.'
+			answer: 'أكيد! حق المعاينة مضمون 100%. ملي كيوصلك الموزع، كتقلب طلبك وتتأكد من العلب عاد كتخلص ثمن الطلب.'
 		},
 		{
 			question: 'شحال كياخد التوصيل باش يوصلني الطلب؟',
-			answer: 'التوصيل سريع وفابور (مجاني) لجميع المدن. كيتم تأكيد الطلب معك عبر الهاتف، وكتوصلك السلعة خلال 24 إلى 48 ساعة حتى لباب دارك.'
+			answer: 'التوصيل سريع ومجاني (فابور) لجميع المدن المغربية خلال 24 إلى 48 ساعة فقط حتى لباب دارك.'
 		}
 	];
 
@@ -120,32 +131,17 @@
 
 
 
-	// Canonical definition of Child Safety Lock product (UPSELL #2)
-	const childLockProduct = {
-		slug: 'qofl-al-aman',
-		title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-		subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-		heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
-		startingPrice: 49
-	};
-
-	// Active upsell list contains ONLY Child Safety Lock:
-	// UPSELL: قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
+	// Canonical definition of NOVAVITA upsell products
 	const cartUpsells = $derived.by(() => {
-		const foundLock = others.find(
-			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
-		);
-
-		return [
-			{
-				...childLockProduct,
-				...(foundLock || {}),
-				title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-				subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-				startingPrice: 49,
-				heroImage: 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
-			}
-		];
+		return others
+			.filter((p) => p.slug !== product?.slug)
+			.map((p) => ({
+				slug: p.slug,
+				title: p.title,
+				subtitle: p.subtitle,
+				heroImage: p.heroImage || '/images/products/collagen-hero.webp',
+				startingPrice: p.startingPrice || 199
+			}));
 	});
 
 	let isAddingToCart = false;
@@ -309,11 +305,11 @@
 	<!-- Store Header: Logo / Brand Name -->
 	<header class="bg-white/95 backdrop-blur-sm border-b border-neutral-200/70 py-3 px-4 flex items-center justify-between sticky top-0 z-30 shadow-2xs" dir="rtl">
 		<div class="flex items-center gap-2">
-			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B4332] font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
-			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'Lhamza Shop'}</span>
+			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B4332] font-display text-base font-bold text-[#E86A7C] shadow-2xs">N</span>
+			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'NOVAVITA'}</span>
 		</div>
 		<a
-			href="https://wa.me/212626558375?text=%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D8%A8%D8%A7%D9%83%20%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85%20%D8%A7%D9%84%D8%B0%D9%83%D9%8A"
+			href="https://wa.me/212600000000?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20NOVAVITA%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D9%85%D9%83%D9%85%D9%84%D8%A7%D8%AA%20NOVAVITA"
 			target="_blank"
 			rel="noopener noreferrer"
 			class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/80 hover:bg-emerald-100 transition-colors"
@@ -733,7 +729,7 @@
 				</div>
 
 				<p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-normal">
-					"الصراحة الرشاشة الهدية واعرة بزاف الجهد ديال الما تبدل عندي فالدوش. المنظم حتى هو إينوكس مكيصداش مع الفوار. تعامل احترافي وتوصيل سريع".
+					"الصراحة المذاق واعر بزاف بحال الفواكه، ولا عندي روتين يومي مكنستغناش عليه. شعري نقص من التساقط ووجهي رجعات فيه النضارة. تعامل راقي وتوصيل سريع".
 				</p>
 			</div>
 
@@ -766,7 +762,7 @@
 				</div>
 
 				<p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-normal">
-					"كنت خايفة من القياس حيت السقف عندي عالي، ولكن التيليسكوب كيتجبد مزيان وكيتبت صحيح بزاف. وليت متهنية من كركبة الحمام".
+					"كنت ديما كنعكز على الفيتامينات بالكبسولات، ولكن هاد العلكات ساهلين ولذاذ وبلا سكر زايد. حسيت بفرق كبير فالطاقة وترطيب البشرة من الشهر الأول".
 				</p>
 			</div>
 		</div>

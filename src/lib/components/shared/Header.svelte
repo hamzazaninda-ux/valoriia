@@ -28,11 +28,10 @@
 
 	const navLinks = [
 		{ label: 'الرئيسية', href: '/' },
-		{ label: 'مجموعتنا', href: '/collection' },
-		{ label: 'كولاجين', href: '/products/gummies_collagen' },
-		{ label: 'بيوتين', href: '/products/gummies_biotine' },
+		{ label: 'كولاجين بحري', href: '/products/gummies_collagen' },
+		{ label: 'بيوتين وزنك', href: '/products/gummies_biotine' },
 		{ label: 'ملتي فيتامين', href: '/products/gumies_vitamine' },
-		{ label: 'من نحن', href: '/about' },
+		{ label: 'باقات العروض', href: '/cart' },
 		{ label: 'اتصل بنا', href: '/contact' }
 	];
 </script>

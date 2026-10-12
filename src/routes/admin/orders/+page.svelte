@@ -119,7 +119,7 @@
 		}
 
 		const greeting = encodeURIComponent(
-			`السلام عليكم أخي/أختي ${customerName}، تواصلنا معك من متجر Lhamza Shop بخصوص تأكيد طلبك (${product}). واش مناسب نأكدو معك العنوان والتوصيل؟`
+			`السلام عليكم أخي/أختي ${customerName}، تواصلنا معك من متجر NOVAVITA بخصوص تأكيد طلبك (${product}). واش مناسب نأكدو معك العنوان والتوصيل؟`
 		);
 		return `https://wa.me/${clean}?text=${greeting}`;
 	}
@@ -264,7 +264,7 @@
 </script>
 
 <svelte:head>
-	<title>إدارة الطلبات - Lhamza Shop Admin</title>
+	<title>إدارة الطلبات - NOVAVITA Admin</title>
 </svelte:head>
 
 <!-- Toast Notification -->
