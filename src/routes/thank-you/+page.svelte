@@ -170,7 +170,11 @@
 		// ==========================================
 		if (typeof window !== 'undefined' && orderId) {
 			const trackingKey = `nv_tracked_${orderId}`;
-			const alreadyFired = sessionStorage.getItem(trackingKey);
+			const alreadyFired =
+				sessionStorage.getItem(trackingKey) ||
+				sessionStorage.getItem(`tracked_order_${orderId}`) ||
+				localStorage.getItem(`tracked_order_${orderId}`) ||
+				sessionStorage.getItem(`fb_purchased_${orderId}`);
 
 			if (!alreadyFired) {
 				// 1. Google Ads Conversion Firing
@@ -242,9 +246,28 @@
 					}
 				}
 
+				// 4. Meta / Facebook Pixel Firing (NOVAVITA: 2180716089518389)
+				if (typeof (window as any).fbq === 'function') {
+					try {
+						(window as any).fbq('track', 'Purchase', {
+							content_name: order.productTitle || 'NOVAVITA Gummies Bundle',
+							content_type: 'product',
+							value: totalPrice,
+							currency: 'MAD',
+							order_id: String(orderId)
+						}, { eventID: String(orderId) });
+						console.log('✅ [Meta Pixel] Purchase fired on thank-you page:', { orderId, totalPrice });
+					} catch (err) {
+						console.warn('⚠️ [Meta Pixel] Purchase firing error:', err);
+					}
+				}
+
 				sessionStorage.setItem(trackingKey, 'true');
+				sessionStorage.setItem(`tracked_order_${orderId}`, 'true');
+				localStorage.setItem(`tracked_order_${orderId}`, 'true');
+				sessionStorage.setItem(`fb_purchased_${orderId}`, 'true');
 			} else {
-				console.log(`🛡️ [Pixel] Conversion already fired for order ${orderId}. Skipping.`);
+				console.log(`🛡️ [Pixel] Conversion already fired for order ${orderId}. Skipping duplicate.`);
 			}
 		}
 	});

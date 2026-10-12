@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import { PRODUCTS, type CatalogProduct } from '$lib/data/products';
+	import { trackPurchase } from '$lib/utils/checkout';
 
 	interface Props {
 		open?: boolean;
@@ -222,6 +223,9 @@
 			} catch (postErr) {
 				console.warn('Orders API network notice:', postErr);
 			}
+
+			// Fire Purchase tracking
+			trackPurchase(subtotal, mainItem?.title || 'NOVAVITA Gummies Bundle', orderId, cleanedPhone);
 
 			// Clear cart and close drawer
 			handleClose();

@@ -7,6 +7,7 @@
 	let { data, children }: { data: LayoutData; children: any } = $props();
 
 	const tracking = $derived(data?.settings?.tracking);
+	const pixelId = $derived(tracking?.facebookPixelId || '2180716089518389');
 
 	let isFirstNav = true;
 	afterNavigate(() => {
@@ -36,9 +37,16 @@
 			} catch (e) {}
 
 			try {
-				if ((window as any).ttq) {
+				if (typeof (window as any).ttq) {
 					(window as any).ttq.page();
 					console.log('📄 [TIKTOK SUCCESS] SPA PageView fired');
+				}
+			} catch (e) {}
+
+			try {
+				if (typeof (window as any).fbq === 'function') {
+					(window as any).fbq('track', 'PageView');
+					console.log('📄 [Meta Pixel] SPA PageView fired');
 				}
 			} catch (e) {}
 		}
@@ -50,21 +58,22 @@
 	<meta property="og:site_name" content="NOVAVITA" />
 	<meta name="apple-mobile-web-app-title" content="NOVAVITA" />
 
-	<!-- Meta / Facebook Pixel Code -->
-	{#if tracking?.facebookPixelId}
-		<script>
-			!function(f,b,e,v,n,t,s)
-			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-			n.queue=[];t=b.createElement(e);t.async=!0;
-			t.src=v;s=b.getElementsByTagName(e)[0];
-			s.parentNode.insertBefore(t,s)}(window, document,'script',
-			'https://connect.facebook.net/en_US/fbevents.js');
-			fbq('init', '{tracking.facebookPixelId}');
-			fbq('track', 'PageView');
-		</script>
-	{/if}
+	<!-- Meta / Facebook Pixel Code (NOVAVITA: 2180716089518389) -->
+	<script>
+		!function(f,b,e,v,n,t,s)
+		{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+		n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+		if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+		n.queue=[];t=b.createElement(e);t.async=!0;
+		t.src=v;s=b.getElementsByTagName(e)[0];
+		s.parentNode.insertBefore(t,s)}(window, document,'script',
+		'https://connect.facebook.net/en_US/fbevents.js');
+		fbq('init', '{pixelId}');
+		fbq('track', 'PageView');
+	</script>
+	<noscript>
+		<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={pixelId}&ev=PageView&noscript=1" alt="Meta Pixel" />
+	</noscript>
 
 
 

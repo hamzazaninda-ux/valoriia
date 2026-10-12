@@ -185,16 +185,8 @@
 	onMount(() => {
 		initDefaultCart();
 
-		// Trigger Meta Pixel AddToCart event strictly on page load
+		// Trigger Meta Pixel AddToCart event strictly on page load (Deduplicated)
 		if (typeof window !== 'undefined') {
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'AddToCart', {
-					content_name: initialProduct.name || 'NOVAVITA Gummies Bundle',
-					currency: 'MAD',
-					value: currentTier.price || 249
-				});
-			}
-
 			fbqTrack('AddToCart', {
 				content_name: initialProduct.name || 'NOVAVITA Gummies Bundle',
 				content_type: 'product',

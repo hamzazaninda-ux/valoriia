@@ -4,16 +4,11 @@
 	import { fbqTrack } from '$lib/tracking/pixel.js';
 
 	onMount(() => {
-		// Fire Meta Pixel AddToCart event immediately on page load
-		if (typeof window !== 'undefined' && window.fbq) {
-			window.fbq('track', 'AddToCart', {
-				content_name: 'NOVAVITA Gummies Bundle',
-				currency: 'MAD',
-				value: 249
-			});
-		} else {
+		// Fire Meta Pixel AddToCart event immediately on page load (Deduplicated)
+		if (typeof window !== 'undefined') {
 			fbqTrack('AddToCart', {
 				content_name: 'NOVAVITA Gummies Bundle',
+				content_type: 'product',
 				currency: 'MAD',
 				value: 249
 			});

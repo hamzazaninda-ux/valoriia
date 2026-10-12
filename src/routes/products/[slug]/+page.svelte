@@ -82,6 +82,7 @@
 			if ((window as any).fbq) {
 				(window as any).fbq('track', 'AddToCart', {
 					content_name: product?.name || 'Gummies Bundle',
+					content_type: 'product',
 					currency: 'MAD',
 					value: currentTier?.price || 249
 				});
@@ -122,6 +123,7 @@
 			if ((window as any).fbq) {
 				(window as any).fbq('track', 'AddToCart', {
 					content_name: product?.name || 'Gummies Bundle',
+					content_type: 'product',
 					currency: 'MAD',
 					value: currentTier?.price || 249
 				});

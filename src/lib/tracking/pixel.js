@@ -1,16 +1,40 @@
 /**
- * Unified Pixel & Tracking Helper (NOVAVITA DTC)
- * Handles Meta Pixel (fbq), TikTok Pixel (ttq), Snapchat (snaptr), and GA4/GTM (dataLayer).
+ * Unified Production-Grade Meta Pixel & Tracking Helper (NOVAVITA DTC)
+ * Pixel ID: 2180716089518389
+ * Handles Meta Pixel (fbq), TikTok Pixel (ttq), and GA4/GTM (dataLayer).
+ * Strict Deduplication | Zero Dropped Conversions
  */
+
+let lastAddToCartTime = 0;
+let lastAddToCartKey = '';
 
 export function fbqTrack(event, data = {}) {
 	if (typeof window === 'undefined') return;
 
-	// 1. Meta / Facebook Pixel
+	// Deduplication guard for AddToCart (1500ms debounce)
+	if (event === 'AddToCart') {
+		const now = Date.now();
+		const key = `${data.content_name || 'bundle'}:${data.value || 249}`;
+		if (now - lastAddToCartTime < 1500 && lastAddToCartKey === key) {
+			console.log('[Pixel] AddToCart duplicate suppressed by deduplication guard:', key);
+			return;
+		}
+		lastAddToCartTime = now;
+		lastAddToCartKey = key;
+	}
+
+	// 1. Meta / Facebook Pixel (NOVAVITA: 2180716089518389)
 	try {
 		if (typeof window.fbq === 'function') {
-			window.fbq('track', event, data);
-			console.log(`[Pixel] Meta fbq track: ${event}`, data);
+			const payload = {
+				content_name: data.content_name || 'NOVAVITA Gummies Bundle',
+				content_type: 'product',
+				currency: data.currency || 'MAD',
+				value: data.value || 249,
+				...data
+			};
+			window.fbq('track', event, payload);
+			console.log(`[Pixel] Meta fbq track: ${event}`, payload);
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta fbq error:', err);
@@ -23,7 +47,7 @@ export function fbqTrack(event, data = {}) {
 			window.ttq.track(ttqEvent, {
 				content_id: data.content_id || 'novavita_bundle',
 				content_name: data.content_name || 'NOVAVITA Gummies Bundle',
-				content_type: data.content_type || 'product',
+				content_type: 'product',
 				value: data.value || 249,
 				currency: data.currency || 'MAD'
 			});

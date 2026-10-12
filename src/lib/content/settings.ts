@@ -61,14 +61,14 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
   const content = await gitReadFile('main', `${SETTINGS_PATH}/tracking.json`);
   const data = JSON.parse(content);
   return {
-    gtmContainerId: '',
-    facebookPixelId: '',
-    tiktokPixelId: '',
+    gtmContainerId: 'GTM-TNFHPGTV',
+    facebookPixelId: '2180716089518389',
+    tiktokPixelId: 'DB3521RC77UF35MHURFG',
     snapchatPixelId: '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce',
     googleAnalyticsId: '',
-    googleAdsId: '',
+    googleAdsId: 'AW-17426876482',
     defaultOgImage: '',
-    siteUrl: '',
+    siteUrl: 'https://novavita.store',
     customHeadScripts: '',
     customBodyScripts: '',
     ...data

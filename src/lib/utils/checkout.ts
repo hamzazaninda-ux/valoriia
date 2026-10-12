@@ -257,8 +257,9 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				value: numPrice,
 				currency: 'MAD',
 				content_name: title,
+				content_type: 'product',
 				order_id: txnId
-			});
+			}, { eventID: txnId });
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta Purchase error:', err);

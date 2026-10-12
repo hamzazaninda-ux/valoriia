@@ -24,6 +24,7 @@
 			if ((window as any).fbq) {
 				(window as any).fbq('track', 'AddToCart', {
 					content_name: productName,
+					content_type: 'product',
 					currency: 'MAD',
 					value: price
 				});
