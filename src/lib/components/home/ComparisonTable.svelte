@@ -1,29 +1,29 @@
 <script lang="ts">
 	const points = [
 		{
-			title: 'المذاق وتجربة التناول',
-			novavita: 'نكهة توت وفواكه طبيعية لذيذة ومنعشة',
-			traditional: 'طعم مر ومعدني غير محبب ورائحة صعبة'
+			title: 'الامتصاص الحيوي',
+			novavita: '92% امتصاص فوري عبر الفم',
+			traditional: '20-30% يتلفه حمض المعدة'
 		},
 		{
-			title: 'سهولة البلع والاستعمال',
-			novavita: 'علكات طرية للمضغ بدون ماء في أي وقت وبأي مكان',
-			traditional: 'كبسولات صيدلانية ضخمة يصعب ابتلاعها'
+			title: 'سهولة الاستخدام',
+			novavita: 'ممتعة، لذيذة بنكهة الفواكه الطبيعية',
+			traditional: 'صعبة البلع وتسبب حموضة'
 		},
 		{
-			title: 'الالتزام والاستمرارية',
-			novavita: 'روتين يومي ممتع كتسنايه كل صباح ويسهل الالتزام به',
-			traditional: 'كيتنسى بعد أسبوعين وتترك القارورة في الخزانة'
+			title: 'راحة المعدة',
+			novavita: 'خفيفة 100% ولا تسبب أي تهيج أو غثيان',
+			traditional: 'ثقيلة وتسبب عسر هضم'
 		},
 		{
-			title: 'التأثير على المعدة والهضم',
-			novavita: 'بكتين فواكه نباتي خفيف وسريع الامتصاص 3 مرات',
-			traditional: 'ثقيلة على المعدة وقد تسبب حموضة وغثيان'
+			title: 'السكر والمواد الحافظة',
+			novavita: '0% سكر مضاف، بكتين نباتي حلال',
+			traditional: 'جيلاتين حيواني ومواد مالئة'
 		},
 		{
-			title: 'المصدر والجودة الحلال',
-			novavita: '100% نباتي، حلال، وخالي تماماً من مشتقات الخنزير',
-			traditional: 'مصدر الجيلاتين الحيواني غير واضح ومشكوك فيه'
+			title: 'الالتزام اليومي',
+			novavita: '98% يلتزمون بها يومياً بدون نسيان',
+			traditional: 'انقطاع متكرر وصعوبة استمرار'
 		}
 	];
 </script>
@@ -49,13 +49,13 @@
 			<table class="w-full text-start text-sm sm:text-base border-collapse" dir="rtl">
 				<thead>
 					<tr class="border-b border-emerald-950/10 bg-white">
-						<th class="p-4 sm:p-5 text-start font-black text-stone-600 text-sm sm:text-base w-1/3">المعيار</th>
+						<th class="p-4 sm:p-5 text-start font-black text-stone-600 text-sm sm:text-base w-1/3">المعايير</th>
 						<th class="p-4 sm:p-5 text-center font-black text-[#1B4332] bg-emerald-50/80 border-x border-emerald-950/10 w-1/3">
 							<span class="block text-base sm:text-lg">علكات NOVAVITA</span>
 							<span class="text-xs font-bold text-emerald-800">الروتين السريري الذكي</span>
 						</th>
 						<th class="p-4 sm:p-5 text-center font-bold text-stone-500 w-1/3">
-							<span class="block text-base sm:text-lg">الكبسولات التقليدية</span>
+							<span class="block text-base sm:text-lg">الحبوب والكبسولات التقليدية</span>
 							<span class="text-xs">الروتين العادي</span>
 						</th>
 					</tr>

@@ -100,10 +100,10 @@
 		offersList.find((o: ProductOffer) => o.id === currentPackId) || offersList[1] || offersList[0] || { title: '', price: 0, quantity: 1 }
 	);
 
-	// â”€â”€ Stacked images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// -- Stacked images ----------------------------------------------------
 	// First image fills a 9:16 frame (all phones identical), the rest keep
 	// their natural ratio (1:1 stays 1:1). Upload slots = hero + gallery.
-	// Accepts images from EVERY admin image list (gallery â†’ carousel â†’ hero)
+	// Accepts images from EVERY admin image list (gallery -> carousel -> hero)
 	// so a product can never render imageless no matter which tab was used.
 	// Empty URLs are filtered out (never render a broken <img>).
 	let slides = $derived.by(() => {
@@ -120,7 +120,7 @@
 		}
 		return [];
 	});
-	// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+	// ----------------------------------------------------------------------
 
 	let showStickyBtn = $state(true);
 

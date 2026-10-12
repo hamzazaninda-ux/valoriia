@@ -16,11 +16,11 @@
 		{
 			slug: 'gummies_collagen',
 			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-collagen_gummies-main_1.png',
-			alt: 'علكات كولاجين نوفافيتا البحري وحمض الهيالورونيك',
-			tag: 'روتين النضارة • Glow',
+			alt: 'كولاجين بحري + حمض الهيالورونيك - نوفافيتا',
+			tag: 'Marine Collagen + Hyaluronic Acid',
 			tagColor: 'bg-emerald-50 text-[#1B4332] border-emerald-200/80',
-			title: 'علكات الكولاجين البحري وحمض الهيالورونيك',
-			description: 'كولاجين بحري متحلل مدعم بالهيالورونيك وفيتامين C. كيعوض نقص الكولاجين بعد سن الـ 25، كيعطيك رطوبة مائية عميقة ونضارة مشدودة بدون إبر.',
+			title: 'كولاجين بحري + حمض الهيالورونيك',
+			description: 'مرونة البشرة، نضارة فورية ومقاومة علامات التقدم في السن',
 			stars: 5,
 			reviewCount: '+480 تقييم',
 			price: 'يبدأ من 199 MAD'
@@ -28,11 +28,11 @@
 		{
 			slug: 'gummies_biotine',
 			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png',
-			alt: 'علكات بيوتين نوفافيتا المركز 3000mcg والزنك لتساقط الشعر',
-			tag: 'روتين الشعر • Hair Rescue',
+			alt: 'بيوتين عالي التركيز + زنك - نوفافيتا',
+			tag: 'Biotin 5000mcg + Zinc',
 			tagColor: 'bg-rose-50 text-[#E86A7C] border-rose-200/80',
-			title: 'علكات البيوتين المركز 3000mcg والزنك',
-			description: 'تركيبة سريرية كتحبس تساقط الشعر الناتج عن التوتر والماء القاصح، كتغذي البصيلات باش تنبت البيبي هير وتقوي الأظافر من أول شهر.',
+			title: 'بيوتين عالي التركيز + زنك',
+			description: 'وقف تساقط الشعر، تقوية الجذور وزيادة كثافة ولمعان الأظافر',
 			stars: 5,
 			reviewCount: '+620 تقييم',
 			price: 'يبدأ من 199 MAD'
@@ -40,11 +40,11 @@
 		{
 			slug: 'gumies_vitamine',
 			image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-Melatonine_Gummies-main.png',
-			alt: 'علكات ملتي فيتامين نوفافيتا الشاملة للطاقة والنشاط اليومي',
-			tag: 'روتين الحيوية • Daily Energy',
+			alt: 'ملتي فيتامين ونشاط يومي - نوفافيتا',
+			tag: 'Multivitamin Daily Boost',
 			tagColor: 'bg-amber-50 text-amber-800 border-amber-200/80',
-			title: 'علكات الفيتامينات المتعددة وحمض الفوليك',
-			description: '13 فيتامين ومعدن أساسي ببكتين فواكه نباتي. كتقضي على السخفة والخمول الصباحي، كتقوي مناعتك وتعطيك طاقة تدوم نهارك كامل بدون ثقل في المعدة.',
+			title: 'ملتي فيتامين ونشاط يومي',
+			description: 'تعزيز المناعة، طاقة مستمرة وتوازن هرموني متكامل',
 			stars: 5,
 			reviewCount: '+350 تقييم',
 			price: 'يبدأ من 199 MAD'
@@ -61,10 +61,10 @@
 				OUR FORMULATIONS • تركيباتنا السريرية
 			</span>
 			<h2 class="font-display text-2xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1B4332] leading-tight tracking-tight">
-				ثلاث علكات. ثلاث مشاكل. حل سريري واحد.
+				ثلاث علكات، ثلاث مشاكل، حل سريري واحد
 			</h2>
 			<p class="text-base sm:text-lg leading-relaxed text-gray-700 font-medium max-w-2xl mx-auto">
-				كل علكة مصممة بجرعات سريرية مدروسة وبكتين فواكه نباتي 100%. اختاري المشكلة اللي تشغلك، أو ادمجي الثلاثة لروتينك الكامل.
+				صُممت مكملات نوفافيتا لتمنحك أقصى درجات الامتصاص الحيوي بتركيبات غنية بالمكونات الفعالة
 			</p>
 			<div class="mx-auto h-1 w-20 rounded-full bg-[#E86A7C]"></div>
 		</div>

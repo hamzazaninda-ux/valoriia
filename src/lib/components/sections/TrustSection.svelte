@@ -130,15 +130,15 @@
 						</svg>
 					</span>
 					<span class="text-xs font-bold text-[#C99738] bg-[#C99738]/10 px-2.5 py-1 rounded-full">
-						14 يوماً
+						30 يوماً
 					</span>
 				</div>
 				<div>
 					<h3 class="font-display text-lg sm:text-xl font-bold text-[#1E293B]">
-						ضمان استبدال رسمي لمدة 14 يوماً
+						ضمان استرجاع الأموال لمدة 30 يوم
 					</h3>
 					<p class="mt-2 text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
-						خدمة ما بعد البيع رهن إشارتك؛ في حال وجود أي ملاحظة أو عيب نقوم باستبدال المنتج مجاناً وبدون تعقيدات.
+						خدمة ما بعد البيع رهن إشارتك؛ في حال عدم رضاك أو وجود أي ملاحظة نضمن لك استرجاع أموالك بالكامل وبدون تعقيدات.
 					</p>
 				</div>
 			</div>
@@ -146,7 +146,7 @@
 				<svg class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 				</svg>
-				<span>استبدال فوري أو استرجاع كامل</span>
+				<span>ضمان استرجاع الأموال لمدة 30 يوم</span>
 			</div>
 		</div>
 	</div>
