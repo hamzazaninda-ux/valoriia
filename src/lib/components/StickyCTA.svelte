@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
+	import { trackAddToCart } from '$lib/tracking/pixel.js';
 
 	interface Props {
 		productName?: string;
@@ -20,15 +21,8 @@
 			// 1. Instantly update browser address bar to /cart
 			window.history.pushState({ page: 'cart' }, '', '/cart');
 
-			// 2. Fire Meta Pixel AddToCart
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'AddToCart', {
-					content_name: productName,
-					content_type: 'product',
-					currency: 'MAD',
-					value: price
-				});
-			}
+			// 2. Fire Meta Pixel AddToCart with 1000ms debounce
+			trackAddToCart(productName, price);
 		}
 
 		// 3. Smoothly scroll to order section

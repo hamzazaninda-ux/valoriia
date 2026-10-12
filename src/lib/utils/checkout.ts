@@ -260,6 +260,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				content_type: 'product',
 				order_id: txnId
 			}, { eventID: txnId });
+			console.log('[Pixel Tracked]: Purchase', { order_id: txnId, value: numPrice, content_name: title });
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta Purchase error:', err);

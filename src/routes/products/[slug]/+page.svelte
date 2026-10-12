@@ -6,6 +6,7 @@
 	import { PRICING_TIERS } from '$lib/constants/pricing';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import { slide } from 'svelte/transition';
+	import { trackAddToCart } from '$lib/tracking/pixel.js';
 
 	let { data } = $props();
 
@@ -79,14 +80,7 @@
 	function handleAddToCartAndOpenDrawer() {
 		if (typeof window !== 'undefined') {
 			window.history.pushState({ page: 'cart' }, '', '/cart');
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'AddToCart', {
-					content_name: product?.name || 'Gummies Bundle',
-					content_type: 'product',
-					currency: 'MAD',
-					value: currentTier?.price || 249
-				});
-			}
+			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 249);
 		}
 
 		const bundleName = currentTier.units === 1 ? 'علبة واحدة' : currentTier.units === 2 ? 'علبتان' : '3 علب';
@@ -120,14 +114,7 @@
 			window.history.pushState({ page: 'cart' }, '', '/cart');
 
 			// 2. Fire Meta Pixel AddToCart
-			if ((window as any).fbq) {
-				(window as any).fbq('track', 'AddToCart', {
-					content_name: product?.name || 'Gummies Bundle',
-					content_type: 'product',
-					currency: 'MAD',
-					value: currentTier?.price || 249
-				});
-			}
+			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 249);
 		}
 
 		// 3. Smoothly scroll customer directly to checkout/order form #order

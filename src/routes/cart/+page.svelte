@@ -166,11 +166,11 @@
 				}
 			}
 
-			// Fire Purchase tracking
-			trackPurchase(subtotal, activeMain.title, orderId, cleanedPhone);
-
 			// Submit to server endpoint
 			await sendOrder(orderPayload);
+
+			// Fire Purchase tracking strictly upon order success
+			trackPurchase(subtotal, activeMain.title, orderId, cleanedPhone);
 
 			// Clear cart and redirect to thank-you page
 			cart.clear();

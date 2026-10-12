@@ -256,9 +256,9 @@
 							currency: 'MAD',
 							order_id: String(orderId)
 						}, { eventID: String(orderId) });
-						console.log('✅ [Meta Pixel] Purchase fired on thank-you page:', { orderId, totalPrice });
+						console.log('[Pixel Tracked]: Purchase', { orderId, totalPrice, content_name: order.productTitle || 'NOVAVITA Gummies Bundle' });
 					} catch (err) {
-						console.warn('⚠️ [Meta Pixel] Purchase firing error:', err);
+						console.warn('[Pixel Error]: Meta Pixel Purchase firing error:', err);
 					}
 				}
 
