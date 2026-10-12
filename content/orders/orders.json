@@ -1,19 +1,19 @@
 [
   {
-    "id": "NV-190915",
-    "createdAt": "2026-10-11T21:33:48.294Z",
-    "fullName": "hamza zaira",
-    "phone": "+212635183899",
+    "id": "NV-478706",
+    "createdAt": "2026-10-12T15:09:03.724Z",
+    "fullName": "Test",
+    "phone": "0646466464",
     "city": "تحدد عند التأكيد",
     "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA - باقة الثنائي الأكثر طلباً (2 علب)",
-    "quantity": 1,
-    "totalPrice": 279,
+    "product": "NOVAVITA - باقة التحول الشامل (3 علب) + علبة العرض الخاطف",
+    "quantity": 3,
+    "totalPrice": 547,
     "status": "جديد",
     "sku": "kit-tandim",
     "pageUrl": "",
-    "orderType": "direct",
-    "items": "[{\"sku\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك + هدية 🎁\",\"quantity\":1,\"unitPrice\":279,\"price\":279}]",
+    "orderType": "upsell",
+    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (3 علب)\",\"quantity\":1,\"unitPrice\":349,\"price\":349},{\"sku\":\"gumies_vitamine\",\"title\":\"علكات الفيتامينات المتعددة (Multivitamin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99},{\"sku\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99}]",
     "notes": ""
   },
   {
