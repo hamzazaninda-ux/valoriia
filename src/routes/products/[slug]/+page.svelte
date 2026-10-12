@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Header from '$lib/components/shared/Header.svelte';
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
@@ -7,6 +8,17 @@
 	import { slide } from 'svelte/transition';
 
 	let { data } = $props();
+
+	onMount(() => {
+		if (typeof window !== 'undefined' && (window.location.hash === '#order' || window.location.hash === '#offers')) {
+			setTimeout(() => {
+				const target = document.getElementById('order') || document.getElementById('product-order-box') || document.getElementById('offers');
+				if (target) {
+					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			}, 150);
+		}
+	});
 
 	const product = $derived(data.product);
 	const brand = $derived(data.brand);
@@ -235,6 +247,7 @@
 			</div>
 
 			<!-- Right Column (Desktop) / Below (Mobile): Emotional Headline, Bundle Selector & Buying Flow -->
+			<div id="order" class="scroll-mt-24"></div>
 			<div id="product-order-box" class="lg:col-span-6 scroll-mt-24">
 				
 				<!-- 1. الشارة العلوية (Pill Tag) -->
