@@ -1,7 +1,15 @@
 /**
- * Dual Pixel Tracker: Meta Pixel (2180716089518389) + TikTok Pixel (DB60A23C77U074LG47QG)
- * Strict Production-Grade Setup | Zero Duplication | Zero Dropped Conversions
+ * Multi-Pixel Unified Tracker:
+ * - Meta Pixel (2180716089518389)
+ * - TikTok Pixel (DB60A23C77U074LG47QG)
+ * - Snapchat Pixel (451b9c4c-9641-4b83-9f0a-319889a52302)
+ *
+ * Strict Production-Grade Setup | Zero Duplication | Zero Dropped Signals
  */
+
+export const SNAPCHAT_PIXEL_ID = '451b9c4c-9641-4b83-9f0a-319889a52302';
+export const META_PIXEL_ID = '2180716089518389';
+export const TIKTOK_PIXEL_ID = 'DB60A23C77U074LG47QG';
 
 let lastAddToCartTime = 0;
 let lastAddToCartKey = '';
@@ -51,26 +59,53 @@ export function trackTikTokEvent(eventName, payload = {}, options = {}) {
 }
 
 /**
- * Universal PageView Dispatcher
+ * Universal Snapchat Event Dispatcher
+ */
+export function trackSnapchatEvent(eventName, payload = {}) {
+	if (typeof window === 'undefined') return;
+
+	try {
+		if (window.snaptr && typeof window.snaptr === 'function') {
+			window.snaptr('track', eventName, payload);
+			console.log('[Snapchat Pixel Tracked]:', eventName, payload);
+		} else {
+			console.warn(`[Snapchat Pixel Warning]: window.snaptr not yet ready for ${eventName}.`);
+		}
+	} catch (err) {
+		console.warn(`[Snapchat Pixel Error] Failed tracking ${eventName}:`, err);
+	}
+}
+
+/**
+ * Universal PageView Dispatcher (Synchronous Triple-Pixel)
  */
 export function trackPageView() {
 	if (typeof window === 'undefined') return;
 
+	// 1. Meta Pixel PageView
 	try {
 		if (typeof window.fbq === 'function') {
 			window.fbq('track', 'PageView');
 		}
 	} catch (e) {}
 
+	// 2. TikTok Pixel PageView
 	try {
 		if (window.ttq && typeof window.ttq.page === 'function') {
 			window.ttq.page();
 		}
 	} catch (e) {}
+
+	// 3. Snapchat Pixel PageView
+	try {
+		if (window.snaptr) {
+			window.snaptr('track', 'PAGE_VIEW');
+		}
+	} catch (e) {}
 }
 
 /**
- * Robust Central Event Trigger (handles Meta, TikTok & GTM)
+ * Robust Central Event Trigger (handles Meta, TikTok, Snapchat & GTM)
  */
 export function fbqTrack(eventName, data = {}) {
 	if (typeof window === 'undefined') return;
@@ -90,6 +125,7 @@ export function fbqTrack(eventName, data = {}) {
 	const contentId = String(data.content_id || data.id || data.title || 'novavita-bundle');
 	const contentName = String(data.content_name || data.name || data.title || 'NOVAVITA Gummies');
 	const priceVal = Number(data.value || data.price || 249);
+	const quantityVal = Number(data.quantity || 1);
 
 	const payload = {
 		content_id: contentId,
@@ -98,7 +134,7 @@ export function fbqTrack(eventName, data = {}) {
 		currency: data.currency || 'MAD',
 		value: priceVal,
 		price: priceVal,
-		quantity: Number(data.quantity || 1),
+		quantity: quantityVal,
 		...data
 	};
 
@@ -113,7 +149,7 @@ export function fbqTrack(eventName, data = {}) {
 					content_id: contentId,
 					content_type: 'product',
 					content_name: contentName,
-					quantity: payload.quantity,
+					quantity: quantityVal,
 					price: priceVal,
 					value: priceVal,
 					currency: 'MAD'
@@ -123,7 +159,7 @@ export function fbqTrack(eventName, data = {}) {
 					content_id: contentId,
 					content_type: 'product',
 					content_name: contentName,
-					quantity: payload.quantity,
+					quantity: quantityVal,
 					price: priceVal,
 					value: priceVal,
 					currency: 'MAD'
@@ -139,7 +175,32 @@ export function fbqTrack(eventName, data = {}) {
 		console.warn('[TikTok Track Error]:', e);
 	}
 
-	// 3. Google Tag Manager / dataLayer
+	// 3. Snapchat Pixel
+	try {
+		if (window.snaptr) {
+			if (eventName === 'AddToCart') {
+				window.snaptr('track', 'ADD_CART', {
+					price: priceVal,
+					currency: 'MAD',
+					item_ids: [contentId],
+					item_category: 'Supplements',
+					number_items: quantityVal
+				});
+			} else if (eventName === 'Purchase' || eventName === 'CompletePayment') {
+				window.snaptr('track', 'PURCHASE', {
+					price: priceVal,
+					currency: 'MAD',
+					transaction_id: String(data.order_id || Date.now()),
+					item_ids: [contentId],
+					number_items: quantityVal
+				});
+			}
+		}
+	} catch (e) {
+		console.warn('[Snapchat Track Error]:', e);
+	}
+
+	// 4. Google Tag Manager / dataLayer
 	try {
 		window.dataLayer = window.dataLayer || [];
 		if (eventName === 'AddToCart') {
@@ -148,7 +209,7 @@ export function fbqTrack(eventName, data = {}) {
 				ecommerce: {
 					currency: 'MAD',
 					value: priceVal,
-					items: [{ item_name: contentName, item_id: contentId, price: priceVal, quantity: payload.quantity }]
+					items: [{ item_name: contentName, item_id: contentId, price: priceVal, quantity: quantityVal }]
 				}
 			});
 		}
@@ -157,10 +218,7 @@ export function fbqTrack(eventName, data = {}) {
 
 /**
  * Dedicated AddToCart Helper with 1000ms Debounce
- * Supports both:
- * trackAddToCart(productName, price, extra)
- * AND
- * trackAddToCart(itemObject)
+ * Dispatches synchronously to Meta, TikTok, and Snapchat
  */
 export function trackAddToCart(itemOrName, price = 249, extra = {}) {
 	if (typeof window === 'undefined') return;
@@ -178,24 +236,26 @@ export function trackAddToCart(itemOrName, price = 249, extra = {}) {
 		};
 	}
 
+	const contentId = String(item.id || item.title || 'novavita-bundle');
+	const contentName = String(item.name || item.title || 'NOVAVITA Gummies');
+	const priceVal = Number(item.value || item.price || 249);
+	const quantityVal = Number(item.quantity || 1);
+
 	fbqTrack('AddToCart', {
-		content_id: String(item.id || item.title || 'novavita-bundle'),
-		content_name: String(item.name || item.title || 'NOVAVITA Gummies'),
+		content_id: contentId,
+		content_name: contentName,
 		content_type: 'product',
 		currency: 'MAD',
-		value: Number(item.value || item.price || 249),
-		price: Number(item.price || item.value || 249),
-		quantity: Number(item.quantity || 1),
+		value: priceVal,
+		price: priceVal,
+		quantity: quantityVal,
 		...item
 	});
 }
 
 /**
  * Dedicated Purchase Helper with Strict Idempotent Deduplication
- * Supports both:
- * trackPurchase(price, productTitle, transactionId, phoneNumber)
- * AND
- * trackPurchase(orderObject)
+ * Dispatches synchronously to Meta, TikTok, and Snapchat upon COD success
  */
 export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNumber) {
 	if (typeof window === 'undefined') return;
@@ -216,13 +276,14 @@ export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNu
 	const orderId = String(order.orderId || order.transactionId || `ORD-${Date.now()}`).trim();
 	const storageKey = `tracked_order_${orderId}`;
 
-	// Strict Idempotent Deduplication: prevent duplicate execution
+	// Strict Idempotent Deduplication: prevent duplicate execution on page refresh or retries
 	try {
 		if (
 			sessionStorage.getItem(storageKey) ||
 			localStorage.getItem(storageKey) ||
 			sessionStorage.getItem(`fb_purchased_${orderId}`) ||
-			sessionStorage.getItem(`tt_purchased_${orderId}`)
+			sessionStorage.getItem(`tt_purchased_${orderId}`) ||
+			sessionStorage.getItem(`snap_purchased_${orderId}`)
 		) {
 			console.log('[Pixel Tracked]: Purchase duplicate suppressed for order:', orderId);
 			return;
@@ -231,6 +292,7 @@ export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNu
 		localStorage.setItem(storageKey, 'true');
 		sessionStorage.setItem(`fb_purchased_${orderId}`, 'true');
 		sessionStorage.setItem(`tt_purchased_${orderId}`, 'true');
+		sessionStorage.setItem(`snap_purchased_${orderId}`, 'true');
 	} catch (e) {}
 
 	const numPrice = Number(order.totalPrice || order.value || order.price || 249);
@@ -266,26 +328,14 @@ export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNu
 		console.warn('[TikTok Purchase Error]:', e);
 	}
 
-	// 3. Google Ads / Analytics
+	// 3. Snapchat Pixel
 	try {
-		if (typeof window.gtag === 'function') {
-			window.gtag('event', 'purchase', {
-				transaction_id: orderId,
-				value: numPrice,
-				currency: 'MAD',
-				items: [{ item_name: title, price: numPrice, quantity: 1 }]
-			});
-		}
-	} catch (e) {}
-
-	// 4. Snapchat Pixel
-	try {
-		if (typeof window.snaptr === 'function') {
+		if (window.snaptr) {
 			if (phone) {
 				const phoneClean = String(phone).trim().replace(/[\s\-\(\)]/g, '');
 				const formattedPhone = phoneClean.startsWith('+') ? phoneClean : ('+212' + phoneClean.replace(/^0/, ''));
 				if (formattedPhone && formattedPhone !== '+212') {
-					window.snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+					window.snaptr('init', SNAPCHAT_PIXEL_ID, {
 						'user_phone_number': formattedPhone
 					});
 				}
@@ -293,7 +343,23 @@ export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNu
 			window.snaptr('track', 'PURCHASE', {
 				price: numPrice,
 				currency: 'MAD',
-				transaction_id: orderId
+				transaction_id: String(orderId),
+				item_ids: [String(order.productTitle || 'novavita-bundle')],
+				number_items: 1
+			});
+		}
+	} catch (e) {
+		console.warn('[Snapchat Purchase Error]:', e);
+	}
+
+	// 4. Google Ads / Analytics
+	try {
+		if (typeof window.gtag === 'function') {
+			window.gtag('event', 'purchase', {
+				transaction_id: orderId,
+				value: numPrice,
+				currency: 'MAD',
+				items: [{ item_name: title, price: numPrice, quantity: 1 }]
 			});
 		}
 	} catch (e) {}

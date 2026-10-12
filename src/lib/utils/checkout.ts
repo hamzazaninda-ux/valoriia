@@ -125,10 +125,11 @@ export function trackAddToCart(
 		try {
 			if (typeof (window as any).snaptr === 'function') {
 				(window as any).snaptr('track', 'ADD_CART', {
+					price: numPrice || 249,
 					currency: 'MAD',
-					price: numPrice || 229,
-					item_category: title || 'منتج',
-					item_ids: [id]
+					item_ids: [String(id || 'novavita-bundle')],
+					item_category: 'Supplements',
+					number_items: Number(numberItems || 1)
 				});
 			}
 		} catch (err) {
@@ -252,7 +253,7 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				const phoneClean = phoneNumber.trim();
 				const formattedPhone = phoneClean.startsWith('+') ? phoneClean : ('+212' + phoneClean.replace(/^0/, ''));
 				if (formattedPhone && formattedPhone !== '+212') {
-					(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+					(window as any).snaptr('init', '451b9c4c-9641-4b83-9f0a-319889a52302', {
 						'user_phone_number': formattedPhone
 					});
 				}
@@ -260,8 +261,9 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 			(window as any).snaptr('track', 'PURCHASE', {
 				price: numPrice,
 				currency: 'MAD',
-				transaction_id: txnId,
-				item_category: title || 'منتج'
+				transaction_id: String(txnId),
+				item_ids: [String(title || 'novavita-bundle')],
+				number_items: 1
 			});
 		}
 	} catch (err) {

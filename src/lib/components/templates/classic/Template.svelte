@@ -274,7 +274,7 @@
 				try {
 					// 1. تمرير رقم الهاتف لمطابقة حساب الزبون في سناب شات (Advanced Matching)
 					if (formattedPhone && formattedPhone !== '+212') {
-						(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
+						(window as any).snaptr('init', '451b9c4c-9641-4b83-9f0a-319889a52302', {
 							'user_phone_number': formattedPhone
 						});
 					}
