@@ -77,6 +77,17 @@
 	}
 
 	function handleAddToCartAndOpenDrawer() {
+		if (typeof window !== 'undefined') {
+			window.history.pushState({ page: 'cart' }, '', '/cart');
+			if ((window as any).fbq) {
+				(window as any).fbq('track', 'AddToCart', {
+					content_name: product?.name || 'Gummies Bundle',
+					currency: 'MAD',
+					value: currentTier?.price || 249
+				});
+			}
+		}
+
 		const bundleName = currentTier.units === 1 ? 'علبة واحدة' : currentTier.units === 2 ? 'علبتان' : '3 علب';
 		const bundleSubtitle = currentTier.units === 1
 			? 'علبة واحدة • شهر تجريبي'
@@ -103,7 +114,22 @@
 	}
 
 	function scrollToOffers() {
-		const el = document.getElementById('offers');
+		if (typeof window !== 'undefined') {
+			// 1. Instantly update browser address bar to /cart
+			window.history.pushState({ page: 'cart' }, '', '/cart');
+
+			// 2. Fire Meta Pixel AddToCart
+			if ((window as any).fbq) {
+				(window as any).fbq('track', 'AddToCart', {
+					content_name: product?.name || 'Gummies Bundle',
+					currency: 'MAD',
+					value: currentTier?.price || 249
+				});
+			}
+		}
+
+		// 3. Smoothly scroll customer directly to checkout/order form #order
+		const el = document.getElementById('order') || document.getElementById('product-order-box') || document.getElementById('offers');
 		if (el) {
 			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
