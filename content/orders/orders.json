@@ -1,19 +1,19 @@
 [
   {
-    "id": "NV-705520",
-    "createdAt": "2026-10-14T20:43:18.703Z",
+    "id": "NV-693075",
+    "createdAt": "2026-10-14T23:24:40.058Z",
     "fullName": "Test",
     "phone": "0646466464",
     "city": "تحدد عند التأكيد",
     "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA - باقة التحول الشامل (3 علب)",
+    "product": "NOVAVITA - باقة الثنائي الأكثر طلباً (2 علب)",
     "quantity": 1,
-    "totalPrice": 349,
+    "totalPrice": 279,
     "status": "جديد",
     "sku": "gummies_collagen",
     "pageUrl": "",
     "orderType": "direct",
-    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (3 علب)\",\"quantity\":1,\"unitPrice\":349,\"price\":349}]",
+    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري + هدية 🎁\",\"quantity\":1,\"unitPrice\":279,\"price\":279}]",
     "notes": ""
   },
   {
