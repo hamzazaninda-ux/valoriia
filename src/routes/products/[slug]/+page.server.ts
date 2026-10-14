@@ -4,18 +4,25 @@ import { getProductBySlug } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const slug = params.slug;
-	const product = getProductBySlug(slug);
+	const rawSlug = params.slug || '';
+	const slug = rawSlug.trim().replace(/\/+$/, '');
+	const product = getProductBySlug(slug) || getProductBySlug('gummies_collagen');
 
 	if (!product) {
 		throw error(404, 'المنتج المطلوب غير موجود');
 	}
 
-	const brand = await readBrandSettings().catch(() => ({
+	let brand = {
 		name: 'NOVAVITA',
 		tagline: 'العناية بالجمال والصحة من الداخل',
 		whatsappNumber: '212600000000'
-	}));
+	};
+	try {
+		const b = await readBrandSettings();
+		if (b) brand = { ...brand, ...b };
+	} catch {
+		// safe fallback
+	}
 
 	return {
 		product,

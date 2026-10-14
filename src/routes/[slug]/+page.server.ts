@@ -5,7 +5,11 @@ import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
 export const load: PageServerLoad = async ({ params }) => {
-  const gummieSlugs = ['gummies_collagen', 'gummies_biotine', 'gumies_vitamine', 'gummies_multivitamines', 'multivitamines', 'gummies-multivitamines'];
+  const gummieSlugs = [
+    'gummies_collagen', 'gummies-collagen', 'collagen',
+    'gummies_biotine', 'gummies-biotine', 'biotine', 'biotin',
+    'gumies_vitamine', 'gummies_multivitamines', 'gummies-multivitamines', 'multivitamines', 'multivitamin'
+  ];
   if (gummieSlugs.includes(params.slug)) {
     throw redirect(301, `/products/${params.slug}`);
   }

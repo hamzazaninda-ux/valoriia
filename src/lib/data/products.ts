@@ -171,17 +171,34 @@ export const PRODUCTS: CatalogProduct[] = [
 ];
 
 export function getProductBySlug(slug: string): CatalogProduct | undefined {
-  const normalized = (slug || '').toLowerCase();
+  const normalized = (slug || '').toLowerCase().trim().replace(/-/g, '_');
   if (
+    normalized === 'gummies_collagen' ||
+    normalized === 'collagen' ||
+    normalized.includes('collagen')
+  ) {
+    return PRODUCTS.find((p) => p.sku === 'gummies_collagen');
+  }
+  if (
+    normalized === 'gummies_biotine' ||
+    normalized === 'biotine' ||
+    normalized === 'biotin' ||
+    normalized.includes('biotin')
+  ) {
+    return PRODUCTS.find((p) => p.sku === 'gummies_biotine');
+  }
+  if (
+    normalized === 'gumies_vitamine' ||
     normalized === 'gummies_multivitamines' ||
-    normalized === 'gummies-multivitamines' ||
+    normalized === 'gummies_vitamine' ||
     normalized === 'multivitamines' ||
     normalized === 'multivitamin' ||
-    normalized === 'gummies_multivitamin'
+    normalized.includes('vitamine') ||
+    normalized.includes('multivit')
   ) {
-    return PRODUCTS.find((p) => p.id === 'gumies_vitamine');
+    return PRODUCTS.find((p) => p.sku === 'gumies_vitamine');
   }
-  return PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+  return PRODUCTS.find((p) => p.slug === slug || p.id === slug || p.sku === slug);
 }
 
 export function getAllProducts(): CatalogProduct[] {
