@@ -89,11 +89,11 @@
 
 			<!-- Column 2 (Left in RTL on Desktop, Top on Mobile): Visual Container with Before-and-After Graphic -->
 			<div class="order-1 lg:order-2 lg:col-span-5 flex justify-center w-full">
-				<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[28px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center">
+				<div class="relative w-full h-auto max-w-md mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 					<img 
 						src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
 						alt="علكات كولاجين نوفافيتا - قبل وبعد" 
-						class="w-full h-full object-cover object-center block"
+						class="w-full h-auto object-contain block"
 						loading="eager"
 						fetchpriority="high"
 					/>

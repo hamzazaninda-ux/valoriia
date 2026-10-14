@@ -497,21 +497,17 @@
 					<!-- 3. Ultra-Compact High-Converting Checkout Footer (Step 1 - Target ~100-120px) -->
 					{#if cart.count > 0}
 						<div class="border-t border-gray-150 bg-white px-4 pt-2.5 pb-3 sm:pb-4 shadow-lg shrink-0 space-y-2">
-							<!-- Row 1: Total & Delivery Info + Social Proof -->
+							<!-- Row 1: Total & Delivery Info -->
 							<div class="flex items-center justify-between text-xs sm:text-sm">
 								<div class="flex items-center gap-2">
 									<span class="font-bold text-gray-700">المجموع:</span>
 									<span class="font-display font-black text-base sm:text-lg text-[#1B4332]" dir="ltr">
 										DH {subtotal}
 									</span>
-									<span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">
-										توصيل مجاني 🚚
-									</span>
 								</div>
-								<div class="text-[11px] font-bold text-amber-700 flex items-center gap-1">
-									<span>+1450 عميلة راضية</span>
-									<span>⭐</span>
-								</div>
+								<span class="text-[10px] sm:text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/50">
+									توصيل مجاني 🚚
+								</span>
 							</div>
 
 							<!-- Row 2: Main CTA Button (Ergonomic & Visible) -->
