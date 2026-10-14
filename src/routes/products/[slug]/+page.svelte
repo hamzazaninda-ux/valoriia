@@ -749,30 +749,13 @@
 		</div>
 
 		<!-- ========================================================================= -->
-		<!-- 5. قسم السلطة والرأي الطبي المصور (Doctor Endorsement with Photo) -->
+		<!-- 5. قسم الاقتباس السريري والعلمي (Clinical Formulation Quote) -->
 		<!-- ========================================================================= -->
-		<div class="mt-12 sm:mt-18">
-			<div class="rounded-3xl bg-[#143427] text-white p-6 sm:p-8 shadow-xl border border-emerald-800/40 space-y-4">
-				
-				<div class="flex items-center gap-3">
-					<!-- Doctor Avatar Placeholder -->
-					<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-900 to-[#C99738]/30 border-2 border-[#C99738]/50 flex items-center justify-center shrink-0 shadow-md">
-						<span class="text-2xl sm:text-3xl">🩺</span>
-					</div>
-					<div>
-						<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#C99738]/20 text-[#C99738] text-[11px] font-black border border-[#C99738]/30">
-							رأي اختصاصي معتمد بالمغرب
-						</span>
-						<h3 class="font-display text-sm sm:text-base font-bold text-white mt-1">
-							د. غيثة التازي • أخصائية تغذية علاجية وصحة البشرة
-						</h3>
-					</div>
-				</div>
-
-				<blockquote class="text-xs sm:text-sm lg:text-base font-medium leading-relaxed text-stone-100 bg-white/5 p-4 rounded-2xl border border-white/10">
+		<div class="mt-10 sm:mt-16">
+			<div class="rounded-3xl bg-[#143427] text-white p-5 sm:p-7 shadow-xl border border-emerald-800/40">
+				<blockquote class="text-xs sm:text-sm lg:text-base font-medium leading-relaxed text-stone-100 bg-white/5 p-4 sm:p-5 rounded-2xl border border-white/10">
 					«تركيبة NOVAVITA المعتمدة على البكتين سريع الامتصاص والجرعات السريرية الدقيقة هي الحل العلمي الأنسب للمرأة في المغرب لعلاج مسببات تساقط الشعر وشحوب البشرة الناتجة عن ملوحة المياه والتوتر اليومي، بدون أي أثر سلبي على المعدة.»
 				</blockquote>
-
 			</div>
 		</div>
 
