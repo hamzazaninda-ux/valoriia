@@ -97,6 +97,7 @@
 							class="w-full h-auto object-contain block"
 							loading="eager"
 							fetchpriority="high"
+							decoding="async"
 						/>
 						<!-- Signature confidence badge at the bottom of the card -->
 						<div class="absolute bottom-3 start-3 sm:bottom-4 sm:start-4 bg-white/95 backdrop-blur-xs rounded-full px-3.5 py-1.5 border border-[#1B4332]/10 shadow-md flex items-center gap-1.5 text-xs font-bold text-[#1B4332] z-10">

@@ -98,6 +98,7 @@
 									alt={p.alt} 
 									class="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
 									loading="lazy"
+									decoding="async"
 								/>
 							</div>
 						</a>

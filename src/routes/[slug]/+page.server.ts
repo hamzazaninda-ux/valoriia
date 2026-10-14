@@ -4,7 +4,7 @@ import { listProducts, readProduct } from '$lib/content/products';
 import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
   const gummieSlugs = [
     'gummies_collagen', 'gummies-collagen', 'collagen',
     'gummies_biotine', 'gummies-biotine', 'biotine', 'biotin',
@@ -13,6 +13,10 @@ export const load: PageServerLoad = async ({ params }) => {
   if (gummieSlugs.includes(params.slug)) {
     throw redirect(301, `/products/${params.slug}`);
   }
+
+  setHeaders({
+    'Cache-Control': 'public, max-age=60, s-maxage=86400, stale-while-revalidate=86400'
+  });
 
   const product = await readProduct(params.slug);
 

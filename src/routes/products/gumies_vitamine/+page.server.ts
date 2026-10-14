@@ -3,7 +3,10 @@ import { getProductBySlug } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ setHeaders }) => {
+	setHeaders({
+		'Cache-Control': 'public, max-age=60, s-maxage=86400, stale-while-revalidate=86400'
+	});
 	const product = getProductBySlug('gumies_vitamine');
 	if (!product) {
 		throw error(404, 'المنتج المطلوب غير موجود');

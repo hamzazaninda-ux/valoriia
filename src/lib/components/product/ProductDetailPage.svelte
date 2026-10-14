@@ -223,6 +223,7 @@
 								class="w-full h-auto object-contain block"
 								loading="eager"
 								fetchpriority="high"
+								decoding="async"
 							/>
 						</div>
 					</div>
@@ -235,6 +236,7 @@
 								class="w-full h-auto object-contain block"
 								loading="eager"
 								fetchpriority="high"
+								decoding="async"
 							/>
 						</div>
 					</div>
@@ -247,6 +249,7 @@
 								class="w-full h-auto object-contain block"
 								loading="eager"
 								fetchpriority="high"
+								decoding="async"
 							/>
 						</div>
 					</div>
@@ -263,6 +266,7 @@
 								}}
 								loading="eager"
 								fetchpriority="high"
+								decoding="async"
 							/>
 						</div>
 					</div>
@@ -445,6 +449,7 @@
 					alt="معاناة تساقط الشعر وظهور الفراغات بسبب الماء الكلسي وضعف البصيلات" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
 				<img 
@@ -452,6 +457,7 @@
 					alt="معاناة الإرهاق الصباحي والسخفة والاعتماد على المنبهات والقهوة" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{:else}
 				<img 
@@ -459,6 +465,7 @@
 					alt="معاناة تساقط الشعر وشحوب البشرة بسبب الماء الكلسي والتعب" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{/if}
 		</div>
@@ -537,6 +544,7 @@
 					alt="الحل الجذري: شعر كثيف وصحي وتوقف التساقط مع علكات بيوتين نوفافيتا" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
 				<img 
@@ -544,6 +552,7 @@
 					alt="الحل الجذري: طاقة طبيعية ونشاط مستمر مع علكات ملتي فيتامين نوفافيتا" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{:else}
 				<img 
@@ -551,6 +560,7 @@
 					alt="الحل الجذري: شعر صحي وبشرة مشرقة بفضل علكات كولاجين نوفافيتا" 
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
+					decoding="async"
 				/>
 			{/if}
 		</div>

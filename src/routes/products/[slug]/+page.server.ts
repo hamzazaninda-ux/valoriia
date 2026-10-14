@@ -3,7 +3,10 @@ import type { PageServerLoad } from './$types';
 import { getProductBySlug } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
+	setHeaders({
+		'Cache-Control': 'public, max-age=60, s-maxage=86400, stale-while-revalidate=86400'
+	});
 	const rawSlug = params.slug || '';
 	const slug = rawSlug.trim().replace(/\/+$/, '');
 	const product = getProductBySlug(slug) || getProductBySlug('gummies_collagen');
