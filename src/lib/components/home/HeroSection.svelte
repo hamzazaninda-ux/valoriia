@@ -89,18 +89,20 @@
 
 			<!-- Column 2 (Left in RTL on Desktop, Top on Mobile): Visual Container with Before-and-After Graphic -->
 			<div class="order-1 lg:order-2 lg:col-span-5 flex justify-center w-full">
-				<div class="relative w-full h-auto max-w-md mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
-					<img 
-						src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
-						alt="علكات كولاجين نوفافيتا - قبل وبعد" 
-						class="w-full h-auto object-contain block"
-						loading="eager"
-						fetchpriority="high"
-					/>
-					<!-- Signature confidence badge at the bottom of the card -->
-					<div class="absolute bottom-3 start-3 sm:bottom-4 sm:start-4 bg-white/95 backdrop-blur-xs rounded-full px-3.5 py-1.5 border border-[#1B4332]/10 shadow-md flex items-center gap-1.5 text-xs font-bold text-[#1B4332] z-10">
-						<span class="text-emerald-700 font-black">✓</span>
-						<span>بكتين نباتي طبيعي 100% حلال</span>
+				<div class="w-full max-w-md mx-auto px-2">
+					<div class="relative w-full h-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
+						<img 
+							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
+							alt="علكات كولاجين نوفافيتا - قبل وبعد" 
+							class="w-full h-auto object-contain block"
+							loading="eager"
+							fetchpriority="high"
+						/>
+						<!-- Signature confidence badge at the bottom of the card -->
+						<div class="absolute bottom-3 start-3 sm:bottom-4 sm:start-4 bg-white/95 backdrop-blur-xs rounded-full px-3.5 py-1.5 border border-[#1B4332]/10 shadow-md flex items-center gap-1.5 text-xs font-bold text-[#1B4332] z-10">
+							<span class="text-emerald-700 font-black">✓</span>
+							<span>بكتين نباتي طبيعي 100% حلال</span>
+						</div>
 					</div>
 				</div>
 			</div>

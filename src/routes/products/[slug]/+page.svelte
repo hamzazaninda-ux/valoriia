@@ -215,48 +215,56 @@
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6">
 				{#if (product.slug || '').includes('collagen')}
-					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center mb-4">
-						<img 
-							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791750544/%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%85%D8%B9_%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA.png" 
-							alt="نتائج كولاجين نوفافيتا قبل وبعد - نضارة البشرة والجمال من الداخل" 
-							class="w-full h-full object-cover object-center block"
-							loading="eager"
-							fetchpriority="high"
-						/>
+					<div class="w-full max-w-md mx-auto px-2 mb-4">
+						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
+							<img 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
+								alt="نتائج كولاجين نوفافيتا قبل وبعد - نضارة البشرة والجمال من الداخل" 
+								class="w-full h-auto object-contain block"
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
 					</div>
 				{:else if (product.slug || '').includes('biotine')}
-					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center mb-4">
-						<img 
-							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
-							alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
-							class="w-full h-full object-cover object-center block"
-							loading="eager"
-							fetchpriority="high"
-						/>
+					<div class="w-full max-w-md mx-auto px-2 mb-4">
+						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
+							<img 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
+								alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
+								class="w-full h-auto object-contain block"
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
 					</div>
 				{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
-					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 flex items-center justify-center mb-4">
-						<img 
-							src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
-							alt="نتائج علكات ملتي فيتامين نوفافيتا قبل وبعد - التخلص من الخمول والنشاط اليومي" 
-							class="w-full h-full object-cover object-center block"
-							loading="eager"
-							fetchpriority="high"
-						/>
+					<div class="w-full max-w-md mx-auto px-2 mb-4">
+						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
+							<img 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
+								alt="نتائج علكات ملتي فيتامين نوفافيتا قبل وبعد - التخلص من الخمول والنشاط اليومي" 
+								class="w-full h-auto object-contain block"
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
 					</div>
 				{:else}
-					<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 mb-4">
-						<img
-							src={activeImage}
-							alt={product.name}
-							class="w-full h-full object-cover block transition-transform duration-500 hover:scale-105"
-							onerror={(e: any) => {
-								e.currentTarget.onerror = null;
-								e.currentTarget.src = '/images/products/gummies_collagen.svg';
-							}}
-							loading="eager"
-							fetchpriority="high"
-						/>
+					<div class="w-full max-w-md mx-auto px-2 mb-4">
+						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
+							<img
+								src={activeImage}
+								alt={product.name}
+								class="w-full h-auto object-contain block transition-transform duration-500 hover:scale-105"
+								onerror={(e: any) => {
+									e.currentTarget.onerror = null;
+									e.currentTarget.src = '/images/products/gummies_collagen.svg';
+								}}
+								loading="eager"
+								fetchpriority="high"
+							/>
+						</div>
 					</div>
 				{/if}
 			</div>
