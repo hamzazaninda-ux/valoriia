@@ -365,4 +365,3 @@ export function trackPurchase(priceOrOrder, productTitle, transactionId, phoneNu
 	} catch (e) {}
 }
 
-export const fbqTrack = trackMetaEvent;
