@@ -313,7 +313,7 @@
 
 	const whatsappUrl = $derived.by(() => {
 		const orderId = order?.orderId || 'NV-000000';
-		const waNum = (data?.whatsappNumber || '212600000000').replace(/\D/g, '') || '212600000000';
+		const waNum = '212626558375';
 		const clientName =
 			order?.fullName && order.fullName !== 'عميلة NOVAVITA المميزة'
 				? order.fullName
