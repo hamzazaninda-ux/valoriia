@@ -3,47 +3,14 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const today = new Date().toLocaleDateString('ar-MA', {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	});
-
-	const statusChip: Record<string, string> = {
-		published: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-		draft: 'bg-amber-50 text-amber-700 border-amber-200',
-		archived: 'bg-neutral-100 text-neutral-500 border-neutral-200'
-	};
-	const statusLabel: Record<string, string> = {
-		published: 'منشور',
-		draft: 'مسودة',
-		archived: 'مؤرشف'
-	};
-
-	const orderStatusBadges: Record<string, string> = {
-		جديد: 'bg-amber-50 text-amber-700 border-amber-200',
-		مؤكد: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-		'جاري الشحن': 'bg-blue-50 text-blue-700 border-blue-200',
-		'تم التسليم': 'bg-teal-50 text-teal-700 border-teal-200',
-		ملغي: 'bg-rose-50 text-rose-700 border-rose-200'
-	};
-
-	function getWhatsappLink(phone: string, customerName: string, product: string): string {
-		let clean = phone.replace(/\D/g, '');
-		if (clean.startsWith('0')) {
-			clean = '212' + clean.slice(1);
-		} else if (!clean.startsWith('212')) {
-			clean = '212' + clean;
-		}
-
-		const greeting = encodeURIComponent(
-			`السلام عليكم ${customerName}، معكم متجر NOVAVITA بخصوص طلبكم (${product}).`
-		);
-		return `https://wa.me/${clean}?text=${greeting}`;
-	}
-
+	// Reactive dashboard state
+	let stats = $state(data.dashboardStats);
+	let orders = $state(data.recentOrders);
+	let isRefreshing = $state(false);
 	let isSyncingAll = $state(false);
+	let searchQuery = $state('');
+
+	// Toast state
 	let toastMessage = $state<string | null>(null);
 	let toastType = $state<'success' | 'error'>('success');
 	let toastTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -57,6 +24,28 @@
 		}, 3000);
 	}
 
+	// Fetch fresh orders from /api/admin/orders
+	async function refreshDashboard() {
+		if (isRefreshing) return;
+		isRefreshing = true;
+		try {
+			const res = await fetch('/api/admin/orders');
+			const json = await res.json();
+			if (res.ok && json.success) {
+				stats = json.stats;
+				orders = json.orders;
+				showToast('تم تحديث بيانات اللوحة والطلبات بنجاح ✅', 'success');
+			} else {
+				showToast(json.error || 'تعذر تحديث البيانات', 'error');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً', 'error');
+		} finally {
+			isRefreshing = false;
+		}
+	}
+
+	// Sync all orders to Google Sheets
 	async function syncAllToSheets() {
 		if (isSyncingAll) return;
 		if (!confirm('هل تريد مزامنة جميع الطلبات المسجلة مع Google Sheets الآن؟')) return;
@@ -67,25 +56,62 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ syncAll: true })
 			});
-			const data = await res.json();
-			if (!res.ok || !data.success) {
-				showToast(data.error || 'تعذرت مزامنة الطلبات', 'error');
+			const resJson = await res.json();
+			if (!res.ok || !resJson.success) {
+				showToast(resJson.error || 'تعذرت مزامنة الطلبات', 'error');
 			} else {
-				showToast(data.message || 'تمت مزامنة الطلبات بنجاح', 'success');
+				showToast(resJson.message || 'تمت مزامنة جميع الطلبات مع Google Sheets بنجاح ✅', 'success');
 			}
 		} catch {
-			showToast('تعذر الاتصال بالخادم', 'error');
+			showToast('تعذر الاتصال بالخادم لمزامنة Google Sheets', 'error');
 		} finally {
 			isSyncingAll = false;
 		}
 	}
+
+	// WhatsApp direct confirmation link generator
+	function getWhatsappLink(phone: string, customerName: string, product: string): string {
+		let clean = phone.replace(/\D/g, '');
+		if (clean.startsWith('0')) {
+			clean = '212' + clean.slice(1);
+		} else if (!clean.startsWith('212')) {
+			clean = '212' + clean;
+		}
+		const greeting = encodeURIComponent(
+			`السلام عليكم ${customerName}، معكم متجر NOVAVITA بخصوص طلبكم (${product}). بغينا نأكدو معاكم العنوان والتوصيل السريع.`
+		);
+		return `https://wa.me/${clean}?text=${greeting}`;
+	}
+
+	// Filtered orders list
+	const filteredOrders = $derived(
+		orders.filter((o) => {
+			if (!searchQuery.trim()) return true;
+			const q = searchQuery.trim().toLowerCase();
+			return (
+				o.fullName.toLowerCase().includes(q) ||
+				o.phone.toLowerCase().includes(q) ||
+				o.id.toLowerCase().includes(q) ||
+				o.mainProduct.toLowerCase().includes(q) ||
+				o.upsellName.toLowerCase().includes(q)
+			);
+		})
+	);
+
+	const orderStatusBadges: Record<string, string> = {
+		جديد: 'bg-amber-50 text-amber-700 border-amber-200',
+		مؤكد: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+		'جاري الشحن': 'bg-blue-50 text-blue-700 border-blue-200',
+		'تم التسليم': 'bg-teal-50 text-teal-700 border-teal-200',
+		ملغي: 'bg-rose-50 text-rose-700 border-rose-200'
+	};
 </script>
 
 <svelte:head>
 	<title>لوحة التحكم - NOVAVITA</title>
 </svelte:head>
 
-<!-- Toast Notification -->
+<!-- Floating Toast -->
 {#if toastMessage}
 	<div class="fixed top-5 left-1/2 z-50 -translate-x-1/2 transform transition-all duration-300">
 		<div
@@ -102,311 +128,302 @@
 	</div>
 {/if}
 
-<div class="space-y-6" dir="rtl">
-	<!-- Greeting -->
-	<div class="flex flex-wrap items-center justify-between gap-3">
+<div class="space-y-8" dir="rtl">
+	<!-- Top Greeting & Control Actions -->
+	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-neutral-200/80 shadow-xs">
 		<div>
-			<h1 class="font-display text-2xl font-bold text-neutral-900">
-				مرحباً بك في {data.health.brandName}
-			</h1>
-			<p class="mt-1 text-sm text-neutral-500">{today} — نظرة شاملة على نشاط المتجر والمبيعات</p>
+			<div class="flex items-center gap-2 mb-1">
+				<h1 class="text-2xl font-black text-neutral-900 tracking-tight">
+					لوحة تحكم NOVAVITA 🌿
+				</h1>
+				<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold">
+					إدارة حية
+				</span>
+			</div>
+			<p class="text-xs sm:text-sm text-neutral-500 font-medium">
+				متابعة فورية للطلبيات، المداخيل، ونسب نجاح الأبسيل (العروض الخاطفة)
+			</p>
 		</div>
-		<div class="flex items-center gap-2">
+
+		<!-- Action Buttons -->
+		<div class="flex flex-wrap items-center gap-2.5">
+			<button
+				type="button"
+				onclick={refreshDashboard}
+				disabled={isRefreshing}
+				class="inline-flex items-center gap-2 rounded-xl border border-neutral-200/90 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-2xs"
+				title="تحديث البيانات فورياً"
+			>
+				<svg class={`h-4 w-4 text-emerald-700 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+				</svg>
+				<span>{isRefreshing ? 'جاري التحديث...' : 'تحديث فوري'}</span>
+			</button>
+
 			<button
 				type="button"
 				onclick={syncAllToSheets}
 				disabled={isSyncingAll}
-				class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-emerald-800 bg-emerald-950 px-3 sm:px-4 text-xs sm:text-sm font-bold text-white shadow-2xs transition-all hover:bg-emerald-900 active:scale-[0.98] disabled:opacity-50"
+				class="inline-flex items-center gap-2 rounded-xl bg-[#0f291e] hover:bg-[#163f2e] text-white px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-md shadow-emerald-950/20"
 				title="مزامنة جميع الطلبات مع Google Sheets"
 			>
 				<svg class={`h-4 w-4 text-emerald-400 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+					<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
 				</svg>
-				{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة جميع الطلبات مع Google Sheets 🔄'}
+				<span>{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة Sheets 📊'}</span>
 			</button>
+
 			<a
 				href="/admin/orders"
-				class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-4 text-sm font-bold text-neutral-700 shadow-2xs transition-all hover:bg-neutral-50 active:scale-[0.98]"
+				class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] shadow-2xs"
 			>
-				<svg class="h-4 w-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
-				</svg>
-				إدارة الطلبات
-			</a>
-			<a
-				href="/admin/products/new"
-				class="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-emerald-950 px-5 text-sm font-bold text-white shadow-2xs transition-all hover:bg-emerald-900 active:scale-[0.98]"
-			>
-				<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-					<path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15" />
-				</svg>
-				منتج جديد
+				<span>إدارة الطلبات</span>
+				<span>←</span>
 			</a>
 		</div>
 	</div>
 
-	<!-- Top Stats: Orders & Sales & Products -->
-	<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-		<!-- Total Orders -->
-		<a
-			href="/admin/orders"
-			class="group rounded-3xl border border-neutral-200/70 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-		>
-			<div class="flex items-center justify-between">
-				<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-950 text-amber-300">
-					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-2.965-.912l-1.122.746A1.5 1.5 0 002.25 15.75v1.5c0 .828.672 1.5 1.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-9a1.5 1.5 0 00-1.5-1.5H6.108a1.5 1.5 0 00-1.087-.835L4.638 4.5M7.5 14.25L9.75 6h9.563a1.125 1.125 0 011.107 1.335l-.891 4.5a1.125 1.125 0 01-1.107.915H7.5z" />
+	<!-- KPI Summary Cards (Grid) -->
+	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+		<!-- 1. Today's Orders -->
+		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+			<div class="flex items-center justify-between mb-3">
+				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 shadow-xs">
+					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
 					</svg>
 				</span>
-				{#if data.stats.pendingOrders > 0}
-					<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black text-amber-800">
-						{data.stats.pendingOrders} جديدة
-					</span>
-				{/if}
+				<span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-200">
+					اليوم
+				</span>
 			</div>
-			<p class="mt-3 text-3xl font-black text-neutral-900">{data.stats.totalOrders}</p>
-			<p class="mt-0.5 text-sm font-semibold text-neutral-500 transition-colors group-hover:text-emerald-700">إجمالي الطلبات</p>
-		</a>
-
-		<!-- Confirmed Revenue -->
-		<a
-			href="/admin/orders"
-			class="group rounded-3xl border border-neutral-200/70 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-		>
-			<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
-				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-				</svg>
-			</span>
-			<p class="mt-3 text-3xl font-black text-neutral-900">
-				{data.stats.confirmedRevenue} <span class="text-sm font-bold text-neutral-500">{data.currencySymbol}</span>
-			</p>
-			<p class="mt-0.5 text-sm font-semibold text-neutral-500 transition-colors group-hover:text-emerald-700">المبيعات المؤكدة</p>
-		</a>
-
-		<!-- Products -->
-		<a
-			href="/admin/products"
-			class="group rounded-3xl border border-neutral-200/70 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-		>
-			<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-100 text-stone-700">
-				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-				</svg>
-			</span>
-			<p class="mt-3 text-3xl font-black text-neutral-900">{data.stats.total}</p>
-			<p class="mt-0.5 text-sm font-semibold text-neutral-500 transition-colors group-hover:text-emerald-700">المنتجات ({data.stats.published} منشورة)</p>
-		</a>
-
-		<!-- Templates -->
-		<a
-			href="/admin/templates"
-			class="group rounded-3xl border border-neutral-200/70 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
-		>
-			<span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-stone-200 text-stone-700">
-				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.043-1.622M12 21v-2.25" />
-				</svg>
-			</span>
-			<p class="mt-3 text-3xl font-black text-neutral-900">{data.stats.templates}</p>
-			<p class="mt-0.5 text-sm font-semibold text-neutral-500 transition-colors group-hover:text-emerald-700">القوالب المتوفرة</p>
-		</a>
-	</div>
-
-	<!-- Main Grid: Recent Orders & Recent Products -->
-	<div class="grid gap-6 lg:grid-cols-2">
-		<!-- Recent Orders Card -->
-		<div class="rounded-3xl border border-neutral-200/70 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-			<div class="flex items-center justify-between pb-3 border-b border-neutral-100">
-				<div class="flex items-center gap-2">
-					<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
-						🛒
-					</span>
-					<div>
-						<h2 class="font-display text-base font-bold text-neutral-900">أحدث الطلبات</h2>
-						<span class="text-[11px] text-neutral-400">آخر 5 طلبيات مسجلة</span>
-					</div>
-				</div>
-				<div class="flex items-center gap-2">
-					<button
-						type="button"
-						onclick={syncAllToSheets}
-						disabled={isSyncingAll}
-						class="flex items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors disabled:opacity-50"
-						title="مزامنة جميع الطلبات مع Google Sheets"
-					>
-						<svg class={`h-3 w-3 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-						</svg>
-						مزامنة مع Sheets 🔄
-					</button>
-					<a href="/admin/orders" class="text-xs font-bold text-emerald-700 hover:underline underline-offset-4 flex items-center gap-1">
-						عرض الكل
-						<span>←</span>
-					</a>
-				</div>
+			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.todayOrdersCount}</p>
+			<div class="flex items-center justify-between mt-1 text-xs">
+				<span class="font-bold text-neutral-600">طلبات اليوم</span>
+				<span class="font-bold text-emerald-700">{stats.todayRevenue} {data.currencySymbol}</span>
 			</div>
-
-			{#if data.recentOrders.length === 0}
-				<div class="flex flex-1 flex-col items-center justify-center py-10 text-center">
-					<span class="text-3xl">📦</span>
-					<p class="mt-2 text-sm font-bold text-neutral-700">ما كاين حتى طلب باقي</p>
-					<p class="text-xs text-neutral-400">أي طلب جديد غادي يتسجل هنا مباشرة</p>
-				</div>
-			{:else}
-				<div class="mt-3 divide-y divide-neutral-100 flex-1">
-					{#each data.recentOrders as order}
-						{@const badgeClass = orderStatusBadges[order.status] || orderStatusBadges['جديد']}
-						<div class="flex items-center justify-between gap-3 py-3">
-							<div class="min-w-0 flex-1">
-								<div class="flex items-center gap-2">
-									<p class="truncate text-sm font-extrabold text-neutral-900">{order.fullName}</p>
-									<span class={`rounded-lg border px-1.5 py-0.2 text-[10px] font-bold ${badgeClass}`}>
-										{order.status}
-									</span>
-								</div>
-								<p class="mt-0.5 truncate text-xs text-neutral-500">
-									{order.product} • <span class="font-bold text-emerald-800">{order.totalPrice} {data.currencySymbol}</span>
-								</p>
-								<div class="mt-1 flex items-center gap-2 text-[11px] text-neutral-400">
-									<span>📍 {order.city}</span>
-									<span>•</span>
-									<span dir="ltr">{order.phone}</span>
-								</div>
-							</div>
-
-							<!-- Quick Actions: WhatsApp & Details -->
-							<div class="flex items-center gap-1.5 shrink-0">
-								<a
-									href={getWhatsappLink(order.phone, order.fullName, order.product)}
-									target="_blank"
-									rel="noopener"
-									class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#25D366]/15 text-[#128C7E] hover:bg-[#25D366]/25 transition-colors"
-									title="واتساب سريع"
-								>
-									<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-										<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-									</svg>
-								</a>
-								<a
-									href="/admin/orders"
-									class="flex h-8 px-2.5 items-center justify-center rounded-xl bg-neutral-100 text-xs font-bold text-neutral-700 hover:bg-neutral-200 transition-colors"
-								>
-									تفاصيل
-								</a>
-							</div>
-						</div>
-					{/each}
-				</div>
-			{/if}
 		</div>
 
-		<!-- Recent Products Card -->
-		<div class="rounded-3xl border border-neutral-200/60 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-			<div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+		<!-- 2. Total Revenue -->
+		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+			<div class="flex items-center justify-between mb-3">
+				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-xs">
+					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				</span>
+				<span class="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-black text-amber-800 border border-amber-200">
+					إجمالي
+				</span>
+			</div>
+			<p class="text-3xl font-black text-neutral-900 tracking-tight">
+				{stats.totalRevenue.toLocaleString()} <span class="text-sm font-bold text-neutral-500">{data.currencySymbol}</span>
+			</p>
+			<div class="flex items-center justify-between mt-1 text-xs">
+				<span class="font-bold text-neutral-600">إجمالي المداخيل</span>
+				<span class="font-bold text-neutral-500">{stats.totalOrdersCount} طلب مسجل</span>
+			</div>
+		</div>
+
+		<!-- 3. Upsell Conversion Rate -->
+		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+			<div class="flex items-center justify-between mb-3">
+				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-800 shadow-xs">
+					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+					</svg>
+				</span>
+				<span class="rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-black text-purple-800 border border-purple-200">
+					العرض الخاطف
+				</span>
+			</div>
+			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.upsellConversionRate}%</p>
+			<div class="flex items-center justify-between mt-1 text-xs">
+				<span class="font-bold text-neutral-600">نسبة تحويل الأبسيل</span>
+				<span class="font-bold text-purple-700">{stats.upsellOrdersCount} طلب بأبسيل (+99)</span>
+			</div>
+		</div>
+
+		<!-- 4. Pending Confirmation -->
+		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+			<div class="flex items-center justify-between mb-3">
+				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-800 shadow-xs">
+					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3.8-3.04a17.893 17.893 0 01-3.95-.572c-2.454-.672-4.25-2.905-4.25-5.46V10.608c0-.97.616-1.813 1.5-2.097m12 0A17.925 17.925 0 0012 7.5c-2.43 0-4.757.487-6.879 1.365m14.879-.354c-.167-.05-.336-.098-.507-.143m-14.372.497c.17-.045.34-.093.507-.143m0 0A17.93 17.93 0 0112 6c2.43 0 4.757.487 6.879 1.365" />
+					</svg>
+				</span>
+				<span class="rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-black text-rose-800 border border-rose-200">
+					مكالمة هاتفية
+				</span>
+			</div>
+			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.pendingOrders}</p>
+			<div class="flex items-center justify-between mt-1 text-xs">
+				<span class="font-bold text-neutral-600">بانتظار التأكيد</span>
+				<span class="font-bold text-neutral-500">معدل الطلب: {stats.averageOrderValue} {data.currencySymbol}</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Recent Orders Section -->
+	<div class="rounded-3xl border border-neutral-200/80 bg-white shadow-xs overflow-hidden">
+		<!-- Header of Recent Orders Table -->
+		<div class="p-5 sm:p-6 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-white to-neutral-50/50">
+			<div>
 				<div class="flex items-center gap-2">
-					<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-100 text-neutral-800 font-bold">
-						🏷️
+					<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold text-sm">
+						🛒
 					</span>
-					<div>
-						<h2 class="font-display text-base font-bold text-neutral-900">أحدث المنتجات</h2>
-						<span class="text-[11px] text-neutral-400">الكتالوج والصفحات المنشورة</span>
-					</div>
+					<h2 class="text-lg font-black text-neutral-900">أحدث الطلبيات (Recent Orders)</h2>
 				</div>
-				<a href="/admin/products" class="text-xs font-bold text-emerald-700 hover:underline underline-offset-4 flex items-center gap-1">
-					عرض الكل
+				<p class="text-xs text-neutral-500 font-medium mt-0.5">
+					تفاصيل المشتريات، المنتجات، والأبسيل مع حالة المزامنة اللحظية
+				</p>
+			</div>
+
+			<!-- Search & Filter Bar -->
+			<div class="flex items-center gap-3">
+				<div class="relative w-full sm:w-64">
+					<input
+						type="text"
+						bind:value={searchQuery}
+						placeholder="بحث باسم الزبون أو الهاتف..."
+						class="w-full pl-3 pr-9 py-2 rounded-xl border border-neutral-200 text-xs font-semibold focus:outline-hidden focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-colors"
+					/>
+					<svg class="h-4 w-4 text-neutral-400 absolute right-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>
+				<a
+					href="/admin/orders"
+					class="text-xs font-extrabold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 shrink-0"
+				>
+					<span>عرض الكل ({orders.length})</span>
 					<span>←</span>
 				</a>
 			</div>
-
-			{#if data.recentProducts.length === 0}
-				<div class="flex flex-1 flex-col items-center justify-center py-10 text-center">
-					<svg viewBox="0 0 120 100" class="h-14 w-auto text-neutral-200" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M8 30h104l-9 48a10 10 0 01-10 8H27a10 10 0 01-10-8L8 30z" />
-						<path stroke-linecap="round" d="M40 30l6-14h28l6 14" />
-					</svg>
-					<p class="mt-2 text-sm font-bold text-neutral-700">ما كاين حتى منتج باقي</p>
-					<a href="/admin/products/new" class="mt-2 inline-flex min-h-10 items-center rounded-xl bg-emerald-950 px-4 text-xs font-bold text-white">+ زيد منتج</a>
-				</div>
-			{:else}
-				<div class="mt-3 divide-y divide-neutral-100 flex-1">
-					{#each data.recentProducts as p}
-						<a href={`/admin/products/${p.slug}/edit`} class="group flex items-center gap-3 py-3">
-							<span class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-emerald-50">
-								{#if p.heroImage}
-									<img src={p.heroImage} alt={p.title} class="h-full w-full object-cover" loading="lazy" />
-								{:else}
-									<svg class="h-5 w-5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-									</svg>
-								{/if}
-							</span>
-							<div class="min-w-0 flex-1">
-								<span class="block truncate text-sm font-extrabold text-neutral-800 transition-colors group-hover:text-emerald-700">{p.title || p.slug}</span>
-								<span class="mt-0.5 block text-xs text-neutral-400">/{p.slug} • {p.startingPrice} DH</span>
-							</div>
-							<span class={`shrink-0 rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${statusChip[p.status] || statusChip.draft}`}>
-								{statusLabel[p.status] || p.status}
-							</span>
-						</a>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</div>
-
-	<!-- Bottom Section: Store Health & Quick Actions -->
-	<div class="grid gap-4 lg:grid-cols-5">
-		<!-- Store Health -->
-		<div class="rounded-3xl border border-neutral-200/60 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] lg:col-span-3">
-			<h2 class="font-display text-base font-bold text-neutral-900">حالة الربط والجاهزية</h2>
-			<div class="mt-3 space-y-2.5">
-				{#each [
-					{ ok: data.health.sheets, label: 'استقبال الطلبات (Google Sheets Webhook)', href: '/admin/settings' },
-					{ ok: data.health.whatsapp, label: 'رقم الواتساب الرسمي لخدمة الزبناء', href: '/admin/settings' },
-					{ ok: data.stats.published > 0, label: 'منتج منشور وجاهز للطلب على الأقل', href: '/admin/products' }
-				] as row}
-					<a href={row.href} class="flex items-center gap-2.5 rounded-2xl border border-neutral-100 bg-neutral-50/60 px-3.5 py-2.5 transition-colors hover:border-emerald-500/30">
-						<span class={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${row.ok ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-							{#if row.ok}
-								<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-									<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-								</svg>
-							{:else}
-								<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-									<path stroke-linecap="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008z" />
-								</svg>
-							{/if}
-						</span>
-						<span class="text-xs sm:text-sm font-bold text-neutral-700">{row.label}</span>
-						<span class={`ms-auto text-[11px] font-bold ${row.ok ? 'text-emerald-600' : 'text-amber-600'}`}>
-							{row.ok ? 'مفعل وجاهز' : 'خاصو إعداد'}
-						</span>
-					</a>
-				{/each}
-			</div>
 		</div>
 
-		<!-- Quick Actions -->
-		<div class="rounded-3xl bg-emerald-950 p-5 text-white shadow-lg lg:col-span-2 flex flex-col justify-between">
-			<div>
-				<h2 class="font-display text-base font-bold">إجراءات سريعة</h2>
-				<p class="mt-0.5 text-xs text-emerald-200/60">روابط مباشرة للإدارة والمتابعة</p>
+		<!-- Table: Desktop and Tablet View -->
+		{#if filteredOrders.length === 0}
+			<div class="p-12 text-center">
+				<span class="text-4xl">📦</span>
+				<h3 class="text-sm font-bold text-neutral-800 mt-2">لا توجد طلبيات تطابق بحثك</h3>
+				<p class="text-xs text-neutral-400 mt-1">تأكد من كتابة الاسم أو رقم الهاتف بشكل صحيح</p>
 			</div>
-			<div class="mt-4 grid grid-cols-2 gap-2">
-				<a href="/admin/orders" class="rounded-2xl bg-amber-400 px-3 py-3 text-center text-xs font-black text-emerald-950 transition-transform hover:scale-[1.02] active:scale-[0.98]">
-					إدارة الطلبات
-				</a>
-				<a href="/admin/products/new" class="rounded-2xl border border-white/20 bg-white/10 px-3 py-3 text-center text-xs font-bold text-white transition-colors hover:bg-white/20">
-					+ منتج جديد
-				</a>
-				<a href="/" target="_blank" rel="noopener" class="rounded-2xl border border-white/15 bg-white/5 px-3 py-3 text-center text-xs font-bold transition-colors hover:bg-white/10">
-					عرض المتجر
-				</a>
-				<a href="/admin/settings" class="rounded-2xl border border-white/15 bg-white/5 px-3 py-3 text-center text-xs font-bold transition-colors hover:bg-white/10">
-					الإعدادات
-				</a>
+		{:else}
+			<div class="overflow-x-auto">
+				<table class="w-full text-right border-collapse">
+					<thead>
+						<tr class="border-b border-neutral-100 bg-neutral-50/75 text-[11px] font-extrabold text-neutral-500 uppercase tracking-wider">
+							<th class="py-3.5 px-4 sm:px-6">التاريخ</th>
+							<th class="py-3.5 px-4">الزبونة / الزبون</th>
+							<th class="py-3.5 px-4">الهاتف والواتساب</th>
+							<th class="py-3.5 px-4">المنتج الرئيسي</th>
+							<th class="py-3.5 px-4">الأبسيل المضاف (+99 DH)</th>
+							<th class="py-3.5 px-4">المجموع</th>
+							<th class="py-3.5 px-4">المزامنة (Sheets / Bot)</th>
+							<th class="py-3.5 px-4 sm:px-6">الحالة</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-neutral-100 text-xs">
+						{#each filteredOrders as order}
+							<tr class="hover:bg-emerald-50/30 transition-colors group">
+								<!-- Date -->
+								<td class="py-4 px-4 sm:px-6 whitespace-nowrap">
+									<div class="flex items-center gap-2">
+										<span class="font-bold text-neutral-800">{order.formattedDate}</span>
+										{#if order.isToday}
+											<span class="px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
+												اليوم
+											</span>
+										{/if}
+									</div>
+									<span class="text-[10px] font-mono text-neutral-400 block mt-0.5">{order.id}</span>
+								</td>
+
+								<!-- Customer Name -->
+								<td class="py-4 px-4 font-bold text-neutral-900 whitespace-nowrap">
+									<div class="flex items-center gap-2">
+										<span class="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 font-bold text-xs">
+											{order.fullName.charAt(0)}
+										</span>
+										<div>
+											<span>{order.fullName}</span>
+											<span class="text-[10px] text-neutral-400 font-normal block">{order.city}</span>
+										</div>
+									</div>
+								</td>
+
+								<!-- Phone with 1-click WhatsApp button -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									<div class="flex items-center gap-1.5">
+										<span class="font-mono font-semibold text-neutral-700 dir-ltr">{order.phone}</span>
+										<a
+											href={getWhatsappLink(order.phone, order.fullName, order.mainProduct)}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="p-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+											title="تأكيد الطلب مباشرة عبر الواتساب"
+										>
+											<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+												<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z" />
+											</svg>
+										</a>
+									</div>
+								</td>
+
+								<!-- Main Product -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									<span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${order.mainProductBadge}`}>
+										{order.mainProductTag}
+									</span>
+								</td>
+
+								<!-- Upsell Product Added -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									{#if order.hasUpsell}
+										<span class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border ${order.upsellBadge}`}>
+											<span>✨</span>
+											<span>{order.upsellName}</span>
+										</span>
+									{:else}
+										<span class="text-neutral-400 text-xs font-medium">
+											— بدون أبسيل
+										</span>
+									{/if}
+								</td>
+
+								<!-- Total Price -->
+								<td class="py-4 px-4 whitespace-nowrap font-black text-sm text-neutral-900">
+									{order.totalPrice} <span class="text-xs font-bold text-neutral-500">{data.currencySymbol}</span>
+								</td>
+
+								<!-- Sync Status (Sheets & SpaceSeller) -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									<div class="flex items-center gap-1.5">
+										<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold" title="تم الإرسال لـ Google Sheets">
+											<span>Google Sheets</span>
+											<span>✓</span>
+										</span>
+										<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 border border-sky-200 text-[10px] font-bold" title="جاهز للربط مع نظام التوصيل">
+											<span>SpaceSeller</span>
+											<span>📦</span>
+										</span>
+									</div>
+								</td>
+
+								<!-- Status -->
+								<td class="py-4 px-4 sm:px-6 whitespace-nowrap">
+									<span class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${orderStatusBadges[order.status] || 'bg-neutral-100 text-neutral-700 border-neutral-200'}`}>
+										<span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+										<span>{order.status}</span>
+									</span>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>
