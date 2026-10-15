@@ -136,23 +136,6 @@
     "notes": ""
   },
   {
-    "id": "NV-710930",
-    "createdAt": "2026-10-15T13:57:01.398Z",
-    "fullName": "Test",
-    "phone": "0646466464",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA كولاجين - باقة التحول الشامل (3 علب)",
-    "quantity": 1,
-    "totalPrice": 349,
-    "status": "جديد",
-    "sku": "gummies_collagen",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (3 علب)\",\"quantity\":1,\"unitPrice\":349,\"price\":349,\"isUpsell\":false}]",
-    "notes": ""
-  },
-  {
     "id": "NV-824949",
     "createdAt": "2026-10-15T12:54:42.638Z",
     "fullName": "فتيحة كاوي Kaoui fatiha",
