@@ -170,6 +170,41 @@ export function calculateOrderTotals(options: {
 }
 
 /**
+ * Formats date strictly in Casablanca timezone as DD/MM/YYYY HH:mm:ss (SpaceSeller format)
+ */
+export function formatCasablancaDisplayDateTime(date: Date = new Date()): string {
+	try {
+		const parts = new Intl.DateTimeFormat('fr-FR', {
+			timeZone: 'Africa/Casablanca',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false
+		}).formatToParts(date);
+
+		const getPart = (type: string) => parts.find((p) => p.type === type)?.value || '00';
+		return `${getPart('day')}/${getPart('month')}/${getPart('year')} ${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
+	} catch {
+		return date.toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+	}
+}
+
+/**
+ * Normalizes phone numbers (ensures leading 0 for Moroccan 9-digit numbers)
+ */
+export function normalizeMoroccanPhone(raw: string): string {
+	let cleaned = String(raw || '').trim().replace(/[\s\-\(\)]/g, '');
+	cleaned = cleaned.replace(/^\+212/, '0').replace(/^00212/, '0').replace(/^212/, '0');
+	if (/^[67]\d{8}$/.test(cleaned)) {
+		return '0' + cleaned;
+	}
+	return cleaned;
+}
+
+/**
  * Formats date strictly in Casablanca timezone as YYYY-MM-DD HH:mm:ss
  */
 export function formatCasablancaDateTime(date: Date = new Date()): string {

@@ -1,7 +1,9 @@
 import { readSettings } from '$lib/content/settings';
 import { buildOrderFulfillmentLabel } from '$lib/data/products';
 import {
+	formatCasablancaDisplayDateTime,
 	formatCasablancaDateTime,
+	normalizeMoroccanPhone,
 	resolveSpaceSellerSku,
 	resolveSpaceSellerNote,
 	calculateOrderTotals
@@ -78,14 +80,14 @@ export async function sendOrderToGoogleSheets(
 		}
 		order.sheetsSynced = true;
 
-		// Format exact timestamp in Casablanca time: YYYY-MM-DD HH:mm:ss (Col A)
-		const dateOrder = formatCasablancaDateTime(
+		// Format exact timestamp in Casablanca time: DD/MM/YYYY HH:mm:ss (Col A)
+		const dateOrder = formatCasablancaDisplayDateTime(
 			order.createdAt ? new Date(order.createdAt) : new Date()
 		);
 
-		const fullName = String(order.fullName || order.name || '').trim();
+		const customerName = String(order.fullName || order.name || '').trim();
 		const rawPhone = String(order.phoneNumber || order.phone || '').trim();
-		const phone = rawPhone.replace(/[\s\-\(\)]/g, '');
+		const customerPhone = normalizeMoroccanPhone(rawPhone);
 
 		let rawItems = order.items;
 		if (typeof rawItems === 'string') {
@@ -120,7 +122,7 @@ export async function sendOrderToGoogleSheets(
 			});
 		}
 
-		// Col D (address): "سيتم التأكيد عبر الهاتف" (Placeholder to maintain column index)
+		// Col D (address): Empty string "" (or explicit address if customer actually provided one)
 		const rawAddr = String(order.address || order.city || '').trim();
 		const address =
 			rawAddr &&
@@ -128,91 +130,116 @@ export async function sendOrderToGoogleSheets(
 			rawAddr !== 'يُحدد عند التأكيد' &&
 			rawAddr !== 'تحدد عند الاتصال'
 				? rawAddr
-				: 'سيتم التأكيد عبر الهاتف';
+				: '';
 
-		// Col E (sku): Exact SKU
+		// Col E (sku): Exact SKU code
 		// * If Collagen + Upsell: "pack-collagen-gummies-3"
 		// * If Collagen base offer: "gummies_collagen"
 		// * If Biotine base offer: "gummies_biotine"
 		// * If Multivitamins base offer: "gumies_vitamine"
-		const sku = resolveSpaceSellerSku({
+		const exactSku = resolveSpaceSellerSku({
 			mainSku: order.sku || order.mainSku,
 			productLabel,
 			items: itemsList,
 			hasUpsell: Boolean(order.hasUpsell)
 		});
 
-		// Col F (qte): 1 (integer: 1 for packs, or selected quantity)
-		const qte = sku.startsWith('pack-') ? 1 : Number(order.quantity ?? order.qte ?? 1) || 1;
+		// Col F (qte): 1 (integer: always 1 for packs and single base offers)
+		const qte = 1;
 
-		// Col G (price): Numeric total calculated price (e.g. 298 for Collagen + Upsell)
+		// Col G (price): Numeric total calculated price (e.g. 298 for Collagen + Upsell, 279 for base)
 		const { totalPrice: calculatedTotal } = calculateOrderTotals({
 			tier: order.tier,
 			items: itemsList,
 			hasUpsell: Boolean(order.hasUpsell),
 			rawTotal: Number(order.totalPrice ?? order.total ?? order.price ?? 0)
 		});
-		const finalTotal = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
+		const totalPrice = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
 
-		// Col H (note): Confirmation note e.g. "عرض كولاجين + أبسيل (99 DH)"
-		const note = resolveSpaceSellerNote({
+		// Col H (note): Order ID + Arabic Title / Upsell breakdown
+		// Format: "NV-815421 | عرض كولاجين + أبسيل (99 DH)" or "NV-815421 | NOVAVITA كولاجين..."
+		const upsellNote = resolveSpaceSellerNote({
 			mainSku: order.sku || order.mainSku,
 			productLabel,
 			items: itemsList,
 			hasUpsell: Boolean(order.hasUpsell),
 			tier: order.tier
 		});
+		const noteDetails = order.hasUpsell
+			? upsellNote
+			: (productLabel && productLabel !== 'NOVAVITA Gummies' ? productLabel : upsellNote);
+		const orderNotesPart = order.notes && String(order.notes).trim() ? ` | ${String(order.notes).trim()}` : '';
+		const orderIdNotes = orderId ? `${orderId} | ${noteDetails}${orderNotesPart}` : `${noteDetails}${orderNotesPart}`;
 
 		// Col I (delivery_note): "الدفع عند الاستلام"
 		const deliveryNote = 'الدفع عند الاستلام';
 
 		// Mandatory 9-column array strictly aligned from Column A to Column I
 		const row = [
-			dateOrder,    // Col A: date_order (YYYY-MM-DD HH:mm:ss)
-			fullName,     // Col B: full_name
-			phone,        // Col C: phone
-			address,      // Col D: address ("سيتم التأكيد عبر الهاتف")
-			sku,          // Col E: sku ("pack-collagen-gummies-3" or default)
-			qte,          // Col F: qte (1)
-			finalTotal,   // Col G: price (e.g. 298)
-			note,         // Col H: note ("عرض كولاجين + أبسيل (99 DH)")
-			deliveryNote  // Col I: delivery_note ("الدفع عند الاستلام")
+			dateOrder,     // Col A: date_order (e.g. "15/10/2026 14:51:48")
+			customerName,  // Col B: full_name (e.g. "Test") — NOT the order ID!
+			customerPhone, // Col C: phone (e.g. "0646466464")
+			address,       // Col D: address (leave empty string "" or placeholder)
+			exactSku,      // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
+			1,             // Col F: quantity (always 1)
+			totalPrice,    // Col G: numeric total price (e.g. 279 or 298)
+			orderIdNotes,  // Col H: Order ID + notes (e.g. "NV-815421 | عرض كولاجين + أبسيل")
+			deliveryNote   // Col I: delivery note ("الدفع عند الاستلام")
 		];
 
 		const sheetsPayload = {
-			// Exact 9-column SpaceSeller array (Col A to I)
+			// 1. Direct 9-column SpaceSeller array (Col A to I)
 			row,
 			rowData: row,
 			values: row,
 
-			// SpaceSeller exact 9 named keys
+			// 2. SpaceSeller exact 9 named keys
 			date_order: dateOrder,
-			full_name: fullName,
-			phone,
+			full_name: customerName,
+			phone: customerPhone,
 			address,
-			sku,
-			qte,
-			price: finalTotal,
-			note,
+			sku: exactSku,
+			qte: 1,
+			price: totalPrice,
+			note: orderIdNotes,
 			delivery_note: deliveryNote,
 
-			// Legacy fields for backward compatibility
-			orderDate: dateOrder,
-			date: dateOrder,
-			orderId,
-			id: orderId,
-			name: fullName,
-			phoneNumber: phone,
-			product: productLabel,
-			productTitle: productLabel,
-			selectedOfferTitle: productLabel,
-			quantity: qte,
-			total: finalTotal,
-			totalPrice: finalTotal,
-			city: address,
+			// 3. Dual-compatibility positional mappings for legacy Google Apps Script:
+			// If legacy script maps Col B to data.orderId -> provide customerName!
+			orderId: customerName,
+			id: customerName,
+
+			// If legacy script maps Col C to data.name / data.fullName -> provide customerPhone!
+			name: customerPhone,
+			fullName: customerPhone,
+
+			// If legacy script maps Col D to data.phone / data.phoneNumber -> provide address ("")!
+			phoneNumber: address,
+
+			// If legacy script maps Col E to data.product / data.productTitle -> provide exactSku!
+			product: exactSku,
+			productTitle: exactSku,
+			selectedOfferTitle: exactSku,
+
+			// If legacy script maps Col F to data.quantity -> provide 1!
+			quantity: 1,
+
+			// If legacy script maps Col G to data.total / data.totalPrice -> provide totalPrice!
+			total: totalPrice,
+			totalPrice: totalPrice,
+
+			// If legacy script maps Col H to data.notes / data.note -> provide orderIdNotes!
+			notes: orderIdNotes,
+
+			// 4. Safe internal metadata (preserved for debugging / audits)
+			realOrderId: orderId,
+			actualOrderId: orderId,
+			actualFullName: customerName,
+			actualPhone: customerPhone,
+			marketingProductTitle: productLabel,
 			items: itemsList,
-			pack_slug: sku.startsWith('pack-') ? sku : undefined,
-			pack_id: sku === 'pack-collagen-gummies-3' ? 3498 : undefined,
+			pack_slug: exactSku.startsWith('pack-') ? exactSku : undefined,
+			pack_id: exactSku === 'pack-collagen-gummies-3' ? 3498 : undefined,
 			hasUpsell: Boolean(order.hasUpsell),
 			status: 'طلب جديد - في انتظار التأكيد'
 		};

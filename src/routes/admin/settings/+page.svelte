@@ -9,27 +9,38 @@
 	let validationErrors = $state<Record<string, string>>({});
 	let copiedScript = $state(false);
 
-	// Production Apps Script Code provided by User for Google Sheets
+	// Production Apps Script Code for Google Sheets (SpaceSeller 9-Column Architecture)
 	const appsScriptCode = `function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = JSON.parse(e.postData.contents);
     
-    var date_order    = data.date || new Date().toLocaleString("ar-MA");
-    var full_name     = data.fullName || "";
-    var phone         = data.phoneNumber || "";
-    var address       = data.address || "";
-    var sku           = data.sku || "pack-pack-alpha-vital---sleep-&-relax";
-    var qte           = data.qte !== undefined ? data.qte : 1;
-    var price         = data.price !== undefined ? data.price : 0;
-    var note          = data.orderId || "";
-    var delivery_note = "";
+    // Support direct row array or named keys
+    var rowValues = null;
+    if (Array.isArray(data)) {
+      rowValues = data;
+    } else if (Array.isArray(data.row)) {
+      rowValues = data.row;
+    } else if (Array.isArray(data.rowData)) {
+      rowValues = data.rowData;
+    } else if (Array.isArray(data.values)) {
+      rowValues = data.values;
+    }
+    
+    var date_order    = rowValues ? rowValues[0] : (data.date_order || data.date || data.orderDate || new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }));
+    var full_name     = rowValues ? rowValues[1] : (data.full_name || data.fullName || data.name || data.orderId || "");
+    var phone         = rowValues ? rowValues[2] : (data.phone || data.phoneNumber || "");
+    var address       = rowValues ? rowValues[3] : (data.address || "");
+    var sku           = rowValues ? rowValues[4] : (data.sku || data.product || "gummies_collagen");
+    var qte           = rowValues ? rowValues[5] : (data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1));
+    var price         = rowValues ? rowValues[6] : (data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 0)));
+    var note          = rowValues ? rowValues[7] : (data.note || data.notes || data.orderId || "");
+    var delivery_note = rowValues ? rowValues[8] : (data.delivery_note || "الدفع عند الاستلام");
     
     var lastRow = sheet.getLastRow();
     var targetRow = lastRow + 1;
-    
-    if (targetRow < 5) {
-      targetRow = 5;
+    if (targetRow < 2) {
+      targetRow = 2;
     }
     
     var range = sheet.getRange(targetRow, 1, 1, 9);
@@ -45,7 +56,7 @@
       delivery_note
     ]]);
     
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", orderId: data.orderId }))
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", orderId: data.realOrderId || data.orderId || note }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({
         "Access-Control-Allow-Origin": "*",
