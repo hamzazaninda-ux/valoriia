@@ -1,19 +1,19 @@
 [
   {
-    "id": "NV-362205",
-    "createdAt": "2026-10-15T11:05:42.852Z",
-    "fullName": "ءخديجة العلوي",
-    "phone": "+212649318068",
+    "id": "NV-TEST-LABEL",
+    "createdAt": "2026-10-15T11:53:33.281Z",
+    "fullName": "Test Verification",
+    "phone": "0612345678",
     "city": "تحدد عند التأكيد",
     "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA - باقة التجربة (1 علبة) + علبة العرض الخاطف",
+    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)",
     "quantity": 2,
     "totalPrice": 298,
     "status": "جديد",
     "sku": "gummies_collagen",
     "pageUrl": "",
     "orderType": "upsell",
-    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبة واحدة)\",\"quantity\":1,\"unitPrice\":199,\"price\":199},{\"sku\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99}]",
+    "items": "[{\"price\":199,\"title\":\"????? ????????? ??????\",\"quantity\":1,\"isUpsell\":false,\"sku\":\"gummies_collagen\"},{\"price\":99,\"title\":\"????? ???????? ??????\",\"quantity\":1,\"isUpsell\":true,\"sku\":\"gummies_biotine\"}]",
     "notes": ""
   },
   {
