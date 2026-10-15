@@ -366,13 +366,12 @@
 		{#if remainingUpsellProducts.length > 0}
 			<div class="bg-gradient-to-br from-amber-50 to-orange-50/30 rounded-3xl p-5 sm:p-6 border border-amber-200/80 shadow-xs space-y-3">
 				<div class="flex items-center gap-2 text-amber-900">
-					<span class="text-base">🎁</span>
 					<h3 class="font-display font-black text-sm sm:text-base">
-						عرض سري خاص: أضيفي مكملاً إضافياً بـ 99 درهم فقط! (عوض 199 DH)
+						🔥 سرّعي نتيجتك 2X (عرض حصري بـ 99 DH فقط مع طلبك):
 					</h3>
 				</div>
 				<p class="text-xs text-amber-800/90 leading-relaxed">
-					استفيدي من خصم 50% على المنتجات التكميلية لتحصلي على روتين جمالي متكامل لنضارة البشرة وكثافة الشعر:
+					استفيدي من خصم 50% على المنتجات التكميلية لتثبيت الكولاجين، طرد الخمول ومضاعفة نضارة البشرة وكثافة الشعر:
 				</p>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -394,7 +393,7 @@
 								onclick={() => handleToggleUpsell(up)}
 								class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer {isAdded ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-100 text-amber-900 hover:bg-amber-200'}"
 							>
-								{isAdded ? '✓ مضاف للسلة' : '+ أضيفي بـ 99 DH'}
+								{isAdded ? '✓ مضاف للسلة' : '+ ضيفيه لروتينك (99 DH)'}
 							</button>
 						</div>
 					{/each}

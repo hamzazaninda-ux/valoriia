@@ -60,6 +60,7 @@
 	// Genuine product benefit & recommendation metadata from catalog
 	interface UpsellBenefitInfo {
 		shortTitle: string;
+		badge?: string;
 		benefitDescription: string;
 		rating: number;
 		reviewCount: number;
@@ -70,6 +71,7 @@
 	const UPSELL_DETAILS: Record<string, UpsellBenefitInfo> = {
 		gummies_collagen: {
 			shortTitle: 'علكات الكولاجين البحري',
+			badge: 'لبناء وترطيب خلايا البشرة',
 			benefitDescription: 'كولاجين بحري مع الهيالورونيك لمرونة البشرة، ترطيب خلوي وملء الخطوط من الداخل.',
 			rating: 4.9,
 			reviewCount: 420,
@@ -77,16 +79,27 @@
 			upsellPrice: 99
 		},
 		gummies_biotine: {
-			shortTitle: 'علكات البيوتين والزنك',
-			benefitDescription: 'جرعة علاجية (3000mcg) توقف تساقط الكالكير وتسرّع إنبات البيبي هير وتكثيف الفراغات.',
+			shortTitle: 'علكات البيوتين 3000mcg + فيتامين C والزنك',
+			badge: 'المكمّل الأساسي للكولاجين',
+			benefitDescription: 'الكولاجين كيبني البشرة، والبيوتين مع فيتامين C والزنك كيثبّتو الكولاجين، يحبسو تساقط الشعر، ينبتو الخلفة ويقويو الأظافر من الجذور.',
 			rating: 4.9,
 			reviewCount: 580,
 			retailPrice: 199,
 			upsellPrice: 99
 		},
 		gumies_vitamine: {
-			shortTitle: 'علكات الفيتامينات المتعددة',
-			benefitDescription: '13 فيتامين أساسي يطرد خمول وتعب النهار ويمد جسمك بحيوية وطاقة تدوم نهارك كامل.',
+			shortTitle: 'علكات الملتي فيتامين (تغذية وطاقة متكاملة)',
+			badge: 'لتسريع الامتصاص وطرد التعب',
+			benefitDescription: 'جسمك ما غاديش يمتص الكولاجين 100% إلا كان عيان وناقصينو فيتامينات! تركيبة متكاملة كتقضي على الخمول، تقوي المناعة وتضاعف نضارة البشرة.',
+			rating: 4.8,
+			reviewCount: 310,
+			retailPrice: 199,
+			upsellPrice: 99
+		},
+		'gumies-vitamine': {
+			shortTitle: 'علكات الملتي فيتامين (تغذية وطاقة متكاملة)',
+			badge: 'لتسريع الامتصاص وطرد التعب',
+			benefitDescription: 'جسمك ما غاديش يمتص الكولاجين 100% إلا كان عيان وناقصينو فيتامينات! تركيبة متكاملة كتقضي على الخمول، تقوي المناعة وتضاعف نضارة البشرة.',
 			rating: 4.8,
 			reviewCount: 310,
 			retailPrice: 199,
@@ -446,11 +459,11 @@
 								</div>
 							{/if}
 
-							<!-- B. Smart Upsell Section: "كمّلي روتينك بهاد المنتجات" -->
+							<!-- B. Smart Upsell Section: "🔥 سرّعي نتيجتك 2X (عرض حصري بـ 99 DH فقط مع طلبك):" -->
 							{#if remainingUpsellProducts.length > 0}
 								<div class="pt-0.5">
 									<h3 class="font-display text-xs sm:text-sm font-bold text-gray-900 mb-2">
-										كمّلي روتينك بهاد المنتجات
+										🔥 سرّعي نتيجتك 2X (عرض حصري بـ 99 DH فقط مع طلبك):
 									</h3>
 
 									<div class="space-y-2.5">
@@ -459,7 +472,7 @@
 											{@const info = getUpsellInfo(upProd)}
 											<div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-emerald-100/90 shadow-2xs hover:border-emerald-300 transition-all flex flex-col gap-2.5">
 												
-												<!-- Top Part: Thumbnail + Title + Full Readable Benefit Description -->
+												<!-- Top Part: Thumbnail + Title with Badge + Full Readable Benefit Description -->
 												<div class="flex items-start gap-3">
 													<!-- Right: Product Thumbnail -->
 													<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#FAF8F5] border border-stone-100 p-1 shrink-0 flex items-center justify-center overflow-hidden">
@@ -474,15 +487,22 @@
 														/>
 													</div>
 
-													<!-- Middle: Product Title & Full Unclipped Description -->
-													<div class="flex-1 min-w-0 text-right">
-														<!-- Product Name -->
-														<h4 class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
-															{info.shortTitle}
-														</h4>
+													<!-- Middle: Product Title, Badge & Full Unclipped Description -->
+													<div class="flex-1 min-w-0 text-right space-y-1">
+														<!-- Product Name & Subtle Highlight Badge -->
+														<div class="flex items-center gap-1.5 flex-wrap">
+															<h4 class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
+																{info.shortTitle}
+															</h4>
+															{#if info.badge}
+																<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-900 border border-amber-200/80 shadow-2xs">
+																	✨ {info.badge}
+																</span>
+															{/if}
+														</div>
 
 														<!-- Full Unclipped Benefit Description (12–13px, Line Height 1.45, Natural Wrap) -->
-														<p class="text-[12px] sm:text-[13px] text-stone-600 leading-[1.45] font-medium mt-1">
+														<p class="text-[12px] sm:text-[13px] text-stone-600 leading-[1.45] font-medium">
 															{info.benefitDescription}
 														</p>
 													</div>
@@ -524,12 +544,12 @@
 																? 'bg-emerald-700 hover:bg-emerald-800 text-white'
 																: 'bg-[#1B4332] hover:bg-[#153427] text-white'
 														}`}
-														aria-label={isAdded ? `إزالة ${info.shortTitle} من السلة` : `إضافة ${info.shortTitle} للسلة`}
+														aria-label={isAdded ? `إزالة ${info.shortTitle} من السلة` : `إضافة ${info.shortTitle} لروتينك`}
 													>
 														{#if isAdded}
 															<span>تمت الإضافة ✓</span>
 														{:else}
-															<span>＋ زيد للسلة</span>
+															<span>+ ضيفيه لروتينك (99 DH)</span>
 														{/if}
 													</button>
 

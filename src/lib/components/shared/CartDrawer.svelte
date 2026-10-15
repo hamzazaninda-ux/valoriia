@@ -144,7 +144,7 @@
 					{#if crossSells.length > 0}
 						<div class="pt-0.5">
 							<p class="px-1 pb-1.5 text-[13px] font-extrabold text-neutral-800">
-								كمّل طلبك بهاد المنتجات
+								🔥 سرّعي نتيجتك 2X (عرض حصري بـ 99 DH فقط مع طلبك):
 							</p>
 							<div class="space-y-1.5">
 								{#each crossSells as p}
@@ -179,7 +179,7 @@
 											onclick={(e) => addCrossSell(p, e)}
 											class="inline-flex min-h-10 shrink-0 items-center rounded-xl bg-emerald-950 px-3.5 text-xs font-bold text-white transition-transform hover:scale-[1.03] active:scale-95"
 										>
-											+ زيد
+											+ ضيفيه لروتينك (99 DH)
 										</button>
 									</div>
 								{/each}
