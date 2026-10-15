@@ -1,5 +1,22 @@
 [
   {
+    "id": "NV-707564",
+    "createdAt": "2026-10-15T15:55:32.943Z",
+    "fullName": "ءخديجة العلوي",
+    "phone": "+212649318068",
+    "city": "تحدد عند التأكيد",
+    "address": "تحدد عند التأكيد",
+    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)",
+    "quantity": 2,
+    "totalPrice": 298,
+    "status": "جديد",
+    "sku": "pack-collagen-gummies-3",
+    "pageUrl": "",
+    "orderType": "upsell",
+    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبة واحدة)\",\"quantity\":1,\"unitPrice\":199,\"price\":199,\"isUpsell\":false},{\"sku\":\"gummies_biotine\",\"slug\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99,\"isUpsell\":true}]",
+    "notes": ""
+  },
+  {
     "id": "NV-849235",
     "createdAt": "2026-10-15T15:23:58.271Z",
     "fullName": "نادية القبلاوي Nadia El kablaoui",
