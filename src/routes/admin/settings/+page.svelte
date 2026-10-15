@@ -56,6 +56,10 @@
       delivery_note
     ]]);
     
+    // Ensure Column C (phone) and Column G (price) preserve exact text formatting without decimal commas
+    sheet.getRange(targetRow, 3).setNumberFormat("@");
+    sheet.getRange(targetRow, 7).setNumberFormat("@");
+    
     return ContentService.createTextOutput(JSON.stringify({ status: "success", orderId: data.realOrderId || data.orderId || note }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({

@@ -88,8 +88,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		body.totalPrice = finalTotal;
 		body.price = finalTotal;
 		body.sku = spaceSellerPayload.sku;
-		body.pack_slug = spaceSellerPayload.pack_slug;
-		body.pack_id = spaceSellerPayload.pack_id;
 
 		// Deduplication check: if order has already been marked as synced
 		if (body.sheetsSynced) {
@@ -126,8 +124,6 @@ export const POST: RequestHandler = async ({ request }) => {
 				price: finalTotal,
 				product: productLabel,
 				sku: spaceSellerPayload.sku,
-				pack_slug: spaceSellerPayload.pack_slug,
-				pack_id: spaceSellerPayload.pack_id,
 				items: body.items || [],
 				status: 'جديد',
 				createdAt: new Date().toISOString()

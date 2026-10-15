@@ -229,10 +229,10 @@ export function formatCasablancaDateTime(date: Date = new Date()): string {
 
 /**
  * Resolves the exact SpaceSeller 9-column schema SKU (Column E)
- * - If Collagen + Upsell: "pack-collagen-gummies-3"
- * - If Collagen base offer: "gummies_collagen"
- * - If Biotine base offer: "gummies_biotine"
- * - If Multivitamins base offer: "gumies_vitamine"
+ * Always returns direct catalog SKU to prevent SpaceSeller bundle price overrides:
+ * - Collagen: "gummies_collagen"
+ * - Biotine: "gummies_biotine"
+ * - Multivitamins: "gumies_vitamine"
  */
 export function resolveSpaceSellerSku(options: {
 	mainSku?: string;
@@ -240,16 +240,6 @@ export function resolveSpaceSellerSku(options: {
 	items?: any[];
 	hasUpsell?: boolean;
 }): string {
-	const hasUpsell = hasUpsellOrder(options);
-	const isCollagen = isCollagenOrder(options);
-
-	if (isCollagen && hasUpsell) {
-		return SPACESELLER_COLLAGEN_UPSELL_PACK.sku; // "pack-collagen-gummies-3"
-	}
-	if (isCollagen) {
-		return 'gummies_collagen';
-	}
-
 	const rawSku = String(options.mainSku || '').toLowerCase();
 	const label = String(options.productLabel || '').toLowerCase();
 
@@ -273,7 +263,7 @@ export function resolveSpaceSellerSku(options: {
 			if (itSku.includes('biotin') || itTitle.includes('بيوتين')) return 'gummies_biotine';
 			if (itSku.includes('vitam') || itTitle.includes('فيتامين')) return 'gumies_vitamine';
 			if (itSku.includes('collagen') || itTitle.includes('كولاجين')) {
-				return hasUpsell ? SPACESELLER_COLLAGEN_UPSELL_PACK.sku : 'gummies_collagen';
+				return 'gummies_collagen';
 			}
 		}
 	}
@@ -565,60 +555,44 @@ export function buildSpaceSellerLeadPayload(options: {
 		customerNote: options.customerNote
 	});
 
-	if (isCollagenUpsell) {
-		// Specific Collagen + Upsell Pack Mapping (ID: 3498, SKU: pack-collagen-gummies-3)
-		sku = SPACESELLER_COLLAGEN_UPSELL_PACK.sku;
-		packSlug = SPACESELLER_COLLAGEN_UPSELL_PACK.slug;
-		packId = SPACESELLER_COLLAGEN_UPSELL_PACK.id;
+	sku = resolveSpaceSellerSku({
+		mainSku: options.mainSku,
+		productLabel: options.productLabel,
+		items: options.items,
+		hasUpsell
+	});
 
-		noteText = breakdown;
-		if (options.orderId && !noteText.includes(options.orderId)) {
-			noteText += ` [طلب: ${options.orderId}]`;
-		}
+	noteText = breakdown;
+	if (options.orderId && !noteText.includes(options.orderId)) {
+		noteText += ` [طلب: ${options.orderId}]`;
+	}
 
+	const qte = calculatePhysicalBottleCount({
+		tier: options.tier,
+		items: options.items,
+		hasUpsell,
+		rawTotal: totalPrice,
+		price: totalPrice
+	});
+
+	if (Array.isArray(options.items) && options.items.length > 0) {
+		products = options.items.map((it: any) => ({
+			sku: resolveSpaceSellerSku({ mainSku: it.sku || it.slug, productLabel: it.title, hasUpsell: Boolean(it.isUpsell) }),
+			quantity: Number(it.quantity || it.qty || 1),
+			price: Number(it.price || it.unitPrice || Math.round(totalPrice / options.items!.length)),
+			name: it.title || it.name,
+			title: it.title || it.name
+		}));
+	} else {
 		products = [
 			{
-				sku: SPACESELLER_COLLAGEN_UPSELL_PACK.sku,
-				pack_slug: SPACESELLER_COLLAGEN_UPSELL_PACK.slug,
-				pack_id: SPACESELLER_COLLAGEN_UPSELL_PACK.id,
-				product_id: SPACESELLER_COLLAGEN_UPSELL_PACK.id,
-				name: SPACESELLER_COLLAGEN_UPSELL_PACK.name,
-				title: SPACESELLER_COLLAGEN_UPSELL_PACK.name,
-				quantity: 1,
-				price: totalPrice
+				sku,
+				quantity: qte,
+				price: totalPrice,
+				name: options.productLabel || 'NOVAVITA علكات',
+				title: options.productLabel || 'NOVAVITA علكات'
 			}
 		];
-	} else {
-		// Dynamic fallback for regular offers without upsell
-		sku =
-			options.mainSku ||
-			(Array.isArray(options.items) && options.items[0]?.sku) ||
-			(isCollagen ? 'gummies_collagen' : 'gummies_biotine');
-
-		noteText = breakdown;
-		if (options.orderId && !noteText.includes(options.orderId)) {
-			noteText += ` [طلب: ${options.orderId}]`;
-		}
-
-		if (Array.isArray(options.items) && options.items.length > 0) {
-			products = options.items.map((it: any) => ({
-				sku: it.sku || it.slug || sku,
-				quantity: Number(it.quantity || it.qty || 1),
-				price: Number(it.price || it.unitPrice || totalPrice / options.items!.length),
-				name: it.title || it.name,
-				title: it.title || it.name
-			}));
-		} else {
-			products = [
-				{
-					sku,
-					quantity: options.tier === 'tier_3' ? 3 : options.tier === 'tier_2' ? 2 : 1,
-					price: totalPrice,
-					name: options.productLabel || 'NOVAVITA علكات',
-					title: options.productLabel || 'NOVAVITA علكات'
-				}
-			];
-		}
 	}
 
 	if (options.customerNote && options.customerNote.trim() && !noteText.includes(options.customerNote.trim())) {
@@ -637,11 +611,13 @@ export function buildSpaceSellerLeadPayload(options: {
 		address: displayAddress,
 		note: noteText,
 		sku,
-		pack_slug: packSlug,
-		pack_id: packId,
 		price: totalPrice,
 		total: totalPrice,
 		total_price: totalPrice,
+		override_price: true,
+		is_price_overridden: true,
+		custom_price: totalPrice,
+		final_price: totalPrice,
 		products,
 		items: products
 	};
@@ -671,8 +647,6 @@ export async function sendOrderToSpaceSeller(
 					name: payload.name,
 					phone: payload.phone,
 					sku: payload.sku,
-					pack_slug: payload.pack_slug,
-					pack_id: payload.pack_id,
 					total: payload.total
 				});
 

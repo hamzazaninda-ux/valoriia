@@ -196,11 +196,8 @@
 				product: fullProductLabel,
 				productTitle: fullProductLabel,
 				selectedOfferTitle: fullProductLabel,
-				sku: isCollagenUpsell ? 'pack-collagen-gummies-3' : activeMain.sku,
-				mainSku: activeMain.sku,
-				pack_slug: isCollagenUpsell ? 'pack-collagen-gummies-3' : undefined,
-				pack_id: isCollagenUpsell ? 3498 : undefined,
-				qte: items.reduce((a, b) => a + b.quantity, 0),
+				sku: activeMain.sku || 'gummies_collagen',
+				mainSku: activeMain.sku || 'gummies_collagen',
 				pageUrl: typeof window !== 'undefined' ? window.location.href : 'https://novavita.store/cart',
 				orderType: 'cart'
 			};

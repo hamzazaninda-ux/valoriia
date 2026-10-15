@@ -192,9 +192,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			items: JSON.stringify(items),
 			orderType: body.hasUpsell ? 'upsell' : 'direct',
 			status: 'جديد' as OrderStatus,
-			sku: spaceSellerPayload.sku,
-			pack_slug: spaceSellerPayload.pack_slug,
-			pack_id: spaceSellerPayload.pack_id
+			sku: spaceSellerPayload.sku
 		};
 
 		// Resilient Dual-Dispatch: Space Seller + Google Sheets + Internal Git DB

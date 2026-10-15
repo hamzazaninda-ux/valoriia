@@ -134,7 +134,11 @@ export async function sendOrderToGoogleSheets(
 			hasUpsell: Boolean(order.hasUpsell),
 			rawTotal: Number(order.totalPrice ?? order.total ?? order.price ?? 0)
 		});
-		const totalPrice = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
+		const totalPrice = Math.round(calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279));
+
+		// Prepend ' so Google Sheets forces literal text format without decimal comma (e.g. '279, '298, '378, '448)
+		// This permanently prevents SpaceSeller Google Sheets bot from stripping ',' and turning 279,0 into 2790!
+		const sheetPrice = `'${totalPrice}`;
 
 		// Col D (address): FULL confirmation breakdown for confirmation team
 		// Format with upsell: "العرض: [X] علب [Base Product] + أبسيل: علبة [Exact Upsell Name] (+99 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
@@ -153,11 +157,8 @@ export async function sendOrderToGoogleSheets(
 			customerNote: order.notes
 		});
 
-		// Col E (sku): Exact SKU code
-		// * If Collagen + Upsell: "pack-collagen-gummies-3"
-		// * If Collagen base offer: "gummies_collagen"
-		// * If Biotine base offer: "gummies_biotine"
-		// * If Multivitamins base offer: "gumies_vitamine"
+		// Col E (sku): Direct catalog SKU (always gummies_collagen, gummies_biotine, gumies_vitamine)
+		// Never send pack-collagen-gummies-3 to avoid SpaceSeller catalog price/bundle overrides!
 		const exactSku = resolveSpaceSellerSku({
 			mainSku: order.sku || order.mainSku,
 			productLabel,
@@ -183,9 +184,9 @@ export async function sendOrderToGoogleSheets(
 			customerName,           // Col B: full_name (e.g. "Hamza")
 			sheetPhone,             // Col C: phone (e.g. "'0646466464" - preserves leading 0)
 			confirmationBreakdown,  // Col D: address (breakdown for confirmation team!)
-			exactSku,               // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
+			exactSku,               // Col E: exact SKU code (e.g. "gummies_collagen")
 			qte,                    // Col F: quantity (exact bottle count: 1, 2, 3, 4)
-			totalPrice,             // Col G: numeric total price (e.g. 378)
+			sheetPrice,             // Col G: integer price without comma (e.g. "'279", "'378")
 			confirmationNote,       // Col H: Confirmation note
 			'الدفع عند الاستلام'     // Col I: delivery note / confirmation
 		];
@@ -205,7 +206,14 @@ export async function sendOrderToGoogleSheets(
 			address: confirmationBreakdown,
 			sku: exactSku,
 			qte: qte,
-			price: totalPrice,
+			price: sheetPrice, // Prevents 279,0 in legacy Apps Script!
+			total: sheetPrice,
+			totalPrice: sheetPrice,
+			raw_price: totalPrice,
+			numeric_price: totalPrice,
+			override_price: true,
+			price_override: true,
+			is_custom_price: true,
 			note: confirmationNote,
 			delivery_note: 'الدفع عند الاستلام',
 
@@ -233,9 +241,8 @@ export async function sendOrderToGoogleSheets(
 			// Col F: Apps Script reads data.quantity / data.qte -> provide true bottle count
 			quantity: qte,
 
-			// Col G: Apps Script reads data.total / data.totalPrice / data.price -> provide totalPrice
-			total: totalPrice,
-			totalPrice: totalPrice,
+			// Col G: Apps Script reads data.total / data.totalPrice / data.price -> provide sheetPrice
+			total_price: sheetPrice,
 
 			// Col H: Candidate keys
 			notes: confirmationNote,
@@ -257,8 +264,6 @@ export async function sendOrderToGoogleSheets(
 			confirmationBreakdown,
 			bottleCount: qte,
 			items: itemsList,
-			pack_slug: exactSku.startsWith('pack-') ? exactSku : undefined,
-			pack_id: exactSku === 'pack-collagen-gummies-3' ? 3498 : undefined,
 			hasUpsell: Boolean(order.hasUpsell)
 		};
 
