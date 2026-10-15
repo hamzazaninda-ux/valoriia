@@ -85,23 +85,6 @@
     "notes": ""
   },
   {
-    "id": "NV-104684",
-    "createdAt": "2026-10-15T15:21:07.558Z",
-    "fullName": "Test",
-    "phone": "0646466464",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)",
-    "quantity": 2,
-    "totalPrice": 298,
-    "status": "جديد",
-    "sku": "pack-collagen-gummies-3",
-    "pageUrl": "",
-    "orderType": "upsell",
-    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبة واحدة)\",\"quantity\":1,\"unitPrice\":199,\"price\":199,\"isUpsell\":false},{\"sku\":\"gummies_biotine\",\"slug\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99,\"isUpsell\":true}]",
-    "notes": ""
-  },
-  {
     "id": "NV-824949",
     "createdAt": "2026-10-15T12:54:42.638Z",
     "fullName": "فتيحة كاوي Kaoui fatiha",
