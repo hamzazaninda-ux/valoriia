@@ -3,14 +3,10 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import type { LayoutData } from './$types';
 	import { afterNavigate } from '$app/navigation';
-	import { page } from '$app/stores';
-	import FloatingWhatsApp from '$lib/components/shared/FloatingWhatsApp.svelte';
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
 
 	const tracking = $derived(data?.settings?.tracking);
-	const brand = $derived(data?.settings?.brand);
-	const isAdmin = $derived($page.url?.pathname?.startsWith('/admin') ?? false);
 	const pixelId = $derived(tracking?.facebookPixelId || '2180716089518389');
 
 	let isFirstNav = true;
@@ -101,7 +97,3 @@
 {/if}
 
 {@render children()}
-
-{#if !isAdmin}
-	<FloatingWhatsApp whatsappNumber={brand?.whatsappNumber} />
-{/if}
