@@ -339,23 +339,5 @@
     "items": "[{\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري\",\"offer\":\"1 قطعة + رشاشة هدية 🎁\",\"price\":229,\"qty\":1}]",
     "notes": "",
     "updatedAt": "2026-10-10T09:13:11.535Z"
-  },
-  {
-    "id": "ORD-148374",
-    "createdAt": "2026-10-09T23:16:53.847Z",
-    "fullName": "Mourad Kandil",
-    "phone": "0660628600",
-    "city": "يُحدد عند التأكيد",
-    "address": "يُحدد عند التأكيد",
-    "product": "1x علكات الكولاجين البحري (2 منظمات + 2 رشاشات هدية 🎁)",
-    "quantity": 1,
-    "totalPrice": 349,
-    "status": "جديد",
-    "sku": "gummies_collagen",
-    "pageUrl": "https://novavita.store/cart",
-    "orderType": "cart",
-    "items": "[{\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري\",\"offer\":\"2 منظمات + 2 رشاشات هدية 🎁\",\"price\":349,\"qty\":1}]",
-    "notes": "",
-    "updatedAt": "2026-10-10T09:13:20.293Z"
   }
 ]
