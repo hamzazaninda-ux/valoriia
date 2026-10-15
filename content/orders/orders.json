@@ -136,23 +136,6 @@
     "notes": ""
   },
   {
-    "id": "NV-212416",
-    "createdAt": "2026-10-15T14:17:40.522Z",
-    "fullName": "Test",
-    "phone": "0646466464",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA كولاجين - باقة الثنائي الأكثر طلباً (2 علب)",
-    "quantity": 1,
-    "totalPrice": 279,
-    "status": "جديد",
-    "sku": "gummies_collagen",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري + هدية 🎁\",\"quantity\":1,\"unitPrice\":279,\"price\":279,\"isUpsell\":false}]",
-    "notes": ""
-  },
-  {
     "id": "NV-710930",
     "createdAt": "2026-10-15T13:57:01.398Z",
     "fullName": "Test",
