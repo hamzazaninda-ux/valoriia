@@ -3,7 +3,11 @@ import type { RequestHandler } from './$types';
 import { readOrders, saveOrder, updateOrderStatus, deleteOrder, getOrderStats } from '$lib/content/orders';
 import { isValidSession } from '$lib/server/auth';
 import { sendOrderToGoogleSheets } from '$lib/server/sheets';
-import { sendOrderToSpaceSeller, type SpaceSellerLeadPayload } from '$lib/server/spaceseller';
+import {
+	sendOrderToSpaceSeller,
+	buildSpaceSellerLeadPayload,
+	type SpaceSellerLeadPayload
+} from '$lib/server/spaceseller';
 import { buildOrderFulfillmentLabel } from '$lib/data/products';
 import type { OrderStatus } from '$lib/types/order';
 
@@ -141,21 +145,23 @@ export const POST: RequestHandler = async ({ request }) => {
 		const city = String(body.city || 'تحدد عند التأكيد').trim();
 		const address = String(body.address || '').trim();
 
-		// Construct Space Seller Payload
-		const spaceSellerProducts = items.map((it: any) => ({
-			sku: it.sku || 'gummies_collagen',
-			quantity: Number(it.quantity || 1),
-			price: Number(it.unitPrice ?? it.price ?? 0)
-		}));
-
-		const spaceSellerPayload: SpaceSellerLeadPayload = {
-			name: fullName,
+		// Construct Space Seller Payload with pack mapping, SKU, dynamic totals, and confirmation notes
+		const spaceSellerPayload = buildSpaceSellerLeadPayload({
+			fullName,
 			phone: cleanPhone,
 			city,
 			address,
-			note: `طلب ${productLabel} [رقم الطلب: ${orderId}]`,
-			products: spaceSellerProducts
-		};
+			orderId,
+			tier,
+			mainSku,
+			productLabel,
+			items,
+			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell)),
+			total,
+			customerNote: body.notes || body.note
+		});
+
+		const finalTotal = spaceSellerPayload.total || total;
 
 		// Construct Internal DB payload
 		const internalOrderPayload = {
@@ -170,10 +176,15 @@ export const POST: RequestHandler = async ({ request }) => {
 			productTitle: productLabel,
 			selectedOfferTitle: productLabel,
 			quantity: totalQuantity,
-			totalPrice: total,
+			totalPrice: finalTotal,
+			total: finalTotal,
+			price: finalTotal,
 			items: JSON.stringify(items),
 			orderType: body.hasUpsell ? 'upsell' : 'direct',
-			status: 'جديد' as OrderStatus
+			status: 'جديد' as OrderStatus,
+			sku: spaceSellerPayload.sku,
+			pack_slug: spaceSellerPayload.pack_slug,
+			pack_id: spaceSellerPayload.pack_id
 		};
 
 		// Resilient Dual-Dispatch: Space Seller + Google Sheets + Internal Git DB
@@ -185,7 +196,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				product: productLabel,
 				productTitle: productLabel,
 				selectedOfferTitle: productLabel,
-				total,
+				total: finalTotal,
+				totalPrice: finalTotal,
+				price: finalTotal,
 				items
 			})
 		]);
@@ -203,11 +216,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		const responsePayload = {
 			success: true,
 			orderId,
-			total,
+			total: finalTotal,
 			message: 'تم استلام طلبك بنجاح',
 			spaceSellerSynced,
 			sheetsSynced,
-			order: savedOrder || { id: orderId, orderId, fullName, phone: cleanPhone, total }
+			order: savedOrder || { id: orderId, orderId, fullName, phone: cleanPhone, total: finalTotal }
 		};
 
 		// Store in 15-second deduplication cache

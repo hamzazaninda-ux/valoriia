@@ -140,6 +140,9 @@ export async function sendOrderToGoogleSheets(
 				price: Number(it.price || it.unitPrice || 0),
 				isUpsell: Boolean(it.isUpsell || (it.title && (it.title.includes('عرض') || it.title.includes('خاطف'))))
 			})),
+			sku: order.sku,
+			pack_slug: order.pack_slug,
+			pack_id: order.pack_id,
 			hasUpsell: !!order.hasUpsell,
 			status: 'طلب جديد - في انتظار التأكيد'
 		};

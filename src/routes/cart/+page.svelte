@@ -135,6 +135,14 @@
 				hasUpsell: cart.getUpsellItems().length > 0
 			});
 
+			const isCollagen =
+				(activeMain.sku || '').toLowerCase().includes('collagen') ||
+				((activeMain as any).slug || '').toLowerCase().includes('collagen') ||
+				(activeMain.title || '').toLowerCase().includes('كولاجين') ||
+				(activeMain.title || '').toLowerCase().includes('collagen');
+			const hasUpsell = cart.getUpsellItems().length > 0;
+			const isCollagenUpsell = isCollagen && hasUpsell;
+
 			const orderPayload = {
 				orderId,
 				fullName: fullName.trim(),
@@ -147,7 +155,9 @@
 				subtotal,
 				shipping: 0,
 				total: subtotal,
-				hasUpsell: cart.getUpsellItems().length > 0,
+				totalPrice: subtotal,
+				price: subtotal,
+				hasUpsell,
 				createdAt: new Date().toISOString(),
 				date: new Date().toLocaleDateString('ar-MA', {
 					year: 'numeric',
@@ -159,9 +169,10 @@
 				product: fullProductLabel,
 				productTitle: fullProductLabel,
 				selectedOfferTitle: fullProductLabel,
-				sku: activeMain.sku,
+				sku: isCollagenUpsell ? 'pack-collagen-gummies-3' : activeMain.sku,
 				mainSku: activeMain.sku,
-				price: subtotal,
+				pack_slug: isCollagenUpsell ? 'pack-collagen-gummies-3' : undefined,
+				pack_id: isCollagenUpsell ? 3498 : undefined,
 				qte: items.reduce((a, b) => a + b.quantity, 0),
 				pageUrl: typeof window !== 'undefined' ? window.location.href : 'https://novavita.store/cart',
 				orderType: 'cart'

@@ -198,6 +198,14 @@
 				hasUpsell: upsells.length > 0
 			});
 
+			const isCollagen =
+				(mainItem?.sku || '').toLowerCase().includes('collagen') ||
+				(mainItem?.slug || '').toLowerCase().includes('collagen') ||
+				(mainItem?.title || '').toLowerCase().includes('كولاجين') ||
+				(mainItem?.title || '').toLowerCase().includes('collagen');
+			const hasUpsell = upsells.length > 0;
+			const isCollagenUpsell = isCollagen && hasUpsell;
+
 			const orderPayload = {
 				orderId,
 				fullName: fullName.trim(),
@@ -209,14 +217,17 @@
 				product: fullProductLabel,
 				productTitle: fullProductLabel,
 				selectedOfferTitle: fullProductLabel,
-				sku: mainItem?.sku || 'gummies_collagen',
+				sku: isCollagenUpsell ? 'pack-collagen-gummies-3' : (mainItem?.sku || 'gummies_collagen'),
 				mainSku: mainItem?.sku || 'gummies_collagen',
+				pack_slug: isCollagenUpsell ? 'pack-collagen-gummies-3' : undefined,
+				pack_id: isCollagenUpsell ? 3498 : undefined,
 				items,
 				subtotal,
 				shipping: 0,
 				total: subtotal,
 				price: subtotal,
-				hasUpsell: upsells.length > 0,
+				totalPrice: subtotal,
+				hasUpsell,
 				createdAt: new Date().toISOString()
 			};
 
