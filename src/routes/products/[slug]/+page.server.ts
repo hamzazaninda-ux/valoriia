@@ -1,6 +1,5 @@
-import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getProductBySlug } from '$lib/data/products';
+import { getProductBySlug, PRODUCTS } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
@@ -9,10 +8,20 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	});
 	const rawSlug = params.slug || '';
 	const slug = rawSlug.trim().replace(/\/+$/, '');
-	const product = getProductBySlug(slug) || getProductBySlug('gummies_collagen');
-
+	
+	let product = getProductBySlug(slug);
 	if (!product) {
-		throw error(404, 'المنتج المطلوب غير موجود');
+		const norm = slug.toLowerCase().replace(/-/g, '_');
+		if (norm.includes('biotin') || norm.includes('بيوتين')) {
+			product = PRODUCTS.find((p) => p.sku === 'gummies_biotine');
+		} else if (norm.includes('vitam') || norm.includes('فيتامين') || norm.includes('multivit')) {
+			product = PRODUCTS.find((p) => p.sku === 'gumies_vitamine');
+		} else {
+			product = PRODUCTS.find((p) => p.sku === 'gummies_collagen') || PRODUCTS[0];
+		}
+	}
+	if (!product) {
+		product = PRODUCTS[0];
 	}
 
 	let brand = {

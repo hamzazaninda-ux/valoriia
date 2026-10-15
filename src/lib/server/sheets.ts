@@ -1,4 +1,5 @@
 import { readSettings } from '$lib/content/settings';
+import { buildOrderFulfillmentLabel } from '$lib/data/products';
 
 export const DEFAULT_SHEETS_WEBHOOK_URL =
 	'https://script.google.com/macros/s/AKfycbw_IupQuynkwQCrYJNyYdbDhq3R_Ab1DoMkcknXZ9C9vRKYVzJefYKUKN9RSJKOjWWLhQ/exec';
@@ -77,7 +78,16 @@ export async function sendOrderToGoogleSheets(
 		const fullName = String(order.fullName || order.name || '').trim();
 		const phone = String(order.phoneNumber || order.phone || '').trim();
 
-		const productLabel = String(
+		let rawItems = order.items;
+		if (typeof rawItems === 'string') {
+			try {
+				const parsed = JSON.parse(rawItems);
+				if (Array.isArray(parsed)) rawItems = parsed;
+			} catch {}
+		}
+		const itemsList = Array.isArray(rawItems) ? rawItems : [];
+
+		let productLabel = String(
 			order.selectedOfferTitle ||
 			(order.offer && order.productTitle && order.offer.trim() && order.offer.trim() !== order.productTitle.trim()
 				? `${order.productTitle} (${order.offer})`
@@ -86,6 +96,20 @@ export async function sendOrderToGoogleSheets(
 			order.product ||
 			'NOVAVITA Gummies'
 		).trim();
+
+		// Fail-safe: If productLabel contains generic 'علبة العرض الخاطف' or is missing specific upsell, rebuild it
+		if (
+			productLabel.includes('علبة العرض الخاطف') ||
+			(order.hasUpsell && !productLabel.includes('(العرض الخاطف)'))
+		) {
+			productLabel = buildOrderFulfillmentLabel({
+				tier: order.tier,
+				mainSku: order.sku || order.mainSku,
+				mainTitle: productLabel,
+				items: itemsList,
+				hasUpsell: Boolean(order.hasUpsell)
+			});
+		}
 
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
 		const finalTotal = Number(order.totalPrice ?? order.total ?? order.price ?? 0);
@@ -109,7 +133,13 @@ export async function sendOrderToGoogleSheets(
 			price: finalTotal,
 			city: order.city || 'تحدد عند التأكيد',
 			address: order.address || '',
-			items: Array.isArray(order.items) ? order.items : [],
+			items: itemsList.map((it: any) => ({
+				sku: it.sku || 'gummies_collagen',
+				title: it.title || 'NOVAVITA علكة',
+				quantity: Number(it.quantity || it.qty || 1),
+				price: Number(it.price || it.unitPrice || 0),
+				isUpsell: Boolean(it.isUpsell || (it.title && (it.title.includes('عرض') || it.title.includes('خاطف'))))
+			})),
 			hasUpsell: !!order.hasUpsell,
 			status: 'طلب جديد - في انتظار التأكيد'
 		};

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
-	import { PRODUCTS, type CatalogProduct } from '$lib/data/products';
+	import { PRODUCTS, type CatalogProduct, buildOrderFulfillmentLabel } from '$lib/data/products';
 	import { trackPurchase } from '$lib/utils/checkout';
 
 	interface Props {
@@ -181,11 +181,22 @@
 
 			const items = cart.lines.map((l) => ({
 				sku: l.sku,
+				slug: l.slug,
 				title: l.title,
 				quantity: l.qty || 1,
 				unitPrice: l.price,
-				price: l.price
+				price: l.price,
+				isUpsell: Boolean(l.isUpsell)
 			}));
+
+			const mainTier = mainItem?.tier || (cart.count > 1 ? 'tier_2' : 'tier_1');
+			const fullProductLabel = buildOrderFulfillmentLabel({
+				tier: mainTier,
+				mainSku: mainItem?.sku || mainItem?.slug,
+				mainTitle: mainItem?.title,
+				items,
+				hasUpsell: upsells.length > 0
+			});
 
 			const orderPayload = {
 				orderId,
@@ -194,7 +205,12 @@
 				phoneNumber: cleanedPhone,
 				city: 'تحدد عند التأكيد',
 				address: '',
-				tier: mainItem?.tier || (cart.count > 1 ? 'tier_2' : 'tier_1'),
+				tier: mainTier,
+				product: fullProductLabel,
+				productTitle: fullProductLabel,
+				selectedOfferTitle: fullProductLabel,
+				sku: mainItem?.sku || 'gummies_collagen',
+				mainSku: mainItem?.sku || 'gummies_collagen',
 				items,
 				subtotal,
 				shipping: 0,
@@ -225,7 +241,7 @@
 			}
 
 			// Fire Purchase tracking
-			trackPurchase(subtotal, mainItem?.title || 'NOVAVITA Gummies Bundle', orderId, cleanedPhone);
+			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone);
 
 			// Clear cart and close drawer
 			handleClose();

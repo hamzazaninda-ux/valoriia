@@ -5,13 +5,16 @@ import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
-  const gummieSlugs = [
-    'gummies_collagen', 'gummies-collagen', 'collagen',
-    'gummies_biotine', 'gummies-biotine', 'biotine', 'biotin',
-    'gumies_vitamine', 'gummies_multivitamines', 'gummies-multivitamines', 'multivitamines', 'multivitamin'
-  ];
-  if (gummieSlugs.includes(params.slug)) {
-    throw redirect(301, `/products/${params.slug}`);
+  const slug = (params.slug || '').trim().toLowerCase();
+  const slugUnderscore = slug.replace(/-/g, '_');
+  if (slugUnderscore.includes('collagen')) {
+    throw redirect(301, '/products/gummies_collagen');
+  }
+  if (slugUnderscore.includes('biotin')) {
+    throw redirect(301, '/products/gummies_biotine');
+  }
+  if (slugUnderscore.includes('vitam') || slugUnderscore.includes('multivit')) {
+    throw redirect(301, '/products/gummies_multivitamines');
   }
 
   setHeaders({

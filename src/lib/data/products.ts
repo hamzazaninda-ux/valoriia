@@ -204,3 +204,100 @@ export function getProductBySlug(slug: string): CatalogProduct | undefined {
 export function getAllProducts(): CatalogProduct[] {
   return PRODUCTS;
 }
+
+/**
+ * Normalizes any SKU, slug, or title to a clean Arabic product name
+ */
+export function getProductShortName(skuOrSlugOrTitle?: string): string {
+  const norm = (skuOrSlugOrTitle || '').toLowerCase().trim().replace(/-/g, '_');
+  if (norm.includes('biotin') || norm.includes('بيوتين')) return 'بيوتين';
+  if (norm.includes('vitamin') || norm.includes('فيتامين') || norm.includes('multivit')) return 'مالتي فيتامين';
+  if (norm.includes('collagen') || norm.includes('كولاجين')) return 'كولاجين';
+  return 'كولاجين';
+}
+
+/**
+ * Normalizes any SKU, slug, or title to the exact fulfillment upsell label in Arabic
+ */
+export function getUpsellItemLabel(skuOrSlugOrTitle?: string): string {
+  const shortName = getProductShortName(skuOrSlugOrTitle);
+  return `علبة ${shortName} (العرض الخاطف)`;
+}
+
+/**
+ * Builds the exact fulfillment order label for Google Sheets & Space Seller
+ * Examples:
+ * - "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)"
+ * - "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة مالتي فيتامين (العرض الخاطف)"
+ * - "NOVAVITA بيوتين - باقة التجربة (1 علبة) + علبة كولاجين (العرض الخاطف)"
+ * - "NOVAVITA كولاجين - باقة الثنائي الأكثر طلباً (2 علب) + علبة بيوتين (العرض الخاطف)"
+ */
+export function buildOrderFulfillmentLabel(params: {
+  tier?: string;
+  mainSku?: string;
+  mainTitle?: string;
+  items?: Array<{ sku?: string; slug?: string; title?: string; isUpsell?: boolean }>;
+  hasUpsell?: boolean;
+}): string {
+  // If mainTitle already contains a specific upsell (e.g. "علبة بيوتين (العرض الخاطف)"), keep it
+  if (
+    params.mainTitle &&
+    params.mainTitle.includes('(العرض الخاطف)') &&
+    (params.mainTitle.includes('بيوتين') || params.mainTitle.includes('مالتي فيتامين') || params.mainTitle.includes('كولاجين'))
+  ) {
+    // If it doesn't contain generic placeholder, it's already well-formed
+    if (!params.mainTitle.includes('+ علبة العرض الخاطف')) {
+      return params.mainTitle.trim();
+    }
+  }
+
+  const rawTier = String(params.tier || 'tier_2');
+  const tierText =
+    rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة')
+      ? 'باقة التجربة (1 علبة)'
+      : rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')
+        ? 'باقة التحول الشامل (3 علب)'
+        : 'باقة الثنائي الأكثر طلباً (2 علب)';
+
+  // 1. Determine main product SKU or title
+  let mainSku = params.mainSku;
+  if (!mainSku && Array.isArray(params.items)) {
+    const mainItem = params.items.find((it) => !it.isUpsell);
+    if (mainItem) {
+      mainSku = mainItem.sku || mainItem.slug;
+    }
+  }
+
+  const mainName = getProductShortName(mainSku || params.mainTitle);
+  const baseLabel = `NOVAVITA ${mainName} - ${tierText}`;
+
+  // 2. Determine upsell items dynamically from cart items
+  const upsellLabels: string[] = [];
+  if (Array.isArray(params.items)) {
+    const upsellItems = params.items.filter(
+      (it) => it.isUpsell || (it.title && (it.title.includes('عرض') || it.title.includes('خاطف')))
+    );
+    for (const up of upsellItems) {
+      const upIdentifier = up.sku || up.slug || up.title;
+      if (upIdentifier) {
+        upsellLabels.push(getUpsellItemLabel(upIdentifier));
+      }
+    }
+  }
+
+  // Deduplicate upsell labels
+  const uniqueUpsells = Array.from(new Set(upsellLabels));
+
+  if (uniqueUpsells.length > 0) {
+    return `${baseLabel} + ${uniqueUpsells.join(' + ')}`;
+  }
+
+  // 3. Fallback when hasUpsell is true but specific upsell line was not in items array
+  if (params.hasUpsell) {
+    // If main is collagen, default upsell is biotine; otherwise collagen
+    const fallbackUpsell = mainName === 'كولاجين' ? 'علبة بيوتين (العرض الخاطف)' : 'علبة كولاجين (العرض الخاطف)';
+    return `${baseLabel} + ${fallbackUpsell}`;
+  }
+
+  return baseLabel;
+}

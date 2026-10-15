@@ -3,8 +3,10 @@
 // Single Source of Truth for CRO Offers
 // =============================================================================
 
+export type PricingTierId = 'tier_1' | 'tier_2' | 'tier_3';
+
 export interface PricingTier {
-  id: 'tier_1' | 'tier_2' | 'tier_3';
+  id: PricingTierId;
   units: number;
   months: number;
   price: number;
@@ -18,7 +20,7 @@ export interface PricingTier {
   badge: string;
 }
 
-export const PRICING_TIERS: Record<'tier_1' | 'tier_2' | 'tier_3', PricingTier> = {
+export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
   tier_1: {
     id: 'tier_1',
     units: 1,

@@ -65,7 +65,15 @@ export function buildOrderPayload(
 		timestamp: now.toISOString(),
 		// Cart detail (new columns; safely ignored by older sheet scripts)
 		items: JSON.stringify(
-			lines.map((l) => ({ slug: l.slug, title: l.title, offer: l.offerTitle, price: l.price, qty: l.qty }))
+			lines.map((l) => ({
+				sku: (l as any).sku || l.slug,
+				slug: l.slug,
+				title: l.title,
+				offer: l.offerTitle,
+				price: l.price,
+				qty: l.qty,
+				isUpsell: Boolean(l.isUpsell)
+			}))
 		),
 		orderType
 	};

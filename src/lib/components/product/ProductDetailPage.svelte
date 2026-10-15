@@ -214,7 +214,7 @@
 			
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6">
-				{#if (product.slug || '').includes('collagen')}
+				{#if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('collagen')}
 					<div class="w-full max-w-md mx-auto px-2 mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
@@ -227,7 +227,7 @@
 							/>
 						</div>
 					</div>
-				{:else if (product.slug || '').includes('biotine')}
+				{:else if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('biotine')}
 					<div class="w-full max-w-md mx-auto px-2 mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
@@ -240,7 +240,7 @@
 							/>
 						</div>
 					</div>
-				{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
+				{:else if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('vitamine') || ((product?.slug || '') + ' ' + (product?.sku || '')).includes('multivit')}
 					<div class="w-full max-w-md mx-auto px-2 mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 

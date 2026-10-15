@@ -1,16 +1,16 @@
 import type { PageServerLoad } from './$types';
-import { getProductBySlug } from '$lib/data/products';
+import { getProductBySlug, PRODUCTS } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
-import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ setHeaders }) => {
 	setHeaders({
 		'Cache-Control': 'public, max-age=60, s-maxage=86400, stale-while-revalidate=86400'
 	});
-	const product = getProductBySlug('gumies_vitamine');
-	if (!product) {
-		throw error(404, 'المنتج المطلوب غير موجود');
-	}
+	const product =
+		getProductBySlug('gummies_multivitamines') ||
+		PRODUCTS.find((p) => p.sku === 'gumies_vitamine') ||
+		PRODUCTS[2] ||
+		PRODUCTS[0];
 
 	let brand = {
 		name: 'NOVAVITA',
@@ -20,7 +20,9 @@ export const load: PageServerLoad = async ({ setHeaders }) => {
 	try {
 		const b = await readBrandSettings();
 		if (b) brand = { ...brand, ...b };
-	} catch {}
+	} catch {
+		// safe fallback
+	}
 
 	return {
 		product,

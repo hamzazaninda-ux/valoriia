@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { saveOrder } from '$lib/content/orders';
 import { sendOrderToGoogleSheets } from '$lib/server/sheets';
+import { buildOrderFulfillmentLabel } from '$lib/data/products';
 
 const GOOGLE_SHEETS_WEBHOOK =
 	process.env.GOOGLE_SHEETS_URL ||
@@ -28,6 +29,24 @@ export const POST: RequestHandler = async ({ request }) => {
 		).trim();
 		body.orderId = orderId;
 		body.id = orderId;
+
+		let items = Array.isArray(body.items) ? body.items : [];
+		if (typeof body.items === 'string') {
+			try {
+				const parsed = JSON.parse(body.items);
+				if (Array.isArray(parsed)) items = parsed;
+			} catch {}
+		}
+		const productLabel = buildOrderFulfillmentLabel({
+			tier: body.tier,
+			mainSku: body.mainSku || body.sku,
+			mainTitle: body.selectedOfferTitle || body.productTitle || body.product,
+			items,
+			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell))
+		});
+		body.product = productLabel;
+		body.productTitle = productLabel;
+		body.selectedOfferTitle = productLabel;
 
 		// Deduplication check: if order has already been marked as synced
 		if (body.sheetsSynced) {

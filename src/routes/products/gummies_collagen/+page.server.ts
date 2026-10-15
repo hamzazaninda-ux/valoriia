@@ -1,16 +1,15 @@
 import type { PageServerLoad } from './$types';
-import { getProductBySlug } from '$lib/data/products';
+import { getProductBySlug, PRODUCTS } from '$lib/data/products';
 import { readBrandSettings } from '$lib/content/settings';
-import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ setHeaders }) => {
 	setHeaders({
 		'Cache-Control': 'public, max-age=60, s-maxage=86400, stale-while-revalidate=86400'
 	});
-	const product = getProductBySlug('gummies_collagen');
-	if (!product) {
-		throw error(404, 'المنتج المطلوب غير موجود');
-	}
+	const product =
+		getProductBySlug('gummies_collagen') ||
+		PRODUCTS.find((p) => p.sku === 'gummies_collagen') ||
+		PRODUCTS[0];
 
 	let brand = {
 		name: 'NOVAVITA',

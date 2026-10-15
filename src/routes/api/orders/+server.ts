@@ -4,6 +4,7 @@ import { readOrders, saveOrder, updateOrderStatus, deleteOrder, getOrderStats } 
 import { isValidSession } from '$lib/server/auth';
 import { sendOrderToGoogleSheets } from '$lib/server/sheets';
 import { sendOrderToSpaceSeller, type SpaceSellerLeadPayload } from '$lib/server/spaceseller';
+import { buildOrderFulfillmentLabel } from '$lib/data/products';
 import type { OrderStatus } from '$lib/types/order';
 
 const VALID_STATUSES: OrderStatus[] = ['جديد', 'مؤكد', 'جاري الشحن', 'تم التسليم', 'ملغي'];
@@ -74,47 +75,68 @@ export const POST: RequestHandler = async ({ request }) => {
 		body.id = orderId;
 
 		// Decompose and resolve items array
-		let items = Array.isArray(body.items) ? [...body.items] : [];
+		let items: any[] = [];
+		if (Array.isArray(body.items)) {
+			items = [...body.items];
+		} else if (typeof body.items === 'string') {
+			try {
+				const parsed = JSON.parse(body.items);
+				if (Array.isArray(parsed)) items = parsed;
+			} catch {}
+		}
+
+		const mainSku = body.mainSku || body.sku || (items.find((it: any) => !it.isUpsell)?.sku) || 'gummies_collagen';
+
 		if (items.length === 0) {
 			if (tier === 'tier_1') {
 				items.push({
-					sku: 'gummies_biotine',
-					title: 'علكات البيوتين (علبة واحدة)',
+					sku: mainSku,
+					title: mainSku.includes('biotin') ? 'علكات البيوتين (علبة واحدة)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (علبة واحدة)' : 'علكات الكولاجين البحري (علبة واحدة)',
 					quantity: 1,
-					price: 199
+					price: 199,
+					isUpsell: false
 				});
 			} else if (tier === 'tier_2') {
 				items.push(
-					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, price: 139.5 },
-					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, price: 139.5 }
+					{ sku: mainSku, title: mainSku.includes('biotin') ? 'علكات البيوتين للشعر' : 'علكات كولاجين البشرة', quantity: 1, price: 139.5, isUpsell: false },
+					{ sku: mainSku, title: mainSku.includes('biotin') ? 'علكات البيوتين للشعر' : 'علكات كولاجين البشرة', quantity: 1, price: 139.5, isUpsell: false }
 				);
 			} else {
 				items.push(
-					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, price: 116.33 },
-					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, price: 116.33 },
-					{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, price: 116.34 }
+					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, price: 116.33, isUpsell: false },
+					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, price: 116.33, isUpsell: false },
+					{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, price: 116.34, isUpsell: false }
 				);
 			}
 			if (body.hasUpsell) {
+				const upsellSku = mainSku === 'gummies_biotine' ? 'gummies_collagen' : 'gummies_biotine';
 				items.push({
-					sku: 'gummies_collagen',
-					title: 'علبة إضافية (عرض خاطف)',
+					sku: upsellSku,
+					title: upsellSku === 'gummies_biotine' ? 'علكات البيوتين والزنك' : 'علكات الكولاجين البحري',
 					quantity: 1,
-					price: 99
+					price: 99,
+					isUpsell: true
 				});
 			}
+		} else {
+			items = items.map((it: any) => ({
+				...it,
+				sku: it.sku || 'gummies_collagen',
+				title: it.title || 'NOVAVITA علكة',
+				quantity: Number(it.quantity || it.qty || 1),
+				price: Number(it.price || it.unitPrice || 0),
+				isUpsell: Boolean(it.isUpsell || (it.title && (it.title.includes('عرض') || it.title.includes('خاطف'))))
+			}));
 		}
 
 		const totalQuantity = items.reduce((sum: number, it: any) => sum + (Number(it.quantity) || 1), 0);
-		const productLabel =
-			body.product ||
-			body.productTitle ||
-			(tier === 'tier_1'
-				? 'NOVAVITA - باقة التجربة (1 علبة)'
-				: tier === 'tier_2'
-					? 'NOVAVITA - باقة الثنائي الأكثر طلباً (2 علب)'
-					: 'NOVAVITA - باقة التحول الشامل (3 علب)') +
-				(body.hasUpsell ? ' + علبة العرض الخاطف' : '');
+		const productLabel = buildOrderFulfillmentLabel({
+			tier,
+			mainSku,
+			mainTitle: body.selectedOfferTitle || body.productTitle || body.product,
+			items,
+			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell))
+		});
 
 		const city = String(body.city || 'تحدد عند التأكيد').trim();
 		const address = String(body.address || '').trim();
@@ -131,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			phone: cleanPhone,
 			city,
 			address,
-			note: `طلب NOVAVITA [${tier}]${body.hasUpsell ? ' + عرض خاطف 99 MAD' : ''} [رقم الطلب: ${orderId}]`,
+			note: `طلب ${productLabel} [رقم الطلب: ${orderId}]`,
 			products: spaceSellerProducts
 		};
 
@@ -146,6 +168,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			address,
 			product: productLabel,
 			productTitle: productLabel,
+			selectedOfferTitle: productLabel,
 			quantity: totalQuantity,
 			totalPrice: total,
 			items: JSON.stringify(items),
@@ -159,6 +182,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			sendOrderToSpaceSeller(spaceSellerPayload),
 			sendOrderToGoogleSheets({
 				...internalOrderPayload,
+				product: productLabel,
+				productTitle: productLabel,
+				selectedOfferTitle: productLabel,
 				total,
 				items
 			})

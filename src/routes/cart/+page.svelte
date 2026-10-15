@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { cart } from '$lib/stores/cart.svelte';
-	import { PRODUCTS, type CatalogProduct } from '$lib/data/products';
+	import { PRODUCTS, type CatalogProduct, buildOrderFulfillmentLabel } from '$lib/data/products';
 	import { PRICING_TIERS, type PricingTierId } from '$lib/constants/pricing';
-	import { fbqTrack } from '$lib/tracking/pixel.js';
+	import { fbqTrack } from '$lib/tracking/pixel';
 	import { sendOrder, trackPurchase } from '$lib/utils/checkout';
 
 	let { data } = $props();
@@ -119,11 +119,21 @@
 
 			const items = cart.lines.map((l) => ({
 				sku: l.sku,
+				slug: l.slug,
 				title: l.title,
 				quantity: l.qty || 1,
 				unitPrice: l.price,
-				price: l.price
+				price: l.price,
+				isUpsell: Boolean(l.isUpsell)
 			}));
+
+			const fullProductLabel = buildOrderFulfillmentLabel({
+				tier: selectedTier,
+				mainSku: activeMain.sku,
+				mainTitle: activeMain.title,
+				items,
+				hasUpsell: cart.getUpsellItems().length > 0
+			});
 
 			const orderPayload = {
 				orderId,
@@ -146,9 +156,11 @@
 					hour: '2-digit',
 					minute: '2-digit'
 				}),
-				product: activeMain.title,
-				productTitle: activeMain.title,
+				product: fullProductLabel,
+				productTitle: fullProductLabel,
+				selectedOfferTitle: fullProductLabel,
 				sku: activeMain.sku,
+				mainSku: activeMain.sku,
 				price: subtotal,
 				qte: items.reduce((a, b) => a + b.quantity, 0),
 				pageUrl: typeof window !== 'undefined' ? window.location.href : 'https://novavita.store/cart',
@@ -170,7 +182,7 @@
 			await sendOrder(orderPayload);
 
 			// Fire Purchase tracking strictly upon order success
-			trackPurchase(subtotal, activeMain.title, orderId, cleanedPhone);
+			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone);
 
 			// Clear cart and redirect to thank-you page
 			cart.clear();
