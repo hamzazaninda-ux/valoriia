@@ -1,5 +1,22 @@
 [
   {
+    "id": "NV-872884",
+    "createdAt": "2026-10-15T14:29:19.451Z",
+    "fullName": "Hamza",
+    "phone": "0646466464",
+    "city": "تحدد عند التأكيد",
+    "address": "تحدد عند التأكيد",
+    "product": "NOVAVITA كولاجين - باقة الثنائي الأكثر طلباً (2 علب) + علبة بيوتين (العرض الخاطف)",
+    "quantity": 2,
+    "totalPrice": 378,
+    "status": "جديد",
+    "sku": "pack-collagen-gummies-3",
+    "pageUrl": "",
+    "orderType": "upsell",
+    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري + هدية 🎁\",\"quantity\":1,\"unitPrice\":279,\"price\":279,\"isUpsell\":false},{\"sku\":\"gummies_biotine\",\"slug\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99,\"isUpsell\":true}]",
+    "notes": ""
+  },
+  {
     "id": "NV-495050",
     "createdAt": "2026-10-15T14:18:35.757Z",
     "fullName": "Test",
