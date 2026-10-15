@@ -318,6 +318,82 @@ export function resolveSpaceSellerNote(options: {
 }
 
 /**
+ * Builds the exact SpaceSeller confirmation note for Column H
+ * Format: "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421"
+ */
+export function buildSpaceSellerConfirmationNote(options: {
+	orderId?: string;
+	tier?: string;
+	mainSku?: string;
+	productLabel?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+	totalPrice: number;
+	customerNote?: string;
+}): string {
+	const hasUpsell = hasUpsellOrder(options);
+
+	// Determine main product Arabic name
+	let mainName = 'كولاجين';
+	const rawSku = String(options.mainSku || '').toLowerCase();
+	const rawLabel = String(options.productLabel || '').toLowerCase();
+	if (rawSku.includes('biotin') || rawLabel.includes('بيوتين')) {
+		mainName = 'بيوتين';
+	} else if (rawSku.includes('vitam') || rawLabel.includes('فيتامين') || rawLabel.includes('multivit')) {
+		mainName = 'مالتي فيتامين';
+	} else if (rawSku.includes('collagen') || rawLabel.includes('كولاجين')) {
+		mainName = 'كولاجين';
+	}
+
+	// Determine tier packaging text
+	const rawTier = String(options.tier || '');
+	let tierText = `باقة 2 علب ${mainName}`;
+	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة')) {
+		tierText = `باقة 1 علبة ${mainName}`;
+	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
+		tierText = `باقة 3 علب ${mainName}`;
+	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
+		tierText = `باقة 2 علب ${mainName}`;
+	} else if (options.totalPrice === 199 || options.totalPrice === 298) {
+		tierText = `باقة 1 علبة ${mainName}`;
+	} else if (options.totalPrice === 349 || options.totalPrice === 448) {
+		tierText = `باقة 3 علب ${mainName}`;
+	}
+
+	// Determine upsell name
+	let upsellText = '';
+	if (hasUpsell) {
+		let upsellProduct = '';
+		if (Array.isArray(options.items)) {
+			const upItem = options.items.find(
+				(it: any) =>
+					it.isUpsell === true ||
+					(it.title &&
+						(it.title.includes('عرض') ||
+							it.title.includes('خاطف') ||
+							it.title.includes('أبسيل') ||
+							it.title.includes('سري')))
+			);
+			if (upItem) {
+				const upSku = String(upItem.sku || upItem.slug || upItem.title || '').toLowerCase();
+				if (upSku.includes('biotin') || upSku.includes('بيوتين')) upsellProduct = 'بيوتين';
+				else if (upSku.includes('vitam') || upSku.includes('فيتامين')) upsellProduct = 'مالتي فيتامين';
+				else if (upSku.includes('collagen') || upSku.includes('كولاجين')) upsellProduct = 'كولاجين';
+			}
+		}
+		if (!upsellProduct) {
+			upsellProduct = mainName === 'كولاجين' ? 'بيوتين' : 'كولاجين';
+		}
+		upsellText = ` + أبسيل ${upsellProduct} (99 DH)`;
+	}
+
+	const orderPart = options.orderId ? ` | ${options.orderId}` : '';
+	const custNote = options.customerNote && String(options.customerNote).trim() ? ` | ملاحظة: ${String(options.customerNote).trim()}` : '';
+
+	return `${tierText}${upsellText} | المجموع: ${options.totalPrice} DH${orderPart}${custNote}`;
+}
+
+/**
  * Builds SpaceSeller lead payload with pack mapping, SKU, dynamic totals, and confirmation notes
  */
 export function buildSpaceSellerLeadPayload(options: {

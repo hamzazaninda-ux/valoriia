@@ -6,6 +6,7 @@ import {
 	normalizeMoroccanPhone,
 	resolveSpaceSellerSku,
 	resolveSpaceSellerNote,
+	buildSpaceSellerConfirmationNote,
 	calculateOrderTotals
 } from '$lib/server/spaceseller';
 
@@ -80,14 +81,16 @@ export async function sendOrderToGoogleSheets(
 		}
 		order.sheetsSynced = true;
 
-		// Format exact timestamp in Casablanca time: DD/MM/YYYY HH:mm:ss (Col A)
-		const dateOrder = formatCasablancaDisplayDateTime(
+		// Format exact timestamp in Casablanca time: YYYY-MM-DD HH:mm:ss (Col A)
+		const dateOrder = formatCasablancaDateTime(
 			order.createdAt ? new Date(order.createdAt) : new Date()
 		);
 
 		const customerName = String(order.fullName || order.name || '').trim();
 		const rawPhone = String(order.phoneNumber || order.phone || '').trim();
 		const customerPhone = normalizeMoroccanPhone(rawPhone);
+		// Prepend ' so Google Sheets forces text format and preserves the leading zero (e.g. '0646466464)
+		const sheetPhone = customerPhone.startsWith('0') ? `'${customerPhone}` : `'0${customerPhone.replace(/^'+/, '')}`;
 
 		let rawItems = order.items;
 		if (typeof rawItems === 'string') {
@@ -122,15 +125,8 @@ export async function sendOrderToGoogleSheets(
 			});
 		}
 
-		// Col D (address): Empty string "" (or explicit address if customer actually provided one)
-		const rawAddr = String(order.address || order.city || '').trim();
-		const address =
-			rawAddr &&
-			rawAddr !== 'تحدد عند التأكيد' &&
-			rawAddr !== 'يُحدد عند التأكيد' &&
-			rawAddr !== 'تحدد عند الاتصال'
-				? rawAddr
-				: '';
+		// Col D (address placeholder): strictly "سيتم التأكيد عبر الهاتف" to prevent phone duplication
+		const addressPlaceholder = 'سيتم التأكيد عبر الهاتف';
 
 		// Col E (sku): Exact SKU code
 		// * If Collagen + Upsell: "pack-collagen-gummies-3"
@@ -147,7 +143,7 @@ export async function sendOrderToGoogleSheets(
 		// Col F (qte): 1 (integer: always 1 for packs and single base offers)
 		const qte = 1;
 
-		// Col G (price): Numeric total calculated price (e.g. 298 for Collagen + Upsell, 279 for base)
+		// Col G (price): Numeric total calculated price (e.g. 298 / 378 / 448 for Collagen + Upsell, 279 for base)
 		const { totalPrice: calculatedTotal } = calculateOrderTotals({
 			tier: order.tier,
 			items: itemsList,
@@ -156,35 +152,30 @@ export async function sendOrderToGoogleSheets(
 		});
 		const totalPrice = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
 
-		// Col H (note): Order ID + Arabic Title / Upsell breakdown
-		// Format: "NV-815421 | عرض كولاجين + أبسيل (99 DH)" or "NV-815421 | NOVAVITA كولاجين..."
-		const upsellNote = resolveSpaceSellerNote({
+		// Col H (note): Full confirmation note with tier, upsell, total price and order ID
+		// Format: "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421"
+		const confirmationNote = buildSpaceSellerConfirmationNote({
+			orderId,
+			tier: order.tier,
 			mainSku: order.sku || order.mainSku,
 			productLabel,
 			items: itemsList,
 			hasUpsell: Boolean(order.hasUpsell),
-			tier: order.tier
+			totalPrice,
+			customerNote: order.notes
 		});
-		const noteDetails = order.hasUpsell
-			? upsellNote
-			: (productLabel && productLabel !== 'NOVAVITA Gummies' ? productLabel : upsellNote);
-		const orderNotesPart = order.notes && String(order.notes).trim() ? ` | ${String(order.notes).trim()}` : '';
-		const orderIdNotes = orderId ? `${orderId} | ${noteDetails}${orderNotesPart}` : `${noteDetails}${orderNotesPart}`;
-
-		// Col I (delivery_note): "الدفع عند الاستلام"
-		const deliveryNote = 'الدفع عند الاستلام';
 
 		// Mandatory 9-column array strictly aligned from Column A to Column I
 		const row = [
-			dateOrder,     // Col A: date_order (e.g. "15/10/2026 14:51:48")
-			customerName,  // Col B: full_name (e.g. "Test") — NOT the order ID!
-			customerPhone, // Col C: phone (e.g. "0646466464")
-			address,       // Col D: address (leave empty string "" or placeholder)
-			exactSku,      // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
-			1,             // Col F: quantity (always 1)
-			totalPrice,    // Col G: numeric total price (e.g. 279 or 298)
-			orderIdNotes,  // Col H: Order ID + notes (e.g. "NV-815421 | عرض كولاجين + أبسيل")
-			deliveryNote   // Col I: delivery note ("الدفع عند الاستلام")
+			dateOrder,          // Col A: date_order (e.g. "2026-10-15 14:18:37")
+			customerName,       // Col B: full_name (e.g. "Test")
+			sheetPhone,         // Col C: phone (e.g. "'0646466464" - preserves leading 0)
+			addressPlaceholder, // Col D: address ("سيتم التأكيد عبر الهاتف")
+			exactSku,           // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
+			1,                  // Col F: quantity (always 1)
+			totalPrice,         // Col G: numeric total price (e.g. 448)
+			confirmationNote,   // Col H: Confirmation note (e.g. "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421")
+			confirmationNote    // Col I: delivery note / confirmation
 		];
 
 		const sheetsPayload = {
@@ -196,52 +187,65 @@ export async function sendOrderToGoogleSheets(
 			// 2. SpaceSeller exact 9 named keys
 			date_order: dateOrder,
 			full_name: customerName,
-			phone: customerPhone,
-			address,
+			phone: addressPlaceholder, // CRITICAL: Sets phone to placeholder so legacy Apps Script doesn't write phone to Col D!
+			customer_phone: sheetPhone,
+			client_phone: sheetPhone,
+			address: addressPlaceholder,
 			sku: exactSku,
 			qte: 1,
 			price: totalPrice,
-			note: orderIdNotes,
-			delivery_note: deliveryNote,
+			note: confirmationNote,
+			delivery_note: confirmationNote,
 
-			// 3. Dual-compatibility positional mappings for legacy Google Apps Script:
-			// If legacy script maps Col B to data.orderId -> provide customerName!
+			// 3. Positional mappings for legacy Google Apps Script:
+			// Col A: date
+			date: dateOrder,
+			orderDate: dateOrder,
+
+			// Col B: Apps Script reads data.orderId / data.id -> provide customerName
 			orderId: customerName,
 			id: customerName,
 
-			// If legacy script maps Col C to data.name / data.fullName -> provide customerPhone!
-			name: customerPhone,
-			fullName: customerPhone,
+			// Col C: Apps Script reads data.name / data.fullName -> provide sheetPhone (with ' prefix)
+			name: sheetPhone,
+			fullName: sheetPhone,
 
-			// If legacy script maps Col D to data.phone / data.phoneNumber -> provide address ("")!
-			phoneNumber: address,
+			// Col D: Apps Script reads data.phone / data.phoneNumber / data.address -> MUST BE addressPlaceholder!
+			phoneNumber: addressPlaceholder,
 
-			// If legacy script maps Col E to data.product / data.productTitle -> provide exactSku!
+			// Col E: Apps Script reads data.product / data.productTitle / data.sku -> provide exactSku
 			product: exactSku,
 			productTitle: exactSku,
 			selectedOfferTitle: exactSku,
 
-			// If legacy script maps Col F to data.quantity -> provide 1!
+			// Col F: Apps Script reads data.quantity / data.qte -> provide 1
 			quantity: 1,
 
-			// If legacy script maps Col G to data.total / data.totalPrice -> provide totalPrice!
+			// Col G: Apps Script reads data.total / data.totalPrice / data.price -> provide totalPrice
 			total: totalPrice,
 			totalPrice: totalPrice,
 
-			// If legacy script maps Col H to data.notes / data.note -> provide orderIdNotes!
-			notes: orderIdNotes,
+			// Col H: Populate ALL candidate keys (status, city, notes, comment, etc.) with confirmationNote!
+			notes: confirmationNote,
+			status: confirmationNote,
+			city: confirmationNote,
+			comment: confirmationNote,
+			comments: confirmationNote,
+			order_note: confirmationNote,
+			note_order: confirmationNote,
+			details: confirmationNote,
 
 			// 4. Safe internal metadata (preserved for debugging / audits)
 			realOrderId: orderId,
 			actualOrderId: orderId,
 			actualFullName: customerName,
 			actualPhone: customerPhone,
+			actualPhoneWithPrefix: sheetPhone,
 			marketingProductTitle: productLabel,
 			items: itemsList,
 			pack_slug: exactSku.startsWith('pack-') ? exactSku : undefined,
 			pack_id: exactSku === 'pack-collagen-gummies-3' ? 3498 : undefined,
-			hasUpsell: Boolean(order.hasUpsell),
-			status: 'طلب جديد - في انتظار التأكيد'
+			hasUpsell: Boolean(order.hasUpsell)
 		};
 
 		console.log('📦 Sent Sheets Payload (9-column SpaceSeller aligned):', sheetsPayload);
