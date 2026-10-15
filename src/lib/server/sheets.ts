@@ -157,8 +157,8 @@ export async function sendOrderToGoogleSheets(
 			customerNote: order.notes
 		});
 
-		// Col E (sku): Direct catalog SKU (always gummies_collagen, gummies_biotine, gumies_vitamine)
-		// Never send pack-collagen-gummies-3 to avoid SpaceSeller catalog price/bundle overrides!
+		// Col E (sku): Direct base catalog SKU (gummies_collagen, gumies-vitamine, gummies_melato, gummies_biotine)
+		// Never send pack slugs to avoid SpaceSeller catalog price/bundle overrides!
 		const exactSku = resolveSpaceSellerSku({
 			mainSku: order.sku || order.mainSku,
 			productLabel,
@@ -273,7 +273,8 @@ export async function sendOrderToGoogleSheets(
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(sheetsPayload),
-			redirect: 'follow'
+			redirect: 'follow',
+			signal: AbortSignal.timeout(10000)
 		});
 
 		console.log('✅ Google Sheets Sync Response:', sheetsRes.status);

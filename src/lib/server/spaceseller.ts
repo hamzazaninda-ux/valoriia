@@ -229,10 +229,11 @@ export function formatCasablancaDateTime(date: Date = new Date()): string {
 
 /**
  * Resolves the exact SpaceSeller 9-column schema SKU (Column E)
- * Always returns direct catalog SKU to prevent SpaceSeller bundle price overrides:
- * - Collagen: "gummies_collagen"
- * - Biotine: "gummies_biotine"
- * - Multivitamins: "gumies_vitamine"
+ * Always returns direct base catalog SKU to prevent SpaceSeller bundle price overrides:
+ * - Collagen Gummies: "gummies_collagen"
+ * - Multivitamine Gummies: "gumies-vitamine" (Note the hyphen and single 'm')
+ * - Melatonin Sleep Gummies: "gummies_melato"
+ * - Biotine Gummies: "gummies_biotine"
  */
 export function resolveSpaceSellerSku(options: {
 	mainSku?: string;
@@ -243,25 +244,59 @@ export function resolveSpaceSellerSku(options: {
 	const rawSku = String(options.mainSku || '').toLowerCase();
 	const label = String(options.productLabel || '').toLowerCase();
 
-	if (rawSku.includes('biotin') || label.includes('biotin') || label.includes('بيوتين')) {
-		return 'gummies_biotine';
+	if (
+		rawSku.includes('melato') ||
+		rawSku.includes('sleep') ||
+		label.includes('melato') ||
+		label.includes('ميلاتونين') ||
+		label.includes('نوم')
+	) {
+		return 'gummies_melato';
 	}
 
 	if (
 		rawSku.includes('vitam') ||
+		rawSku.includes('gumies') ||
 		label.includes('vitam') ||
 		label.includes('فيتامين') ||
 		label.includes('multivit')
 	) {
-		return 'gumies_vitamine';
+		return 'gumies-vitamine';
+	}
+
+	if (rawSku.includes('biotin') || label.includes('biotin') || label.includes('بيوتين')) {
+		return 'gummies_biotine';
+	}
+
+	if (rawSku.includes('collagen') || label.includes('collagen') || label.includes('كولاجين')) {
+		return 'gummies_collagen';
 	}
 
 	if (Array.isArray(options.items)) {
 		for (const it of options.items) {
 			const itSku = String(it.sku || it.slug || '').toLowerCase();
 			const itTitle = String(it.title || '').toLowerCase();
-			if (itSku.includes('biotin') || itTitle.includes('بيوتين')) return 'gummies_biotine';
-			if (itSku.includes('vitam') || itTitle.includes('فيتامين')) return 'gumies_vitamine';
+			if (
+				itSku.includes('melato') ||
+				itSku.includes('sleep') ||
+				itTitle.includes('melato') ||
+				itTitle.includes('ميلاتونين') ||
+				itTitle.includes('نوم')
+			) {
+				return 'gummies_melato';
+			}
+			if (
+				itSku.includes('vitam') ||
+				itSku.includes('gumies') ||
+				itTitle.includes('vitam') ||
+				itTitle.includes('فيتامين') ||
+				itTitle.includes('multivit')
+			) {
+				return 'gumies-vitamine';
+			}
+			if (itSku.includes('biotin') || itTitle.includes('بيوتين')) {
+				return 'gummies_biotine';
+			}
 			if (itSku.includes('collagen') || itTitle.includes('كولاجين')) {
 				return 'gummies_collagen';
 			}
@@ -315,6 +350,7 @@ export function resolveSpaceSellerNote(options: {
  */
 export function resolveProductArabicName(skuOrSlugOrTitle?: string): string {
 	const norm = String(skuOrSlugOrTitle || '').toLowerCase().trim();
+	if (norm.includes('melato') || norm.includes('ميلاتونين') || norm.includes('نوم')) return 'ميلاتونين';
 	if (norm.includes('biotin') || norm.includes('بيوتين')) return 'بيوتين';
 	if (norm.includes('vitam') || norm.includes('فيتامين') || norm.includes('multivit')) return 'مالتي فيتامين';
 	if (norm.includes('collagen') || norm.includes('كولاجين')) return 'كولاجين';
