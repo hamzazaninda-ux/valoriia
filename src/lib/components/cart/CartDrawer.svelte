@@ -178,6 +178,19 @@
 		try {
 			const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
 			const upsells = cart.getUpsellItems();
+			const activeUpsell = upsells[0];
+
+			let upsellName = '';
+			if (activeUpsell) {
+				const uSku = (activeUpsell.sku || activeUpsell.slug || '').toLowerCase();
+				if (uSku.includes('biotin') || activeUpsell.title.includes('بيوتين')) {
+					upsellName = 'بيوتين (Biotine)';
+				} else if (uSku.includes('vitam') || activeUpsell.title.includes('فيتامين') || uSku.includes('multivit')) {
+					upsellName = 'مالتي فيتامين (Multivitamines)';
+				} else if (uSku.includes('collagen') || activeUpsell.title.includes('كولاجين')) {
+					upsellName = 'كولاجين (Collagène)';
+				}
+			}
 
 			const items = cart.lines.map((l) => ({
 				sku: l.sku,
@@ -190,6 +203,9 @@
 			}));
 
 			const mainTier = mainItem?.tier || (cart.count > 1 ? 'tier_2' : 'tier_1');
+			const baseTierBottles = mainTier === 'tier_1' ? 1 : mainTier === 'tier_3' ? 3 : 2;
+			const totalBottles = baseTierBottles + (upsells.length > 0 ? upsells.length : 0);
+
 			const fullProductLabel = buildOrderFulfillmentLabel({
 				tier: mainTier,
 				mainSku: mainItem?.sku || mainItem?.slug,
@@ -214,6 +230,15 @@
 				city: 'تحدد عند التأكيد',
 				address: '',
 				tier: mainTier,
+				baseTier: mainTier,
+				baseBottles: baseTierBottles,
+				tierName: mainTier === 'tier_1' ? 'علبة واحدة (1 علبة)' : mainTier === 'tier_3' ? '3 علب (كورس علاجي)' : 'علبتان (2 علب)',
+				upsellProduct: upsellName || undefined,
+				upsellName: upsellName || undefined,
+				upsellSku: activeUpsell?.sku,
+				totalBottles,
+				quantity: totalBottles,
+				qte: totalBottles,
 				product: fullProductLabel,
 				productTitle: fullProductLabel,
 				selectedOfferTitle: fullProductLabel,

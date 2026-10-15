@@ -6,6 +6,7 @@ import { sendOrderToGoogleSheets } from '$lib/server/sheets';
 import {
 	sendOrderToSpaceSeller,
 	buildSpaceSellerLeadPayload,
+	calculatePhysicalBottleCount,
 	type SpaceSellerLeadPayload
 } from '$lib/server/spaceseller';
 import { buildOrderFulfillmentLabel } from '$lib/data/products';
@@ -133,7 +134,13 @@ export const POST: RequestHandler = async ({ request }) => {
 			}));
 		}
 
-		const totalQuantity = items.reduce((sum: number, it: any) => sum + (Number(it.quantity) || 1), 0);
+		const physicalBottleCount = calculatePhysicalBottleCount({
+			tier,
+			items,
+			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell)),
+			rawTotal: total,
+			price: total
+		});
 		const productLabel = buildOrderFulfillmentLabel({
 			tier,
 			mainSku,
@@ -172,10 +179,13 @@ export const POST: RequestHandler = async ({ request }) => {
 			phone: cleanPhone,
 			city,
 			address,
+			tier,
+			baseTier: tier,
 			product: productLabel,
 			productTitle: productLabel,
 			selectedOfferTitle: productLabel,
-			quantity: totalQuantity,
+			quantity: physicalBottleCount,
+			qte: physicalBottleCount,
 			totalPrice: finalTotal,
 			total: finalTotal,
 			price: finalTotal,
@@ -193,13 +203,18 @@ export const POST: RequestHandler = async ({ request }) => {
 			sendOrderToSpaceSeller(spaceSellerPayload),
 			sendOrderToGoogleSheets({
 				...internalOrderPayload,
+				tier,
+				baseTier: tier,
 				product: productLabel,
 				productTitle: productLabel,
 				selectedOfferTitle: productLabel,
 				total: finalTotal,
 				totalPrice: finalTotal,
 				price: finalTotal,
-				items
+				items,
+				upsellProduct: body.upsellProduct || body.upsellName,
+				upsellName: body.upsellName || body.upsellProduct,
+				upsellSku: body.upsellSku
 			})
 		]);
 

@@ -318,8 +318,179 @@ export function resolveSpaceSellerNote(options: {
 }
 
 /**
+ * Resolves the clean Arabic name for a product:
+ * - 'كولاجين'
+ * - 'بيوتين'
+ * - 'مالتي فيتامين'
+ */
+export function resolveProductArabicName(skuOrSlugOrTitle?: string): string {
+	const norm = String(skuOrSlugOrTitle || '').toLowerCase().trim();
+	if (norm.includes('biotin') || norm.includes('بيوتين')) return 'بيوتين';
+	if (norm.includes('vitam') || norm.includes('فيتامين') || norm.includes('multivit')) return 'مالتي فيتامين';
+	if (norm.includes('collagen') || norm.includes('كولاجين')) return 'كولاجين';
+	return 'كولاجين';
+}
+
+/**
+ * Resolves the exact upsell product name for display:
+ * - 'بيوتين'
+ * - 'مالتي فيتامين'
+ * - 'كولاجين'
+ */
+export function resolveUpsellArabicName(options: {
+	upsellProduct?: string;
+	upsellName?: string;
+	upsellSku?: string;
+	mainSku?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+}): string {
+	if (options.upsellProduct) {
+		return resolveProductArabicName(options.upsellProduct);
+	}
+	if (options.upsellName) {
+		return resolveProductArabicName(options.upsellName);
+	}
+	if (options.upsellSku) {
+		return resolveProductArabicName(options.upsellSku);
+	}
+	if (Array.isArray(options.items)) {
+		const upItem = options.items.find(
+			(it: any) =>
+				it.isUpsell === true ||
+				(it.title &&
+					(it.title.includes('عرض') ||
+						it.title.includes('خاطف') ||
+						it.title.includes('أبسيل') ||
+						it.title.includes('سري')))
+		);
+		if (upItem) {
+			return resolveProductArabicName(upItem.sku || upItem.slug || upItem.title);
+		}
+	}
+	// Fallback based on base product
+	const baseName = resolveProductArabicName(options.mainSku);
+	return baseName === 'كولاجين' ? 'بيوتين' : 'كولاجين';
+}
+
+/**
+ * Calculates the TRUE total number of physical bottles in the order:
+ * - 1 bottle offer (199 DH) + Upsell (99 DH) -> qte = 2
+ * - 2 bottles offer (279 DH) + Upsell (99 DH) -> qte = 3
+ * - 3 bottles offer (349 DH) + Upsell (99 DH) -> qte = 4
+ * - Without upsell -> qte = 1, 2, or 3 according to selected tier
+ */
+export function calculatePhysicalBottleCount(options: {
+	tier?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+	rawTotal?: number;
+	price?: number;
+}): number {
+	let baseBottles = 2; // Default tier_2
+	const rawTier = String(options.tier || '').toLowerCase();
+	const hasUpsell = hasUpsellOrder(options);
+
+	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
+		baseBottles = 1;
+	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
+		baseBottles = 3;
+	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
+		baseBottles = 2;
+	} else {
+		const total = Number(options.rawTotal ?? options.price ?? 0);
+		if (total === 199 || total === 298) {
+			baseBottles = 1;
+		} else if (total === 279 || total === 378) {
+			baseBottles = 2;
+		} else if (total === 349 || total === 448) {
+			baseBottles = 3;
+		} else if (Array.isArray(options.items) && options.items.length > 0) {
+			const baseItems = options.items.filter((it: any) => !it.isUpsell);
+			const sumBaseQty = baseItems.reduce((acc: number, it: any) => acc + (Number(it.quantity || it.qty) || 1), 0);
+			if (sumBaseQty > 0) baseBottles = sumBaseQty;
+		}
+	}
+
+	let upsellBottles = 0;
+	if (Array.isArray(options.items)) {
+		const upsellItems = options.items.filter(
+			(it: any) =>
+				it.isUpsell === true ||
+				(it.title &&
+					(it.title.includes('عرض') ||
+						it.title.includes('خاطف') ||
+						it.title.includes('أبسيل') ||
+						it.title.includes('سري')))
+		);
+		if (upsellItems.length > 0) {
+			upsellBottles = upsellItems.reduce((acc: number, it: any) => acc + (Number(it.quantity || it.qty) || 1), 0);
+		} else if (hasUpsell) {
+			upsellBottles = 1;
+		}
+	} else if (hasUpsell) {
+		upsellBottles = 1;
+	}
+
+	return baseBottles + upsellBottles;
+}
+
+/**
+ * Builds the exact confirmation breakdown for Column D (address) and notes:
+ * Format when Upsell is added:
+ * "العرض: [X] علب [Base Product] + أبسيل: علبة [Exact Upsell Name] (+99 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
+ * Format without Upsell:
+ * "العرض: [X] علب [Base Product] (بدون أبسيل) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
+ */
+export function buildConfirmationBreakdown(options: {
+	orderId?: string;
+	tier?: string;
+	mainSku?: string;
+	productLabel?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+	upsellProduct?: string;
+	upsellName?: string;
+	upsellSku?: string;
+	totalPrice: number;
+	customerNote?: string;
+}): string {
+	const hasUpsell = hasUpsellOrder(options);
+	const baseName = resolveProductArabicName(options.mainSku || options.productLabel);
+
+	// Resolve tier bottle text: "1 علبة", "2 علب", "3 علب"
+	const rawTier = String(options.tier || '').toLowerCase();
+	let tierUnitText = '2 علب';
+	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
+		tierUnitText = '1 علبة';
+	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
+		tierUnitText = '3 علب';
+	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
+		tierUnitText = '2 علب';
+	} else if (options.totalPrice === 199 || options.totalPrice === 298) {
+		tierUnitText = '1 علبة';
+	} else if (options.totalPrice === 349 || options.totalPrice === 448) {
+		tierUnitText = '3 علب';
+	}
+
+	if (hasUpsell) {
+		const upsellName = resolveUpsellArabicName({
+			upsellProduct: options.upsellProduct,
+			upsellName: options.upsellName,
+			upsellSku: options.upsellSku,
+			mainSku: options.mainSku || options.productLabel,
+			items: options.items,
+			hasUpsell
+		});
+		return `العرض: ${tierUnitText} ${baseName} + أبسيل: علبة ${upsellName} (+99 DH) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
+	}
+
+	return `العرض: ${tierUnitText} ${baseName} (بدون أبسيل) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
+}
+
+/**
  * Builds the exact SpaceSeller confirmation note for Column H
- * Format: "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421"
+ * Format: "العرض: [X] علب [Base Product] + أبسيل: علبة [Exact Upsell Name] (+99 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
  */
 export function buildSpaceSellerConfirmationNote(options: {
 	orderId?: string;
@@ -328,69 +499,16 @@ export function buildSpaceSellerConfirmationNote(options: {
 	productLabel?: string;
 	items?: any[];
 	hasUpsell?: boolean;
+	upsellProduct?: string;
+	upsellName?: string;
+	upsellSku?: string;
 	totalPrice: number;
 	customerNote?: string;
 }): string {
-	const hasUpsell = hasUpsellOrder(options);
-
-	// Determine main product Arabic name
-	let mainName = 'كولاجين';
-	const rawSku = String(options.mainSku || '').toLowerCase();
-	const rawLabel = String(options.productLabel || '').toLowerCase();
-	if (rawSku.includes('biotin') || rawLabel.includes('بيوتين')) {
-		mainName = 'بيوتين';
-	} else if (rawSku.includes('vitam') || rawLabel.includes('فيتامين') || rawLabel.includes('multivit')) {
-		mainName = 'مالتي فيتامين';
-	} else if (rawSku.includes('collagen') || rawLabel.includes('كولاجين')) {
-		mainName = 'كولاجين';
-	}
-
-	// Determine tier packaging text
-	const rawTier = String(options.tier || '');
-	let tierText = `باقة 2 علب ${mainName}`;
-	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة')) {
-		tierText = `باقة 1 علبة ${mainName}`;
-	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
-		tierText = `باقة 3 علب ${mainName}`;
-	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
-		tierText = `باقة 2 علب ${mainName}`;
-	} else if (options.totalPrice === 199 || options.totalPrice === 298) {
-		tierText = `باقة 1 علبة ${mainName}`;
-	} else if (options.totalPrice === 349 || options.totalPrice === 448) {
-		tierText = `باقة 3 علب ${mainName}`;
-	}
-
-	// Determine upsell name
-	let upsellText = '';
-	if (hasUpsell) {
-		let upsellProduct = '';
-		if (Array.isArray(options.items)) {
-			const upItem = options.items.find(
-				(it: any) =>
-					it.isUpsell === true ||
-					(it.title &&
-						(it.title.includes('عرض') ||
-							it.title.includes('خاطف') ||
-							it.title.includes('أبسيل') ||
-							it.title.includes('سري')))
-			);
-			if (upItem) {
-				const upSku = String(upItem.sku || upItem.slug || upItem.title || '').toLowerCase();
-				if (upSku.includes('biotin') || upSku.includes('بيوتين')) upsellProduct = 'بيوتين';
-				else if (upSku.includes('vitam') || upSku.includes('فيتامين')) upsellProduct = 'مالتي فيتامين';
-				else if (upSku.includes('collagen') || upSku.includes('كولاجين')) upsellProduct = 'كولاجين';
-			}
-		}
-		if (!upsellProduct) {
-			upsellProduct = mainName === 'كولاجين' ? 'بيوتين' : 'كولاجين';
-		}
-		upsellText = ` + أبسيل ${upsellProduct} (99 DH)`;
-	}
-
-	const orderPart = options.orderId ? ` | ${options.orderId}` : '';
+	const breakdown = buildConfirmationBreakdown(options);
+	const orderPart = options.orderId ? ` [${options.orderId}]` : '';
 	const custNote = options.customerNote && String(options.customerNote).trim() ? ` | ملاحظة: ${String(options.customerNote).trim()}` : '';
-
-	return `${tierText}${upsellText} | المجموع: ${options.totalPrice} DH${orderPart}${custNote}`;
+	return `${breakdown}${orderPart}${custNote}`;
 }
 
 /**
@@ -433,16 +551,28 @@ export function buildSpaceSellerLeadPayload(options: {
 	let noteText: string;
 	let products: SpaceSellerProductItem[];
 
+	const breakdown = buildConfirmationBreakdown({
+		orderId: options.orderId,
+		tier: options.tier,
+		mainSku: options.mainSku,
+		productLabel: options.productLabel,
+		items: options.items,
+		hasUpsell,
+		upsellProduct: (options as any).upsellProduct,
+		upsellName: (options as any).upsellName,
+		upsellSku: (options as any).upsellSku,
+		totalPrice,
+		customerNote: options.customerNote
+	});
+
 	if (isCollagenUpsell) {
 		// Specific Collagen + Upsell Pack Mapping (ID: 3498, SKU: pack-collagen-gummies-3)
 		sku = SPACESELLER_COLLAGEN_UPSELL_PACK.sku;
 		packSlug = SPACESELLER_COLLAGEN_UPSELL_PACK.slug;
 		packId = SPACESELLER_COLLAGEN_UPSELL_PACK.id;
 
-		// Exact Arabic text detailing package, upsell, and total for confirmation team:
-		// "عرض كولاجين + أبسيل (99 DH) | باقة: pack-collagen-gummies-3 | المجموع: [TOTAL] DH"
-		noteText = `عرض كولاجين + أبسيل (99 DH) | باقة: ${SPACESELLER_COLLAGEN_UPSELL_PACK.slug} | المجموع: ${totalPrice} DH`;
-		if (options.orderId) {
+		noteText = breakdown;
+		if (options.orderId && !noteText.includes(options.orderId)) {
 			noteText += ` [طلب: ${options.orderId}]`;
 		}
 
@@ -465,8 +595,8 @@ export function buildSpaceSellerLeadPayload(options: {
 			(Array.isArray(options.items) && options.items[0]?.sku) ||
 			(isCollagen ? 'gummies_collagen' : 'gummies_biotine');
 
-		noteText = `طلب ${options.productLabel || 'NOVAVITA'} | المجموع: ${totalPrice} DH`;
-		if (options.orderId) {
+		noteText = breakdown;
+		if (options.orderId && !noteText.includes(options.orderId)) {
 			noteText += ` [طلب: ${options.orderId}]`;
 		}
 
@@ -491,15 +621,20 @@ export function buildSpaceSellerLeadPayload(options: {
 		}
 	}
 
-	if (options.customerNote && options.customerNote.trim()) {
+	if (options.customerNote && options.customerNote.trim() && !noteText.includes(options.customerNote.trim())) {
 		noteText += ` - ${options.customerNote.trim()}`;
 	}
+
+	const displayAddress =
+		!address || address === 'تحدد عند التأكيد' || address === 'سيتم التأكيد عبر الهاتف' || address === 'يُحدد عند التأكيد'
+			? breakdown
+			: `${breakdown} | ${address}`;
 
 	return {
 		name: cleanName,
 		phone: cleanPhone,
 		city,
-		address,
+		address: displayAddress,
 		note: noteText,
 		sku,
 		pack_slug: packSlug,

@@ -2,7 +2,11 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { saveOrder } from '$lib/content/orders';
 import { sendOrderToGoogleSheets } from '$lib/server/sheets';
-import { sendOrderToSpaceSeller, buildSpaceSellerLeadPayload } from '$lib/server/spaceseller';
+import {
+	sendOrderToSpaceSeller,
+	buildSpaceSellerLeadPayload,
+	calculatePhysicalBottleCount
+} from '$lib/server/spaceseller';
 import { buildOrderFulfillmentLabel } from '$lib/data/products';
 
 const GOOGLE_SHEETS_WEBHOOK =
@@ -38,8 +42,18 @@ export const POST: RequestHandler = async ({ request }) => {
 				if (Array.isArray(parsed)) items = parsed;
 			} catch {}
 		}
+
+		const tier = String(body.tier || body.baseTier || 'tier_2');
+		const physicalBottleCount = calculatePhysicalBottleCount({
+			tier,
+			items,
+			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell)),
+			rawTotal: Number(body.totalPrice ?? body.total ?? body.price ?? 279),
+			price: Number(body.totalPrice ?? body.total ?? body.price ?? 279)
+		});
+
 		const productLabel = buildOrderFulfillmentLabel({
-			tier: body.tier,
+			tier,
 			mainSku: body.mainSku || body.sku,
 			mainTitle: body.selectedOfferTitle || body.productTitle || body.product,
 			items,
@@ -48,6 +62,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		body.product = productLabel;
 		body.productTitle = productLabel;
 		body.selectedOfferTitle = productLabel;
+		body.tier = tier;
+		body.baseTier = tier;
+		body.quantity = physicalBottleCount;
+		body.qte = physicalBottleCount;
 
 		// Construct Space Seller Payload with pack mapping, SKU, dynamic totals, and confirmation notes
 		const spaceSellerPayload = buildSpaceSellerLeadPayload({
@@ -56,7 +74,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			city: body.city,
 			address: body.address,
 			orderId,
-			tier: body.tier,
+			tier,
 			mainSku: body.mainSku || body.sku,
 			productLabel,
 			items,

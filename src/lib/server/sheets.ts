@@ -7,6 +7,8 @@ import {
 	resolveSpaceSellerSku,
 	resolveSpaceSellerNote,
 	buildSpaceSellerConfirmationNote,
+	buildConfirmationBreakdown,
+	calculatePhysicalBottleCount,
 	calculateOrderTotals
 } from '$lib/server/spaceseller';
 
@@ -117,7 +119,7 @@ export async function sendOrderToGoogleSheets(
 			(order.hasUpsell && !productLabel.includes('(العرض الخاطف)'))
 		) {
 			productLabel = buildOrderFulfillmentLabel({
-				tier: order.tier,
+				tier: order.tier || order.baseTier,
 				mainSku: order.sku || order.mainSku,
 				mainTitle: productLabel,
 				items: itemsList,
@@ -125,8 +127,31 @@ export async function sendOrderToGoogleSheets(
 			});
 		}
 
-		// Col D (address placeholder): strictly "سيتم التأكيد عبر الهاتف" to prevent phone duplication
-		const addressPlaceholder = 'سيتم التأكيد عبر الهاتف';
+		// Col G (price): Numeric total calculated price (e.g. 298 / 378 / 448 for Collagen + Upsell, 279 for base)
+		const { totalPrice: calculatedTotal } = calculateOrderTotals({
+			tier: order.tier || order.baseTier,
+			items: itemsList,
+			hasUpsell: Boolean(order.hasUpsell),
+			rawTotal: Number(order.totalPrice ?? order.total ?? order.price ?? 0)
+		});
+		const totalPrice = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
+
+		// Col D (address): FULL confirmation breakdown for confirmation team
+		// Format with upsell: "العرض: [X] علب [Base Product] + أبسيل: علبة [Exact Upsell Name] (+99 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
+		// Format without upsell: "العرض: [X] علب [Base Product] (بدون أبسيل) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
+		const confirmationBreakdown = buildConfirmationBreakdown({
+			orderId,
+			tier: order.tier || order.baseTier,
+			mainSku: order.sku || order.mainSku,
+			productLabel,
+			items: itemsList,
+			hasUpsell: Boolean(order.hasUpsell),
+			upsellProduct: order.upsellProduct,
+			upsellName: order.upsellName,
+			upsellSku: order.upsellSku,
+			totalPrice,
+			customerNote: order.notes
+		});
 
 		// Col E (sku): Exact SKU code
 		// * If Collagen + Upsell: "pack-collagen-gummies-3"
@@ -140,42 +165,29 @@ export async function sendOrderToGoogleSheets(
 			hasUpsell: Boolean(order.hasUpsell)
 		});
 
-		// Col F (qte): 1 (integer: always 1 for packs and single base offers)
-		const qte = 1;
-
-		// Col G (price): Numeric total calculated price (e.g. 298 / 378 / 448 for Collagen + Upsell, 279 for base)
-		const { totalPrice: calculatedTotal } = calculateOrderTotals({
-			tier: order.tier,
+		// Col F (qte): TRUE physical bottle count in parcel (1, 2, 3, or 4 - NEVER hardcode 1)
+		const qte = calculatePhysicalBottleCount({
+			tier: order.tier || order.baseTier,
 			items: itemsList,
 			hasUpsell: Boolean(order.hasUpsell),
-			rawTotal: Number(order.totalPrice ?? order.total ?? order.price ?? 0)
+			rawTotal: totalPrice,
+			price: totalPrice
 		});
-		const totalPrice = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
 
-		// Col H (note): Full confirmation note with tier, upsell, total price and order ID
-		// Format: "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421"
-		const confirmationNote = buildSpaceSellerConfirmationNote({
-			orderId,
-			tier: order.tier,
-			mainSku: order.sku || order.mainSku,
-			productLabel,
-			items: itemsList,
-			hasUpsell: Boolean(order.hasUpsell),
-			totalPrice,
-			customerNote: order.notes
-		});
+		// Col H (note): Full confirmation note
+		const confirmationNote = confirmationBreakdown;
 
 		// Mandatory 9-column array strictly aligned from Column A to Column I
 		const row = [
-			dateOrder,          // Col A: date_order (e.g. "2026-10-15 14:18:37")
-			customerName,       // Col B: full_name (e.g. "Test")
-			sheetPhone,         // Col C: phone (e.g. "'0646466464" - preserves leading 0)
-			addressPlaceholder, // Col D: address ("سيتم التأكيد عبر الهاتف")
-			exactSku,           // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
-			1,                  // Col F: quantity (always 1)
-			totalPrice,         // Col G: numeric total price (e.g. 448)
-			confirmationNote,   // Col H: Confirmation note (e.g. "باقة 3 علب كولاجين + أبسيل بيوتين (99 DH) | المجموع: 448 DH | NV-815421")
-			confirmationNote    // Col I: delivery note / confirmation
+			dateOrder,              // Col A: date_order (e.g. "2026-10-15 14:18:37")
+			customerName,           // Col B: full_name (e.g. "Hamza")
+			sheetPhone,             // Col C: phone (e.g. "'0646466464" - preserves leading 0)
+			confirmationBreakdown,  // Col D: address (breakdown for confirmation team!)
+			exactSku,               // Col E: exact SKU code (e.g. "pack-collagen-gummies-3")
+			qte,                    // Col F: quantity (exact bottle count: 1, 2, 3, 4)
+			totalPrice,             // Col G: numeric total price (e.g. 378)
+			confirmationNote,       // Col H: Confirmation note
+			'الدفع عند الاستلام'     // Col I: delivery note / confirmation
 		];
 
 		const sheetsPayload = {
@@ -187,15 +199,15 @@ export async function sendOrderToGoogleSheets(
 			// 2. SpaceSeller exact 9 named keys
 			date_order: dateOrder,
 			full_name: customerName,
-			phone: addressPlaceholder, // CRITICAL: Sets phone to placeholder so legacy Apps Script doesn't write phone to Col D!
+			phone: confirmationBreakdown, // Maps to Column D in legacy Apps Script!
 			customer_phone: sheetPhone,
 			client_phone: sheetPhone,
-			address: addressPlaceholder,
+			address: confirmationBreakdown,
 			sku: exactSku,
-			qte: 1,
+			qte: qte,
 			price: totalPrice,
 			note: confirmationNote,
-			delivery_note: confirmationNote,
+			delivery_note: 'الدفع عند الاستلام',
 
 			// 3. Positional mappings for legacy Google Apps Script:
 			// Col A: date
@@ -210,22 +222,22 @@ export async function sendOrderToGoogleSheets(
 			name: sheetPhone,
 			fullName: sheetPhone,
 
-			// Col D: Apps Script reads data.phone / data.phoneNumber / data.address -> MUST BE addressPlaceholder!
-			phoneNumber: addressPlaceholder,
+			// Col D: Apps Script reads data.phone / data.phoneNumber / data.address -> provide confirmationBreakdown!
+			phoneNumber: confirmationBreakdown,
 
 			// Col E: Apps Script reads data.product / data.productTitle / data.sku -> provide exactSku
 			product: exactSku,
 			productTitle: exactSku,
 			selectedOfferTitle: exactSku,
 
-			// Col F: Apps Script reads data.quantity / data.qte -> provide 1
-			quantity: 1,
+			// Col F: Apps Script reads data.quantity / data.qte -> provide true bottle count
+			quantity: qte,
 
 			// Col G: Apps Script reads data.total / data.totalPrice / data.price -> provide totalPrice
 			total: totalPrice,
 			totalPrice: totalPrice,
 
-			// Col H: Populate ALL candidate keys (status, city, notes, comment, etc.) with confirmationNote!
+			// Col H: Candidate keys
 			notes: confirmationNote,
 			status: confirmationNote,
 			city: confirmationNote,
@@ -242,6 +254,8 @@ export async function sendOrderToGoogleSheets(
 			actualPhone: customerPhone,
 			actualPhoneWithPrefix: sheetPhone,
 			marketingProductTitle: productLabel,
+			confirmationBreakdown,
+			bottleCount: qte,
 			items: itemsList,
 			pack_slug: exactSku.startsWith('pack-') ? exactSku : undefined,
 			pack_id: exactSku === 'pack-collagen-gummies-3' ? 3498 : undefined,

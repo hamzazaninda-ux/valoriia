@@ -29,8 +29,8 @@
     
     var date_order    = rowValues ? rowValues[0] : (data.date_order || data.date || data.orderDate || new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }));
     var full_name     = rowValues ? rowValues[1] : (data.full_name || data.fullName || data.name || data.orderId || "");
-    var phone         = rowValues ? rowValues[2] : (data.phone || data.phoneNumber || "");
-    var address       = rowValues ? rowValues[3] : (data.address || "");
+    var phone         = rowValues ? rowValues[2] : (data.customer_phone || data.client_phone || data.actualPhoneWithPrefix || data.phone || "");
+    var address       = rowValues ? rowValues[3] : (data.address || data.confirmationBreakdown || data.phone || "");
     var sku           = rowValues ? rowValues[4] : (data.sku || data.product || "gummies_collagen");
     var qte           = rowValues ? rowValues[5] : (data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1));
     var price         = rowValues ? rowValues[6] : (data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 0)));

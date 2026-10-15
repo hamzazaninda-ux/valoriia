@@ -117,6 +117,21 @@
 				price: currentTier.price
 			};
 
+			const upsells = cart.getUpsellItems();
+			const activeUpsell = upsells[0];
+
+			let upsellName = '';
+			if (activeUpsell) {
+				const uSku = (activeUpsell.sku || activeUpsell.slug || '').toLowerCase();
+				if (uSku.includes('biotin') || activeUpsell.title.includes('بيوتين')) {
+					upsellName = 'بيوتين (Biotine)';
+				} else if (uSku.includes('vitam') || activeUpsell.title.includes('فيتامين') || uSku.includes('multivit')) {
+					upsellName = 'مالتي فيتامين (Multivitamines)';
+				} else if (uSku.includes('collagen') || activeUpsell.title.includes('كولاجين')) {
+					upsellName = 'كولاجين (Collagène)';
+				}
+			}
+
 			const items = cart.lines.map((l) => ({
 				sku: l.sku,
 				slug: l.slug,
@@ -127,12 +142,15 @@
 				isUpsell: Boolean(l.isUpsell)
 			}));
 
+			const baseTierBottles = selectedTier === 'tier_1' ? 1 : selectedTier === 'tier_3' ? 3 : 2;
+			const totalBottles = baseTierBottles + (upsells.length > 0 ? upsells.length : 0);
+
 			const fullProductLabel = buildOrderFulfillmentLabel({
 				tier: selectedTier,
 				mainSku: activeMain.sku,
 				mainTitle: activeMain.title,
 				items,
-				hasUpsell: cart.getUpsellItems().length > 0
+				hasUpsell: upsells.length > 0
 			});
 
 			const isCollagen =
@@ -140,7 +158,7 @@
 				((activeMain as any).slug || '').toLowerCase().includes('collagen') ||
 				(activeMain.title || '').toLowerCase().includes('كولاجين') ||
 				(activeMain.title || '').toLowerCase().includes('collagen');
-			const hasUpsell = cart.getUpsellItems().length > 0;
+			const hasUpsell = upsells.length > 0;
 			const isCollagenUpsell = isCollagen && hasUpsell;
 
 			const orderPayload = {
@@ -151,6 +169,15 @@
 				city: city.trim() || 'يُحدد عند التأكيد',
 				address: city.trim() || 'يُحدد عند التأكيد',
 				tier: selectedTier,
+				baseTier: selectedTier,
+				baseBottles: baseTierBottles,
+				tierName: selectedTier === 'tier_1' ? 'علبة واحدة (1 علبة)' : selectedTier === 'tier_3' ? '3 علب (كورس علاجي)' : 'علبتان (2 علب)',
+				upsellProduct: upsellName || undefined,
+				upsellName: upsellName || undefined,
+				upsellSku: activeUpsell?.sku,
+				totalBottles,
+				quantity: totalBottles,
+				qte: totalBottles,
 				items,
 				subtotal,
 				shipping: 0,

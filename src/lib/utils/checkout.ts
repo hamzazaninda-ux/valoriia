@@ -31,9 +31,27 @@ export function buildOrderPayload(
 			? `${parentOrderId}-U1`
 			: 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 
+	const mainLine = lines.find((l) => !l.isUpsell) || lines[0];
+	const upsells = lines.filter((l) => l.isUpsell);
+	const activeUpsell = upsells[0];
+
+	let upsellName = '';
+	if (activeUpsell) {
+		const uSku = (activeUpsell.sku || activeUpsell.slug || '').toLowerCase();
+		if (uSku.includes('biotin') || activeUpsell.title.includes('بيوتين')) {
+			upsellName = 'بيوتين (Biotine)';
+		} else if (uSku.includes('vitam') || activeUpsell.title.includes('فيتامين') || uSku.includes('multivit')) {
+			upsellName = 'مالتي فيتامين (Multivitamines)';
+		} else if (uSku.includes('collagen') || activeUpsell.title.includes('كولاجين')) {
+			upsellName = 'كولاجين (Collagène)';
+		}
+	}
+
 	const titles = lines.map((l) => `${l.qty}x ${l.title}${l.offerTitle ? ` (${l.offerTitle})` : ''}`);
 	const subtotal = lines.reduce((a, l) => a + l.qty * l.price, 0);
-	const totalQty = lines.reduce((a, l) => a + l.qty, 0);
+	const mainTier = mainLine?.tier || (subtotal === 199 || subtotal === 298 ? 'tier_1' : subtotal === 349 || subtotal === 448 ? 'tier_3' : 'tier_2');
+	const baseTierBottles = mainTier === 'tier_1' ? 1 : mainTier === 'tier_3' ? 3 : 2;
+	const physicalBottleCount = baseTierBottles + upsells.length;
 	const now = new Date();
 
 	const offerDetail = titles.join(' + ');
@@ -46,11 +64,20 @@ export function buildOrderPayload(
 		// City is collected on the confirmation call for popup orders.
 		address: customer.city?.trim() || 'يُحدد عند التأكيد',
 		city: customer.city?.trim() || 'يُحدد عند التأكيد',
+		tier: mainTier,
+		baseTier: mainTier,
+		baseBottles: baseTierBottles,
+		upsellProduct: upsellName || undefined,
+		upsellName: upsellName || undefined,
+		upsellSku: activeUpsell?.sku,
 		offer: offerDetail,
 		selectedOfferTitle: fullProductLabel,
 		price: subtotal,
-		quantity: totalQty,
-		qte: totalQty,
+		totalPrice: subtotal,
+		total: subtotal,
+		totalBottles: physicalBottleCount,
+		quantity: physicalBottleCount,
+		qte: physicalBottleCount,
 		sku: ctx.sku,
 		productTitle: fullProductLabel,
 		product: fullProductLabel,
