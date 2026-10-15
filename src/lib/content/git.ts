@@ -152,6 +152,8 @@ export async function gitWriteFile(
     return;
   }
 
+  const targetBranch = branch === 'main' ? (env.GITHUB_BRANCH || 'novavita') : branch;
+
   return withRetry(async () => {
     const ok = getOctokit();
 
@@ -161,7 +163,7 @@ export async function gitWriteFile(
         owner: env.GITHUB_OWNER,
         repo: env.GITHUB_REPO,
         path,
-        ref: branch
+        ref: targetBranch
       });
       if ('sha' in data) {
         sha = data.sha;
@@ -176,10 +178,10 @@ export async function gitWriteFile(
       path,
       message,
       content: Buffer.from(content, 'utf8').toString('base64'),
-      branch,
+      branch: targetBranch,
       sha
     });
-  }, `gitWriteFile(${branch}, ${path})`);
+  }, `gitWriteFile(${targetBranch}, ${path})`);
 }
 
 export async function gitEnsureBranch(branch: string, sourceBranch = 'main'): Promise<void> {
@@ -217,6 +219,8 @@ export async function gitDeleteFile(
   path: string,
   message: string
 ): Promise<boolean> {
+  const targetBranch = branch === 'main' ? (env.GITHUB_BRANCH || 'novavita') : branch;
+
   return withRetry(async () => {
     const ok = getOctokit();
     let data;
@@ -225,7 +229,7 @@ export async function gitDeleteFile(
         owner: env.GITHUB_OWNER,
         repo: env.GITHUB_REPO,
         path,
-        ref: branch
+        ref: targetBranch
       }));
     } catch (error) {
       if ((error as { status?: number }).status === 404) return false;
@@ -239,12 +243,12 @@ export async function gitDeleteFile(
         path,
         message,
         sha: data.sha,
-        branch
+        branch: targetBranch
       });
       return true;
     }
     return false;
-  }, `gitDeleteFile(${branch}, ${path})`);
+  }, `gitDeleteFile(${targetBranch}, ${path})`);
 }
 
 export async function gitListFiles(branch: string, path: string): Promise<string[]> {

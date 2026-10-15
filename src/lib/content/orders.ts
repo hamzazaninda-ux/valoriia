@@ -15,7 +15,7 @@ export async function readOrders(forceFresh = false): Promise<StoredOrder[]> {
   }
 
   try {
-    const raw = await gitReadFile('main', ORDERS_FILE_PATH);
+    const raw = await gitReadFile('novavita', ORDERS_FILE_PATH);
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
       // Sort newest first
@@ -78,7 +78,7 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
 
   try {
     await gitWriteFile(
-      'main',
+      'novavita',
       ORDERS_FILE_PATH,
       JSON.stringify(updatedList, null, 2),
       `feat(orders): add new order ${orderId}`
@@ -114,7 +114,7 @@ export async function updateOrderStatus(
 
   try {
     await gitWriteFile(
-      'main',
+      'novavita',
       ORDERS_FILE_PATH,
       JSON.stringify(currentOrders, null, 2),
       `fix(orders): update order ${orderId} status to ${status}`
@@ -138,7 +138,7 @@ export async function deleteOrder(orderId: string): Promise<boolean> {
 
   try {
     await gitWriteFile(
-      'main',
+      'novavita',
       ORDERS_FILE_PATH,
       JSON.stringify(filtered, null, 2),
       `fix(orders): delete order ${orderId}`
