@@ -57,12 +57,10 @@
 				? 'علبة واحدة • شهر تجريبي'
 				: tier.units === 2
 					? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
-					: '3 علب • كورس علاجي كامل 3 أشهر 🎁';
+					: '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
 
 			const cleanName = product.name.replace(/\s*\([^)]*\)/g, '').trim();
-			const displayTitle = tier.units === 2
-				? `${cleanName} + هدية 🎁`
-				: `${cleanName} (${bundleName})`;
+			const displayTitle = `${cleanName} (${bundleName})`;
 
 			cart.setMainItem({
 				slug: product.slug,
@@ -88,12 +86,10 @@
 			? 'علبة واحدة • شهر تجريبي'
 			: currentTier.units === 2
 				? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
-				: '3 علب • كورس علاجي كامل 3 أشهر 🎁';
+				: '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
 
 		const cleanName = product.name.replace(/\s*\([^)]*\)/g, '').trim();
-		const displayTitle = currentTier.units === 2
-			? `${cleanName} + هدية 🎁`
-			: `${cleanName} (${bundleName})`;
+		const displayTitle = `${cleanName} (${bundleName})`;
 
 		cart.setMainItem({
 			slug: product.slug,
@@ -395,7 +391,7 @@
 					>
 						<!-- Badge in top right above radio circle -->
 						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
-							<span>توفير 248 درهم 🎁</span>
+							<span>توفير 248 درهم</span>
 						</div>
 						<!-- Right: Radio circle + Title & details -->
 						<div class="flex items-center gap-3 text-right">
@@ -406,7 +402,7 @@
 							</div>
 							<div class="text-right">
 								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب • كورس علاجي كامل</div>
-								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر + هدية 🎁</div>
+								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر متواصلة + توصيل فابور 🚚</div>
 							</div>
 						</div>
 						<!-- Left: Price & savings -->

@@ -57,7 +57,7 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
     originalPrice: 597,
     savings: 248,
     title: 'باقة التحول الشامل (3 علب)',
-    subtitle: 'الروتين المتكامل لنتائج دائمة للشعر، البشرة والأظافر + هدايا مجانية',
+    subtitle: 'الروتين المتكامل لنتائج دائمة للشعر، البشرة والأظافر + توصيل فابور 🚚',
     shipping: 0,
     isFreeShipping: true,
     isPopular: false,

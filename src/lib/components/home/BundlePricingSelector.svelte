@@ -68,7 +68,7 @@
 		<!-- Section Header -->
 		<div class="text-center max-w-2xl mx-auto space-y-3">
 			<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-900/10 px-3.5 py-1 text-xs font-bold text-[#1B4332]">
-				🎁 عروض التوفير الحصرية بالمغرب
+				✨ عروض التوفير الحصرية بالمغرب
 			</span>
 			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332]">
 				اختاري باقتك المناسبة مع التوصيل المجاني
@@ -170,7 +170,7 @@
 					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (50 علكة) لكورس شهرين كامل</strong></li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
-					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 119 MAD</strong> مقارنة بالسعر الفردي</li>
 				</ul>
 			</button>
 
@@ -214,7 +214,7 @@
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 116 MAD للعلبة</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
-					<li class="flex items-center gap-2 text-[#E86A7C]"><span>🎁</span> هدية فرشاة مساج الفروة + هدية إضافية</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>أقصى توفير (248 MAD)</strong> لكورس متواصل</li>
 				</ul>
 			</button>
 

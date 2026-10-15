@@ -45,10 +45,17 @@
 		return PRODUCTS.filter((p) => p.sku !== mainSku);
 	});
 
+	function cleanItemTitle(title?: string): string {
+		return (title || '')
+			.replace(/\s*\+?\s*هدية\s*🎁?/g, '')
+			.replace(/\s*🎁/g, '')
+			.trim();
+	}
+
 	// Derived subtitle for main item in case not explicitly set
 	const mainItemSubtitle = $derived.by(() => {
-		if (mainItem?.subtitle) return mainItem.subtitle;
-		if (mainItem?.tier === 'tier_3') return '3 علب • كورس علاجي كامل 3 أشهر 🎁';
+		if (mainItem?.subtitle) return cleanItemTitle(mainItem.subtitle);
+		if (mainItem?.tier === 'tier_3') return '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
 		if (mainItem?.tier === 'tier_1') return 'علبة واحدة • شهر تجريبي';
 		return 'علبتان • شهرين متواصلين + توصيل فابور 🚚';
 	});
@@ -386,7 +393,7 @@
 									<div class="flex-1 text-right min-w-0">
 										<div class="flex items-start justify-between gap-2">
 											<h4 class="font-display font-bold text-xs sm:text-sm text-gray-900 leading-snug">
-												{mainItem.title}
+												{cleanItemTitle(mainItem.title)}
 											</h4>
 											<div class="font-display font-black text-xs sm:text-sm text-[#1B4332] shrink-0" dir="ltr">
 												DH {mainItem.price}
@@ -429,7 +436,7 @@
 											<div class="w-11 h-11 rounded-xl bg-[#FAF8F5] border border-stone-100 p-1 shrink-0 flex items-center justify-center overflow-hidden">
 												<img
 													src={up.image}
-													alt={up.title}
+													alt={cleanItemTitle(up.title)}
 													class="w-full h-full object-contain"
 												/>
 											</div>
@@ -437,7 +444,7 @@
 											<!-- Center: Title, Price -->
 											<div class="flex-1 text-right min-w-0">
 												<h4 class="font-display font-bold text-xs text-gray-900 leading-snug truncate">
-													{up.title}
+													{cleanItemTitle(up.title)}
 												</h4>
 												<div class="flex items-center gap-1.5 mt-0.5" dir="ltr">
 													<span class="font-display font-black text-xs text-[#E86A7C]">DH 99</span>
@@ -652,7 +659,7 @@
 								{#each checkoutOrderedItems as { item, isUpsell } (item.key)}
 									{@const meta = getProductMeta(item.sku)}
 									{@const upsellInfo = UPSELL_DETAILS[item.sku]}
-									{@const itemTitle = isUpsell ? (upsellInfo?.shortTitle || item.title) : item.title}
+									{@const itemTitle = isUpsell ? (upsellInfo?.shortTitle || cleanItemTitle(item.title)) : cleanItemTitle(item.title)}
 									{@const itemDesc = isUpsell ? upsellInfo?.benefitDescription : meta?.headline}
 
 									<div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-stone-200/90 shadow-2xs flex items-start gap-3">
@@ -693,7 +700,7 @@
 													</span>
 												{:else}
 													<span class="text-[10px] sm:text-[11px] font-bold text-[#E86A7C] bg-rose-50 px-2 py-0.5 rounded-md">
-														عرض سري مخفض 🎁
+														عرض سري مخفض
 													</span>
 												{/if}
 											</div>

@@ -38,10 +38,11 @@
 	function initDefaultCart() {
 		if (cart.lines.length === 0) {
 			const p = initialProduct;
+			const cleanName = p.name.replace(/\s*\([^)]*\)/g, '').trim();
 			cart.setMainItem({
 				slug: p.slug,
 				sku: p.sku,
-				title: `${p.name} (علبتان + هدية 🎁)`,
+				title: `${cleanName} (علبتان)`,
 				subtitle: 'علبتان • شهرين متواصلين + توصيل فابور 🚚',
 				image: p.image,
 				price: PRICING_TIERS.tier_2.price,
@@ -63,10 +64,10 @@
 				? 'علبة واحدة • شهر تجريبي'
 				: tier.units === 2
 					? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
-					: '3 علب • كورس علاجي كامل 3 أشهر 🎁';
+					: '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
 
 		const cleanName = p.name.replace(/\s*\([^)]*\)/g, '').trim();
-		const displayTitle = tier.units === 2 ? `${cleanName} + هدية 🎁` : `${cleanName} (${bundleName})`;
+		const displayTitle = `${cleanName} (${bundleName})`;
 
 		cart.setMainItem({
 			slug: p.slug,
@@ -340,10 +341,10 @@
 							الأكثر طلباً ⭐
 						</span>
 						<div class="flex items-center justify-between">
-							<span class="text-xs font-bold text-stone-900">علبتان + هدية 🎁</span>
+							<span class="text-xs font-bold text-stone-900">علبتان (شهرين متواصلين)</span>
 							<span class="text-xs font-black text-[#1B4332]" dir="ltr">249 MAD</span>
 						</div>
-						<span class="text-[11px] text-emerald-800 font-semibold mt-1">شهرين متواصلين</span>
+						<span class="text-[11px] text-emerald-800 font-semibold mt-1">توصيل فابور مجاني</span>
 					</button>
 
 					<!-- Tier 3 -->
@@ -356,7 +357,7 @@
 							<span class="text-xs font-bold text-stone-800">3 علب (كورس كامل)</span>
 							<span class="text-xs font-black text-[#1B4332]" dir="ltr">349 MAD</span>
 						</div>
-						<span class="text-[11px] text-stone-500 mt-1">كورس 3 أشهر + هدية</span>
+						<span class="text-[11px] text-stone-500 mt-1">كورس 3 أشهر متواصلة + توصيل فابور 🚚</span>
 					</button>
 				</div>
 			</div>

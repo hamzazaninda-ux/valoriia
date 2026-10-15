@@ -159,7 +159,7 @@
 					onclick={handleAccept}
 					class="w-full min-h-13 sm:min-h-14 rounded-2xl bg-[#1B4332] hover:bg-[#143427] active:scale-[0.98] font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-950/20 transition-all duration-300 flex items-center justify-center gap-2"
 				>
-					<span>نعم، ضيفيها لطلبي بـ 99 درهم فقط 🎁</span>
+					<span>نعم، ضيفيها لطلبي بـ 99 درهم فقط 🔥</span>
 					<span class="text-xl">←</span>
 				</button>
 
