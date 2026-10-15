@@ -136,23 +136,6 @@
     "notes": ""
   },
   {
-    "id": "NV-495050",
-    "createdAt": "2026-10-15T14:18:35.757Z",
-    "fullName": "Test",
-    "phone": "0646466464",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA كولاجين - باقة التحول الشامل (3 علب) + علبة بيوتين (العرض الخاطف)",
-    "quantity": 2,
-    "totalPrice": 448,
-    "status": "جديد",
-    "sku": "pack-collagen-gummies-3",
-    "pageUrl": "",
-    "orderType": "upsell",
-    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (3 علب)\",\"quantity\":1,\"unitPrice\":349,\"price\":349,\"isUpsell\":false},{\"sku\":\"gummies_biotine\",\"slug\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99,\"isUpsell\":true}]",
-    "notes": ""
-  },
-  {
     "id": "NV-212416",
     "createdAt": "2026-10-15T14:17:40.522Z",
     "fullName": "Test",
