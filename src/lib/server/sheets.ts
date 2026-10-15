@@ -1,5 +1,11 @@
 import { readSettings } from '$lib/content/settings';
 import { buildOrderFulfillmentLabel } from '$lib/data/products';
+import {
+	formatCasablancaDateTime,
+	resolveSpaceSellerSku,
+	resolveSpaceSellerNote,
+	calculateOrderTotals
+} from '$lib/server/spaceseller';
 
 export const DEFAULT_SHEETS_WEBHOOK_URL =
 	'https://script.google.com/macros/s/AKfycbw_IupQuynkwQCrYJNyYdbDhq3R_Ab1DoMkcknXZ9C9vRKYVzJefYKUKN9RSJKOjWWLhQ/exec';
@@ -72,11 +78,14 @@ export async function sendOrderToGoogleSheets(
 		}
 		order.sheetsSynced = true;
 
-		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const dateStr = order.date || order.orderDate || casablancaTime;
+		// Format exact timestamp in Casablanca time: YYYY-MM-DD HH:mm:ss (Col A)
+		const dateOrder = formatCasablancaDateTime(
+			order.createdAt ? new Date(order.createdAt) : new Date()
+		);
 
 		const fullName = String(order.fullName || order.name || '').trim();
-		const phone = String(order.phoneNumber || order.phone || '').trim();
+		const rawPhone = String(order.phoneNumber || order.phone || '').trim();
+		const phone = rawPhone.replace(/[\s\-\(\)]/g, '');
 
 		let rawItems = order.items;
 		if (typeof rawItems === 'string') {
@@ -111,43 +120,104 @@ export async function sendOrderToGoogleSheets(
 			});
 		}
 
-		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
-		const finalTotal = Number(order.totalPrice ?? order.total ?? order.price ?? 0);
+		// Col D (address): "سيتم التأكيد عبر الهاتف" (Placeholder to maintain column index)
+		const rawAddr = String(order.address || order.city || '').trim();
+		const address =
+			rawAddr &&
+			rawAddr !== 'تحدد عند التأكيد' &&
+			rawAddr !== 'يُحدد عند التأكيد' &&
+			rawAddr !== 'تحدد عند الاتصال'
+				? rawAddr
+				: 'سيتم التأكيد عبر الهاتف';
+
+		// Col E (sku): Exact SKU
+		// * If Collagen + Upsell: "pack-collagen-gummies-3"
+		// * If Collagen base offer: "gummies_collagen"
+		// * If Biotine base offer: "gummies_biotine"
+		// * If Multivitamins base offer: "gumies_vitamine"
+		const sku = resolveSpaceSellerSku({
+			mainSku: order.sku || order.mainSku,
+			productLabel,
+			items: itemsList,
+			hasUpsell: Boolean(order.hasUpsell)
+		});
+
+		// Col F (qte): 1 (integer: 1 for packs, or selected quantity)
+		const qte = sku.startsWith('pack-') ? 1 : Number(order.quantity ?? order.qte ?? 1) || 1;
+
+		// Col G (price): Numeric total calculated price (e.g. 298 for Collagen + Upsell)
+		const { totalPrice: calculatedTotal } = calculateOrderTotals({
+			tier: order.tier,
+			items: itemsList,
+			hasUpsell: Boolean(order.hasUpsell),
+			rawTotal: Number(order.totalPrice ?? order.total ?? order.price ?? 0)
+		});
+		const finalTotal = calculatedTotal || Number(order.totalPrice ?? order.total ?? order.price ?? 279);
+
+		// Col H (note): Confirmation note e.g. "عرض كولاجين + أبسيل (99 DH)"
+		const note = resolveSpaceSellerNote({
+			mainSku: order.sku || order.mainSku,
+			productLabel,
+			items: itemsList,
+			hasUpsell: Boolean(order.hasUpsell),
+			tier: order.tier
+		});
+
+		// Col I (delivery_note): "الدفع عند الاستلام"
+		const deliveryNote = 'الدفع عند الاستلام';
+
+		// Mandatory 9-column array strictly aligned from Column A to Column I
+		const row = [
+			dateOrder,    // Col A: date_order (YYYY-MM-DD HH:mm:ss)
+			fullName,     // Col B: full_name
+			phone,        // Col C: phone
+			address,      // Col D: address ("سيتم التأكيد عبر الهاتف")
+			sku,          // Col E: sku ("pack-collagen-gummies-3" or default)
+			qte,          // Col F: qte (1)
+			finalTotal,   // Col G: price (e.g. 298)
+			note,         // Col H: note ("عرض كولاجين + أبسيل (99 DH)")
+			deliveryNote  // Col I: delivery_note ("الدفع عند الاستلام")
+		];
 
 		const sheetsPayload = {
-			orderDate: dateStr,
-			date: dateStr,
+			// Exact 9-column SpaceSeller array (Col A to I)
+			row,
+			rowData: row,
+			values: row,
+
+			// SpaceSeller exact 9 named keys
+			date_order: dateOrder,
+			full_name: fullName,
+			phone,
+			address,
+			sku,
+			qte,
+			price: finalTotal,
+			note,
+			delivery_note: deliveryNote,
+
+			// Legacy fields for backward compatibility
+			orderDate: dateOrder,
+			date: dateOrder,
 			orderId,
 			id: orderId,
 			name: fullName,
-			fullName,
-			phone,
 			phoneNumber: phone,
 			product: productLabel,
 			productTitle: productLabel,
 			selectedOfferTitle: productLabel,
-			quantity,
-			qte: quantity,
+			quantity: qte,
 			total: finalTotal,
 			totalPrice: finalTotal,
-			price: finalTotal,
-			city: order.city || 'تحدد عند التأكيد',
-			address: order.address || '',
-			items: itemsList.map((it: any) => ({
-				sku: it.sku || 'gummies_collagen',
-				title: it.title || 'NOVAVITA علكة',
-				quantity: Number(it.quantity || it.qty || 1),
-				price: Number(it.price || it.unitPrice || 0),
-				isUpsell: Boolean(it.isUpsell || (it.title && (it.title.includes('عرض') || it.title.includes('خاطف'))))
-			})),
-			sku: order.sku,
-			pack_slug: order.pack_slug,
-			pack_id: order.pack_id,
-			hasUpsell: !!order.hasUpsell,
+			city: address,
+			items: itemsList,
+			pack_slug: sku.startsWith('pack-') ? sku : undefined,
+			pack_id: sku === 'pack-collagen-gummies-3' ? 3498 : undefined,
+			hasUpsell: Boolean(order.hasUpsell),
 			status: 'طلب جديد - في انتظار التأكيد'
 		};
 
-		console.log('📦 Sent Sheets Payload:', sheetsPayload);
+		console.log('📦 Sent Sheets Payload (9-column SpaceSeller aligned):', sheetsPayload);
 
 		const sheetsRes = await fetch(webhookUrl, {
 			method: 'POST',

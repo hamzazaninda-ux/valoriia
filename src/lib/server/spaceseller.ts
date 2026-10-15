@@ -170,6 +170,119 @@ export function calculateOrderTotals(options: {
 }
 
 /**
+ * Formats date strictly in Casablanca timezone as YYYY-MM-DD HH:mm:ss
+ */
+export function formatCasablancaDateTime(date: Date = new Date()): string {
+	try {
+		const parts = new Intl.DateTimeFormat('en-CA', {
+			timeZone: 'Africa/Casablanca',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false
+		}).formatToParts(date);
+
+		const getPart = (type: string) => parts.find((p) => p.type === type)?.value || '00';
+		return `${getPart('year')}-${getPart('month')}-${getPart('day')} ${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
+	} catch {
+		return date.toISOString().replace('T', ' ').substring(0, 19);
+	}
+}
+
+/**
+ * Resolves the exact SpaceSeller 9-column schema SKU (Column E)
+ * - If Collagen + Upsell: "pack-collagen-gummies-3"
+ * - If Collagen base offer: "gummies_collagen"
+ * - If Biotine base offer: "gummies_biotine"
+ * - If Multivitamins base offer: "gumies_vitamine"
+ */
+export function resolveSpaceSellerSku(options: {
+	mainSku?: string;
+	productLabel?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+}): string {
+	const hasUpsell = hasUpsellOrder(options);
+	const isCollagen = isCollagenOrder(options);
+
+	if (isCollagen && hasUpsell) {
+		return SPACESELLER_COLLAGEN_UPSELL_PACK.sku; // "pack-collagen-gummies-3"
+	}
+	if (isCollagen) {
+		return 'gummies_collagen';
+	}
+
+	const rawSku = String(options.mainSku || '').toLowerCase();
+	const label = String(options.productLabel || '').toLowerCase();
+
+	if (rawSku.includes('biotin') || label.includes('biotin') || label.includes('بيوتين')) {
+		return 'gummies_biotine';
+	}
+
+	if (
+		rawSku.includes('vitam') ||
+		label.includes('vitam') ||
+		label.includes('فيتامين') ||
+		label.includes('multivit')
+	) {
+		return 'gumies_vitamine';
+	}
+
+	if (Array.isArray(options.items)) {
+		for (const it of options.items) {
+			const itSku = String(it.sku || it.slug || '').toLowerCase();
+			const itTitle = String(it.title || '').toLowerCase();
+			if (itSku.includes('biotin') || itTitle.includes('بيوتين')) return 'gummies_biotine';
+			if (itSku.includes('vitam') || itTitle.includes('فيتامين')) return 'gumies_vitamine';
+			if (itSku.includes('collagen') || itTitle.includes('كولاجين')) {
+				return hasUpsell ? SPACESELLER_COLLAGEN_UPSELL_PACK.sku : 'gummies_collagen';
+			}
+		}
+	}
+
+	return 'gummies_collagen';
+}
+
+/**
+ * Resolves confirmation note for SpaceSeller 9-column sheet (Column H)
+ * e.g. "عرض كولاجين + أبسيل (99 DH)"
+ */
+export function resolveSpaceSellerNote(options: {
+	mainSku?: string;
+	productLabel?: string;
+	items?: any[];
+	hasUpsell?: boolean;
+	tier?: string;
+}): string {
+	const hasUpsell = hasUpsellOrder(options);
+	const isCollagen = isCollagenOrder(options);
+
+	if (isCollagen && hasUpsell) {
+		return 'عرض كولاجين + أبسيل (99 DH)';
+	}
+
+	const rawSku = String(options.mainSku || '').toLowerCase();
+	const label = String(options.productLabel || '').toLowerCase();
+
+	if (rawSku.includes('biotin') || label.includes('بيوتين')) {
+		return hasUpsell ? 'عرض بيوتين + أبسيل (99 DH)' : 'باقة علكات البيوتين';
+	}
+
+	if (rawSku.includes('vitam') || label.includes('فيتامين')) {
+		return hasUpsell ? 'عرض فيتامينات + أبسيل (99 DH)' : 'باقة علكات الفيتامينات';
+	}
+
+	if (isCollagen) {
+		return 'باقة علكات الكولاجين البحري';
+	}
+
+	return options.productLabel || 'طلب NOVAVITA';
+}
+
+/**
  * Builds SpaceSeller lead payload with pack mapping, SKU, dynamic totals, and confirmation notes
  */
 export function buildSpaceSellerLeadPayload(options: {
