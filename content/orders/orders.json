@@ -1,19 +1,19 @@
 [
   {
-    "id": "NV-693075",
-    "createdAt": "2026-10-14T23:24:40.058Z",
-    "fullName": "Test",
-    "phone": "0646466464",
+    "id": "NV-362205",
+    "createdAt": "2026-10-15T11:05:42.852Z",
+    "fullName": "ءخديجة العلوي",
+    "phone": "+212649318068",
     "city": "تحدد عند التأكيد",
     "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA - باقة الثنائي الأكثر طلباً (2 علب)",
-    "quantity": 1,
-    "totalPrice": 279,
+    "product": "NOVAVITA - باقة التجربة (1 علبة) + علبة العرض الخاطف",
+    "quantity": 2,
+    "totalPrice": 298,
     "status": "جديد",
     "sku": "gummies_collagen",
     "pageUrl": "",
-    "orderType": "direct",
-    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري + هدية 🎁\",\"quantity\":1,\"unitPrice\":279,\"price\":279}]",
+    "orderType": "upsell",
+    "items": "[{\"sku\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبة واحدة)\",\"quantity\":1,\"unitPrice\":199,\"price\":199},{\"sku\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك (Biotin Gummies) (عرض سري حصري)\",\"quantity\":1,\"unitPrice\":99,\"price\":99}]",
     "notes": ""
   },
   {
