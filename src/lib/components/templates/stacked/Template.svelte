@@ -623,9 +623,17 @@
 						<div class="flex flex-col gap-2 pt-1">
 							{#each offersList as offer}
 								<label
-									class="w-full flex flex-row items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-150 select-none {currentPackId === offer.id ? 'border-2 border-emerald-600 bg-emerald-50/40' : 'border border-gray-300 bg-white'}"
+									class="w-full grid items-center gap-2.5 p-3 rounded-xl cursor-pointer transition-all duration-150 select-none {offer.id === 2 ? 'relative mt-4' : 'relative'} {currentPackId === offer.id ? 'border-2 border-emerald-600 bg-emerald-50/40' : 'border border-gray-300 bg-white'}"
+									style="grid-template-columns: 56px 1fr auto;"
 									dir="rtl"
 								>
+									<!-- Floating Pill Badge on Top of Offer 2 -->
+									{#if offer.id === 2}
+										<span class="absolute -top-3 right-4 bg-amber-400 text-amber-950 text-[11px] font-extrabold px-3 py-0.5 rounded-full shadow-sm z-10 flex items-center gap-1 whitespace-nowrap">
+											الأكثر طلباً ⭐
+										</span>
+									{/if}
+
 									<input
 										type="radio"
 										name="selectedPack-stacked"
@@ -637,32 +645,31 @@
 										class="sr-only"
 									/>
 
-									<!-- 1. Rightmost Element (Start of RTL Flex Row): Product Thumbnail Image -->
-									{#if offer.image}
-										<div class="w-14 h-14 rounded-md overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs mr-0">
+									<!-- Column 1 (Right - Image): 56px -->
+									<div class="w-14 h-14 rounded-lg overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
+										{#if offer.image}
 											<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
-										</div>
-									{/if}
+										{:else}
+											<div class="w-full h-full flex items-center justify-center text-neutral-400">🎁</div>
+										{/if}
+									</div>
 
-									<!-- 2. Middle Section (Main Content - flex-1 min-w-0 text-right pr-2.5 pl-1) -->
-									<div class="flex-1 min-w-0 text-right pr-2.5 pl-1">
+									<!-- Column 2 (Middle - Title & Single Badge) -->
+									<div class="min-w-0 text-right pr-1">
 										{#if offer.id === 2}
-											<span class="block text-sm font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+											<span class="block text-[13px] sm:text-sm font-extrabold text-gray-900 leading-snug break-words">
 												2 قطع + رشاشين هدية 🎁
 											</span>
-											<div class="flex items-center gap-1.5 mt-1">
-												<span class="bg-orange-500 text-white text-[11px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
-													الأكثر طلباً 🔥
-												</span>
-												<span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+											<div class="mt-1.5">
+												<span class="inline-block bg-emerald-100 text-emerald-800 border border-emerald-300 text-[11px] font-bold px-2.5 py-0.5 rounded whitespace-nowrap">
 													وفّر 109 درهم
 												</span>
 											</div>
 										{:else}
-											<span class="block text-sm font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+											<span class="block text-[13px] sm:text-sm font-extrabold text-gray-900 leading-snug break-words">
 												1 قطعة + رشاشة هدية 🎁
 											</span>
-											<div class="mt-1">
+											<div class="mt-1.5">
 												<span class="inline-block bg-sky-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded whitespace-nowrap">
 													توصيل مجاني
 												</span>
@@ -670,20 +677,20 @@
 										{/if}
 									</div>
 
-									<!-- 3. Leftmost Element (Clean Compact Price on Far Left) -->
-									<div class="flex flex-col items-end justify-center shrink-0 text-left">
+									<!-- Column 3 (Left - Price): Protected with subtle divider and padding -->
+									<div class="flex flex-col items-end justify-center shrink-0 pl-1 border-r border-gray-100 pr-2.5 text-left">
 										{#if offer.id === 2}
-											<span class="text-xs text-gray-400 line-through leading-none mb-1">
+											<span class="text-[11px] text-gray-400 line-through leading-none mb-1 whitespace-nowrap">
 												458 درهم
 											</span>
-											<span class="text-base font-extrabold text-emerald-700 leading-none whitespace-nowrap">
+											<span class="text-[15px] sm:text-base font-black text-emerald-700 leading-none whitespace-nowrap">
 												349 درهم
 											</span>
 										{:else}
-											<span class="text-xs text-gray-400 line-through leading-none mb-1">
+											<span class="text-[11px] text-gray-400 line-through leading-none mb-1 whitespace-nowrap">
 												299 درهم
 											</span>
-											<span class="text-base font-extrabold text-gray-900 leading-none whitespace-nowrap">
+											<span class="text-[15px] sm:text-base font-black text-gray-900 leading-none whitespace-nowrap">
 												229 درهم
 											</span>
 										{/if}
