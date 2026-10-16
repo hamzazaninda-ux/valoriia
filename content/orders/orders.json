@@ -4,8 +4,8 @@
     "createdAt": "2026-10-16T19:39:25.765Z",
     "fullName": "hamza",
     "phone": "0635183899",
-    "city": "يُحدد بعد التأكيد",
-    "address": "يُحدد بعد التأكيد",
+    "city": "كازا",
+    "address": "كازا",
     "product": "2 منظمات الحمام + 2 رشاشات هدية 🎁",
     "quantity": 2,
     "totalPrice": 349,
@@ -14,7 +14,8 @@
     "pageUrl": "",
     "orderType": "direct",
     "items": "",
-    "notes": ""
+    "notes": "",
+    "updatedAt": "2026-10-16T19:52:05.683Z"
   },
   {
     "id": "ORD-645461",
