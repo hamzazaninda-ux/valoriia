@@ -384,41 +384,28 @@
 		}
 		const offersSection = document.getElementById('checkout-form') || document.getElementById('offers') || document.querySelector('[data-section="offers"]');
 		if (offersSection) {
-			offersSection.scrollIntoView({ behavior: 'smooth' });
-			setTimeout(() => {
-				const input = document.getElementById('order-fullName');
-				if (input) input.focus();
-			}, 300);
+			offersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 	}
 
 	onMount(() => {
-		const formTop = document.getElementById('checkout-form');
-		const formBottom = document.getElementById('checkout-form-bottom');
-
-		let topVisible = false;
-		let bottomVisible = false;
-
-		function updateVisibility() {
-			showStickyBtn = !topVisible && !bottomVisible;
-		}
+		const formElement = document.getElementById('checkout-form') || document.getElementById('offers');
 
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					if (entry.target.id === 'checkout-form') {
-						topVisible = entry.isIntersecting;
-					} else if (entry.target.id === 'checkout-form-bottom') {
-						bottomVisible = entry.isIntersecting;
+					if (entry.isIntersecting) {
+						showStickyBtn = false;
+					} else {
+						const rect = entry.target.getBoundingClientRect();
+						showStickyBtn = rect.top > 0;
 					}
 				}
-				updateVisibility();
 			},
-			{ threshold: 0.05 }
+			{ threshold: 0, rootMargin: '0px 0px 40px 0px' }
 		);
 
-		if (formTop) observer.observe(formTop);
-		if (formBottom) observer.observe(formBottom);
+		if (formElement) observer.observe(formElement);
 
 		return () => {
 			observer.disconnect();

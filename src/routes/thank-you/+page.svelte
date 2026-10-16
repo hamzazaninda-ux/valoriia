@@ -25,47 +25,6 @@
 	let newPhone = $state('');
 	let phoneUpdateSuccess = $state(false);
 
-	// Post-confirmation address state
-	let addressInput = $state('');
-	let isSavingAddress = $state(false);
-	let addressSaved = $state(false);
-	let savedAddressText = $state('');
-
-	async function saveAddress() {
-		if (!addressInput.trim() || !order?.orderId) return;
-		isSavingAddress = true;
-		try {
-			const res = await fetch('/api/checkout', {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					orderId: order.orderId,
-					address: addressInput.trim(),
-					city: addressInput.trim()
-				})
-			});
-			savedAddressText = addressInput.trim();
-			addressSaved = true;
-			if (order) {
-				order.address = addressInput.trim();
-				if (typeof localStorage !== 'undefined') {
-					localStorage.setItem('latestOrder', JSON.stringify(order));
-				}
-				if (typeof sessionStorage !== 'undefined') {
-					sessionStorage.setItem('latestOrder', JSON.stringify(order));
-					sessionStorage.setItem('lastCompletedOrder', JSON.stringify(order));
-				}
-			}
-		} catch (e) {
-			console.error('Failed to update address:', e);
-			savedAddressText = addressInput.trim();
-			addressSaved = true;
-			if (order) order.address = addressInput.trim();
-		} finally {
-			isSavingAddress = false;
-		}
-	}
-
 	// Time check: daytime (9:00 - 21:00) vs night
 	let isDaytime = $state(true);
 
@@ -133,11 +92,6 @@
 			paramTotal ||
 			349
 		);
-
-		if (address && address !== 'يُحدد بعد التأكيد' && address !== 'المغرب') {
-			addressSaved = true;
-			savedAddressText = address;
-		}
 
 		order = {
 			orderId: String(orderId),
@@ -258,6 +212,15 @@
 		setTimeout(() => { phoneUpdateSuccess = false; }, 4000);
 	}
 
+	const whatsappConfirmUrl = $derived.by(() => {
+		const orderId = order?.orderId || 'ORD-000000';
+		const fullName = order?.fullName || 'العميل';
+		const offer = order?.offer ? ` (${order.offer})` : '';
+		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
+		const msg = `سلام، أريد تأكيد طلبي رقم ${orderId} (${fullName}${offer})، هذا عنواني الكامل للتوصيل: `;
+		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+	});
+
 	const whatsappUrl = $derived.by(() => {
 		const orderId = order?.orderId || 'ORD-000000';
 		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
@@ -327,7 +290,7 @@
 			</button>
 		</div>
 
-		<!-- Post-Confirmation Address Step (Fast-Track Delivery) -->
+		<!-- Direct WhatsApp Confirmation Card (Fast-Track Delivery) -->
 		<div class="w-full rounded-2xl border-2 border-emerald-500/80 bg-white p-4 sm:p-5 mb-5 shadow-sm text-right">
 			<div class="flex items-start gap-3">
 				<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 text-xl border border-emerald-300">
@@ -337,40 +300,21 @@
 					<span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-black px-2.5 py-0.5 rounded-full mb-1.5">
 						خطوة اختيارية لتسريع التوصيل ⚡
 					</span>
-					<h3 class="text-xs sm:text-sm font-black text-neutral-900 leading-snug">
-						تم تسجيل طلبك بنجاح! يمكنك إضافة عنوانك أو مدينتك الآن لتسريع الشحن (اختياري أو يتصل بك فريقنا للتأكيد):
+					<h3 class="text-xs sm:text-sm font-black text-neutral-900 leading-snug mb-3">
+						تم تسجيل طلبك بنجاح! لتسريع الشحن، أرسل لنا عنوانك أو موقعك الآن عبر الواتساب:
 					</h3>
 
-					{#if addressSaved}
-						<div class="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 flex items-center gap-2">
-							<span class="text-emerald-700 font-black text-base">✓</span>
-							<p class="text-xs font-bold leading-relaxed">
-								تم حفظ عنوانك بنجاح: <span class="font-black text-emerald-950">{savedAddressText}</span>. سيتم تجهيز طلبيتك وشحنها مباشرة!
-							</p>
-						</div>
-					{:else}
-						<div class="mt-3 space-y-2">
-							<input
-								type="text"
-								bind:value={addressInput}
-								placeholder="المدينة والحي أو العنوان (مثال: الدار البيضاء، حي المعاريف...)"
-								class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-600 bg-neutral-50/60 text-right font-medium"
-							/>
-							<button
-								type="button"
-								onclick={saveAddress}
-								disabled={isSavingAddress || !addressInput.trim()}
-								class="w-full py-2.5 px-4 rounded-xl bg-[#15803D] hover:bg-[#166534] disabled:opacity-50 text-white font-black text-xs sm:text-sm shadow-sm active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
-							>
-								{#if isSavingAddress}
-									<span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-									<span>جاري الحفظ...</span>
-								{:else}
-									<span>حفظ العنوان لتسريع الشحن 🚀</span>
-								{/if}
-							</button>
-						</div>
-					{/if}
+					<a
+						href={whatsappConfirmUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="bg-[#25D366] hover:bg-[#1ebe5d] text-white font-extrabold py-3.5 px-6 rounded-xl w-full flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all text-xs sm:text-sm text-center"
+					>
+						<svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
+							<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+						</svg>
+						<span>أكد طلبك وأرسل عنوانك عبر واتساب 💬</span>
+					</a>
 				</div>
 			</div>
 		</div>

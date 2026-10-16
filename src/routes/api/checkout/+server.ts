@@ -81,26 +81,6 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
 		const updatedOrder = await updateOrderAddress(orderId, address, city);
 
-		// Non-blocking update webhook dispatch if webhook supports updateAddress action
-		try {
-			const webhookUrl = await getSheetsWebhookUrl(body.sheetsUrl);
-			if (webhookUrl) {
-				fetch(webhookUrl, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						action: 'updateAddress',
-						orderId,
-						id: orderId,
-						address,
-						city
-					})
-				}).catch((e) => console.warn('Sheets address update dispatch warning:', e));
-			}
-		} catch (e) {
-			console.warn('Sheets update warning:', e);
-		}
-
 		return json({ success: true, order: updatedOrder });
 	} catch (err) {
 		console.error('❌ Failed to update address:', err);
