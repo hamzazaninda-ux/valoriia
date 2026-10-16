@@ -600,30 +600,31 @@
 	</section>
 
 	<!-- Checkout form -->
-	<div id="checkout-form" class="px-2 sm:px-4 py-6">
+	<div id="checkout-form" class="px-1.5 sm:px-3 py-4 sm:py-6 w-full">
 		<div id="offers" data-section="offers" class="border border-border/60 shadow-lg rounded-3xl bg-white scroll-mt-6" dir="rtl">
 			<div class="h-1" style="background-color: var(--t-primary, #047857);"></div>
-			<div class="text-center pb-3 pt-5 select-none px-4">
-				<h2 class="text-2xl font-extrabold tracking-tight font-display">
+			<div class="text-center pb-2 pt-4 select-none px-3">
+				<h2 class="text-xl sm:text-2xl font-extrabold tracking-tight font-display">
 					{t.sections.orderForm.title}
 				</h2>
-				<p class="text-sm font-bold mt-2 px-2 leading-relaxed text-neutral-500">
+				<p class="text-xs sm:text-sm font-bold mt-1 px-1 leading-relaxed text-neutral-500">
 					عمّر الاستمارة وخلص ملي توصلك السلعة
 				</p>
 			</div>
 
-			<div class="px-2 sm:px-3.5 pb-5">
+			<div class="px-2 sm:px-3 pb-4">
 				<div class="space-y-4">
 					<!-- Offers Selection -->
-					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
+					<div class="space-y-2.5 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-3.5 pt-1">
+						<div class="grid grid-cols-1 gap-2.5 pt-1">
 							{#each offersList as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center justify-between gap-2 sm:gap-3 rounded-2xl border-2 p-3 sm:p-4 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-50/50 shadow-sm ring-1 ring-emerald-600/30' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+									class="relative flex w-full cursor-pointer items-center justify-between gap-2 sm:gap-2.5 rounded-2xl border-2 p-2.5 sm:py-2.5 sm:px-3 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-50/50 shadow-sm ring-1 ring-emerald-600/30' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+									dir="rtl"
 								>
 									<input
 										type="radio"
@@ -636,56 +637,67 @@
 										class="sr-only"
 									/>
 									{#if offer.id === 2 || offer.badge || offer.isPopular}
-										<span class="absolute -top-3 right-3 z-10 bg-amber-400 text-amber-950 font-black text-[11px] px-3 py-0.5 rounded-full shadow-xs border border-amber-500/30">
+										<span class="absolute -top-2.5 right-4 z-10 bg-amber-400 text-amber-950 font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm border border-amber-500/30">
 											الأكثر طلباً ⭐
 										</span>
 									{/if}
 
-									<!-- Right: Radio + Text Info -->
-									<div class="flex items-start gap-2.5 min-w-0 flex-1">
-										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all mt-0.5 {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-600' : 'border-neutral-300 bg-white'}">
+									<!-- 1. Right (Start): Radio button + Thumbnail Image -->
+									<div class="flex items-center gap-2 shrink-0">
+										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-600' : 'border-neutral-300 bg-white'}">
 											{#if currentPackId === offer.id}
 												<span class="h-2 w-2 rounded-full bg-white"></span>
 											{/if}
 										</span>
-										<div class="min-w-0 flex-1 text-right">
-											{#if offer.id === 2}
-												<span class="block text-xs sm:text-sm font-black text-neutral-900 leading-snug">2 منظمات الحمام + 2 رشاشات هدية 🎁</span>
-												<span class="block text-[11px] font-bold text-neutral-600 mt-0.5">(واحد لحمامك وواحد لحمام الضياف أو الكوزينة)</span>
-												<div class="flex items-center gap-1.5 flex-wrap mt-1.5">
-													<span class="text-[10px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">وفّر 109 درهم</span>
-													<span class="text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-md">(فقط بـ 174 درهم للواحد!)</span>
-												</div>
-												<span class="text-[11px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-													<span>🚚</span>
-													<span>توصيل مجاني لجميع المدن</span>
-												</span>
-											{:else}
-												<span class="block text-xs sm:text-sm font-black text-neutral-900 leading-snug">1 منظم الحمام + رشاش هدية 🎁</span>
-												<div class="flex items-center gap-1.5 flex-wrap mt-1.5">
-													<span class="text-[10px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">وفّر 70 درهم</span>
-												</div>
-												<span class="text-[11px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-													<span>🚚</span>
-													<span>توصيل مجاني لجميع المدن</span>
-												</span>
-											{/if}
-										</div>
+
+										{#if offer.image}
+											<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
+												<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
+											</div>
+										{/if}
 									</div>
 
-									<!-- Center: Offer Image Thumbnail (w-16 h-16 sm:w-20 sm:h-20) -->
-									{#if offer.image}
-										<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
-											<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
-										</div>
-									{/if}
+									<!-- 2. Middle: Title + Note + Badges Row (Horizontal Wrap) -->
+									<div class="flex-1 min-w-0 text-right">
+										{#if offer.id === 2}
+											<span class="block text-sm sm:text-base font-bold leading-snug text-gray-900">
+												2 منظمات الحمام + 2 رشاشات هدية 🎁
+											</span>
+											<span class="block text-[11px] sm:text-xs text-gray-600 leading-tight mt-0.5">
+												(واحد لحمامك وواحد لحمام الضياف أو الكوزينة)
+											</span>
+											<div class="flex flex-wrap items-center gap-1 mt-1">
+												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-emerald-800 bg-emerald-100 border border-emerald-200">
+													وفّر 109 درهم
+												</span>
+												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-amber-900 bg-amber-100 border border-amber-200">
+													174 درهم للواحد
+												</span>
+												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-sky-800 bg-sky-50 border border-sky-200">
+													🚚 توصيل مجاني
+												</span>
+											</div>
+										{:else}
+											<span class="block text-sm sm:text-base font-bold leading-snug text-gray-900">
+												1 منظم الحمام + رشاش هدية 🎁
+											</span>
+											<div class="flex flex-wrap items-center gap-1 mt-1">
+												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-emerald-800 bg-emerald-100 border border-emerald-200">
+													وفّر 70 درهم
+												</span>
+												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-sky-800 bg-sky-50 border border-sky-200">
+													🚚 توصيل مجاني
+												</span>
+											</div>
+										{/if}
+									</div>
 
-									<!-- Left: Price & Strikethrough (strictly RTL Arabic, no decimals, no dh) -->
-									<div class="shrink-0 text-left flex flex-col items-end justify-center ps-1">
-										<span class="block whitespace-nowrap text-sm sm:text-base font-black text-emerald-800 leading-tight">
+									<!-- 3. Left (End - Price Column): Compact vertical stack -->
+									<div class="flex flex-col items-end justify-center shrink-0 text-left pl-1">
+										<span class="block text-base sm:text-lg font-extrabold text-emerald-700 whitespace-nowrap">
 											{offer.id === 2 ? '349 درهم' : (offer.id === 1 ? '229 درهم' : `${offer.price} درهم`)}
 										</span>
-										<span class="text-xs text-neutral-400 line-through font-bold leading-tight mt-0.5">
+										<span class="text-xs text-gray-400 line-through whitespace-nowrap mt-0.5">
 											{offer.id === 2 ? '458 درهم' : (offer.id === 1 ? '299 درهم' : (offer.originalPrice ? `${offer.originalPrice} درهم` : ''))}
 										</span>
 									</div>
