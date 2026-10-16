@@ -1,37 +1,5 @@
 [
   {
-    "id": "NV-TEST-LABEL3",
-    "createdAt": "2026-10-15T11:54:24.178Z",
-    "fullName": "Test Verification Multi",
-    "phone": "0612345679",
-    "city": "يُحدد عند التأكيد",
-    "address": "",
-    "product": "طقم التنظيم المنزلي + هدية",
-    "quantity": 1,
-    "totalPrice": 378,
-    "status": "جديد",
-    "sku": "kit-tandim",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": [
-      {
-        "price": 279,
-        "title": "????? ????????? ??????",
-        "quantity": 2,
-        "isUpsell": false,
-        "sku": "gummies_collagen"
-      },
-      {
-        "price": 99,
-        "title": "????? ??????????? ????????",
-        "quantity": 1,
-        "isUpsell": true,
-        "sku": "gumies_vitamine"
-      }
-    ],
-    "notes": ""
-  },
-  {
     "id": "NV-TEST-LABEL2",
     "createdAt": "2026-10-15T11:54:14.859Z",
     "fullName": "Test Verification Multi",
