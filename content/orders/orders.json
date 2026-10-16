@@ -1,22 +1,5 @@
 [
   {
-    "id": "NV-TEST-LABEL",
-    "createdAt": "2026-10-15T11:53:33.281Z",
-    "fullName": "Test Verification",
-    "phone": "0612345678",
-    "city": "تحدد عند التأكيد",
-    "address": "تحدد عند التأكيد",
-    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)",
-    "quantity": 2,
-    "totalPrice": 298,
-    "status": "جديد",
-    "sku": "gummies_collagen",
-    "pageUrl": "",
-    "orderType": "upsell",
-    "items": "[{\"price\":199,\"title\":\"????? ????????? ??????\",\"quantity\":1,\"isUpsell\":false,\"sku\":\"gummies_collagen\"},{\"price\":99,\"title\":\"????? ???????? ??????\",\"quantity\":1,\"isUpsell\":true,\"sku\":\"gummies_biotine\"}]",
-    "notes": ""
-  },
-  {
     "id": "ORD-600716",
     "createdAt": "2026-10-10T10:13:47.134Z",
     "fullName": "Test",
