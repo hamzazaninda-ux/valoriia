@@ -22,7 +22,7 @@
 	const defaultOffers: ProductOffer[] = [
 		{
 			id: 1,
-			title: '1 منظم الحمام + رشاش هدية 🎁',
+			title: '1 قطعة + رشاشة هدية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 229,
 			originalPrice: 299,
@@ -33,12 +33,12 @@
 		},
 		{
 			id: 2,
-			title: '2 منظمات الحمام + 2 رشاشات هدية 🎁',
+			title: '2 قطع + رشاشين هدية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 349,
 			originalPrice: 458,
 			quantity: 2,
-			badge: 'الأكثر طلباً ⭐',
+			badge: 'الأكثر طلباً 🔥',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png',
 			isPopular: true
 		}
@@ -280,7 +280,7 @@
 			const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 			const price = Number(activeOffer?.price || 349);
 			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
-			const offerTitle = activeOffer?.title || (currentPackId === 2 ? '2 منظمات الحمام + 2 رشاشات هدية 🎁' : '1 منظم الحمام + رشاش هدية 🎁');
+			const offerTitle = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁');
 			const productTitle = content.title || 'طقم التنظيم المنزلي + هدية';
 
 			const payload = {
@@ -620,10 +620,10 @@
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-2.5 pt-1">
+						<div class="flex flex-col gap-2 pt-1">
 							{#each offersList as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center justify-between gap-2 sm:gap-2.5 rounded-2xl border-2 p-2.5 sm:py-2.5 sm:px-3 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-50/50 shadow-sm ring-1 ring-emerald-600/30' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+									class="w-full flex flex-row items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all duration-150 select-none {currentPackId === offer.id ? 'border-2 border-emerald-600 bg-emerald-50/40' : 'border border-gray-300 bg-white'}"
 									dir="rtl"
 								>
 									<input
@@ -636,70 +636,57 @@
 										}}
 										class="sr-only"
 									/>
-									{#if offer.id === 2 || offer.badge || offer.isPopular}
-										<span class="absolute -top-2.5 right-4 z-10 bg-amber-400 text-amber-950 font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-sm border border-amber-500/30">
-											الأكثر طلباً ⭐
-										</span>
+
+									<!-- 1. Rightmost Element (Start of RTL Flex Row): Product Thumbnail Image -->
+									{#if offer.image}
+										<div class="w-14 h-14 rounded-md overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs mr-0">
+											<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
+										</div>
 									{/if}
 
-									<!-- 1. Right (Start): Radio button + Thumbnail Image -->
-									<div class="flex items-center gap-2 shrink-0">
-										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-600' : 'border-neutral-300 bg-white'}">
-											{#if currentPackId === offer.id}
-												<span class="h-2 w-2 rounded-full bg-white"></span>
-											{/if}
-										</span>
-
-										{#if offer.image}
-											<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
-												<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
-											</div>
-										{/if}
-									</div>
-
-									<!-- 2. Middle: Title + Note + Badges Row (Horizontal Wrap) -->
-									<div class="flex-1 min-w-0 text-right">
+									<!-- 2. Middle Section (Main Content - flex-1 min-w-0 text-right pr-2.5 pl-1) -->
+									<div class="flex-1 min-w-0 text-right pr-2.5 pl-1">
 										{#if offer.id === 2}
-											<span class="block text-sm sm:text-base font-bold leading-snug text-gray-900">
-												2 منظمات الحمام + 2 رشاشات هدية 🎁
+											<span class="block text-sm font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+												2 قطع + رشاشين هدية 🎁
 											</span>
-											<span class="block text-[11px] sm:text-xs text-gray-600 leading-tight mt-0.5">
-												(واحد لحمامك وواحد لحمام الضياف أو الكوزينة)
-											</span>
-											<div class="flex flex-wrap items-center gap-1 mt-1">
-												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-emerald-800 bg-emerald-100 border border-emerald-200">
+											<div class="flex items-center gap-1.5 mt-1">
+												<span class="bg-orange-500 text-white text-[11px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+													الأكثر طلباً 🔥
+												</span>
+												<span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
 													وفّر 109 درهم
-												</span>
-												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-amber-900 bg-amber-100 border border-amber-200">
-													174 درهم للواحد
-												</span>
-												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-sky-800 bg-sky-50 border border-sky-200">
-													🚚 توصيل مجاني
 												</span>
 											</div>
 										{:else}
-											<span class="block text-sm sm:text-base font-bold leading-snug text-gray-900">
-												1 منظم الحمام + رشاش هدية 🎁
+											<span class="block text-sm font-bold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">
+												1 قطعة + رشاشة هدية 🎁
 											</span>
-											<div class="flex flex-wrap items-center gap-1 mt-1">
-												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-emerald-800 bg-emerald-100 border border-emerald-200">
-													وفّر 70 درهم
-												</span>
-												<span class="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded font-semibold whitespace-nowrap text-sky-800 bg-sky-50 border border-sky-200">
-													🚚 توصيل مجاني
+											<div class="mt-1">
+												<span class="inline-block bg-sky-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded whitespace-nowrap">
+													توصيل مجاني
 												</span>
 											</div>
 										{/if}
 									</div>
 
-									<!-- 3. Left (End - Price Column): Compact vertical stack -->
-									<div class="flex flex-col items-end justify-center shrink-0 text-left pl-1">
-										<span class="block text-base sm:text-lg font-extrabold text-emerald-700 whitespace-nowrap">
-											{offer.id === 2 ? '349 درهم' : (offer.id === 1 ? '229 درهم' : `${offer.price} درهم`)}
-										</span>
-										<span class="text-xs text-gray-400 line-through whitespace-nowrap mt-0.5">
-											{offer.id === 2 ? '458 درهم' : (offer.id === 1 ? '299 درهم' : (offer.originalPrice ? `${offer.originalPrice} درهم` : ''))}
-										</span>
+									<!-- 3. Leftmost Element (Clean Compact Price on Far Left) -->
+									<div class="flex flex-col items-end justify-center shrink-0 text-left">
+										{#if offer.id === 2}
+											<span class="text-xs text-gray-400 line-through leading-none mb-1">
+												458 درهم
+											</span>
+											<span class="text-base font-extrabold text-emerald-700 leading-none whitespace-nowrap">
+												349 درهم
+											</span>
+										{:else}
+											<span class="text-xs text-gray-400 line-through leading-none mb-1">
+												299 درهم
+											</span>
+											<span class="text-base font-extrabold text-gray-900 leading-none whitespace-nowrap">
+												229 درهم
+											</span>
+										{/if}
 									</div>
 								</label>
 							{/each}

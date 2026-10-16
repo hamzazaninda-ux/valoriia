@@ -77,7 +77,7 @@
       "offers": [
         {
           "id": 1,
-          "title": "1 منظم الحمام + رشاش هدية 🎁",
+          "title": "1 قطعة + رشاشة هدية 🎁",
           "subtitle": "توصيل مجاني لجميع المدن",
           "price": 229,
           "originalPrice": 299,
@@ -88,12 +88,12 @@
         },
         {
           "id": 2,
-          "title": "2 منظمات الحمام + 2 رشاشات هدية 🎁",
+          "title": "2 قطع + رشاشين هدية 🎁",
           "subtitle": "توصيل مجاني لجميع المدن",
           "price": 349,
           "originalPrice": 458,
           "quantity": 2,
-          "badge": "الأكثر طلباً ⭐",
+          "badge": "الأكثر طلباً 🔥",
           "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png",
           "isPopular": true
         }
