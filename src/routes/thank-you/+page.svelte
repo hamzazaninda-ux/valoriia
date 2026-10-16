@@ -25,6 +25,47 @@
 	let newPhone = $state('');
 	let phoneUpdateSuccess = $state(false);
 
+	// Post-confirmation address state
+	let addressInput = $state('');
+	let isSavingAddress = $state(false);
+	let addressSaved = $state(false);
+	let savedAddressText = $state('');
+
+	async function saveAddress() {
+		if (!addressInput.trim() || !order?.orderId) return;
+		isSavingAddress = true;
+		try {
+			const res = await fetch('/api/checkout', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					orderId: order.orderId,
+					address: addressInput.trim(),
+					city: addressInput.trim()
+				})
+			});
+			savedAddressText = addressInput.trim();
+			addressSaved = true;
+			if (order) {
+				order.address = addressInput.trim();
+				if (typeof localStorage !== 'undefined') {
+					localStorage.setItem('latestOrder', JSON.stringify(order));
+				}
+				if (typeof sessionStorage !== 'undefined') {
+					sessionStorage.setItem('latestOrder', JSON.stringify(order));
+					sessionStorage.setItem('lastCompletedOrder', JSON.stringify(order));
+				}
+			}
+		} catch (e) {
+			console.error('Failed to update address:', e);
+			savedAddressText = addressInput.trim();
+			addressSaved = true;
+			if (order) order.address = addressInput.trim();
+		} finally {
+			isSavingAddress = false;
+		}
+	}
+
 	// Time check: daytime (9:00 - 21:00) vs night
 	let isDaytime = $state(true);
 
@@ -92,6 +133,11 @@
 			paramTotal ||
 			349
 		);
+
+		if (address && address !== 'يُحدد بعد التأكيد' && address !== 'المغرب') {
+			addressSaved = true;
+			savedAddressText = address;
+		}
 
 		order = {
 			orderId: String(orderId),
@@ -279,6 +325,54 @@
 					<span>نسخ</span>
 				{/if}
 			</button>
+		</div>
+
+		<!-- Post-Confirmation Address Step (Fast-Track Delivery) -->
+		<div class="w-full rounded-2xl border-2 border-emerald-500/80 bg-white p-4 sm:p-5 mb-5 shadow-sm text-right">
+			<div class="flex items-start gap-3">
+				<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 text-xl border border-emerald-300">
+					📍
+				</div>
+				<div class="flex-1 min-w-0">
+					<span class="inline-block bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-black px-2.5 py-0.5 rounded-full mb-1.5">
+						خطوة اختيارية لتسريع التوصيل ⚡
+					</span>
+					<h3 class="text-xs sm:text-sm font-black text-neutral-900 leading-snug">
+						تم تسجيل طلبك بنجاح! يمكنك إضافة عنوانك أو مدينتك الآن لتسريع الشحن (اختياري أو يتصل بك فريقنا للتأكيد):
+					</h3>
+
+					{#if addressSaved}
+						<div class="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 flex items-center gap-2">
+							<span class="text-emerald-700 font-black text-base">✓</span>
+							<p class="text-xs font-bold leading-relaxed">
+								تم حفظ عنوانك بنجاح: <span class="font-black text-emerald-950">{savedAddressText}</span>. سيتم تجهيز طلبيتك وشحنها مباشرة!
+							</p>
+						</div>
+					{:else}
+						<div class="mt-3 space-y-2">
+							<input
+								type="text"
+								bind:value={addressInput}
+								placeholder="المدينة والحي أو العنوان (مثال: الدار البيضاء، حي المعاريف...)"
+								class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-600 bg-neutral-50/60 text-right font-medium"
+							/>
+							<button
+								type="button"
+								onclick={saveAddress}
+								disabled={isSavingAddress || !addressInput.trim()}
+								class="w-full py-2.5 px-4 rounded-xl bg-[#15803D] hover:bg-[#166534] disabled:opacity-50 text-white font-black text-xs sm:text-sm shadow-sm active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
+							>
+								{#if isSavingAddress}
+									<span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+									<span>جاري الحفظ...</span>
+								{:else}
+									<span>حفظ العنوان لتسريع الشحن 🚀</span>
+								{/if}
+							</button>
+						</div>
+					{/if}
+				</div>
+			</div>
 		</div>
 
 		<!-- 2. Call Schedule Notice Card -->

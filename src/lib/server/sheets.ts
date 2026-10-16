@@ -91,6 +91,9 @@ export async function sendOrderToGoogleSheets(
 		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
 		const finalTotal = Number(order.totalPrice ?? order.total ?? order.price ?? 0);
 
+		const city = String(order.city || order.ville || '').trim() || 'يُحدد بعد التأكيد';
+		const address = String(order.address || order.adresse || '').trim() || 'يُحدد بعد التأكيد';
+
 		const sheetsPayload = {
 			orderDate: dateStr,
 			date: dateStr,
@@ -100,6 +103,10 @@ export async function sendOrderToGoogleSheets(
 			fullName,
 			phone,
 			phoneNumber: phone,
+			city,
+			ville: city,
+			address,
+			adresse: address,
 			product: productLabel,
 			productTitle: productLabel,
 			selectedOfferTitle: productLabel,

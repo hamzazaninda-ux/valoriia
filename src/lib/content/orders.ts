@@ -59,8 +59,8 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     createdAt: now,
     fullName: (input.fullName || 'زبون').trim(),
     phone: (input.phoneNumber || input.phone || '').trim(),
-    city: (input.city || 'يُحدد عند التأكيد').trim(),
-    address: (input.address || input.city || '').trim(),
+    city: (input.city || 'يُحدد بعد التأكيد').trim(),
+    address: (input.address || input.city || 'يُحدد بعد التأكيد').trim(),
     product: productTitle,
     quantity: isNaN(qty) || qty <= 0 ? 1 : qty,
     totalPrice: isNaN(price) || price <= 0 ? 229 : price,
@@ -88,6 +88,42 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
   }
 
   return newOrder;
+}
+
+export async function updateOrderAddress(
+  orderId: string,
+  address: string,
+  city?: string
+): Promise<StoredOrder | null> {
+  const currentOrders = await readOrders(true);
+  const index = currentOrders.findIndex((o) => o.id === orderId);
+  if (index === -1) {
+    return null;
+  }
+
+  const updatedOrder: StoredOrder = {
+    ...currentOrders[index],
+    address: address.trim(),
+    city: (city || address).trim(),
+    updatedAt: new Date().toISOString()
+  };
+
+  currentOrders[index] = updatedOrder;
+  cachedOrders = currentOrders;
+  cacheTime = Date.now();
+
+  try {
+    await gitWriteFile(
+      'main',
+      ORDERS_FILE_PATH,
+      JSON.stringify(currentOrders, null, 2),
+      `fix(orders): update address for order ${orderId}`
+    );
+  } catch (err) {
+    console.error(`[Orders] Failed to persist address update for order ${orderId}:`, err);
+  }
+
+  return updatedOrder;
 }
 
 export async function updateOrderStatus(

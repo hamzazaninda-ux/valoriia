@@ -22,7 +22,7 @@
 	const defaultOffers: ProductOffer[] = [
 		{
 			id: 1,
-			title: '1 قطعة + رشاشة هدية 🎁',
+			title: '1 منظم الحمام + رشاش هدية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 229,
 			originalPrice: 299,
@@ -33,12 +33,12 @@
 		},
 		{
 			id: 2,
-			title: '2 منظمات + 2 رشاشات هدية 🎁',
+			title: '2 منظمات الحمام + 2 رشاشات هدية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 349,
 			originalPrice: 458,
 			quantity: 2,
-			badge: '⭐ الأكثر طلباً',
+			badge: 'الأكثر طلباً ⭐',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png',
 			isPopular: true
 		}
@@ -240,16 +240,138 @@
 		}
 	}
 
+	let customerName = $state('');
+	let customerPhone = $state('');
+	let formError = $state('');
+	let isSubmitting = $state(false);
+
+	function validateMoroccanPhone(val: string): boolean {
+		const cleaned = val.replace(/[\s\-\(\)\.]/g, '');
+		return /^(?:(?:\+|00)212|0)[5-7]\d{8}$/.test(cleaned);
+	}
+
+	async function handleDirectCheckout() {
+		formError = '';
+
+		if (!customerName.trim()) {
+			formError = 'الرجاء إدخال الاسم الكامل';
+			const input = document.getElementById('order-fullName');
+			if (input) input.focus();
+			return;
+		}
+
+		if (!customerPhone.trim()) {
+			formError = 'الرجاء إدخال رقم الهاتف';
+			const input = document.getElementById('order-phone');
+			if (input) input.focus();
+			return;
+		}
+
+		if (!validateMoroccanPhone(customerPhone)) {
+			formError = 'يرجى إدخال رقم هاتف مغربي صحيح يبدأ بـ 06 أو 07 (10 أرقام)';
+			const input = document.getElementById('order-phone');
+			if (input) input.focus();
+			return;
+		}
+
+		isSubmitting = true;
+
+		try {
+			const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+			const price = Number(activeOffer?.price || 349);
+			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
+			const offerTitle = activeOffer?.title || (currentPackId === 2 ? '2 منظمات الحمام + 2 رشاشات هدية 🎁' : '1 منظم الحمام + رشاش هدية 🎁');
+			const productTitle = content.title || 'طقم التنظيم المنزلي + هدية';
+
+			const payload = {
+				orderId,
+				id: orderId,
+				fullName: customerName.trim(),
+				name: customerName.trim(),
+				phoneNumber: customerPhone.trim(),
+				phone: customerPhone.trim(),
+				city: 'يُحدد بعد التأكيد',
+				address: 'يُحدد بعد التأكيد',
+				productTitle,
+				selectedOfferTitle: offerTitle,
+				offer: offerTitle,
+				quantity,
+				qte: quantity,
+				totalPrice: price,
+				price,
+				total: price,
+				sku: (product as any)?.published?.order?.sku || (product as any)?.draft?.order?.sku || 'kit-tandim',
+				sheetsUrl
+			};
+
+			const res = await fetch('/api/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			const data = await res.json();
+
+			if (!res.ok && !data?.order) {
+				throw new Error(data?.error || 'حدث خطأ أثناء إرسال الطلب');
+			}
+
+			const savedOrder = {
+				orderId,
+				fullName: customerName.trim(),
+				phoneNumber: customerPhone.trim(),
+				city: 'يُحدد بعد التأكيد',
+				address: 'يُحدد بعد التأكيد',
+				date: new Date().toLocaleDateString('ar-MA'),
+				price,
+				total: price,
+				productTitle,
+				offer: offerTitle,
+				quantity,
+				qte: quantity,
+				sku: payload.sku
+			};
+
+			if (typeof window !== 'undefined') {
+				try {
+					localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+					sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+					sessionStorage.setItem('lastCompletedOrder', JSON.stringify(savedOrder));
+				} catch (e) {
+					console.warn('Storage save error:', e);
+				}
+
+				try {
+					if (typeof (window as any).gtag === 'function') {
+						(window as any).gtag('event', 'conversion', {
+							'send_to': 'AW-18405009405',
+							'value': price,
+							'currency': 'MAD',
+							'transaction_id': orderId
+						});
+					}
+				} catch {}
+
+				window.location.href = `/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${price}&promptAddress=1`;
+			}
+		} catch (err: any) {
+			console.error('Direct checkout failed:', err);
+			formError = err?.message || 'تعذر إرسال الطلب، يرجى المحاولة مرة أخرى أو الاتصال بنا عبر الواتساب';
+			isSubmitting = false;
+		}
+	}
+
 	function scrollToOffers() {
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(activeOffer?.price || (product as any)?.price || 229);
+				const itemPrice = Number(activeOffer?.price || (product as any)?.price || 349);
 				const itemName = (product as any)?.title || (product as any)?.name || 'طقم التنظيم المنزلي';
 
 				(window as any).gtag('event', 'add_to_cart', {
 					currency: 'MAD',
 					value: itemPrice,
 					items: [{
+						item_id: (product as any)?.id || 'PROD-1',
 						item_name: itemName,
 						price: itemPrice,
 						quantity: 1
@@ -260,12 +382,15 @@
 		} catch (e) {
 			console.warn('Gtag add_to_cart error:', e);
 		}
-		const offersSection = document.getElementById('offers') || document.querySelector('[data-section="offers"]') || document.getElementById('checkout-form');
+		const offersSection = document.getElementById('checkout-form') || document.getElementById('offers') || document.querySelector('[data-section="offers"]');
 		if (offersSection) {
 			offersSection.scrollIntoView({ behavior: 'smooth' });
+			setTimeout(() => {
+				const input = document.getElementById('order-fullName');
+				if (input) input.focus();
+			}, 300);
 		}
 	}
-
 
 	onMount(() => {
 		const formTop = document.getElementById('checkout-form');
@@ -488,16 +613,17 @@
 			</div>
 
 			<div class="px-2 sm:px-3.5 pb-5">
-				<div class="space-y-3">
+				<div class="space-y-4">
+					<!-- Offers Selection -->
 					<div class="space-y-3 pb-3 border-b border-gray-100" dir="rtl">
 						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
 							اختر العرض المناسب لك:
 						</span>
 
-						<div class="grid grid-cols-1 gap-3.5 pt-3">
+						<div class="grid grid-cols-1 gap-3.5 pt-1">
 							{#each offersList as offer}
 								<label
-									class="relative flex w-full cursor-pointer items-center justify-between gap-1.5 sm:gap-2.5 rounded-xl border-2 px-2.5 py-3 sm:px-3.5 sm:py-3.5 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-sky-600 bg-sky-50/60 shadow-sm' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
+									class="relative flex w-full cursor-pointer items-center justify-between gap-2 sm:gap-3 rounded-2xl border-2 p-3 sm:p-4 transition-all duration-200 select-none active:scale-[0.99] {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-50/50 shadow-sm ring-1 ring-emerald-600/30' : 'border-neutral-200 bg-white hover:border-neutral-300'}"
 								>
 									<input
 										type="radio"
@@ -506,108 +632,156 @@
 										checked={currentPackId === offer.id}
 										onchange={() => {
 											selectedPack = offer.id;
-											try {
-												if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-													const itemPrice = Number(offer?.price || (product as any)?.price || 229);
-													const itemName = (product as any)?.title || (product as any)?.name || 'منتج المتجر';
-
-													(window as any).gtag('event', 'add_to_cart', {
-														currency: 'MAD',
-														value: itemPrice,
-														items: [{
-															item_id: (product as any)?.id || 'PROD-1',
-															item_name: itemName,
-															price: itemPrice,
-															quantity: 1
-														}]
-													});
-													console.log('🛒 [GTAG SUCCESS] add_to_cart fired');
-												}
-											} catch (e) {
-												console.warn('Gtag add_to_cart error:', e);
-											}
 										}}
 										class="sr-only"
 									/>
-									{#if offer.badge || offer.isPopular || offer.id === 2}
-										<span class="absolute -top-3 right-3 z-10 bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-[11px] px-3 py-0.5 rounded-full shadow-sm">
-											{offer.badge || '⭐ الأكثر طلباً'}
+									{#if offer.id === 2 || offer.badge || offer.isPopular}
+										<span class="absolute -top-3 right-3 z-10 bg-amber-400 text-amber-950 font-black text-[11px] px-3 py-0.5 rounded-full shadow-xs border border-amber-500/30">
+											الأكثر طلباً ⭐
 										</span>
 									{/if}
 
 									<!-- Right: Radio + Text Info -->
-									<div class="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 {currentPackId === offer.id ? 'border-sky-600 bg-sky-600' : 'border-neutral-300 bg-white'}">
+									<div class="flex items-start gap-2.5 min-w-0 flex-1">
+										<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all mt-0.5 {currentPackId === offer.id ? 'border-emerald-600 bg-emerald-600' : 'border-neutral-300 bg-white'}">
 											{#if currentPackId === offer.id}
 												<span class="h-2 w-2 rounded-full bg-white"></span>
 											{/if}
 										</span>
 										<div class="min-w-0 flex-1 text-right">
 											{#if offer.id === 2}
-												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">2 منظمات + 2 رشاشات هدية 🎁</span>
-												<span class="text-[11px] text-sky-800 font-medium mt-1 block">توصيل مجاني لجميع المدن</span>
-											{:else if offer.id === 1}
-												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">1 قطعة + رشاشة هدية 🎁</span>
-												<span class="text-[11px] text-sky-800 font-medium mt-1 block">توصيل مجاني لجميع المدن</span>
+												<span class="block text-xs sm:text-sm font-black text-neutral-900 leading-snug">2 منظمات الحمام + 2 رشاشات هدية 🎁</span>
+												<span class="block text-[11px] font-bold text-neutral-600 mt-0.5">(واحد لحمامك وواحد لحمام الضياف أو الكوزينة)</span>
+												<div class="flex items-center gap-1.5 flex-wrap mt-1.5">
+													<span class="text-[10px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">وفّر 109 درهم</span>
+													<span class="text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-md">(فقط بـ 174 درهم للواحد!)</span>
+												</div>
+												<span class="text-[11px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
+													<span>🚚</span>
+													<span>توصيل مجاني لجميع المدن</span>
+												</span>
 											{:else}
-												<span class="block text-xs sm:text-sm font-black text-gray-900 leading-tight">{offer.title}</span>
-												{#if offer.subtitle}
-													<span class="text-[11px] text-sky-800 font-medium mt-1 block truncate">{offer.subtitle}</span>
-												{/if}
+												<span class="block text-xs sm:text-sm font-black text-neutral-900 leading-snug">1 منظم الحمام + رشاش هدية 🎁</span>
+												<div class="flex items-center gap-1.5 flex-wrap mt-1.5">
+													<span class="text-[10px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-md">وفّر 70 درهم</span>
+												</div>
+												<span class="text-[11px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
+													<span>🚚</span>
+													<span>توصيل مجاني لجميع المدن</span>
+												</span>
 											{/if}
 										</div>
 									</div>
 
-									<!-- Center: Offer Image -->
+									<!-- Center: Offer Image Thumbnail (w-16 h-16 sm:w-20 sm:h-20) -->
 									{#if offer.image}
-										<span class="h-12 w-12 sm:h-14 sm:w-14 rounded-lg overflow-hidden border border-gray-100 shrink-0 mx-1.5 sm:mx-2 bg-white shadow-xs">
-											<img src={offer.image} alt={offer.title} class="h-full w-full object-cover" loading="lazy" />
-										</span>
-									{:else}
-										<span class="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-lg bg-neutral-100 mx-1.5 sm:mx-2">
-											<svg class="h-5 w-5 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-											</svg>
-										</span>
+										<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
+											<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
+										</div>
 									{/if}
 
-									<!-- Left: Price & Savings Badge -->
-									<div class="shrink-0 text-left flex flex-col items-end">
-										<span class="block whitespace-nowrap text-sm sm:text-base font-black text-gray-900 leading-tight">dh {offer.price.toFixed(2)}</span>
-										{#if offer.originalPrice && offer.originalPrice > offer.price}
-											<span class="text-[11px] text-gray-400 line-through leading-tight">dh {offer.originalPrice.toFixed(2)}</span>
-										{/if}
-										{#if offer.id === 2 || (offer.originalPrice && offer.originalPrice > offer.price && (offer.badge || offer.isPopular))}
-											<span class="text-[10px] sm:text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded shrink-0 whitespace-nowrap mt-1 leading-normal">وفّر {(offer.originalPrice ? offer.originalPrice - offer.price : 109)} درهم</span>
-										{/if}
+									<!-- Left: Price & Strikethrough (strictly RTL Arabic, no decimals, no dh) -->
+									<div class="shrink-0 text-left flex flex-col items-end justify-center ps-1">
+										<span class="block whitespace-nowrap text-sm sm:text-base font-black text-emerald-800 leading-tight">
+											{offer.id === 2 ? '349 درهم' : (offer.id === 1 ? '229 درهم' : `${offer.price} درهم`)}
+										</span>
+										<span class="text-xs text-neutral-400 line-through font-bold leading-tight mt-0.5">
+											{offer.id === 2 ? '458 درهم' : (offer.id === 1 ? '299 درهم' : (offer.originalPrice ? `${offer.originalPrice} درهم` : ''))}
+										</span>
 									</div>
 								</label>
 							{/each}
 						</div>
 					</div>
 
+					<!-- Direct Embedded COD Form (Strictly 2 Fields: fullName & phone) -->
+					<div class="space-y-3 pt-1" dir="rtl">
+						<div class="flex items-center gap-1.5 text-xs font-black text-neutral-800">
+							<span>✍️</span>
+							<span>معلومات التوصيل (الدفع عند الاستلام بعد المعاينة):</span>
+						</div>
+
+						<!-- Field 1: Full Name -->
+						<div>
+							<label for="order-fullName" class="block text-xs font-bold text-neutral-700 mb-1 text-right">
+								الاسم الكامل <span class="text-red-500">*</span>
+							</label>
+							<input
+								id="order-fullName"
+								type="text"
+								bind:value={customerName}
+								placeholder="الاسم العائلي والشخصي"
+								autocomplete="name"
+								required
+								class="w-full px-3.5 py-3 text-xs sm:text-sm rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-600 bg-white transition-all text-right shadow-2xs font-medium"
+							/>
+						</div>
+
+						<!-- Field 2: Phone Number (LTR digits, RTL placeholder) -->
+						<div>
+							<label for="order-phone" class="block text-xs font-bold text-neutral-700 mb-1 text-right">
+								رقم الهاتف (الواتساب) <span class="text-red-500">*</span>
+							</label>
+							<input
+								id="order-phone"
+								type="tel"
+								dir="ltr"
+								bind:value={customerPhone}
+								placeholder="06XXXXXXXX / 07XXXXXXXX"
+								autocomplete="tel"
+								required
+								class="w-full px-3.5 py-3 text-xs sm:text-sm rounded-xl border border-neutral-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-600 bg-white transition-all text-left font-mono shadow-2xs font-bold"
+							/>
+							<p class="text-[11px] text-neutral-500 mt-1 font-medium text-right">
+								سيتصل بك الموزع لتأكيد العنوان قبل التوصيل.
+							</p>
+						</div>
+
+						{#if formError}
+							<div class="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold text-right flex items-center gap-1.5">
+								<span>⚠️</span>
+								<span>{formError}</span>
+							</div>
+						{/if}
+					</div>
+
+					<!-- Dynamic Conversion CTA Button -->
 					<button
 						type="button"
-						onclick={addSelectedToCart}
-						class="add-to-cart flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#15803D] py-3.5 text-base font-black text-white shadow-lg transition-all hover:bg-[#166534] active:scale-[0.98]"
+						onclick={handleDirectCheckout}
+						disabled={isSubmitting}
+						class="w-full flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#15803D] hover:bg-[#166534] py-3.5 sm:py-4 px-4 text-base sm:text-lg font-black text-white shadow-xl shadow-green-700/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed select-none"
 					>
-						<ShoppingCart class="h-5 w-5 shrink-0 pointer-events-none" style="pointer-events: none;" />
-						<span class="pointer-events-none" style="pointer-events: none;">أضف العرض للسلة · {formatPrice(activeOffer.price, settings.commerce.currencySymbol)}</span>
+						{#if isSubmitting}
+							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+							<span>جاري تأكيد طلبك...</span>
+						{:else}
+							<span>تأكيد الطلب الآن • {activeOffer.price} درهم</span>
+						{/if}
 					</button>
 
+					<!-- Trust Box Placed Directly Below CTA Button (Fixed RTL Livreur text) -->
+					<div class="flex items-start gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 sm:p-4 text-right">
+						<div class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-emerald-200/80 shadow-xs text-xl">
+							📦
+						</div>
+						<div class="flex-1 min-w-0">
+							<h4 class="font-black text-xs sm:text-sm text-emerald-950 mb-0.5">حق المعاينة مكفول 📦</h4>
+							<p class="text-xs text-emerald-900/90 leading-relaxed font-bold">
+								قلّب سلعتك وتأكد من الجودة والمقاسات مع الـ Livreur عاد خلّص.
+							</p>
+						</div>
+					</div>
 
 					{#if t.sections.pricing.showGuarantee}
 						<p class="text-center text-xs font-bold text-emerald-800 mt-1">
 							{t.sections.pricing.guaranteeText}
 						</p>
 					{/if}
-
 				</div>
 			</div>
 		</div>
-	</div>
-
-	<!-- ── TRUST & ASSURANCE SECTION ── -->
+	</div><!-- ── TRUST & ASSURANCE SECTION ── -->
 	<section class="px-2 sm:px-4 pb-4" dir="rtl">
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
 			<!-- Feature 1: Inspection -->
@@ -619,7 +793,7 @@
 				</div>
 				<div class="flex-1 min-w-0">
 					<h4 class="font-extrabold text-sm sm:text-base text-neutral-900 leading-snug">حق المعاينة مكفول 📦</h4>
-					<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">قلّب سلعتك وتأكد من الجودة والمقاسات عاد خلّص Livreur.</p>
+					<p class="text-xs sm:text-sm text-neutral-600 leading-relaxed mt-0.5">قلّب سلعتك وتأكد من الجودة والمقاسات مع الـ Livreur عاد خلّص.</p>
 				</div>
 			</div>
 
@@ -830,7 +1004,7 @@
 				style="background-color: var(--t-cta, #16a34a);"
 				class="w-full max-w-xl mx-auto flex items-center justify-center h-11 py-2.5 px-4 text-sm sm:text-base font-bold text-white rounded-xl shadow-lg active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
 			>
-				{t.sections.pricing.stickyCtaText || t.sections.pricing.ctaText}
+				تأكيد الطلب الآن • {activeOffer.price} درهم
 			</button>
 		</div>
 	{/if}

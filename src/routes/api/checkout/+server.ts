@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { saveOrder } from '$lib/content/orders';
-import { sendOrderToGoogleSheets } from '$lib/server/sheets';
+import { saveOrder, updateOrderAddress } from '$lib/content/orders';
+import { sendOrderToGoogleSheets, getSheetsWebhookUrl } from '$lib/server/sheets';
 
 const GOOGLE_SHEETS_WEBHOOK =
 	process.env.GOOGLE_SHEETS_URL ||
@@ -18,9 +18,17 @@ export const POST: RequestHandler = async ({ request }) => {
 		const fullName = String(body.fullName || body.name || '').trim();
 		const phone = String(body.phoneNumber || body.phone || '').trim();
 
-		if (!fullName && !phone) {
-			return json({ error: 'الاسم ورقم الهاتف مطلوبان' }, { status: 400 });
+		if (!fullName) {
+			return json({ error: 'الرجاء إدخال الاسم الكامل' }, { status: 400 });
 		}
+
+		if (!phone) {
+			return json({ error: 'الرجاء إدخال رقم الهاتف' }, { status: 400 });
+		}
+
+		// Ensure default values for city & address if not provided initially
+		body.city = String(body.city || '').trim() || 'يُحدد بعد التأكيد';
+		body.address = String(body.address || '').trim() || 'يُحدد بعد التأكيد';
 
 		// Ensure consistent orderId across both internal storage and Google Sheets
 		const orderId = String(
@@ -57,5 +65,45 @@ export const POST: RequestHandler = async ({ request }) => {
 	} catch (err) {
 		console.error('❌ Checkout processing failed:', err);
 		return json({ error: 'حدث خطأ أثناء معالجة الطلب' }, { status: 500 });
+	}
+};
+
+export const PATCH: RequestHandler = async ({ request }) => {
+	try {
+		const body = await request.json();
+		const orderId = String(body.orderId || body.id || '').trim();
+		const address = String(body.address || body.city || '').trim();
+		const city = String(body.city || body.address || '').trim();
+
+		if (!orderId || !address) {
+			return json({ error: 'معرف الطلب والعنوان مطلوبان' }, { status: 400 });
+		}
+
+		const updatedOrder = await updateOrderAddress(orderId, address, city);
+
+		// Non-blocking update webhook dispatch if webhook supports updateAddress action
+		try {
+			const webhookUrl = await getSheetsWebhookUrl(body.sheetsUrl);
+			if (webhookUrl) {
+				fetch(webhookUrl, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						action: 'updateAddress',
+						orderId,
+						id: orderId,
+						address,
+						city
+					})
+				}).catch((e) => console.warn('Sheets address update dispatch warning:', e));
+			}
+		} catch (e) {
+			console.warn('Sheets update warning:', e);
+		}
+
+		return json({ success: true, order: updatedOrder });
+	} catch (err) {
+		console.error('❌ Failed to update address:', err);
+		return json({ error: 'حدث خطأ أثناء تحديث العنوان' }, { status: 500 });
 	}
 };
