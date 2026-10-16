@@ -152,3 +152,20 @@ button.add-to-cart *, .add-to-cart * {
   pointer-events: none !important;
 }
 
+@keyframes gentleHorizontalSway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+.animate-gentle-sway {
+  animation: gentleHorizontalSway 2.8s ease-in-out infinite;
+}
+
+

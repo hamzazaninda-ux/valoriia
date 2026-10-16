@@ -431,24 +431,10 @@
 	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-border/30 pb-32"
 	style="{buildThemeCssVars(t)}; background-color: var(--t-bg, #faf9f6); color: var(--t-text, #1c1917);"
 >
-	<!-- Store Header: Logo / Brand Name -->
-	<header class="bg-white/95 backdrop-blur-sm border-b border-neutral-200/70 py-3 px-4 flex items-center justify-between sticky top-0 z-30 shadow-2xs" dir="rtl">
-		<div class="flex items-center gap-2">
-			<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B4332] font-display text-base font-bold text-amber-400 shadow-2xs">L</span>
-			<span class="font-display text-lg font-black text-neutral-900 tracking-tight">{settings?.brand?.name && settings.brand.name !== 'Valoriia' ? settings.brand.name : 'Lhamza Shop'}</span>
-		</div>
-		<a
-			href="https://wa.me/212626558375?text=%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%AD%D9%88%D9%84%20%D8%A8%D8%A7%D9%83%20%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85%20%D8%A7%D9%84%D8%B0%D9%83%D9%8A"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/80 hover:bg-emerald-100 transition-colors"
-		>
-			<span>💬 خدمة الزبناء</span>
-		</a>
-	</header>
-
-	<!-- Static Announcement Banner for Product Landing -->
-	<AnnouncementBar isStatic={true} />
+	<!-- Static Announcement Banner for Product Landing at the very top (Header completely removed) -->
+	<div class="sticky top-0 z-40 w-full">
+		<AnnouncementBar isStatic={true} />
+	</div>
 
 
 	<!-- ── Stacked images: first fills 9:16, rest keep natural ratio ── -->
@@ -762,7 +748,7 @@
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
 							<span>جاري تأكيد طلبك...</span>
 						{:else}
-							<span>تأكيد الطلب الآن • {activeOffer.price} درهم</span>
+							<span>للطلب اضغط هنا</span>
 						{/if}
 					</button>
 
@@ -1003,14 +989,14 @@
 	</footer>
 
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-2 sm:bottom-3 left-0 right-0 z-50 px-3 sm:px-4 pointer-events-none" dir="rtl">
+		<div class="fixed bottom-2 sm:bottom-2.5 left-0 right-0 z-50 px-3 sm:px-4 pointer-events-none" dir="rtl">
 			<button
 				type="button"
 				onclick={scrollToOffers}
 				style="background-color: var(--t-cta, #16a34a);"
-				class="w-full max-w-xl mx-auto flex items-center justify-center h-11 py-2.5 px-4 text-sm sm:text-base font-bold text-white rounded-xl shadow-lg active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center"
+				class="w-full max-w-xl mx-auto flex items-center justify-center py-2.5 sm:py-3 px-4 text-sm sm:text-base font-black text-white rounded-xl shadow-xl active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer text-center animate-gentle-sway"
 			>
-				تأكيد الطلب الآن • {activeOffer.price} درهم
+				للطلب اضغط هنا
 			</button>
 		</div>
 	{/if}
@@ -1023,4 +1009,22 @@
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
 		onDone={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
 	/>
-	</div>
+</div>
+
+<style>
+	@keyframes gentleHorizontalSway {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		25% {
+			transform: translateX(-6px);
+		}
+		75% {
+			transform: translateX(6px);
+		}
+	}
+
+	:global(.animate-gentle-sway) {
+		animation: gentleHorizontalSway 2.8s ease-in-out infinite;
+	}
+</style>
