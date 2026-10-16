@@ -14,14 +14,14 @@ export const load: PageServerLoad = async () => {
 	]);
 
 	const dashboardStats = computeDashboardStats(rawOrders);
-	const recentOrders = rawOrders.slice(0, 15).map(enrichOrderForDashboard);
+	const recentOrders = rawOrders.map(enrichOrderForDashboard);
 
 	return {
 		dashboardStats,
 		recentOrders,
 		productsCount: products.length,
 		templatesCount: templates.length,
-		currencySymbol: settings?.commerce?.currencySymbol || 'DH',
+		currencySymbol: settings?.commerce?.currencySymbol || 'MAD',
 		health: {
 			sheets: !!(settings?.commerce?.googleSheetsUrl || '').trim(),
 			whatsapp: !!(settings?.brand?.whatsappNumber || '').trim(),

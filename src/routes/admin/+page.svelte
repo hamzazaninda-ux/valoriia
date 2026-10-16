@@ -1,14 +1,38 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
 	// Reactive dashboard state
-	let stats = $state(data.dashboardStats);
-	let orders = $state(data.recentOrders);
+	let statsOverride = $state<PageData['dashboardStats'] | null>(null);
+	let ordersOverride = $state<PageData['recentOrders'] | null>(null);
+
+	const stats = $derived(statsOverride ?? data.dashboardStats);
+	const orders = $derived(ordersOverride ?? data.recentOrders);
+
 	let isRefreshing = $state(false);
 	let isSyncingAll = $state(false);
 	let searchQuery = $state('');
+
+	// Financial parameters synced with Calculator localStorage (Defaults: 65 MAD SpaceSeller, 45 MAD COGS)
+	let spaceSellerFee = $state(65);
+	let unitCost = $state(45);
+	let confirmationRate = $state(65);
+	let deliveryRate = $state(75);
+
+	onMount(() => {
+		try {
+			const saved = localStorage.getItem('nv_cod_calc_settings');
+			if (saved) {
+				const parsed = JSON.parse(saved);
+				if (typeof parsed.spaceSellerFee === 'number') spaceSellerFee = parsed.spaceSellerFee;
+				if (typeof parsed.unitCost === 'number') unitCost = parsed.unitCost;
+				if (typeof parsed.confirmationRate === 'number') confirmationRate = parsed.confirmationRate;
+				if (typeof parsed.deliveryRate === 'number') deliveryRate = parsed.deliveryRate;
+			}
+		} catch {}
+	});
 
 	// Toast state
 	let toastMessage = $state<string | null>(null);
@@ -32,9 +56,9 @@
 			const res = await fetch('/api/admin/orders');
 			const json = await res.json();
 			if (res.ok && json.success) {
-				stats = json.stats;
-				orders = json.orders;
-				showToast('تم تحديث بيانات اللوحة والطلبات بنجاح ✅', 'success');
+				statsOverride = json.stats;
+				ordersOverride = json.orders;
+				showToast('تم تحديث بيانات الطلبيات والمؤشرات المالية بنجاح ✅', 'success');
 			} else {
 				showToast(json.error || 'تعذر تحديث البيانات', 'error');
 			}
@@ -83,6 +107,20 @@
 		return `https://wa.me/${clean}?text=${greeting}`;
 	}
 
+	// Calculate exact net profit for a single order if delivered
+	function calcOrderDeliveredNetProfit(totalPrice: number, physicalBottles: number): number {
+		return Math.round(totalPrice - spaceSellerFee - physicalBottles * unitCost);
+	}
+
+	// Quick Live Funnel Preview Metrics
+	const effectiveNetRate = $derived((confirmationRate / 100) * (deliveryRate / 100));
+	const liveMarginPerDelivered = $derived(
+		stats.averageOrderValue > 0
+			? stats.averageOrderValue - spaceSellerFee - stats.avgBottlesPerOrder * unitCost
+			: 0
+	);
+	const liveBreakEvenCPA = $derived(liveMarginPerDelivered * effectiveNetRate);
+
 	// Filtered orders list
 	const filteredOrders = $derived(
 		orders.filter((o) => {
@@ -93,22 +131,23 @@
 				o.phone.toLowerCase().includes(q) ||
 				o.id.toLowerCase().includes(q) ||
 				o.mainProduct.toLowerCase().includes(q) ||
+				o.baseOfferLabel.toLowerCase().includes(q) ||
 				o.upsellName.toLowerCase().includes(q)
 			);
 		})
 	);
 
 	const orderStatusBadges: Record<string, string> = {
-		جديد: 'bg-amber-50 text-amber-700 border-amber-200',
-		مؤكد: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-		'جاري الشحن': 'bg-blue-50 text-blue-700 border-blue-200',
-		'تم التسليم': 'bg-teal-50 text-teal-700 border-teal-200',
-		ملغي: 'bg-rose-50 text-rose-700 border-rose-200'
+		جديد: 'bg-amber-50 text-amber-800 border-amber-200',
+		مؤكد: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+		'جاري الشحن': 'bg-blue-50 text-blue-800 border-blue-200',
+		'تم التسليم': 'bg-teal-50 text-teal-800 border-teal-200',
+		ملغي: 'bg-rose-50 text-rose-800 border-rose-200'
 	};
 </script>
 
 <svelte:head>
-	<title>لوحة التحكم - NOVAVITA</title>
+	<title>لوحة القيادة والطلبيات - NOVAVITA</title>
 </svelte:head>
 
 <!-- Floating Toast -->
@@ -117,7 +156,7 @@
 		<div
 			class={`flex items-center gap-2.5 rounded-2xl px-5 py-3 text-sm font-bold shadow-xl ${
 				toastType === 'success'
-					? 'bg-emerald-950 text-emerald-200 border border-emerald-800'
+					? 'bg-[#065f46] text-amber-200 border border-amber-400/40'
 					: 'bg-rose-950 text-rose-200 border border-rose-800'
 			}`}
 			dir="rtl"
@@ -128,182 +167,322 @@
 	</div>
 {/if}
 
-<div class="space-y-8" dir="rtl">
-	<!-- Top Greeting & Control Actions -->
-	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-neutral-200/80 shadow-xs">
-		<div>
-			<div class="flex items-center gap-2 mb-1">
-				<h1 class="text-2xl font-black text-neutral-900 tracking-tight">
-					لوحة تحكم NOVAVITA 🌿
-				</h1>
-				<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold">
-					إدارة حية
+<div class="space-y-6 sm:space-y-8" dir="rtl">
+	<!-- Top Hero Header & Quick Actions -->
+	<div
+		class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-l from-[#134e4a] via-[#065f46] to-[#0f3d39] text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-amber-400/30 relative overflow-hidden"
+	>
+		<div
+			class="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full bg-amber-400/15 blur-3xl"
+		></div>
+
+		<div class="relative z-10 space-y-1.5">
+			<div class="flex flex-wrap items-center gap-2">
+				<span
+					class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-300/40 text-[11px] font-black"
+				>
+					📊 متابعة حية للطلبيات والـ AOV
+				</span>
+				<span
+					class="px-2.5 py-0.5 rounded-full bg-emerald-950/60 text-emerald-200 border border-emerald-700 text-[11px] font-bold"
+				>
+					رسوم SpaceSeller: {spaceSellerFee} MAD • تكلفة العلبة: {unitCost} MAD
 				</span>
 			</div>
-			<p class="text-xs sm:text-sm text-neutral-500 font-medium">
-				متابعة فورية للطلبيات، المداخيل، ونسب نجاح الأبسيل (العروض الخاطفة)
+			<h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+				لوحة القيادة والطلبيات الحية — NOVAVITA
+			</h1>
+			<p class="text-xs sm:text-sm text-emerald-100/85 font-medium max-w-2xl">
+				تتبع لحظي لجميع طلبيات المتجر، متوسط سلة الشراء الحقيقي (Live AOV)، عدد العلب الفعلي لكل طلبية، والربح الصافي بعد احتساب رسوم SpaceSeller وتكلفة الجملة.
 			</p>
 		</div>
 
 		<!-- Action Buttons -->
-		<div class="flex flex-wrap items-center gap-2.5">
+		<div class="relative z-10 flex flex-wrap items-center gap-2.5">
 			<button
 				type="button"
 				onclick={refreshDashboard}
 				disabled={isRefreshing}
-				class="inline-flex items-center gap-2 rounded-xl border border-neutral-200/90 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-2xs"
-				title="تحديث البيانات فورياً"
+				class="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 text-xs font-extrabold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
 			>
-				<svg class={`h-4 w-4 text-emerald-700 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+				<svg
+					class={`h-4 w-4 text-amber-300 ${isRefreshing ? 'animate-spin' : ''}`}
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					stroke-width="2.2"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+					/>
 				</svg>
-				<span>{isRefreshing ? 'جاري التحديث...' : 'تحديث فوري'}</span>
+				<span>{isRefreshing ? 'جاري التحديث...' : 'تحديث الطلبيات'}</span>
 			</button>
 
 			<button
 				type="button"
 				onclick={syncAllToSheets}
 				disabled={isSyncingAll}
-				class="inline-flex items-center gap-2 rounded-xl bg-[#0f291e] hover:bg-[#163f2e] text-white px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-md shadow-emerald-950/20"
-				title="مزامنة جميع الطلبات مع Google Sheets"
+				class="inline-flex items-center gap-2 rounded-2xl bg-emerald-950/70 hover:bg-emerald-950 border border-emerald-700/60 text-emerald-100 px-4 py-2.5 text-xs font-extrabold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
 			>
-				<svg class={`h-4 w-4 text-emerald-400 ${isSyncingAll ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-				</svg>
 				<span>{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة Sheets 📊'}</span>
 			</button>
 
 			<a
-				href="/admin/orders"
-				class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-700/30 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 px-4 py-2.5 text-xs font-bold transition-all active:scale-[0.98] shadow-2xs"
+				href="/admin/calculator"
+				class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-amber-300 to-amber-400 hover:from-amber-400 hover:to-amber-500 text-emerald-950 px-5 py-2.5 text-xs font-black transition-all active:scale-[0.98] shadow-lg shadow-black/20"
 			>
-				<span>إدارة الطلبات</span>
+				<span>🧮 حاسبة الأرباح والـ Break-Even</span>
 				<span>←</span>
 			</a>
 		</div>
 	</div>
 
-	<!-- KPI Summary Cards (Grid) -->
+	<!-- 4 Real-Time Core KPI Cards -->
 	<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-		<!-- 1. Today's Orders -->
-		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+		<!-- KPI 1: إجمالي الطلبيات (Total Leads) -->
+		<div
+			class="rounded-3xl border border-emerald-900/10 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all relative overflow-hidden"
+		>
 			<div class="flex items-center justify-between mb-3">
-				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 shadow-xs">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-					</svg>
+				<span
+					class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#065f46] border border-emerald-200 font-black text-xl"
+				>
+					📦
 				</span>
-				<span class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black text-emerald-800 border border-emerald-200">
-					اليوم
+				<span
+					class="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black text-[#065f46] border border-emerald-200"
+				>
+					اليوم: {stats.todayOrdersCount} طلبية
 				</span>
 			</div>
-			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.todayOrdersCount}</p>
-			<div class="flex items-center justify-between mt-1 text-xs">
-				<span class="font-bold text-neutral-600">طلبات اليوم</span>
-				<span class="font-bold text-emerald-700">{stats.todayRevenue} {data.currencySymbol}</span>
+			<p class="text-xs font-extrabold text-neutral-500">إجمالي الطلبيات (Total Leads)</p>
+			<div class="flex items-baseline gap-2 mt-1">
+				<p class="text-3xl sm:text-4xl font-black text-neutral-900 tracking-tight">
+					{stats.totalOrdersCount}
+				</p>
+				<span class="text-xs font-bold text-neutral-400">طلبية مسجلة</span>
+			</div>
+			<div class="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs">
+				<span class="font-semibold text-neutral-500">إجمالي المبيعات الخام:</span>
+				<span class="font-black text-[#065f46]" dir="ltr">
+					{stats.totalRevenue.toLocaleString()} MAD
+				</span>
 			</div>
 		</div>
 
-		<!-- 2. Total Revenue -->
-		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+		<!-- KPI 2: متوسط سلة الشراء الحقيقي (Live AOV in MAD) -->
+		<div
+			class="rounded-3xl border border-amber-500/25 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all relative overflow-hidden"
+		>
 			<div class="flex items-center justify-between mb-3">
-				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-xs">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-					</svg>
+				<span
+					class="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-800 border border-amber-200 font-black text-xl"
+				>
+					💰
 				</span>
-				<span class="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-black text-amber-800 border border-amber-200">
-					إجمالي
+				<span
+					class="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-black text-amber-800 border border-amber-200"
+				>
+					Live AOV
 				</span>
 			</div>
-			<p class="text-3xl font-black text-neutral-900 tracking-tight">
-				{stats.totalRevenue.toLocaleString()} <span class="text-sm font-bold text-neutral-500">{data.currencySymbol}</span>
+			<p class="text-xs font-extrabold text-neutral-500">متوسط سلة الشراء الحقيقي (Live AOV)</p>
+			<div class="flex items-baseline gap-1.5 mt-1" dir="ltr">
+				<p class="text-3xl sm:text-4xl font-black text-[#134e4a] tracking-tight">
+					{Math.round(stats.averageOrderValue)}
+				</p>
+				<span class="text-sm font-black text-amber-600">MAD</span>
+			</div>
+			<div class="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs">
+				<span class="font-semibold text-neutral-500">صافي ربح الطلبية الموصلة:</span>
+				<span class="font-black text-emerald-700" dir="ltr">
+					+{Math.round(liveMarginPerDelivered)} MAD
+				</span>
+			</div>
+		</div>
+
+		<!-- KPI 3: متوسط عدد العلب لكل طلبية (Avg Bottles / Order) -->
+		<div
+			class="rounded-3xl border border-emerald-900/10 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all relative overflow-hidden"
+		>
+			<div class="flex items-center justify-between mb-3">
+				<span
+					class="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-50 text-teal-800 border border-teal-200 font-black text-xl"
+				>
+					🧪
+				</span>
+				<span
+					class="rounded-full bg-teal-50 px-3 py-1 text-[11px] font-black text-teal-800 border border-teal-200"
+				>
+					مجموع العلب: {stats.totalPhysicalBottles}
+				</span>
+			</div>
+			<p class="text-xs font-extrabold text-neutral-500">
+				متوسط عدد العلب لكل طلبية (Avg Bottles)
 			</p>
-			<div class="flex items-center justify-between mt-1 text-xs">
-				<span class="font-bold text-neutral-600">إجمالي المداخيل</span>
-				<span class="font-bold text-neutral-500">{stats.totalOrdersCount} طلب مسجل</span>
+			<div class="flex items-baseline gap-2 mt-1">
+				<p class="text-3xl sm:text-4xl font-black text-neutral-900 tracking-tight" dir="ltr">
+					{stats.avgBottlesPerOrder}
+				</p>
+				<span class="text-xs font-bold text-teal-700">علبة / طلبية</span>
+			</div>
+			<div class="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs">
+				<span class="font-semibold text-neutral-500">متوسط تكلفة السلعة (COGS):</span>
+				<span class="font-black text-neutral-800" dir="ltr">
+					{Math.round(stats.avgBottlesPerOrder * unitCost)} MAD
+				</span>
 			</div>
 		</div>
 
-		<!-- 3. Upsell Conversion Rate -->
-		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
+		<!-- KPI 4: نسبة نجاح الأبسيل (Upsell Take Rate %) -->
+		<div
+			class="rounded-3xl border border-purple-500/20 bg-white p-5 sm:p-6 shadow-xs hover:shadow-md transition-all relative overflow-hidden"
+		>
 			<div class="flex items-center justify-between mb-3">
-				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-100 text-purple-800 shadow-xs">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-					</svg>
+				<span
+					class="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-50 text-purple-800 border border-purple-200 font-black text-xl"
+				>
+					🔥
 				</span>
-				<span class="rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-black text-purple-800 border border-purple-200">
-					العرض الخاطف
-				</span>
-			</div>
-			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.upsellConversionRate}%</p>
-			<div class="flex items-center justify-between mt-1 text-xs">
-				<span class="font-bold text-neutral-600">نسبة تحويل الأبسيل</span>
-				<span class="font-bold text-purple-700">{stats.upsellOrdersCount} طلب بأبسيل (+99)</span>
-			</div>
-		</div>
-
-		<!-- 4. Pending Confirmation -->
-		<div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
-			<div class="flex items-center justify-between mb-3">
-				<span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-800 shadow-xs">
-					<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3.8-3.04a17.893 17.893 0 01-3.95-.572c-2.454-.672-4.25-2.905-4.25-5.46V10.608c0-.97.616-1.813 1.5-2.097m12 0A17.925 17.925 0 0012 7.5c-2.43 0-4.757.487-6.879 1.365m14.879-.354c-.167-.05-.336-.098-.507-.143m-14.372.497c.17-.045.34-.093.507-.143m0 0A17.93 17.93 0 0112 6c2.43 0 4.757.487 6.879 1.365" />
-					</svg>
-				</span>
-				<span class="rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-black text-rose-800 border border-rose-200">
-					مكالمة هاتفية
+				<span
+					class="rounded-full bg-purple-50 px-3 py-1 text-[11px] font-black text-purple-800 border border-purple-200"
+				>
+					+99 MAD للعلبة
 				</span>
 			</div>
-			<p class="text-3xl font-black text-neutral-900 tracking-tight">{stats.pendingOrders}</p>
-			<div class="flex items-center justify-between mt-1 text-xs">
-				<span class="font-bold text-neutral-600">بانتظار التأكيد</span>
-				<span class="font-bold text-neutral-500">معدل الطلب: {stats.averageOrderValue} {data.currencySymbol}</span>
+			<p class="text-xs font-extrabold text-neutral-500">
+				نسبة نجاح الأبسيل (Upsell Take Rate %)
+			</p>
+			<div class="flex items-baseline gap-2 mt-1">
+				<p class="text-3xl sm:text-4xl font-black text-purple-900 tracking-tight" dir="ltr">
+					{stats.upsellConversionRate}%
+				</p>
+				<span class="text-xs font-bold text-purple-700">
+					({stats.upsellOrdersCount} من {stats.totalOrdersCount})
+				</span>
+			</div>
+			<div class="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs">
+				<span class="font-semibold text-neutral-500">علب أبسيل مباعة (+99 DH):</span>
+				<span class="font-black text-purple-800">
+					{stats.totalUpsellBottles} علبة إضافية
+				</span>
 			</div>
 		</div>
 	</div>
 
-	<!-- Recent Orders Section -->
-	<div class="rounded-3xl border border-neutral-200/80 bg-white shadow-xs overflow-hidden">
-		<!-- Header of Recent Orders Table -->
-		<div class="p-5 sm:p-6 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-white to-neutral-50/50">
+	<!-- Quick Break-Even & Unit Economics Banner -->
+	<div
+		class="rounded-3xl bg-white border-2 border-[#065f46]/20 p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
+	>
+		<div class="flex items-center gap-4">
+			<div
+				class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#065f46] text-amber-300 font-black text-xl shadow-md"
+			>
+				🎯
+			</div>
 			<div>
-				<div class="flex items-center gap-2">
-					<span class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold text-sm">
-						🛒
+				<div class="flex flex-wrap items-center gap-2">
+					<h2 class="text-sm sm:text-base font-black text-neutral-900">
+						مؤشر التعادل الإعلاني الحي (Live Break-Even CPA)
+					</h2>
+					<span
+						class="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-extrabold text-[#065f46] border border-emerald-200"
+					>
+						تأكيد {confirmationRate}% × توصيل {deliveryRate}% = صافي وصول {(effectiveNetRate * 100).toFixed(1)}%
 					</span>
-					<h2 class="text-lg font-black text-neutral-900">أحدث الطلبيات (Recent Orders)</h2>
 				</div>
 				<p class="text-xs text-neutral-500 font-medium mt-0.5">
-					تفاصيل المشتريات، المنتجات، والأبسيل مع حالة المزامنة اللحظية
+					بناءً على طلبيات متجرك الفعلية، أقصى تكلفة للـ Lead الواحد في الإعلانات بدون خسارة هي
+					<strong class="text-[#065f46] font-black" dir="ltr"
+						>{liveBreakEvenCPA.toFixed(1)} MAD</strong
+					>
 				</p>
+			</div>
+		</div>
+
+		<div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+			<div class="rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-center">
+				<span class="block text-[10px] font-bold text-emerald-800">Break-Even CPA</span>
+				<span class="block text-base font-black text-[#065f46]" dir="ltr">
+					{liveBreakEvenCPA.toFixed(1)} MAD
+				</span>
+			</div>
+			<div class="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-2 text-center">
+				<span class="block text-[10px] font-bold text-amber-800">صافي ربح الطلبية الموصلة</span>
+				<span class="block text-base font-black text-amber-900" dir="ltr">
+					+{Math.round(liveMarginPerDelivered)} MAD
+				</span>
+			</div>
+			<a
+				href="/admin/calculator"
+				class="rounded-2xl bg-[#134e4a] hover:bg-[#065f46] text-white px-4 py-3 text-xs font-extrabold transition-colors shadow-xs"
+			>
+				تعديل النسب ومحاكاة الإعلانات ←
+			</a>
+		</div>
+	</div>
+
+	<!-- Detailed Orders Table -->
+	<div class="rounded-3xl border border-neutral-200/90 bg-white shadow-xs overflow-hidden">
+		<!-- Header of Orders Table -->
+		<div
+			class="p-5 sm:p-6 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-l from-white to-emerald-50/30"
+		>
+			<div>
+				<div class="flex items-center gap-2.5">
+					<span
+						class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#065f46] text-amber-300 font-bold text-base shadow-xs"
+					>
+						📋
+					</span>
+					<div>
+						<h2 class="text-base sm:text-lg font-black text-neutral-900">
+							سجل الطلبيات التفصيلي وتحليل الربحية لكل طلبية
+						</h2>
+						<p class="text-xs text-neutral-500 font-medium">
+							يعرض العرض الأساسي (199 / 279 / 349 MAD)، الأبسيل المضاف (+99 MAD)، عدد العلب الفعلي (qte)، والربح الصافي في حال التسليم
+						</p>
+					</div>
+				</div>
 			</div>
 
 			<!-- Search & Filter Bar -->
 			<div class="flex items-center gap-3">
-				<div class="relative w-full sm:w-64">
+				<div class="relative w-full sm:w-72">
 					<input
 						type="text"
 						bind:value={searchQuery}
-						placeholder="بحث باسم الزبون أو الهاتف..."
-						class="w-full pl-3 pr-9 py-2 rounded-xl border border-neutral-200 text-xs font-semibold focus:outline-hidden focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-colors"
+						placeholder="ابحث بالاسم، الهاتف، أو الباقة..."
+						class="w-full pl-3 pr-9 py-2.5 rounded-xl border border-neutral-200 text-xs font-bold focus:outline-hidden focus:border-[#065f46] focus:ring-2 focus:ring-emerald-500/15 transition-all"
 					/>
-					<svg class="h-4 w-4 text-neutral-400 absolute right-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					<svg
+						class="h-4 w-4 text-neutral-400 absolute right-3 top-3"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+						/>
 					</svg>
 				</div>
 				<a
 					href="/admin/orders"
-					class="text-xs font-extrabold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 shrink-0"
+					class="text-xs font-extrabold text-[#065f46] hover:underline flex items-center gap-1 shrink-0"
 				>
-					<span>عرض الكل ({orders.length})</span>
+					<span>إدارة الحالات ({orders.length})</span>
 					<span>←</span>
 				</a>
 			</div>
 		</div>
 
-		<!-- Table: Desktop and Tablet View -->
+		<!-- Table -->
 		{#if filteredOrders.length === 0}
 			<div class="p-12 text-center">
 				<span class="text-4xl">📦</span>
@@ -314,110 +493,151 @@
 			<div class="overflow-x-auto">
 				<table class="w-full text-right border-collapse">
 					<thead>
-						<tr class="border-b border-neutral-100 bg-neutral-50/75 text-[11px] font-extrabold text-neutral-500 uppercase tracking-wider">
-							<th class="py-3.5 px-4 sm:px-6">التاريخ</th>
-							<th class="py-3.5 px-4">الزبونة / الزبون</th>
-							<th class="py-3.5 px-4">الهاتف والواتساب</th>
-							<th class="py-3.5 px-4">المنتج الرئيسي</th>
-							<th class="py-3.5 px-4">الأبسيل المضاف (+99 DH)</th>
-							<th class="py-3.5 px-4">المجموع</th>
-							<th class="py-3.5 px-4">المزامنة (Sheets / Bot)</th>
-							<th class="py-3.5 px-4 sm:px-6">الحالة</th>
+						<tr
+							class="border-b border-neutral-200/80 bg-neutral-50/90 text-[11px] font-black text-neutral-600 uppercase tracking-wider"
+						>
+							<th class="py-3.5 px-4 sm:px-5">التاريخ</th>
+							<th class="py-3.5 px-4">الزبونة / الاسم</th>
+							<th class="py-3.5 px-4">رقم الهاتف</th>
+							<th class="py-3.5 px-4">العرض الأساسي (Base Offer)</th>
+							<th class="py-3.5 px-4">الأبسيل المضاف (+99 MAD)</th>
+							<th class="py-3.5 px-4 text-center">عدد العلب (qte)</th>
+							<th class="py-3.5 px-4">المبلغ الإجمالي</th>
+							<th class="py-3.5 px-4 sm:px-5">الربح الصافي (عند التسليم)</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-neutral-100 text-xs">
 						{#each filteredOrders as order}
-							<tr class="hover:bg-emerald-50/30 transition-colors group">
-								<!-- Date -->
-								<td class="py-4 px-4 sm:px-6 whitespace-nowrap">
-									<div class="flex items-center gap-2">
+							{@const orderNetProfit = calcOrderDeliveredNetProfit(
+								order.totalPrice,
+								order.physicalBottles
+							)}
+							<tr class="hover:bg-emerald-50/40 transition-colors group">
+								<!-- 1. Order Date -->
+								<td class="py-4 px-4 sm:px-5 whitespace-nowrap">
+									<div class="flex items-center gap-1.5">
 										<span class="font-bold text-neutral-800">{order.formattedDate}</span>
 										{#if order.isToday}
-											<span class="px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
+											<span
+												class="px-1.5 py-0.5 rounded-md bg-emerald-100 text-[#065f46] text-[10px] font-black"
+											>
 												اليوم
 											</span>
 										{/if}
 									</div>
-									<span class="text-[10px] font-mono text-neutral-400 block mt-0.5">{order.id}</span>
+									<div class="flex items-center gap-1.5 mt-1">
+										<span class="text-[10px] font-mono text-neutral-400">{order.id}</span>
+										<span
+											class={`inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-bold border ${
+												orderStatusBadges[order.status] ||
+												'bg-neutral-100 text-neutral-600 border-neutral-200'
+											}`}
+										>
+											{order.status}
+										</span>
+									</div>
 								</td>
 
-								<!-- Customer Name -->
+								<!-- 2. Customer Name -->
 								<td class="py-4 px-4 font-bold text-neutral-900 whitespace-nowrap">
-									<div class="flex items-center gap-2">
-										<span class="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 font-bold text-xs">
+									<div class="flex items-center gap-2.5">
+										<span
+											class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100/80 text-[#065f46] font-black text-xs"
+										>
 											{order.fullName.charAt(0)}
 										</span>
 										<div>
-											<span>{order.fullName}</span>
-											<span class="text-[10px] text-neutral-400 font-normal block">{order.city}</span>
+											<span class="block font-extrabold text-neutral-900">{order.fullName}</span>
+											<span class="text-[10px] text-neutral-400 font-semibold block">
+												{order.city}
+											</span>
 										</div>
 									</div>
 								</td>
 
-								<!-- Phone with 1-click WhatsApp button -->
+								<!-- 3. Phone with 1-click WhatsApp -->
 								<td class="py-4 px-4 whitespace-nowrap">
 									<div class="flex items-center gap-1.5">
-										<span class="font-mono font-semibold text-neutral-700 dir-ltr">{order.phone}</span>
+										<span class="font-mono font-bold text-neutral-800" dir="ltr">
+											{order.phone}
+										</span>
 										<a
-											href={getWhatsappLink(order.phone, order.fullName, order.mainProduct)}
+											href={getWhatsappLink(order.phone, order.fullName, order.product)}
 											target="_blank"
 											rel="noopener noreferrer"
-											class="p-1 rounded-lg bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors"
+											class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-100 text-[#065f46] hover:bg-emerald-200 transition-colors text-[10px] font-extrabold"
 											title="تأكيد الطلب مباشرة عبر الواتساب"
 										>
-											<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
-												<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z" />
-											</svg>
+											<span>واتساب</span>
+											<span>↗</span>
 										</a>
 									</div>
 								</td>
 
-								<!-- Main Product -->
+								<!-- 4. Base Offer (199 / 279 / 349 MAD) -->
 								<td class="py-4 px-4 whitespace-nowrap">
-									<span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${order.mainProductBadge}`}>
-										{order.mainProductTag}
-									</span>
-								</td>
-
-								<!-- Upsell Product Added -->
-								<td class="py-4 px-4 whitespace-nowrap">
-									{#if order.hasUpsell}
-										<span class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border ${order.upsellBadge}`}>
-											<span>✨</span>
-											<span>{order.upsellName}</span>
+									<div class="flex flex-col gap-1 items-start">
+										<span
+											class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-extrabold border ${order.baseOfferBadge}`}
+										>
+											{order.baseOfferLabel}
 										</span>
-									{:else}
-										<span class="text-neutral-400 text-xs font-medium">
-											— بدون أبسيل
-										</span>
-									{/if}
-								</td>
-
-								<!-- Total Price -->
-								<td class="py-4 px-4 whitespace-nowrap font-black text-sm text-neutral-900">
-									{order.totalPrice} <span class="text-xs font-bold text-neutral-500">{data.currencySymbol}</span>
-								</td>
-
-								<!-- Sync Status (Sheets & SpaceSeller) -->
-								<td class="py-4 px-4 whitespace-nowrap">
-									<div class="flex items-center gap-1.5">
-										<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold" title="تم الإرسال لـ Google Sheets">
-											<span>Google Sheets</span>
-											<span>✓</span>
-										</span>
-										<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 border border-sky-200 text-[10px] font-bold" title="جاهز للربط مع نظام التوصيل">
-											<span>SpaceSeller</span>
-											<span>📦</span>
+										<span class="text-[10px] font-bold text-neutral-500">
+											المنتج: {order.mainProductTag} ({order.sku})
 										</span>
 									</div>
 								</td>
 
-								<!-- Status -->
-								<td class="py-4 px-4 sm:px-6 whitespace-nowrap">
-									<span class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${orderStatusBadges[order.status] || 'bg-neutral-100 text-neutral-700 border-neutral-200'}`}>
-										<span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-										<span>{order.status}</span>
+								<!-- 5. Upsells Added (+99 MAD items) -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									{#if order.hasUpsell}
+										<span
+											class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-extrabold border ${order.upsellBadge}`}
+										>
+											<span>🔥</span>
+											<span>{order.upsellName}</span>
+										</span>
+									{:else}
+										<span class="text-neutral-400 text-xs font-semibold"> — بدون أبسيل </span>
+									{/if}
+								</td>
+
+								<!-- 6. Total Physical Bottles (qte) -->
+								<td class="py-4 px-4 text-center whitespace-nowrap">
+									<span
+										class="inline-flex items-center justify-center gap-1 px-3 py-1 rounded-xl bg-neutral-900 text-amber-300 font-black text-xs shadow-2xs"
+									>
+										<span>{order.physicalBottles}</span>
+										<span class="text-[10px] text-white font-bold">
+											{order.physicalBottles === 1 ? 'علبة' : 'علب'}
+										</span>
 									</span>
+								</td>
+
+								<!-- 7. Total Price (MAD) -->
+								<td class="py-4 px-4 whitespace-nowrap">
+									<span class="font-black text-sm text-neutral-900" dir="ltr">
+										{order.totalPrice} MAD
+									</span>
+								</td>
+
+								<!-- 8. Estimated Net Profit if Delivered -->
+								<td class="py-4 px-4 sm:px-5 whitespace-nowrap">
+									<div class="flex flex-col items-start">
+										<span
+											class={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black border ${
+												orderNetProfit > 0
+													? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+													: 'bg-rose-50 text-rose-800 border-rose-200'
+											}`}
+											dir="ltr"
+										>
+											{orderNetProfit > 0 ? `+${orderNetProfit}` : orderNetProfit} MAD
+										</span>
+										<span class="text-[10px] text-neutral-400 font-semibold mt-0.5">
+											بعد {spaceSellerFee} شحن و {order.physicalBottles * unitCost} سلعة
+										</span>
+									</div>
 								</td>
 							</tr>
 						{/each}

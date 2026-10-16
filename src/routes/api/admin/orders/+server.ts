@@ -5,10 +5,11 @@ import { isValidSession } from '$lib/server/auth';
 import { computeDashboardStats, enrichOrderForDashboard } from '$lib/server/adminOrders';
 
 export const GET: RequestHandler = async ({ cookies }) => {
-	// 1. Session Authentication Check
+	// 1. Session or PIN Cookie Authentication Check
 	const session = cookies.get('session');
-	if (!isValidSession(session)) {
-		return json({ error: 'غير مصرح لك بالوصول، يرجى تسجيل الدخول أولاً' }, { status: 401 });
+	const pinCookie = cookies.get('nv_admin_pin');
+	if (!isValidSession(session) && pinCookie !== '2026') {
+		return json({ error: 'غير مصرح لك بالوصول، يرجى إدخال رمز القفل أولاً' }, { status: 401 });
 	}
 
 	try {
@@ -17,7 +18,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
 
 		// 3. Compute KPI metrics and enrich orders
 		const stats = computeDashboardStats(rawOrders);
-		const enrichedOrders = rawOrders.slice(0, 50).map(enrichOrderForDashboard);
+		const enrichedOrders = rawOrders.map(enrichOrderForDashboard);
 
 		return json({
 			success: true,
