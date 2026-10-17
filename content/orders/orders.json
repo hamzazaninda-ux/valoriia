@@ -1,5 +1,32 @@
 [
   {
+    "id": "NV-152452",
+    "createdAt": "2026-10-17T18:24:06.854Z",
+    "fullName": "بسمة",
+    "phone": "0630266355",
+    "city": "تأكيد العنوان عبر الهاتف",
+    "address": "تأكيد العنوان عبر الهاتف",
+    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة)",
+    "quantity": 1,
+    "totalPrice": 199,
+    "status": "جديد",
+    "sku": "gummies_collagen",
+    "pageUrl": "",
+    "orderType": "direct",
+    "items": [
+      {
+        "sku": "gummies_collagen",
+        "slug": "gummies_collagen",
+        "title": "علكات الكولاجين البحري (علبة واحدة)",
+        "quantity": 1,
+        "unitPrice": 199,
+        "price": 199,
+        "isUpsell": false
+      }
+    ],
+    "notes": ""
+  },
+  {
     "id": "NV-832562",
     "createdAt": "2026-10-17T13:34:09.138Z",
     "fullName": "فاطمة",
