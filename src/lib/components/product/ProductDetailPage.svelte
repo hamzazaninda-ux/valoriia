@@ -18,6 +18,8 @@
 	let phoneError = $state('');
 	let isSubmitting = $state(false);
 	let fullNameInputEl = $state<HTMLInputElement | null>(null);
+	let directFormEl = $state<HTMLFormElement | null>(null);
+	let isFormVisible = $state(false);
 
 	onMount(() => {
 		if (
@@ -38,6 +40,24 @@
 				}
 			}, 150);
 		}
+
+		let observer: IntersectionObserver | null = null;
+		const formNode = directFormEl || document.getElementById('direct-cod-form');
+		if (typeof IntersectionObserver !== 'undefined' && formNode) {
+			observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						isFormVisible = entry.isIntersecting;
+					}
+				},
+				{ threshold: 0.1 }
+			);
+			observer.observe(formNode);
+		}
+
+		return () => {
+			observer?.disconnect();
+		};
 	});
 
 	const product = $derived(data.product);
@@ -503,9 +523,10 @@
 
 				<!-- نموذج الطلب المباشر عالي التحويل (Direct Inline COD Form) -->
 				<form
+					bind:this={directFormEl}
 					id="direct-cod-form"
 					onsubmit={handleDirectOrderSubmit}
-					class="bg-white border-2 border-[#065f46]/20 shadow-lg rounded-2xl p-4 sm:p-5 mt-4 scroll-mt-24 space-y-3.5"
+					class="bg-white border-2 border-[#065f46]/20 shadow-lg rounded-2xl p-4 sm:p-5 mt-4 scroll-mt-24 space-y-4"
 					dir="rtl"
 					novalidate
 				>
@@ -515,6 +536,9 @@
 
 					<!-- Field 1: Full Name -->
 					<div class="space-y-1">
+						<label for="cod-fullname-input" class="text-sm font-bold text-gray-800 mb-1.5 block text-right">
+							الاسم الكامل :
+						</label>
 						<div class="relative flex items-center">
 							<span class="pointer-events-none absolute right-3.5 text-[#065f46]/70" aria-hidden="true">
 								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -527,11 +551,12 @@
 								id="cod-fullname-input"
 								name="fullName"
 								type="text"
+								dir="rtl"
 								autocomplete="name"
 								required
-								placeholder="الاسم الكامل (مثال: فاطمة الزهراء)"
+								placeholder="أدخلي اسمك الكامل هنا..."
 								oninput={() => (nameError = '')}
-								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-gray-50 border {nameError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300'} focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all"
+								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-white border-2 {nameError ? 'border-red-500 ring-4 ring-red-500/15' : 'border-emerald-700/25'} shadow-sm focus:border-[#059669] focus:ring-4 focus:ring-[#059669]/15 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all text-right"
 							/>
 						</div>
 						{#if nameError}
@@ -541,6 +566,9 @@
 
 					<!-- Field 2: Phone Number -->
 					<div class="space-y-1">
+						<label for="cod-phone-input" class="text-sm font-bold text-gray-800 mb-1.5 block text-right">
+							رقم الهاتف لتأكيد الطلب :
+						</label>
 						<div class="relative flex items-center">
 							<span class="pointer-events-none absolute right-3.5 text-[#065f46]/70" aria-hidden="true">
 								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -553,11 +581,12 @@
 								name="phone"
 								type="tel"
 								inputmode="numeric"
+								dir="rtl"
 								autocomplete="tel"
 								required
-								placeholder="رقم الهاتف (06XXXXXXXX أو 07XXXXXXXX)"
+								placeholder="06XXXXXXXX أو 07XXXXXXXX"
 								oninput={() => (phoneError = '')}
-								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-gray-50 border {phoneError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300'} focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all text-right"
+								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-white border-2 {phoneError ? 'border-red-500 ring-4 ring-red-500/15' : 'border-emerald-700/25'} shadow-sm focus:border-[#059669] focus:ring-4 focus:ring-[#059669]/15 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all text-right"
 							/>
 						</div>
 						{#if phoneError}
@@ -569,12 +598,12 @@
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						class="w-full min-h-14 py-4 px-5 rounded-xl bg-gradient-to-r from-[#059669] via-[#047857] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] ring-2 ring-[#f59e0b]/40 shadow-xl shadow-emerald-900/20 active:scale-[0.99] transition-all flex items-center justify-center text-center font-extrabold text-lg sm:text-xl text-white cursor-pointer disabled:opacity-70"
+						class="cta-shake w-full min-h-14 py-4 px-5 rounded-xl bg-gradient-to-r from-[#059669] via-[#047857] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] ring-2 ring-[#f59e0b]/40 shadow-xl shadow-emerald-900/20 active:scale-[0.99] transition-all flex items-center justify-center text-center font-extrabold text-lg sm:text-xl text-white cursor-pointer disabled:opacity-70"
 					>
 						{#if isSubmitting}
 							<span>جاري تأكيد طلبك...</span>
 						{:else}
-							<span>✅ أكدي طلبك الآن • {currentTier.price} DH</span>
+							<span>✅ أكدي طلبك الآن</span>
 						{/if}
 					</button>
 
@@ -1113,53 +1142,50 @@
 	<!-- ========================================================================= -->
 	<!-- 9. Sticky Mobile CTA Bar (Dark Green Brand Color, Scroll-Triggered)       -->
 	<!-- ========================================================================= -->
-	{#if scrollY > 350}
-		<div
-			transition:slide={{ duration: 250 }}
-			class="fixed bottom-3.5 inset-x-3.5 z-40 max-w-sm mx-auto sm:hidden pointer-events-none pb-[env(safe-area-inset-bottom,0px)]"
-			dir="rtl"
+	<div
+		class="fixed bottom-3.5 inset-x-3.5 z-40 max-w-sm mx-auto sm:hidden pb-[env(safe-area-inset-bottom,0px)] transition-all duration-300 ease-in-out {scrollY > 350 && !isFormVisible ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-full'}"
+		dir="rtl"
+	>
+		<button
+			type="button"
+			onclick={scrollToOffers}
+			class="{scrollY > 350 && !isFormVisible ? 'pointer-events-auto' : 'pointer-events-none'} relative overflow-hidden w-full min-h-[54px] rounded-full bg-gradient-to-r from-[#143427] via-[#1B4332] to-[#143427] text-white px-5 py-2.5 shadow-[0_12px_32px_rgba(20,52,39,0.5),0_2px_8px_rgba(20,52,39,0.2)] border border-emerald-400/35 active:scale-[0.98] transition-all flex items-center justify-between gap-3 cursor-pointer group"
+			aria-label="اطلبي الآن والدفع عند الاستلام"
 		>
-			<button
-				type="button"
-				onclick={scrollToOffers}
-				class="pointer-events-auto relative overflow-hidden w-full min-h-[54px] rounded-full bg-gradient-to-r from-[#143427] via-[#1B4332] to-[#143427] text-white px-5 py-2.5 shadow-[0_12px_32px_rgba(20,52,39,0.5),0_2px_8px_rgba(20,52,39,0.2)] border border-emerald-400/35 active:scale-[0.98] transition-all flex items-center justify-between gap-3 cursor-pointer group"
-				aria-label="اطلبي الآن والدفع عند الاستلام"
-			>
-				<!-- Shimmer Light-Beam Streak -->
-				<div
-					class="shimmer-pill-beam absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"
-					aria-hidden="true"
-				></div>
+			<!-- Shimmer Light-Beam Streak -->
+			<div
+				class="shimmer-pill-beam absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none"
+				aria-hidden="true"
+			></div>
 
-				<!-- Right Side: Live Pulse Dot + Headline & Trust Micro-Copy -->
-				<div class="relative z-10 flex items-center gap-2.5 text-start leading-tight">
-					<span class="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
-						<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-						<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
-					</span>
+			<!-- Right Side: Live Pulse Dot + Headline & Trust Micro-Copy -->
+			<div class="relative z-10 flex items-center gap-2.5 text-start leading-tight">
+				<span class="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
+					<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+					<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
+				</span>
 
-					<div class="flex flex-col">
-						<div class="flex items-center gap-1.5">
-							<span class="font-display font-black text-sm text-white tracking-tight">
-								اطلبي الآن • الدفع عند الاستلام
-							</span>
-							<span class="text-xs">🛍️</span>
-						</div>
-						<span class="text-[10px] text-emerald-200/90 font-semibold mt-0.5 flex items-center gap-1">
-							<span>🚚 توصيل فابور</span>
-							<span class="text-emerald-400/50">•</span>
-							<span>📦 معاينة عند الباب</span>
+				<div class="flex flex-col">
+					<div class="flex items-center gap-1.5">
+						<span class="font-display font-black text-sm text-white tracking-tight">
+							اطلبي الآن • الدفع عند الاستلام
 						</span>
+						<span class="text-xs">🛍️</span>
 					</div>
+					<span class="text-[10px] text-emerald-200/90 font-semibold mt-0.5 flex items-center gap-1">
+						<span>🚚 توصيل فابور</span>
+						<span class="text-emerald-400/50">•</span>
+						<span>📦 معاينة عند الباب</span>
+					</span>
 				</div>
+			</div>
 
-				<!-- Left Side: Circular Arrow Badge -->
-				<div class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white border border-white/25 text-xs font-black transition-transform group-hover:-translate-x-0.5 shadow-inner">
-					←
-				</div>
-			</button>
-		</div>
-	{/if}
+			<!-- Left Side: Circular Arrow Badge -->
+			<div class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20 text-white border border-white/25 text-xs font-black transition-transform group-hover:-translate-x-0.5 shadow-inner">
+				←
+			</div>
+		</button>
+	</div>
 
 </div>
 
@@ -1174,5 +1200,22 @@
 	}
 	.shimmer-pill-beam {
 		animation: shimmerSweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	}
+
+	@keyframes ctaShake {
+		0%, 80%, 100% { transform: translateX(0); }
+		84% { transform: translateX(-6px); }
+		88% { transform: translateX(6px); }
+		92% { transform: translateX(-4px); }
+		96% { transform: translateX(4px); }
+	}
+	.cta-shake {
+		animation: ctaShake 3s infinite ease-in-out;
+	}
+	.cta-shake:hover,
+	.cta-shake:active,
+	.cta-shake:focus,
+	.cta-shake:disabled {
+		animation: none;
 	}
 </style>
