@@ -67,7 +67,7 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
 
 export const DEFAULT_TIER_ID: 'tier_1' | 'tier_2' | 'tier_3' = 'tier_2';
 
-export const FLASH_UPSELL_PRICE = 98; // MAD
+export const FLASH_UPSELL_PRICE = 99; // MAD
 export const FREE_SHIPPING_THRESHOLD = 250; // MAD
 export const STANDARD_SHIPPING_FEE = 29; // MAD
 export const CURRENCY = 'MAD';

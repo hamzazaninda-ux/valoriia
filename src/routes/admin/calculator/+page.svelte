@@ -146,12 +146,12 @@
 	// =========================================================================
 	const OFFERS_LIST = [
 		{ name: 'باقة 1 علبة', bottles: 1, price: 199 },
-		{ name: 'باقة 1 علبة + أبسيل (2 علب)', bottles: 2, price: 297 },
+		{ name: 'باقة 1 علبة + أبسيل (2 علب)', bottles: 2, price: 298 },
 		{ name: 'باقة علبتين (2 علب)', bottles: 2, price: 279 },
-		{ name: 'باقة علبتين + أبسيل (3 علب)', bottles: 3, price: 377 },
-		{ name: 'باقة علبتين + 2 أبسيل (4 علب)', bottles: 4, price: 475 },
+		{ name: 'باقة علبتين + أبسيل (3 علب)', bottles: 3, price: 378 },
+		{ name: 'باقة علبتين + 2 أبسيل (4 علب)', bottles: 4, price: 477 },
 		{ name: 'باقة 3 علب', bottles: 3, price: 349 },
-		{ name: 'باقة 3 علب + أبسيل (4 علب)', bottles: 4, price: 447 }
+		{ name: 'باقة 3 علب + أبسيل (4 علب)', bottles: 4, price: 448 }
 	];
 
 	const offerRows = $derived(

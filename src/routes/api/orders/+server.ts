@@ -120,7 +120,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					sku: upsellSku,
 					title: upsellSku === 'gummies_biotine' ? 'علكات البيوتين والزنك' : 'علكات الكولاجين البحري',
 					quantity: 1,
-					price: 98,
+					price: 99,
 					isUpsell: true
 				});
 			}

@@ -147,10 +147,10 @@
 			if (rawOrder?.hasUpsell || paramUpsell) {
 				items.push({
 					sku: 'gummies_biotine',
-					title: 'علكات البيوتين والزنك المركز (عرض خاص - خصم 51%)',
+					title: 'علكات البيوتين والزنك المركز (عرض خاص)',
 					quantity: 1,
-					unitPrice: 98,
-					price: 98
+					unitPrice: 99,
+					price: 99
 				});
 			}
 		}

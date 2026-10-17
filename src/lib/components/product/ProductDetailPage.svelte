@@ -18,13 +18,15 @@
 	let phoneError = $state('');
 	let isSubmitting = $state(false);
 	let showUpsellModal = $state(false);
+	let upsellCountdown = $state(10);
+	let upsellTimerId: ReturnType<typeof setInterval> | null = null;
 	let pendingOrderId = $state('');
 	let orderDispatched = $state(false);
 	let fullNameInputEl = $state<HTMLInputElement | null>(null);
 	let directFormEl = $state<HTMLFormElement | null>(null);
 	let isFormVisible = $state(false);
 
-	const UPSELL_PRICE = 98;
+	const UPSELL_PRICE = 99;
 	const BIOTINE_UPSELL_IMAGE =
 		'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png';
 
@@ -275,16 +277,31 @@
 
 		if (hasError) return;
 
-		// Open Pre-Thank-You Interstitial Upsell Modal instantaneously (0ms)
+		// Open Pre-Thank-You Interstitial Upsell Modal instantaneously (0ms) with 10s countdown
 		pendingOrderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
 		orderDispatched = false;
+		upsellCountdown = 10;
 		showUpsellModal = true;
+
+		if (upsellTimerId) clearInterval(upsellTimerId);
+		upsellTimerId = setInterval(() => {
+			if (upsellCountdown > 0) {
+				upsellCountdown -= 1;
+			} else if (upsellTimerId) {
+				clearInterval(upsellTimerId);
+				upsellTimerId = null;
+			}
+		}, 1000);
 	}
 
 	function finalizeOrder(withUpsell: boolean) {
 		if (isSubmitting) return;
 		isSubmitting = true;
 		orderDispatched = true;
+		if (upsellTimerId) {
+			clearInterval(upsellTimerId);
+			upsellTimerId = null;
+		}
 
 		const orderPayload = buildUnifiedOrderPayload(withUpsell);
 		const jsonStr = JSON.stringify(orderPayload);
@@ -1279,129 +1296,94 @@
 	</div>
 
 	<!-- ========================================================================= -->
-	<!-- 10. Pre-Thank-You Interstitial Upsell Modal (Biotin & Zinc 98 DH)         -->
+	<!-- 10. Pre-Thank-You Interstitial Upsell Modal (One-Screen Zero-Scroll 99 DH) -->
 	<!-- ========================================================================= -->
 	{#if showUpsellModal}
 		<div
-			class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto"
+			class="fixed inset-0 z-50 bg-white sm:bg-black/75 sm:backdrop-blur-xs flex items-center justify-center h-[100dvh] max-h-[100dvh] overflow-hidden p-0 sm:p-4"
 			dir="rtl"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="upsell-modal-title"
 		>
 			<div
-				class="relative w-full min-h-dvh sm:min-h-0 sm:max-w-lg bg-white sm:rounded-3xl border-2 border-[#059669] shadow-2xl flex flex-col justify-between overflow-hidden"
+				class="w-full h-[100dvh] max-h-[100dvh] sm:h-auto sm:max-h-[92vh] sm:max-w-md bg-white sm:rounded-3xl sm:border-2 sm:border-[#059669] sm:shadow-2xl flex flex-col justify-between p-4 overflow-hidden"
 			>
-				<!-- Top Highlighted Banner -->
+				<!-- 1. Top 10-Second Countdown Timer Bar -->
 				<div
-					class="bg-gradient-to-r from-[#064e3b] via-[#059669] to-[#064e3b] text-white px-3.5 py-3 text-center border-b-2 border-[#d97706] relative"
+					class="shrink-0 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl py-2 px-3 text-center font-bold text-sm flex items-center justify-center gap-2"
 				>
-					<p class="text-xs sm:text-sm font-extrabold leading-snug">
-						⏳ خطوة أخيرة قبل تغليف طلبيتك — عرض خاص لمرة واحدة (خصم 51%)
-					</p>
-					<button
-						type="button"
-						onclick={() => finalizeOrder(false)}
-						aria-label="إغلاق وإكمال الطلب الأساسي"
-						class="absolute left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+					<span>⏳ عرض خاص يختفي خلال:</span>
+					<span
+						class="bg-[#d97706] text-white font-mono font-black px-2 py-0.5 rounded-lg text-xs sm:text-sm tracking-wider shadow-2xs"
+						dir="ltr"
 					>
-						✕
-					</button>
+						00:{upsellCountdown < 10 ? `0${upsellCountdown}` : upsellCountdown}
+					</span>
+					<span class="text-xs font-extrabold text-amber-800">({upsellCountdown} ثواني)</span>
 				</div>
 
-				<!-- Modal Body -->
-				<div class="p-4 sm:p-6 space-y-3.5 flex-1 flex flex-col justify-center">
-					<!-- Product Image & Concentration Badge -->
-					<div class="relative flex flex-col items-center">
-						<div
-							class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-[#FAF8F5] border-2 border-[#059669]/25 p-2 shadow-md flex items-center justify-center overflow-hidden"
-						>
-							<img
-								src={BIOTINE_UPSELL_IMAGE}
-								alt="علكات البيوتين والزنك المركز - NOVAVITA"
-								class="w-full h-full object-contain"
-								loading="eager"
-								onerror={(e: any) => {
-									e.currentTarget.onerror = null;
-									e.currentTarget.src = '/images/products/gummies_biotine.svg';
-								}}
-							/>
-						</div>
-						<span
-							class="-mt-3 z-10 inline-flex items-center gap-1 bg-gradient-to-r from-[#d97706] to-[#b45309] text-white text-xs font-extrabold px-3.5 py-1 rounded-full shadow-md border border-amber-200"
-						>
-							تركيز الزنك + بيوتين 3000mcg
-						</span>
-					</div>
+				<!-- 2. Simple Title Above Image -->
+				<h2
+					id="upsell-modal-title"
+					class="shrink-0 text-xl font-extrabold text-[#064e3b] text-center leading-tight my-1"
+				>
+					⚡ سرّعي مفعول الكولاجين 2X مع البيوتين والزنك!
+				</h2>
 
-					<!-- Main Headline -->
-					<h2
-						id="upsell-modal-title"
-						class="font-display text-lg sm:text-xl font-black text-[#064e3b] text-center leading-snug"
-					>
-						⚡ ضاعفي وسرّعي مفعول الكولاجين 2X مع البيوتين والزنك المركز!
-					</h2>
+				<!-- 3. Large Centered Hero Product Image with Floating Overlay Badges -->
+				<div class="relative flex-1 flex items-center justify-center my-1 min-h-0 w-full max-w-[290px] mx-auto">
+					<img
+						src={BIOTINE_UPSELL_IMAGE}
+						alt="علكات البيوتين والزنك المركز - NOVAVITA"
+						class="w-full max-w-[260px] h-[230px] sm:h-[260px] max-h-full object-contain mx-auto drop-shadow-md p-1"
+						loading="eager"
+						onerror={(e: any) => {
+							e.currentTarget.onerror = null;
+							e.currentTarget.src = '/images/products/gummies_biotine.svg';
+						}}
+					/>
 
-					<!-- Psychological Subheadline -->
-					<p class="text-xs sm:text-sm text-gray-700 text-center leading-relaxed font-medium bg-emerald-50/60 border border-[#059669]/20 rounded-xl p-2.5">
-						الكولاجين يحتاج إلى "الزنك وفيتامين C" ليثبت في خلايا البشرة! أضيفي علكات البيوتين والزنك لطلبك الآن لتسريع نضارة الوجه في نصف المدة، ووقف تساقط الشعر وتكثيفه من الجذور.
-					</p>
-
-					<!-- 3 Concise & Clear Benefits -->
-					<div class="bg-[#FAF8F5] border border-stone-200/90 rounded-2xl p-3 space-y-2 text-right">
-						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-gray-800 leading-snug">
-							<span class="shrink-0">🔬</span>
-							<span>تركيز الزنك وفيتامين C: يثبّت الكولاجين في البشرة ويضاعف الإشراقة 2X.</span>
-						</div>
-						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-gray-800 leading-snug">
-							<span class="shrink-0">💇‍♀️</span>
-							<span>بيوتين 3000mcg: يوقف تساقط الشعر، ينبت البيبي هير ويقوي الأظافر.</span>
-						</div>
-						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-[#065f46] leading-snug">
-							<span class="shrink-0">📦</span>
-							<span>يُشحن مجاناً في نفس الكولية ديالك بدون أي مصاريف توصيل إضافية!</span>
-						</div>
-					</div>
-
-					<!-- Attractive Price Box -->
+					<!-- Corner Floating Price Badge -->
 					<div
-						class="bg-amber-50/80 border-2 border-[#d97706]/40 rounded-2xl py-2.5 px-4 flex items-center justify-center gap-3 flex-wrap text-center"
+						class="absolute top-1 right-0 z-10 bg-[#059669] text-white font-black px-3 py-1.5 rounded-2xl shadow-lg text-base sm:text-lg border-2 border-white flex flex-col items-center leading-tight"
 					>
-						<span class="text-sm sm:text-base font-bold text-gray-400 line-through" dir="ltr">
-							199 DH
-						</span>
-						<span class="text-xl sm:text-2xl font-black text-[#059669]">
-							98 DH فقط
-						</span>
-						<span
-							class="bg-[#d97706] text-white text-xs font-extrabold px-2.5 py-0.5 rounded-full shadow-2xs"
-						>
-							وفّري 101 درهم الآن
-						</span>
+						<span class="whitespace-nowrap">99 درهم فقط</span>
+						<span class="text-[11px] text-emerald-100 line-through font-bold" dir="ltr">199 DH</span>
 					</div>
 
-					<!-- Action Buttons -->
-					<div class="space-y-2.5 pt-1">
-						<!-- Primary CTA: Accept Upsell -->
-						<button
-							type="button"
-							disabled={isSubmitting}
-							onclick={() => finalizeOrder(true)}
-							class="cta-shake w-full min-h-14 py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#059669] via-[#047857] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] ring-2 ring-[#d97706]/60 shadow-xl shadow-emerald-900/25 active:scale-[0.99] transition-all flex items-center justify-center text-center font-extrabold text-base sm:text-lg text-white cursor-pointer disabled:opacity-70"
-						>
-							<span>✅ نعم! أضيفي البيوتين والزنك لطلبي (+98 DH)</span>
-						</button>
-
-						<!-- Secondary CTA: Decline Upsell & Complete Base Order -->
-						<button
-							type="button"
-							disabled={isSubmitting}
-							onclick={() => finalizeOrder(false)}
-							class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-gray-600 hover:text-gray-900 font-bold text-xs sm:text-sm transition-colors text-center cursor-pointer disabled:opacity-50"
-						>
-							لا شكراً، أكملي طلبي الأساسي فقط ←
-						</button>
+					<!-- Bottom Floating Concentration Badge -->
+					<div
+						class="absolute bottom-1 left-1/2 -translate-x-1/2 z-10 bg-amber-600 text-white text-xs font-bold px-3.5 py-1 rounded-full shadow-md border border-amber-200 whitespace-nowrap"
+					>
+						تركيز الزنك + بيوتين 3000mcg • توصيل فابور
 					</div>
+				</div>
+
+				<!-- 4. Short Subtitle Below Image -->
+				<p class="shrink-0 text-sm font-medium text-gray-700 text-center px-2 my-1 leading-snug">
+					يثبّت الكولاجين في البشرة، يوقف تساقط الشعر ويقوي الأظافر من الجذور.
+				</p>
+
+				<!-- 5. Compact Single-Line Action Buttons -->
+				<div class="shrink-0 w-full pt-1">
+					<button
+						type="button"
+						disabled={isSubmitting}
+						onclick={() => finalizeOrder(true)}
+						class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#059669] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] text-white font-extrabold text-lg shadow-lg cta-shake whitespace-nowrap flex items-center justify-center text-center cursor-pointer disabled:opacity-70"
+					>
+						✅ أضيفي للطلب • 99 درهم فقط
+					</button>
+
+					<button
+						type="button"
+						disabled={isSubmitting}
+						onclick={() => finalizeOrder(false)}
+						class="w-full py-2.5 mt-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm text-center cursor-pointer transition-colors disabled:opacity-50"
+					>
+						لا شكراً
+					</button>
 				</div>
 			</div>
 		</div>

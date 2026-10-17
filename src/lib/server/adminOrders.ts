@@ -144,7 +144,7 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	if (upsellLines.length > 0) {
 		for (const up of upsellLines) {
 			const qty = Math.max(1, Number(up.quantity ?? up.qty ?? 1));
-			const unitUpPrice = Number(up.price || up.unitPrice || 98);
+			const unitUpPrice = Number(up.price || up.unitPrice || 99);
 			upsellCount += qty;
 			const upSku = normalizeToCanonicalSku(`${up.sku || ''} ${up.slug || ''} ${up.title || ''}`);
 			skuBreakdown[upSku] += qty;
@@ -162,9 +162,9 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	// 2. Determine Base Tier (1, 2, or 3 bottles) and infer upsells if not in items JSON
 	let baseBottles: 1 | 2 | 3 = 1;
 
-	// Price-based exact matching first (199, 279, 349 + n * 98)
-	const priceWithoutKnownUpsells = totalPrice - upsellCount * 98;
-	const priceWithoutLegacyUpsells = totalPrice - upsellCount * 99;
+	// Price-based exact matching first (199, 279, 349 + n * 99)
+	const priceWithoutKnownUpsells = totalPrice - upsellCount * 99;
+	const priceWithoutLegacyUpsells = totalPrice - upsellCount * 98;
 
 	if (
 		prodText.includes('3 علب') ||
@@ -173,10 +173,10 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		priceWithoutKnownUpsells === 349 ||
 		priceWithoutLegacyUpsells === 349 ||
 		totalPrice === 349 ||
-		totalPrice === 447 ||
 		totalPrice === 448 ||
-		totalPrice === 545 ||
-		totalPrice === 547
+		totalPrice === 447 ||
+		totalPrice === 547 ||
+		totalPrice === 545
 	) {
 		baseBottles = 3;
 	} else if (
@@ -189,10 +189,10 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		priceWithoutKnownUpsells === 249 ||
 		totalPrice === 279 ||
 		totalPrice === 249 ||
-		totalPrice === 377 ||
 		totalPrice === 378 ||
-		totalPrice === 475 ||
-		totalPrice === 477
+		totalPrice === 377 ||
+		totalPrice === 477 ||
+		totalPrice === 475
 	) {
 		baseBottles = 2;
 	} else {
@@ -204,14 +204,14 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	// If upsellLines was empty but totalPrice or product text indicates upsells:
 	if (upsellCount === 0) {
 		const priceDiff = totalPrice - baseOfferPrice;
-		if (priceDiff >= 90 && Math.round(priceDiff / 98) >= 1) {
-			upsellCount = Math.round(priceDiff / 98);
+		if (priceDiff >= 90 && Math.round(priceDiff / 99) >= 1) {
+			upsellCount = Math.round(priceDiff / 99);
 		} else if (order.orderType === 'upsell' || prodText.includes('أبسيل') || prodText.includes('العرض الخاطف')) {
 			upsellCount = 1;
 		}
 
 		if (upsellCount > 0) {
-			const inferredUpPrice = priceDiff === 99 ? 99 : 98;
+			const inferredUpPrice = priceDiff === 98 ? 98 : 99;
 			const lower = prodText.toLowerCase();
 			if (lower.includes('biotin') || lower.includes('بيوتين')) {
 				skuBreakdown.gummies_biotine += upsellCount;
