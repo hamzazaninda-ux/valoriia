@@ -1,21 +1,40 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import Header from '$lib/components/shared/Header.svelte';
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
-	import CartDrawer from '$lib/components/cart/CartDrawer.svelte';
 	import { PRICING_TIERS } from '$lib/constants/pricing';
-	import { cart, cartUi } from '$lib/stores/cart.svelte';
+	import { buildOrderFulfillmentLabel } from '$lib/data/products';
 	import { slide } from 'svelte/transition';
 	import { trackAddToCart } from '$lib/tracking/pixel.js';
+	import { trackPurchase } from '$lib/utils/checkout';
 
 	let { data } = $props();
 
+	// Inline Direct COD Form State
+	let fullName = $state('');
+	let phone = $state('');
+	let nameError = $state('');
+	let phoneError = $state('');
+	let isSubmitting = $state(false);
+	let fullNameInputEl = $state<HTMLInputElement | null>(null);
+
 	onMount(() => {
-		if (typeof window !== 'undefined' && (window.location.hash === '#order' || window.location.hash === '#offers')) {
+		if (
+			typeof window !== 'undefined' &&
+			(window.location.hash === '#order' ||
+				window.location.hash === '#offers' ||
+				window.location.hash === '#direct-cod-form')
+		) {
 			setTimeout(() => {
-				const target = document.getElementById('order') || document.getElementById('product-order-box') || document.getElementById('offers');
+				const target =
+					document.getElementById('direct-cod-form') ||
+					document.getElementById('order') ||
+					document.getElementById('product-order-box') ||
+					document.getElementById('offers');
 				if (target) {
-					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					setTimeout(() => fullNameInputEl?.focus(), 350);
 				}
 			}, 150);
 		}
@@ -39,7 +58,7 @@
 		activeImage = data.product.image;
 	});
 
-	// Drawer and Header States
+	// Header States
 	let searchOpen = $state(false);
 	let menuOpen = $state(false);
 	let query = $state('');
@@ -50,73 +69,143 @@
 
 	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
 		selectedTier = tierId;
-		if (cart.getMainItem()) {
-			const tier = PRICING_TIERS[tierId];
-			const bundleName = tier.units === 1 ? 'علبة واحدة' : tier.units === 2 ? 'علبتان' : '3 علب';
-			const bundleSubtitle = tier.units === 1
-				? 'علبة واحدة • شهر تجريبي'
-				: tier.units === 2
-					? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
-					: '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
-
-			const cleanName = product.name.replace(/\s*\([^)]*\)/g, '').trim();
-			const displayTitle = `${cleanName} (${bundleName})`;
-
-			cart.setMainItem({
-				slug: product.slug,
-				sku: product.sku,
-				title: displayTitle,
-				subtitle: bundleSubtitle,
-				image: product.image,
-				price: tier.price,
-				tier: tierId,
-				tierTitle: tier.title
-			});
-		}
-	}
-
-	function handleAddToCartAndOpenDrawer() {
-		if (typeof window !== 'undefined') {
-			window.history.pushState({ page: 'cart' }, '', '/cart');
-			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 249);
-		}
-
-		const bundleName = currentTier.units === 1 ? 'علبة واحدة' : currentTier.units === 2 ? 'علبتان' : '3 علب';
-		const bundleSubtitle = currentTier.units === 1
-			? 'علبة واحدة • شهر تجريبي'
-			: currentTier.units === 2
-				? 'علبتان • شهرين متواصلين + توصيل فابور 🚚'
-				: '3 علب • كورس علاجي كامل 3 أشهر متواصلة + توصيل فابور 🚚';
-
-		const cleanName = product.name.replace(/\s*\([^)]*\)/g, '').trim();
-		const displayTitle = `${cleanName} (${bundleName})`;
-
-		cart.setMainItem({
-			slug: product.slug,
-			sku: product.sku,
-			title: displayTitle,
-			subtitle: bundleSubtitle,
-			image: product.image,
-			price: currentTier.price,
-			tier: selectedTier,
-			tierTitle: currentTier.title
-		});
-		cartUi.openDrawer();
 	}
 
 	function scrollToOffers() {
 		if (typeof window !== 'undefined') {
-			// 1. Instantly update browser address bar to /cart
-			window.history.pushState({ page: 'cart' }, '', '/cart');
-
-			// 2. Fire Meta Pixel AddToCart
-			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 249);
+			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 279);
 		}
 
-		// 3. Smoothly scroll customer directly to checkout/order form #order
-		const el = document.getElementById('order') || document.getElementById('product-order-box') || document.getElementById('offers');
+		const el =
+			document.getElementById('direct-cod-form') ||
+			document.getElementById('order') ||
+			document.getElementById('product-order-box') ||
+			document.getElementById('offers');
 		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			setTimeout(() => {
+				fullNameInputEl?.focus();
+			}, 350);
+		}
+	}
+
+	function validatePhone(input: string): boolean {
+		const cleaned = input.replace(/[\s\-\(\)]/g, '');
+		const regex = /^(?:(?:\+?212)|0)[567]\d{8}$/;
+		return regex.test(cleaned);
+	}
+
+	async function handleDirectOrderSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		nameError = '';
+		phoneError = '';
+		let hasError = false;
+
+		if (!fullName.trim() || fullName.trim().length < 2) {
+			nameError = 'يرجى إدخال الاسم الكامل';
+			hasError = true;
+		}
+
+		const cleanedPhone = phone.trim().replace(/[\s\-\(\)]/g, '');
+		if (!cleanedPhone || !validatePhone(phone)) {
+			phoneError = 'يرجى إدخال رقم هاتف مغربي صحيح (06 أو 07 أو 05)';
+			hasError = true;
+		}
+
+		if (hasError) return;
+		if (isSubmitting) return;
+		isSubmitting = true;
+
+		try {
+			const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
+			const baseTierBottles = currentTier.units;
+			const bundleName =
+				baseTierBottles === 1 ? 'علبة واحدة' : baseTierBottles === 2 ? 'علبتان' : '3 علب';
+			const cleanName = (product?.name || 'NOVAVITA Gummies').replace(/\s*\([^)]*\)/g, '').trim();
+			const displayTitle = `${cleanName} (${bundleName})`;
+
+			const items = [
+				{
+					sku: product.sku,
+					slug: product.slug,
+					title: displayTitle,
+					quantity: baseTierBottles,
+					unitPrice: Math.round((currentTier.price / baseTierBottles) * 100) / 100,
+					price: currentTier.price,
+					isUpsell: false
+				}
+			];
+
+			const fullProductLabel = buildOrderFulfillmentLabel({
+				tier: selectedTier,
+				mainSku: product.sku || product.slug,
+				mainTitle: displayTitle,
+				items,
+				hasUpsell: false
+			});
+
+			const orderPayload = {
+				orderId,
+				fullName: fullName.trim(),
+				phone: cleanedPhone,
+				phoneNumber: cleanedPhone,
+				city: 'تأكيد العنوان عبر الهاتف',
+				address: 'تأكيد العنوان عبر الهاتف',
+				tier: selectedTier,
+				baseTier: selectedTier,
+				baseBottles: baseTierBottles,
+				tierName:
+					selectedTier === 'tier_1'
+						? 'علبة واحدة (1 علبة)'
+						: selectedTier === 'tier_3'
+							? '3 علب (كورس علاجي)'
+							: 'علبتان (2 علب)',
+				totalBottles: baseTierBottles,
+				quantity: baseTierBottles,
+				qte: baseTierBottles,
+				product: fullProductLabel,
+				productTitle: fullProductLabel,
+				selectedOfferTitle: fullProductLabel,
+				sku: product.sku || 'gummies_collagen',
+				mainSku: product.sku || 'gummies_collagen',
+				items,
+				subtotal: currentTier.price,
+				shipping: 0,
+				total: currentTier.price,
+				price: currentTier.price,
+				totalPrice: currentTier.price,
+				hasUpsell: false,
+				createdAt: new Date().toISOString()
+			};
+
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('latestOrder', JSON.stringify(orderPayload));
+			}
+			if (typeof sessionStorage !== 'undefined') {
+				sessionStorage.setItem('latestOrder', JSON.stringify(orderPayload));
+			}
+
+			try {
+				await fetch('/api/checkout', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(orderPayload),
+					keepalive: true
+				});
+			} catch (postErr) {
+				console.warn('Checkout API network notice:', postErr);
+			}
+
+			trackPurchase(currentTier.price, fullProductLabel, orderId, cleanedPhone);
+
+			await goto(
+				`/thank-you?orderId=${encodeURIComponent(orderId)}&total=${currentTier.price}&fullName=${encodeURIComponent(fullName.trim())}&phone=${encodeURIComponent(cleanedPhone)}&sku=${encodeURIComponent(product.sku || 'gummies_collagen')}&tier=${encodeURIComponent(selectedTier)}&qte=${baseTierBottles}&hasUpsell=false`
+			);
+		} catch (err) {
+			console.error('Order submission error:', err);
+			phoneError = 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى.';
+		} finally {
+			isSubmitting = false;
 		}
 	}
 
@@ -195,11 +284,9 @@
 	<!-- Sticky Header with Circular Brand Logo -->
 	<Header
 		brandName="NOVAVITA"
-		cartCount={cart.count}
 		bind:searchOpen
 		bind:menuOpen
 		bind:query
-		onOpenCart={() => cartUi.openDrawer()}
 	/>
 
 	<!-- ========================================================================= -->
@@ -414,23 +501,90 @@
 				</div>
 
 
-				<!-- زر الإجراء العريض وشارة الأمان المقتضبة -->
-				<div class="space-y-3 pt-3">
+				<!-- نموذج الطلب المباشر عالي التحويل (Direct Inline COD Form) -->
+				<form
+					id="direct-cod-form"
+					onsubmit={handleDirectOrderSubmit}
+					class="bg-white border-2 border-[#065f46]/20 shadow-lg rounded-2xl p-4 sm:p-5 mt-4 scroll-mt-24 space-y-3.5"
+					dir="rtl"
+					novalidate
+				>
+					<h3 class="text-[#064e3b] font-bold text-base sm:text-lg mb-3 text-center">
+						⚡ املئي معلوماتك لتأكيد الطلب (الدفع عند الاستلام)
+					</h3>
+
+					<!-- Field 1: Full Name -->
+					<div class="space-y-1">
+						<div class="relative flex items-center">
+							<span class="pointer-events-none absolute right-3.5 text-[#065f46]/70" aria-hidden="true">
+								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+								</svg>
+							</span>
+							<input
+								bind:this={fullNameInputEl}
+								bind:value={fullName}
+								id="cod-fullname-input"
+								name="fullName"
+								type="text"
+								autocomplete="name"
+								required
+								placeholder="الاسم الكامل (مثال: فاطمة الزهراء)"
+								oninput={() => (nameError = '')}
+								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-gray-50 border {nameError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300'} focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all"
+							/>
+						</div>
+						{#if nameError}
+							<p class="text-xs font-bold text-red-600 pr-1">{nameError}</p>
+						{/if}
+					</div>
+
+					<!-- Field 2: Phone Number -->
+					<div class="space-y-1">
+						<div class="relative flex items-center">
+							<span class="pointer-events-none absolute right-3.5 text-[#065f46]/70" aria-hidden="true">
+								<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+								</svg>
+							</span>
+							<input
+								bind:value={phone}
+								id="cod-phone-input"
+								name="phone"
+								type="tel"
+								inputmode="numeric"
+								autocomplete="tel"
+								required
+								placeholder="رقم الهاتف (06XXXXXXXX أو 07XXXXXXXX)"
+								oninput={() => (phoneError = '')}
+								class="w-full h-13 py-3.5 pr-11 pl-4 rounded-xl bg-gray-50 border {phoneError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300'} focus:bg-white focus:border-[#059669] focus:ring-2 focus:ring-[#059669]/20 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all text-right"
+							/>
+						</div>
+						{#if phoneError}
+							<p class="text-xs font-bold text-red-600 pr-1">{phoneError}</p>
+						{/if}
+					</div>
+
+					<!-- High-CVR Submit CTA Button -->
 					<button
-						type="button"
-						onclick={handleAddToCartAndOpenDrawer}
-						class="bg-[#1B4332] text-white py-4 px-6 rounded-2xl text-lg font-bold flex items-center justify-center gap-2 shadow-md hover:bg-[#153427] transition-all w-full cursor-pointer"
+						type="submit"
+						disabled={isSubmitting}
+						class="w-full min-h-14 py-4 px-5 rounded-xl bg-gradient-to-r from-[#059669] via-[#047857] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] ring-2 ring-[#f59e0b]/40 shadow-xl shadow-emerald-900/20 active:scale-[0.99] transition-all flex items-center justify-center text-center font-extrabold text-lg sm:text-xl text-white cursor-pointer disabled:opacity-70"
 					>
-						<span>أضيفي العرض للسلة • DH {currentTier.price} 🛒</span>
+						{#if isSubmitting}
+							<span>جاري تأكيد طلبك...</span>
+						{:else}
+							<span>✅ أكدي طلبك الآن • {currentTier.price} DH</span>
+						{/if}
 					</button>
 
-					<!-- شارة أمان واحدة مقتضبة تحت الزر -->
-					<div class="text-center pt-1">
+					<!-- Reassurance Badge directly underneath the CTA button -->
+					<div class="text-center pt-0.5">
 						<p class="text-xs sm:text-sm font-bold text-[#1B4332] bg-emerald-50/80 py-2.5 px-4 rounded-xl border border-emerald-900/10 inline-block w-full">
 							📦 فتحي الكولية وقلبيها عاد تخلصي • التوصيل فابور 24/48h
 						</p>
 					</div>
-				</div>
+				</form>
 
 			</div>
 		</div>
@@ -934,7 +1088,7 @@
 				<div class="max-w-md mx-auto">
 					<button
 						type="button"
-						onclick={handleAddToCartAndOpenDrawer}
+						onclick={scrollToOffers}
 						class="w-full min-h-14 rounded-2xl bg-[#E86A7C] hover:bg-[#d45366] active:scale-[0.98] font-black text-white text-base shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all"
 					>
 						<span>اطلبي الآن • الدفع عند الاستلام</span>
@@ -1006,9 +1160,6 @@
 			</button>
 		</div>
 	{/if}
-
-	<!-- Slide-Out Cart Drawer & 99 MAD Upsell Funnel -->
-	<CartDrawer />
 
 </div>
 

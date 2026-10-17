@@ -14,7 +14,7 @@ import type { OrderStatus } from '$lib/types/order';
 import { waitUntil } from '@vercel/functions';
 
 const VALID_STATUSES: OrderStatus[] = ['جديد', 'مؤكد', 'جاري الشحن', 'تم التسليم', 'ملغي'];
-const MOROCCAN_PHONE_REGEX = /^(?:(?:\+?212)|0)[67]\d{8}$/;
+const MOROCCAN_PHONE_REGEX = /^(?:(?:\+?212)|0)[567]\d{8}$/;
 
 // In-memory sliding window cache for 15-second deduplication
 interface DedupeCacheEntry {

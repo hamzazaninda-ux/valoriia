@@ -114,23 +114,6 @@
 					<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" />
 				</svg>
 			</button>
-
-			<!-- Quick Cart Drawer Trigger (Always accessible on Mobile and Desktop) -->
-			<button
-				type="button"
-				onclick={() => onOpenCart?.()}
-				class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-[#1B4332]/5 text-[#1B4332] border border-emerald-900/10 transition-all hover:bg-[#1B4332] hover:text-white active:scale-95"
-				aria-label="سلة التسوق"
-			>
-				<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25c-.669 0-1.189-.578-1.119-1.243l1.263-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-				</svg>
-				{#if cartCount > 0}
-					<span class="absolute -top-1 -start-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#E86A7C] px-1 text-[11px] font-black text-white shadow-sm ring-2 ring-[#FAF8F5]">
-						{cartCount}
-					</span>
-				{/if}
-			</button>
 		</div>
 	</div>
 
