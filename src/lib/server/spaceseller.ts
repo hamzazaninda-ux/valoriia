@@ -112,8 +112,8 @@ export function hasUpsellOrder(options: {
 
 /**
  * Accurately calculates baseOfferPrice, upsellPrice, and totalPrice
- * Formula: totalPrice = baseOfferPrice + upsellPrice (99 DH)
- * e.g., if base offer is 199 DH, total sent must be 298 DH
+ * Formula: totalPrice = baseOfferPrice + upsellPrice (98 DH)
+ * e.g., if base offer is 199 DH, total sent must be 297 DH
  */
 export function calculateOrderTotals(options: {
 	tier?: string;
@@ -126,7 +126,7 @@ export function calculateOrderTotals(options: {
 	totalPrice: number;
 } {
 	const hasUpsell = hasUpsellOrder(options);
-	const upsellPrice = hasUpsell ? 99 : 0;
+	const upsellPrice = hasUpsell ? 98 : 0;
 
 	let baseOfferPrice = 279; // Default tier_2
 
@@ -138,14 +138,14 @@ export function calculateOrderTotals(options: {
 		baseOfferPrice = 279;
 	} else if (typeof options.rawTotal === 'number' && options.rawTotal > 0) {
 		const r = options.rawTotal;
-		if (r === 199 || r === 298) {
+		if (r === 199 || r === 297 || r === 298) {
 			baseOfferPrice = 199;
-		} else if (r === 279 || r === 378) {
+		} else if (r === 279 || r === 377 || r === 378) {
 			baseOfferPrice = 279;
-		} else if (r === 349 || r === 448) {
+		} else if (r === 349 || r === 447 || r === 448) {
 			baseOfferPrice = 349;
-		} else if (hasUpsell && r > 99) {
-			baseOfferPrice = r - 99;
+		} else if (hasUpsell && r > 98) {
+			baseOfferPrice = r - 98;
 		} else {
 			baseOfferPrice = r;
 		}
@@ -274,6 +274,7 @@ export function resolveSpaceSellerSku(options: {
 
 	if (Array.isArray(options.items)) {
 		for (const it of options.items) {
+			if (it.isUpsell) continue;
 			const itSku = String(it.sku || it.slug || '').toLowerCase();
 			const itTitle = String(it.title || '').toLowerCase();
 			if (
@@ -308,7 +309,7 @@ export function resolveSpaceSellerSku(options: {
 
 /**
  * Resolves confirmation note for SpaceSeller 9-column sheet (Column H)
- * e.g. "عرض كولاجين + أبسيل (99 DH)"
+ * e.g. "عرض كولاجين + أبسيل (98 DH)"
  */
 export function resolveSpaceSellerNote(options: {
 	mainSku?: string;
@@ -321,18 +322,18 @@ export function resolveSpaceSellerNote(options: {
 	const isCollagen = isCollagenOrder(options);
 
 	if (isCollagen && hasUpsell) {
-		return 'عرض كولاجين + أبسيل (99 DH)';
+		return 'عرض كولاجين + أبسيل (98 DH)';
 	}
 
 	const rawSku = String(options.mainSku || '').toLowerCase();
 	const label = String(options.productLabel || '').toLowerCase();
 
 	if (rawSku.includes('biotin') || label.includes('بيوتين')) {
-		return hasUpsell ? 'عرض بيوتين + أبسيل (99 DH)' : 'باقة علكات البيوتين';
+		return hasUpsell ? 'عرض بيوتين + أبسيل (98 DH)' : 'باقة علكات البيوتين';
 	}
 
 	if (rawSku.includes('vitam') || label.includes('فيتامين')) {
-		return hasUpsell ? 'عرض فيتامينات + أبسيل (99 DH)' : 'باقة علكات الفيتامينات';
+		return hasUpsell ? 'عرض فيتامينات + أبسيل (98 DH)' : 'باقة علكات الفيتامينات';
 	}
 
 	if (isCollagen) {
@@ -359,7 +360,7 @@ export function resolveProductArabicName(skuOrSlugOrTitle?: string): string {
 
 /**
  * Resolves the exact upsell product name for display:
- * - 'بيوتين'
+ * - 'بيوتين وزنك'
  * - 'مالتي فيتامين'
  * - 'كولاجين'
  */
@@ -371,14 +372,19 @@ export function resolveUpsellArabicName(options: {
 	items?: any[];
 	hasUpsell?: boolean;
 }): string {
+	const formatUpsellLabel = (raw?: string) => {
+		const p = resolveProductArabicName(raw);
+		return p === 'بيوتين' ? 'بيوتين وزنك' : p;
+	};
+
 	if (options.upsellProduct) {
-		return resolveProductArabicName(options.upsellProduct);
+		return formatUpsellLabel(options.upsellProduct);
 	}
 	if (options.upsellName) {
-		return resolveProductArabicName(options.upsellName);
+		return formatUpsellLabel(options.upsellName);
 	}
 	if (options.upsellSku) {
-		return resolveProductArabicName(options.upsellSku);
+		return formatUpsellLabel(options.upsellSku);
 	}
 	if (Array.isArray(options.items)) {
 		const upItem = options.items.find(
@@ -391,19 +397,18 @@ export function resolveUpsellArabicName(options: {
 						it.title.includes('سري')))
 		);
 		if (upItem) {
-			return resolveProductArabicName(upItem.sku || upItem.slug || upItem.title);
+			return formatUpsellLabel(upItem.sku || upItem.slug || upItem.title);
 		}
 	}
-	// Fallback based on base product
-	const baseName = resolveProductArabicName(options.mainSku);
-	return baseName === 'كولاجين' ? 'بيوتين' : 'كولاجين';
+	// Default upsell is Biotin & Zinc (بيوتين وزنك)
+	return 'بيوتين وزنك';
 }
 
 /**
  * Calculates the TRUE total number of physical bottles in the order:
- * - 1 bottle offer (199 DH) + Upsell (99 DH) -> qte = 2
- * - 2 bottles offer (279 DH) + Upsell (99 DH) -> qte = 3
- * - 3 bottles offer (349 DH) + Upsell (99 DH) -> qte = 4
+ * - 1 bottle offer (199 DH) + Upsell (98 DH) -> qte = 2
+ * - 2 bottles offer (279 DH) + Upsell (98 DH) -> qte = 3
+ * - 3 bottles offer (349 DH) + Upsell (98 DH) -> qte = 4
  * - Without upsell -> qte = 1, 2, or 3 according to selected tier
  */
 export function calculatePhysicalBottleCount(options: {
@@ -425,11 +430,11 @@ export function calculatePhysicalBottleCount(options: {
 		baseBottles = 2;
 	} else {
 		const total = Number(options.rawTotal ?? options.price ?? 0);
-		if (total === 199 || total === 298) {
+		if (total === 199 || total === 297 || total === 298) {
 			baseBottles = 1;
-		} else if (total === 279 || total === 378) {
+		} else if (total === 279 || total === 377 || total === 378) {
 			baseBottles = 2;
-		} else if (total === 349 || total === 448) {
+		} else if (total === 349 || total === 447 || total === 448) {
 			baseBottles = 3;
 		} else if (Array.isArray(options.items) && options.items.length > 0) {
 			const baseItems = options.items.filter((it: any) => !it.isUpsell);
@@ -464,7 +469,7 @@ export function calculatePhysicalBottleCount(options: {
 /**
  * Builds the exact confirmation breakdown for Column D (address) and notes:
  * Format when Upsell is added:
- * "العرض: [X] علب [Base Product] + أبسيل: علبة [Exact Upsell Name] (+99 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
+ * "العرض: [X] علب [Base Product] + أبسيل: علبة بيوتين وزنك (+98 DH) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
  * Format without Upsell:
  * "العرض: [X] علب [Base Product] (بدون أبسيل) | المجموع: [Total] DH (تأكيد عبر الهاتف)"
  */
@@ -493,9 +498,9 @@ export function buildConfirmationBreakdown(options: {
 		tierUnitText = '3 علب';
 	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
 		tierUnitText = '2 علب';
-	} else if (options.totalPrice === 199 || options.totalPrice === 298) {
+	} else if (options.totalPrice === 199 || options.totalPrice === 297 || options.totalPrice === 298) {
 		tierUnitText = '1 علبة';
-	} else if (options.totalPrice === 349 || options.totalPrice === 448) {
+	} else if (options.totalPrice === 349 || options.totalPrice === 447 || options.totalPrice === 448) {
 		tierUnitText = '3 علب';
 	}
 
@@ -508,7 +513,7 @@ export function buildConfirmationBreakdown(options: {
 			items: options.items,
 			hasUpsell
 		});
-		return `العرض: ${tierUnitText} ${baseName} + أبسيل: علبة ${upsellName} (+99 DH) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
+		return `العرض: ${tierUnitText} ${baseName} + أبسيل: علبة ${upsellName} (+98 DH) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
 	}
 
 	return `العرض: ${tierUnitText} ${baseName} (بدون أبسيل) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;

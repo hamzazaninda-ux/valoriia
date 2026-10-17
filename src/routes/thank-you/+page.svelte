@@ -112,32 +112,45 @@
 		}
 
 		if (items.length === 0) {
-			const tier = rawOrder?.tier || 'tier_2';
+			const tier = rawOrder?.tier || urlParams?.get('tier') || 'tier_2';
+			const mainSku = rawOrder?.sku || rawOrder?.mainSku || urlParams?.get('sku') || 'gummies_collagen';
+			const baseTitle = mainSku.includes('biotine')
+				? 'علكات البيوتين 3000mcg والزنك'
+				: mainSku.includes('vitamine')
+					? 'علكات الملتي فيتامين المتكاملة'
+					: 'علكات الكولاجين البحري';
 			if (tier === 'tier_1') {
 				items.push({
-					sku: 'gummies_biotine',
-					title: 'علكات البيوتين المركزة (علبة واحدة)',
+					sku: mainSku,
+					title: `${baseTitle} (علبة واحدة)`,
 					quantity: 1,
-					unitPrice: 199
+					unitPrice: 199,
+					price: 199
 				});
 			} else if (tier === 'tier_3') {
-				items.push(
-					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 116 },
-					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 116 },
-					{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, unitPrice: 117 }
-				);
+				items.push({
+					sku: mainSku,
+					title: `${baseTitle} (3 علب - كورس علاجي كامل)`,
+					quantity: 3,
+					unitPrice: 116.33,
+					price: 349
+				});
 			} else {
-				items.push(
-					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, unitPrice: 139.5 },
-					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, unitPrice: 139.5 }
-				);
+				items.push({
+					sku: mainSku,
+					title: `${baseTitle} (علبتان - الأكثر طلباً)`,
+					quantity: 2,
+					unitPrice: 139.5,
+					price: 279
+				});
 			}
 			if (rawOrder?.hasUpsell || paramUpsell) {
 				items.push({
-					sku: 'gummies_collagen',
-					title: 'علبة إضافية (عرض خاطف)',
+					sku: 'gummies_biotine',
+					title: 'علكات البيوتين والزنك المركز (عرض خاص - خصم 51%)',
 					quantity: 1,
-					unitPrice: 99
+					unitPrice: 98,
+					price: 98
 				});
 			}
 		}
@@ -310,18 +323,6 @@
 			phoneUpdateSuccess = false;
 		}, 4000);
 	}
-
-	const whatsappUrl = $derived.by(() => {
-		const orderId = order?.orderId || 'NV-000000';
-		const waNum = '212626558375';
-		const clientName =
-			order?.fullName && order.fullName !== 'عميلة NOVAVITA المميزة'
-				? order.fullName
-				: 'عميلة NOVAVITA';
-		const total = order?.price || 279;
-		const msg = `سلام عليكم، أنا ${clientName} قمت بطلب حلوى الفيتامينات من NOVAVITA ورقم طلبي هو ${orderId} بمبلغ ${total} درهم، بغيت نأكد الطلب ديالي للاستلام والتوصيل السريع.`;
-		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-	});
 
 	function handleBackHome() {
 		window.location.href = '/';
@@ -501,32 +502,63 @@
 			</div>
 		</div>
 
-		<!-- 3. WhatsApp 1-Click Action Button (Pulsing Green) -->
-		<div class="w-full mb-5">
-			<a
-				href={whatsappUrl}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="relative w-full py-4 px-4 font-black text-white bg-[#15803D] hover:bg-[#166534] active:scale-[0.98] rounded-2xl shadow-xl shadow-green-600/30 flex items-center justify-center gap-2.5 text-sm sm:text-base transition-all duration-300 no-underline text-center select-none cursor-pointer group overflow-hidden"
-			>
-				<span
-					class="absolute inset-0 rounded-2xl bg-white/20 animate-ping opacity-75 duration-1000 pointer-events-none"
-				></span>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="22"
-					height="22"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="shrink-0 text-white animate-bounce"
+		<!-- 3. Order Summary Card (Base Product + Biotin & Zinc Upsell if added + Final Total) -->
+		{#if order}
+			<div class="w-full rounded-2xl border-2 border-[#059669]/25 bg-white p-4 sm:p-5 mb-5 shadow-sm">
+				<div
+					class="flex justify-between items-center text-xs sm:text-sm font-extrabold text-[#1B4332] pb-3 border-b border-stone-100"
 				>
-					<path
-						d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z"
-					/>
-				</svg>
-				<span>💬 أكدي طلبك الآن مباشرة عبر الواتساب (توصيل أسرع)</span>
-			</a>
-		</div>
+					<span>📋 ملخص طلبيتك المؤكدة</span>
+					<span class="bg-emerald-50 text-[#059669] px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold text-xs"
+						>مؤكد بالحجز ✅</span
+					>
+				</div>
+
+				<!-- Items breakdown -->
+				<div class="py-3 border-b border-stone-100 space-y-2.5">
+					{#if order.items && order.items.length > 0}
+						{#each order.items as it}
+							<div class="flex justify-between items-center text-xs sm:text-sm {(it as any).isUpsell ? 'bg-amber-50/70 border border-amber-200/80 rounded-xl p-2.5' : ''}">
+								<div class="flex items-center gap-2">
+									<span class="w-2 h-2 rounded-full {(it as any).isUpsell ? 'bg-[#d97706]' : 'bg-[#059669]'} shrink-0"></span>
+									<div>
+										<span class="text-stone-900 font-bold">{it.title}</span>
+										<span class="text-stone-500 font-mono text-[11px] mr-1">(×{it.quantity})</span>
+										{#if (it as any).isUpsell}
+											<span class="inline-block bg-[#d97706]/15 text-[#b45309] text-[10px] font-extrabold px-2 py-0.5 rounded-full mr-1">
+												عرض خاص -51% ⚡
+											</span>
+										{/if}
+									</div>
+								</div>
+								<span class="font-black text-[#1B4332] shrink-0" dir="ltr">{it.price || it.unitPrice || 0} DH</span>
+							</div>
+						{/each}
+					{:else}
+						<div class="flex justify-between items-center text-xs sm:text-sm">
+							<span class="text-stone-800 font-bold">{order.productTitle}</span>
+							<span class="font-bold text-[#1B4332]" dir="ltr">{order.price} DH</span>
+						</div>
+					{/if}
+				</div>
+
+				<div class="grid grid-cols-2 gap-y-2 text-xs sm:text-sm py-3 border-b border-stone-100">
+					<span class="text-stone-500">الاسم الكامل:</span>
+					<span class="text-stone-900 font-bold text-left">{order.fullName}</span>
+
+					<span class="text-stone-500">المدينة / العنوان:</span>
+					<span class="text-stone-900 font-bold text-left">{order.address}</span>
+
+					<span class="text-stone-500">مصاريف الشحن:</span>
+					<span class="text-emerald-700 font-bold text-left">توصيل مجاني (0 DH) 🚚</span>
+				</div>
+
+				<div class="flex justify-between items-center pt-3">
+					<span class="font-extrabold text-sm sm:text-base text-neutral-900">المجموع النهائي عند الاستلام:</span>
+					<span class="text-lg sm:text-xl font-black text-[#059669] font-mono" dir="ltr">{currentTotal} DH</span>
+				</div>
+			</div>
+		{/if}
 
 		<!-- 4. Demystifying the Call (3 Points) -->
 		<div class="w-full rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
@@ -549,62 +581,11 @@
 				<div class="flex items-start gap-2.5">
 					<span class="text-base shrink-0 mt-0.5">🔄</span>
 					<p class="leading-relaxed">
-						<strong>إلى كنتِ مشغولة:</strong> ما كاين حتى مشكل، كنصيفطو ليك رسالة متابعة في الواتساب.
+						<strong>إلى كنتِ مشغولة:</strong> ما كاين حتى مشكل، سيعاود فريقنا الاتصال بك في وقت لاحق يناسبك.
 					</p>
 				</div>
 			</div>
 		</div>
-
-		<!-- 5. Order Summary Card -->
-		{#if order}
-			<div class="w-full rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
-				<div
-					class="flex justify-between items-center text-xs font-bold text-stone-500 pb-3 border-b border-stone-100"
-				>
-					<span>تفاصيل الطلبية</span>
-					<span class="bg-emerald-50 text-[#1B4332] px-2.5 py-0.5 rounded-full border border-emerald-200/60 font-bold"
-						>مؤكد بالحجز 🍓</span
-					>
-				</div>
-
-				<!-- Items breakdown -->
-				<div class="py-3 border-b border-stone-100 space-y-2">
-					{#if order.items && order.items.length > 0}
-						{#each order.items as it}
-							<div class="flex justify-between items-center text-xs sm:text-sm">
-								<div class="flex items-center gap-2">
-									<span class="w-1.5 h-1.5 rounded-full bg-[#E86A7C]"></span>
-									<span class="text-stone-800 font-semibold">{it.title}</span>
-									<span class="text-stone-400 font-mono text-[11px]">(×{it.quantity})</span>
-								</div>
-								<span class="font-bold text-[#1B4332]">{it.unitPrice || it.price || 0} MAD</span>
-							</div>
-						{/each}
-					{:else}
-						<div class="flex justify-between items-center text-xs sm:text-sm">
-							<span class="text-stone-800 font-bold">{order.productTitle}</span>
-							<span class="font-bold text-[#1B4332]">{order.price} MAD</span>
-						</div>
-					{/if}
-				</div>
-
-				<div class="grid grid-cols-2 gap-y-2 text-xs sm:text-sm py-3 border-b border-stone-100">
-					<span class="text-stone-500">الاسم الكامل:</span>
-					<span class="text-stone-900 font-bold text-left">{order.fullName}</span>
-
-					<span class="text-stone-500">المدينة / العنوان:</span>
-					<span class="text-stone-900 font-bold text-left">{order.address}</span>
-
-					<span class="text-stone-500">مصاريف الشحن:</span>
-					<span class="text-emerald-700 font-bold text-left">توصيل مجاني (0 MAD)</span>
-				</div>
-
-				<div class="flex justify-between items-center pt-3">
-					<span class="font-extrabold text-sm sm:text-base text-neutral-900">المجموع المطلوب عند الاستلام:</span>
-					<span class="text-lg sm:text-xl font-black text-[#1B4332] font-mono">{currentTotal} MAD</span>
-				</div>
-			</div>
-		{/if}
 
 		<!-- 6. Order Journey Timeline -->
 		<div class="w-full rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5 mb-5 shadow-xs">
@@ -644,7 +625,7 @@
 					<div class="flex-1 pt-0.5">
 						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">2. مكالمة التأكيد (اليوم)</h5>
 						<p class="text-[11px] sm:text-xs text-stone-500 mt-0.5 leading-relaxed">
-							مكالمة هاتفية سريعة جداً أو رسالة عبر الواتساب لتأكيد العنوان والمدينة.
+							مكالمة هاتفية سريعة جداً لتأكيد العنوان والمدينة.
 						</p>
 					</div>
 				</div>

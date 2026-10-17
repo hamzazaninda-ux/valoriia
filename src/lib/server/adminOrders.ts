@@ -132,34 +132,50 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		} catch {}
 	}
 
-	const upsellLines = parsedItems.filter((it) => it && (it.isUpsell === true || Number(it.price) === 99 || Number(it.unitPrice) === 99));
+	const upsellLines = parsedItems.filter(
+		(it) =>
+			it &&
+			(it.isUpsell === true ||
+				Number(it.price) === 98 ||
+				Number(it.unitPrice) === 98 ||
+				Number(it.price) === 99 ||
+				Number(it.unitPrice) === 99)
+	);
 	if (upsellLines.length > 0) {
 		for (const up of upsellLines) {
 			const qty = Math.max(1, Number(up.quantity ?? up.qty ?? 1));
+			const unitUpPrice = Number(up.price || up.unitPrice || 98);
 			upsellCount += qty;
 			const upSku = normalizeToCanonicalSku(`${up.sku || ''} ${up.slug || ''} ${up.title || ''}`);
 			skuBreakdown[upSku] += qty;
 
-			if (upSku === 'gummies_biotine') upsellNames.push(qty > 1 ? `${qty}x بيوتين (+${qty * 99} DH)` : 'بيوتين وزنك (+99 DH)');
-			else if (upSku === 'gumies-vitamine') upsellNames.push(qty > 1 ? `${qty}x مالتي فيتامين (+${qty * 99} DH)` : 'مالتي فيتامين (+99 DH)');
-			else if (upSku === 'gummies_melato') upsellNames.push(qty > 1 ? `${qty}x ميلاتونين (+${qty * 99} DH)` : 'ميلاتونين للنوم (+99 DH)');
-			else upsellNames.push(qty > 1 ? `${qty}x كولاجين (+${qty * 99} DH)` : 'كولاجين بحري (+99 DH)');
+			if (upSku === 'gummies_biotine')
+				upsellNames.push(qty > 1 ? `${qty}x بيوتين (+${qty * unitUpPrice} DH)` : `بيوتين وزنك (+${unitUpPrice} DH)`);
+			else if (upSku === 'gumies-vitamine')
+				upsellNames.push(qty > 1 ? `${qty}x مالتي فيتامين (+${qty * unitUpPrice} DH)` : `مالتي فيتامين (+${unitUpPrice} DH)`);
+			else if (upSku === 'gummies_melato')
+				upsellNames.push(qty > 1 ? `${qty}x ميلاتونين (+${qty * unitUpPrice} DH)` : `ميلاتونين للنوم (+${unitUpPrice} DH)`);
+			else upsellNames.push(qty > 1 ? `${qty}x كولاجين (+${qty * unitUpPrice} DH)` : `كولاجين بحري (+${unitUpPrice} DH)`);
 		}
 	}
 
 	// 2. Determine Base Tier (1, 2, or 3 bottles) and infer upsells if not in items JSON
 	let baseBottles: 1 | 2 | 3 = 1;
 
-	// Price-based exact matching first (199, 279, 349 + n * 99)
-	const priceWithoutKnownUpsells = totalPrice - upsellCount * 99;
+	// Price-based exact matching first (199, 279, 349 + n * 98)
+	const priceWithoutKnownUpsells = totalPrice - upsellCount * 98;
+	const priceWithoutLegacyUpsells = totalPrice - upsellCount * 99;
 
 	if (
 		prodText.includes('3 علب') ||
 		prodText.includes('ثلاث') ||
 		prodText.includes('التحول الشامل') ||
 		priceWithoutKnownUpsells === 349 ||
+		priceWithoutLegacyUpsells === 349 ||
 		totalPrice === 349 ||
+		totalPrice === 447 ||
 		totalPrice === 448 ||
+		totalPrice === 545 ||
 		totalPrice === 547
 	) {
 		baseBottles = 3;
@@ -169,10 +185,13 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		prodText.includes('علبتين') ||
 		prodText.includes('الثنائي') ||
 		priceWithoutKnownUpsells === 279 ||
+		priceWithoutLegacyUpsells === 279 ||
 		priceWithoutKnownUpsells === 249 ||
 		totalPrice === 279 ||
 		totalPrice === 249 ||
+		totalPrice === 377 ||
 		totalPrice === 378 ||
+		totalPrice === 475 ||
 		totalPrice === 477
 	) {
 		baseBottles = 2;
@@ -185,26 +204,39 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	// If upsellLines was empty but totalPrice or product text indicates upsells:
 	if (upsellCount === 0) {
 		const priceDiff = totalPrice - baseOfferPrice;
-		if (priceDiff >= 90 && Math.round(priceDiff / 99) >= 1) {
-			upsellCount = Math.round(priceDiff / 99);
+		if (priceDiff >= 90 && Math.round(priceDiff / 98) >= 1) {
+			upsellCount = Math.round(priceDiff / 98);
 		} else if (order.orderType === 'upsell' || prodText.includes('أبسيل') || prodText.includes('العرض الخاطف')) {
 			upsellCount = 1;
 		}
 
 		if (upsellCount > 0) {
+			const inferredUpPrice = priceDiff === 99 ? 99 : 98;
 			const lower = prodText.toLowerCase();
 			if (lower.includes('biotin') || lower.includes('بيوتين')) {
 				skuBreakdown.gummies_biotine += upsellCount;
-				upsellNames.push(upsellCount > 1 ? `${upsellCount}x بيوتين (+${upsellCount * 99} DH)` : 'بيوتين وزنك (+99 DH)');
+				upsellNames.push(
+					upsellCount > 1 ? `${upsellCount}x بيوتين (+${upsellCount * inferredUpPrice} DH)` : `بيوتين وزنك (+${inferredUpPrice} DH)`
+				);
 			} else if (lower.includes('vitam') || lower.includes('فيتامين')) {
 				skuBreakdown['gumies-vitamine'] += upsellCount;
-				upsellNames.push(upsellCount > 1 ? `${upsellCount}x مالتي فيتامين (+${upsellCount * 99} DH)` : 'مالتي فيتامين (+99 DH)');
+				upsellNames.push(
+					upsellCount > 1
+						? `${upsellCount}x مالتي فيتامين (+${upsellCount * inferredUpPrice} DH)`
+						: `مالتي فيتامين (+${inferredUpPrice} DH)`
+				);
 			} else if (lower.includes('melato') || lower.includes('ميلاتونين')) {
 				skuBreakdown.gummies_melato += upsellCount;
-				upsellNames.push(upsellCount > 1 ? `${upsellCount}x ميلاتونين (+${upsellCount * 99} DH)` : 'ميلاتونين للنوم (+99 DH)');
+				upsellNames.push(
+					upsellCount > 1
+						? `${upsellCount}x ميلاتونين (+${upsellCount * inferredUpPrice} DH)`
+						: `ميلاتونين للنوم (+${inferredUpPrice} DH)`
+				);
 			} else {
 				skuBreakdown.gummies_biotine += upsellCount;
-				upsellNames.push(upsellCount > 1 ? `${upsellCount}x أبسيل (+${upsellCount * 99} DH)` : 'عرض خاطف (+99 DH)');
+				upsellNames.push(
+					upsellCount > 1 ? `${upsellCount}x بيوتين (+${upsellCount * inferredUpPrice} DH)` : `بيوتين وزنك (+${inferredUpPrice} DH)`
+				);
 			}
 		}
 	}

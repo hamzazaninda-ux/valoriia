@@ -84,11 +84,16 @@ export const POST: RequestHandler = async ({ request }) => {
 			customerNote: body.notes || body.note
 		});
 
+		const hasUpsellFlag = Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell));
 		const finalTotal = spaceSellerPayload.total || Number(body.totalPrice ?? body.total ?? 279);
 		body.total = finalTotal;
 		body.totalPrice = finalTotal;
 		body.price = finalTotal;
 		body.sku = spaceSellerPayload.sku;
+		body.hasUpsell = hasUpsellFlag;
+		body.orderType = hasUpsellFlag ? 'upsell' : 'direct';
+		body.address = spaceSellerPayload.address || body.address;
+		body.notes = spaceSellerPayload.note || body.notes;
 
 		// Deduplication check: if order has already been marked as synced
 		if (body.sheetsSynced) {
@@ -110,7 +115,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			price: finalTotal,
 			product: productLabel,
 			sku: spaceSellerPayload.sku,
-			items: body.items || [],
+			hasUpsell: hasUpsellFlag,
+			orderType: body.orderType,
+			items: items,
 			status: 'جديد',
 			createdAt: new Date().toISOString()
 		};
@@ -120,9 +127,13 @@ export const POST: RequestHandler = async ({ request }) => {
 		// keeps background execution active until Google Sheets successfully receives the lead.
 		const backgroundSync = async () => {
 			try {
+				const dbOrderPayload = {
+					...body,
+					items: typeof body.items === 'string' ? body.items : JSON.stringify(items)
+				};
 				await Promise.allSettled([
-					saveOrder(body).catch((e) => console.error('[API /api/checkout POST] saveOrder error:', e)),
-					sendOrderToGoogleSheets(body, body.sheetsUrl).catch((e) =>
+					saveOrder(dbOrderPayload).catch((e) => console.error('[API /api/checkout POST] saveOrder error:', e)),
+					sendOrderToGoogleSheets({ ...body, items }, body.sheetsUrl).catch((e) =>
 						console.error('[API /api/checkout POST] sendOrderToGoogleSheets error:', e)
 					),
 					sendOrderToSpaceSeller(spaceSellerPayload).catch((e) =>

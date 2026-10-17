@@ -11,15 +11,22 @@
 
 	let { data } = $props();
 
-	// Inline Direct COD Form State
+	// Inline Direct COD Form & Pre-Thank-You Upsell Modal State
 	let fullName = $state('');
 	let phone = $state('');
 	let nameError = $state('');
 	let phoneError = $state('');
 	let isSubmitting = $state(false);
+	let showUpsellModal = $state(false);
+	let pendingOrderId = $state('');
+	let orderDispatched = $state(false);
 	let fullNameInputEl = $state<HTMLInputElement | null>(null);
 	let directFormEl = $state<HTMLFormElement | null>(null);
 	let isFormVisible = $state(false);
+
+	const UPSELL_PRICE = 98;
+	const BIOTINE_UPSELL_IMAGE =
+		'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png';
 
 	onMount(() => {
 		if (
@@ -55,8 +62,50 @@
 			observer.observe(formNode);
 		}
 
+		// Fail-Safe: If the Pre-Thank-You Upsell Modal is open and the user closes the tab/browser
+		// without clicking either button, automatically dispatch the base order via sendBeacon/keepalive
+		const handleFailSafeExit = () => {
+			if (!showUpsellModal || orderDispatched) return;
+			orderDispatched = true;
+			const basePayload = buildUnifiedOrderPayload(false);
+			try {
+				const jsonStr = JSON.stringify(basePayload);
+				if (typeof localStorage !== 'undefined') localStorage.setItem('latestOrder', jsonStr);
+				if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('latestOrder', jsonStr);
+
+				let beaconSent = false;
+				if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+					const blob = new Blob([jsonStr], { type: 'application/json' });
+					beaconSent = navigator.sendBeacon('/api/checkout', blob);
+				}
+				if (!beaconSent && typeof fetch === 'function') {
+					fetch('/api/checkout', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: jsonStr,
+						keepalive: true
+					}).catch(() => {});
+				}
+			} catch {}
+		};
+
+		const onVisibilityChange = () => {
+			if (document.visibilityState === 'hidden') {
+				handleFailSafeExit();
+			}
+		};
+
+		const onPageHide = () => {
+			handleFailSafeExit();
+		};
+
+		window.addEventListener('pagehide', onPageHide);
+		document.addEventListener('visibilitychange', onVisibilityChange);
+
 		return () => {
 			observer?.disconnect();
+			window.removeEventListener('pagehide', onPageHide);
+			document.removeEventListener('visibilitychange', onVisibilityChange);
 		};
 	});
 
@@ -115,7 +164,99 @@
 		return regex.test(cleaned);
 	}
 
-	async function handleDirectOrderSubmit(e: SubmitEvent) {
+	function buildUnifiedOrderPayload(withUpsell: boolean) {
+		const orderId =
+			pendingOrderId || 'NV-' + Math.floor(100000 + Math.random() * 900000);
+		const cleanedPhone = phone.trim().replace(/[\s\-\(\)]/g, '');
+		const baseTierBottles = currentTier.units;
+		const bundleName =
+			baseTierBottles === 1 ? 'علبة واحدة' : baseTierBottles === 2 ? 'علبتان' : '3 علب';
+		const cleanName = (product?.name || 'NOVAVITA Gummies').replace(/\s*\([^)]*\)/g, '').trim();
+		const displayTitle = `${cleanName} (${bundleName})`;
+
+		const items: Array<{
+			sku: string;
+			slug: string;
+			title: string;
+			quantity: number;
+			unitPrice: number;
+			price: number;
+			isUpsell: boolean;
+		}> = [
+			{
+				sku: product.sku || 'gummies_collagen',
+				slug: product.slug || 'gummies_collagen',
+				title: displayTitle,
+				quantity: baseTierBottles,
+				unitPrice: Math.round((currentTier.price / baseTierBottles) * 100) / 100,
+				price: currentTier.price,
+				isUpsell: false
+			}
+		];
+
+		if (withUpsell) {
+			items.push({
+				sku: 'gummies_biotine',
+				slug: 'gummies_biotine',
+				title: 'علكات البيوتين والزنك 3000mcg (عرض خاص)',
+				quantity: 1,
+				unitPrice: UPSELL_PRICE,
+				price: UPSELL_PRICE,
+				isUpsell: true
+			});
+		}
+
+		const totalBottles = baseTierBottles + (withUpsell ? 1 : 0);
+		const finalTotal = currentTier.price + (withUpsell ? UPSELL_PRICE : 0);
+
+		const fullProductLabel = buildOrderFulfillmentLabel({
+			tier: selectedTier,
+			mainSku: product.sku || product.slug || 'gummies_collagen',
+			mainTitle: displayTitle,
+			items,
+			hasUpsell: withUpsell
+		});
+
+		return {
+			orderId,
+			fullName: fullName.trim(),
+			phone: cleanedPhone,
+			phoneNumber: cleanedPhone,
+			city: 'تأكيد العنوان عبر الهاتف',
+			address: 'تأكيد العنوان عبر الهاتف',
+			tier: selectedTier,
+			baseTier: selectedTier,
+			baseBottles: baseTierBottles,
+			tierName:
+				selectedTier === 'tier_1'
+					? 'علبة واحدة (1 علبة)'
+					: selectedTier === 'tier_3'
+						? '3 علب (كورس علاجي)'
+						: 'علبتان (2 علب)',
+			totalBottles,
+			quantity: totalBottles,
+			qte: totalBottles,
+			product: fullProductLabel,
+			productTitle: fullProductLabel,
+			selectedOfferTitle: fullProductLabel,
+			sku: product.sku || 'gummies_collagen',
+			mainSku: product.sku || 'gummies_collagen',
+			upsellProduct: withUpsell ? 'بيوتين وزنك' : undefined,
+			upsellName: withUpsell ? 'بيوتين وزنك' : undefined,
+			upsellSku: withUpsell ? 'gummies_biotine' : undefined,
+			items,
+			subtotal: finalTotal,
+			shipping: 0,
+			total: finalTotal,
+			price: finalTotal,
+			totalPrice: finalTotal,
+			hasUpsell: withUpsell,
+			orderType: withUpsell ? 'upsell' : 'direct',
+			createdAt: new Date().toISOString()
+		};
+	}
+
+	function handleDirectOrderSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		nameError = '';
 		phoneError = '';
@@ -133,100 +274,50 @@
 		}
 
 		if (hasError) return;
+
+		// Open Pre-Thank-You Interstitial Upsell Modal instantaneously (0ms)
+		pendingOrderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
+		orderDispatched = false;
+		showUpsellModal = true;
+	}
+
+	function finalizeOrder(withUpsell: boolean) {
 		if (isSubmitting) return;
 		isSubmitting = true;
+		orderDispatched = true;
 
-		try {
-			const orderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
-			const baseTierBottles = currentTier.units;
-			const bundleName =
-				baseTierBottles === 1 ? 'علبة واحدة' : baseTierBottles === 2 ? 'علبتان' : '3 علب';
-			const cleanName = (product?.name || 'NOVAVITA Gummies').replace(/\s*\([^)]*\)/g, '').trim();
-			const displayTitle = `${cleanName} (${bundleName})`;
+		const orderPayload = buildUnifiedOrderPayload(withUpsell);
+		const jsonStr = JSON.stringify(orderPayload);
 
-			const items = [
-				{
-					sku: product.sku,
-					slug: product.slug,
-					title: displayTitle,
-					quantity: baseTierBottles,
-					unitPrice: Math.round((currentTier.price / baseTierBottles) * 100) / 100,
-					price: currentTier.price,
-					isUpsell: false
-				}
-			];
-
-			const fullProductLabel = buildOrderFulfillmentLabel({
-				tier: selectedTier,
-				mainSku: product.sku || product.slug,
-				mainTitle: displayTitle,
-				items,
-				hasUpsell: false
-			});
-
-			const orderPayload = {
-				orderId,
-				fullName: fullName.trim(),
-				phone: cleanedPhone,
-				phoneNumber: cleanedPhone,
-				city: 'تأكيد العنوان عبر الهاتف',
-				address: 'تأكيد العنوان عبر الهاتف',
-				tier: selectedTier,
-				baseTier: selectedTier,
-				baseBottles: baseTierBottles,
-				tierName:
-					selectedTier === 'tier_1'
-						? 'علبة واحدة (1 علبة)'
-						: selectedTier === 'tier_3'
-							? '3 علب (كورس علاجي)'
-							: 'علبتان (2 علب)',
-				totalBottles: baseTierBottles,
-				quantity: baseTierBottles,
-				qte: baseTierBottles,
-				product: fullProductLabel,
-				productTitle: fullProductLabel,
-				selectedOfferTitle: fullProductLabel,
-				sku: product.sku || 'gummies_collagen',
-				mainSku: product.sku || 'gummies_collagen',
-				items,
-				subtotal: currentTier.price,
-				shipping: 0,
-				total: currentTier.price,
-				price: currentTier.price,
-				totalPrice: currentTier.price,
-				hasUpsell: false,
-				createdAt: new Date().toISOString()
-			};
-
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('latestOrder', JSON.stringify(orderPayload));
-			}
-			if (typeof sessionStorage !== 'undefined') {
-				sessionStorage.setItem('latestOrder', JSON.stringify(orderPayload));
-			}
-
-			try {
-				await fetch('/api/checkout', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(orderPayload),
-					keepalive: true
-				});
-			} catch (postErr) {
-				console.warn('Checkout API network notice:', postErr);
-			}
-
-			trackPurchase(currentTier.price, fullProductLabel, orderId, cleanedPhone);
-
-			await goto(
-				`/thank-you?orderId=${encodeURIComponent(orderId)}&total=${currentTier.price}&fullName=${encodeURIComponent(fullName.trim())}&phone=${encodeURIComponent(cleanedPhone)}&sku=${encodeURIComponent(product.sku || 'gummies_collagen')}&tier=${encodeURIComponent(selectedTier)}&qte=${baseTierBottles}&hasUpsell=false`
-			);
-		} catch (err) {
-			console.error('Order submission error:', err);
-			phoneError = 'حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى.';
-		} finally {
-			isSubmitting = false;
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('latestOrder', jsonStr);
 		}
+		if (typeof sessionStorage !== 'undefined') {
+			sessionStorage.setItem('latestOrder', jsonStr);
+		}
+
+		// Fire-and-forget non-blocking POST with keepalive: true so redirect occurs in <25ms
+		try {
+			fetch('/api/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: jsonStr,
+				keepalive: true
+			}).catch((postErr) => {
+				console.warn('Checkout API network notice:', postErr);
+			});
+		} catch {}
+
+		trackPurchase(
+			orderPayload.total,
+			orderPayload.productTitle,
+			orderPayload.orderId,
+			orderPayload.phone
+		);
+
+		goto(
+			`/thank-you?orderId=${encodeURIComponent(orderPayload.orderId)}&total=${orderPayload.total}&fullName=${encodeURIComponent(orderPayload.fullName)}&phone=${encodeURIComponent(orderPayload.phone)}&sku=${encodeURIComponent(orderPayload.sku)}&tier=${encodeURIComponent(orderPayload.tier)}&qte=${orderPayload.qte}&hasUpsell=${withUpsell ? 'true' : 'false'}`
+		);
 	}
 
 	// Product-specific DTC Hero Content
@@ -1143,13 +1234,13 @@
 	<!-- 9. Sticky Mobile CTA Bar (Dark Green Brand Color, Scroll-Triggered)       -->
 	<!-- ========================================================================= -->
 	<div
-		class="fixed bottom-3.5 inset-x-3.5 z-40 max-w-sm mx-auto sm:hidden pb-[env(safe-area-inset-bottom,0px)] transition-all duration-300 ease-in-out {scrollY > 350 && !isFormVisible ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-full'}"
+		class="fixed bottom-3.5 inset-x-3.5 z-40 max-w-sm mx-auto sm:hidden pb-[env(safe-area-inset-bottom,0px)] transition-all duration-300 ease-in-out {scrollY > 350 && !isFormVisible && !showUpsellModal ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-full'}"
 		dir="rtl"
 	>
 		<button
 			type="button"
 			onclick={scrollToOffers}
-			class="{scrollY > 350 && !isFormVisible ? 'pointer-events-auto' : 'pointer-events-none'} relative overflow-hidden w-full min-h-[54px] rounded-full bg-gradient-to-r from-[#143427] via-[#1B4332] to-[#143427] text-white px-5 py-2.5 shadow-[0_12px_32px_rgba(20,52,39,0.5),0_2px_8px_rgba(20,52,39,0.2)] border border-emerald-400/35 active:scale-[0.98] transition-all flex items-center justify-between gap-3 cursor-pointer group"
+			class="{scrollY > 350 && !isFormVisible && !showUpsellModal ? 'pointer-events-auto' : 'pointer-events-none'} relative overflow-hidden w-full min-h-[54px] rounded-full bg-gradient-to-r from-[#143427] via-[#1B4332] to-[#143427] text-white px-5 py-2.5 shadow-[0_12px_32px_rgba(20,52,39,0.5),0_2px_8px_rgba(20,52,39,0.2)] border border-emerald-400/35 active:scale-[0.98] transition-all flex items-center justify-between gap-3 cursor-pointer group"
 			aria-label="اطلبي الآن والدفع عند الاستلام"
 		>
 			<!-- Shimmer Light-Beam Streak -->
@@ -1186,6 +1277,135 @@
 			</div>
 		</button>
 	</div>
+
+	<!-- ========================================================================= -->
+	<!-- 10. Pre-Thank-You Interstitial Upsell Modal (Biotin & Zinc 98 DH)         -->
+	<!-- ========================================================================= -->
+	{#if showUpsellModal}
+		<div
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto"
+			dir="rtl"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="upsell-modal-title"
+		>
+			<div
+				class="relative w-full min-h-dvh sm:min-h-0 sm:max-w-lg bg-white sm:rounded-3xl border-2 border-[#059669] shadow-2xl flex flex-col justify-between overflow-hidden"
+			>
+				<!-- Top Highlighted Banner -->
+				<div
+					class="bg-gradient-to-r from-[#064e3b] via-[#059669] to-[#064e3b] text-white px-3.5 py-3 text-center border-b-2 border-[#d97706] relative"
+				>
+					<p class="text-xs sm:text-sm font-extrabold leading-snug">
+						⏳ خطوة أخيرة قبل تغليف طلبيتك — عرض خاص لمرة واحدة (خصم 51%)
+					</p>
+					<button
+						type="button"
+						onclick={() => finalizeOrder(false)}
+						aria-label="إغلاق وإكمال الطلب الأساسي"
+						class="absolute left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+					>
+						✕
+					</button>
+				</div>
+
+				<!-- Modal Body -->
+				<div class="p-4 sm:p-6 space-y-3.5 flex-1 flex flex-col justify-center">
+					<!-- Product Image & Concentration Badge -->
+					<div class="relative flex flex-col items-center">
+						<div
+							class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-[#FAF8F5] border-2 border-[#059669]/25 p-2 shadow-md flex items-center justify-center overflow-hidden"
+						>
+							<img
+								src={BIOTINE_UPSELL_IMAGE}
+								alt="علكات البيوتين والزنك المركز - NOVAVITA"
+								class="w-full h-full object-contain"
+								loading="eager"
+								onerror={(e: any) => {
+									e.currentTarget.onerror = null;
+									e.currentTarget.src = '/images/products/gummies_biotine.svg';
+								}}
+							/>
+						</div>
+						<span
+							class="-mt-3 z-10 inline-flex items-center gap-1 bg-gradient-to-r from-[#d97706] to-[#b45309] text-white text-xs font-extrabold px-3.5 py-1 rounded-full shadow-md border border-amber-200"
+						>
+							تركيز الزنك + بيوتين 3000mcg
+						</span>
+					</div>
+
+					<!-- Main Headline -->
+					<h2
+						id="upsell-modal-title"
+						class="font-display text-lg sm:text-xl font-black text-[#064e3b] text-center leading-snug"
+					>
+						⚡ ضاعفي وسرّعي مفعول الكولاجين 2X مع البيوتين والزنك المركز!
+					</h2>
+
+					<!-- Psychological Subheadline -->
+					<p class="text-xs sm:text-sm text-gray-700 text-center leading-relaxed font-medium bg-emerald-50/60 border border-[#059669]/20 rounded-xl p-2.5">
+						الكولاجين يحتاج إلى "الزنك وفيتامين C" ليثبت في خلايا البشرة! أضيفي علكات البيوتين والزنك لطلبك الآن لتسريع نضارة الوجه في نصف المدة، ووقف تساقط الشعر وتكثيفه من الجذور.
+					</p>
+
+					<!-- 3 Concise & Clear Benefits -->
+					<div class="bg-[#FAF8F5] border border-stone-200/90 rounded-2xl p-3 space-y-2 text-right">
+						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-gray-800 leading-snug">
+							<span class="shrink-0">🔬</span>
+							<span>تركيز الزنك وفيتامين C: يثبّت الكولاجين في البشرة ويضاعف الإشراقة 2X.</span>
+						</div>
+						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-gray-800 leading-snug">
+							<span class="shrink-0">💇‍♀️</span>
+							<span>بيوتين 3000mcg: يوقف تساقط الشعر، ينبت البيبي هير ويقوي الأظافر.</span>
+						</div>
+						<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-[#065f46] leading-snug">
+							<span class="shrink-0">📦</span>
+							<span>يُشحن مجاناً في نفس الكولية ديالك بدون أي مصاريف توصيل إضافية!</span>
+						</div>
+					</div>
+
+					<!-- Attractive Price Box -->
+					<div
+						class="bg-amber-50/80 border-2 border-[#d97706]/40 rounded-2xl py-2.5 px-4 flex items-center justify-center gap-3 flex-wrap text-center"
+					>
+						<span class="text-sm sm:text-base font-bold text-gray-400 line-through" dir="ltr">
+							199 DH
+						</span>
+						<span class="text-xl sm:text-2xl font-black text-[#059669]">
+							98 DH فقط
+						</span>
+						<span
+							class="bg-[#d97706] text-white text-xs font-extrabold px-2.5 py-0.5 rounded-full shadow-2xs"
+						>
+							وفّري 101 درهم الآن
+						</span>
+					</div>
+
+					<!-- Action Buttons -->
+					<div class="space-y-2.5 pt-1">
+						<!-- Primary CTA: Accept Upsell -->
+						<button
+							type="button"
+							disabled={isSubmitting}
+							onclick={() => finalizeOrder(true)}
+							class="cta-shake w-full min-h-14 py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#059669] via-[#047857] to-[#065f46] hover:from-[#047857] hover:to-[#064e3b] ring-2 ring-[#d97706]/60 shadow-xl shadow-emerald-900/25 active:scale-[0.99] transition-all flex items-center justify-center text-center font-extrabold text-base sm:text-lg text-white cursor-pointer disabled:opacity-70"
+						>
+							<span>✅ نعم! أضيفي البيوتين والزنك لطلبي (+98 DH)</span>
+						</button>
+
+						<!-- Secondary CTA: Decline Upsell & Complete Base Order -->
+						<button
+							type="button"
+							disabled={isSubmitting}
+							onclick={() => finalizeOrder(false)}
+							class="w-full py-2.5 px-4 rounded-xl bg-stone-100 hover:bg-stone-200/80 text-gray-600 hover:text-gray-900 font-bold text-xs sm:text-sm transition-colors text-center cursor-pointer disabled:opacity-50"
+						>
+							لا شكراً، أكملي طلبي الأساسي فقط ←
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
 
 </div>
 
