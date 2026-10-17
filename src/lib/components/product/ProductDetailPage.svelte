@@ -312,18 +312,18 @@
 	<!-- ========================================================================= -->
 	<!-- 1. Hero Section & Interactive Buying Box -->
 	<!-- ========================================================================= -->
-	<main class="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
-		<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+	<main class="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8 pt-2 pb-0 sm:py-6">
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-1.5 sm:gap-6 lg:gap-10 items-start">
 			
 			<!-- Left Column (Desktop) / Top (Mobile): Hero Image Container -->
 			<div class="lg:col-span-6">
 				{#if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('collagen')}
-					<div class="w-full max-w-md mx-auto px-2 mb-4">
+					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
 								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
 								alt="نتائج كولاجين نوفافيتا قبل وبعد - نضارة البشرة والجمال من الداخل" 
-								class="w-full h-auto object-contain block"
+								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
 								decoding="async"
@@ -331,12 +331,12 @@
 						</div>
 					</div>
 				{:else if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('biotine')}
-					<div class="w-full max-w-md mx-auto px-2 mb-4">
+					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
 								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
 								alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
-								class="w-full h-auto object-contain block"
+								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
 								decoding="async"
@@ -344,12 +344,12 @@
 						</div>
 					</div>
 				{:else if ((product?.slug || '') + ' ' + (product?.sku || '')).includes('vitamine') || ((product?.slug || '') + ' ' + (product?.sku || '')).includes('multivit')}
-					<div class="w-full max-w-md mx-auto px-2 mb-4">
+					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
 								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
 								alt="نتائج علكات ملتي فيتامين نوفافيتا قبل وبعد - التخلص من الخمول والنشاط اليومي" 
-								class="w-full h-auto object-contain block"
+								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
 								decoding="async"
@@ -357,12 +357,12 @@
 						</div>
 					</div>
 				{:else}
-					<div class="w-full max-w-md mx-auto px-2 mb-4">
+					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img
 								src={activeImage}
 								alt={product.name}
-								class="w-full h-auto object-contain block transition-transform duration-500 hover:scale-105"
+								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto transition-transform duration-500 hover:scale-105"
 								onerror={(e: any) => {
 									e.currentTarget.onerror = null;
 									e.currentTarget.src = '/images/products/gummies_collagen.svg';
@@ -377,28 +377,28 @@
 			</div>
 
 			<!-- Right Column (Desktop) / Below (Mobile): Emotional Headline, Bundle Selector & Buying Flow -->
-			<div id="order" class="scroll-mt-24"></div>
 			<div id="product-order-box" class="lg:col-span-6 scroll-mt-24">
+				<div id="order" class="scroll-mt-24"></div>
 				
 				<!-- 1. الشارة العلوية (Pill Tag) -->
-				<div>
-					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold mb-2">
+				<div class="mt-1 sm:mt-0 mb-1.5">
+					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#1B4332]/15 text-[#1B4332] text-xs font-bold">
 						<span>{heroData.tag}</span>
 					</div>
 				</div>
 
 				<!-- 2. العنوان العاطفي الصادم (H1) -->
-				<h1 class="font-display text-xl sm:text-2xl font-black text-[#1B4332] leading-snug mb-2">
+				<h1 class="font-display text-[21px] sm:text-2xl font-extrabold text-[#1B4332] leading-[1.3] mb-1.5">
 					{heroData.h1}
 				</h1>
 
 				<!-- 3. النص الفرعي التفسيري (جملة واحدة فقط) -->
-				<p class="text-xs sm:text-sm text-gray-700 leading-relaxed mb-3 font-medium">
+				<p class="text-sm text-gray-600 leading-relaxed mb-2 font-medium">
 					{heroData.sub}
 				</p>
 
 				<!-- 4. صف التقييم والنجوم الذهبية النظيفة -->
-				<div class="flex items-center gap-2 mb-4">
+				<div class="flex items-center gap-2 mb-3">
 					<span class="font-bold text-gray-900 text-sm">4.9</span>
 					<div class="flex text-[#F59E0B] gap-0.5" aria-label="تقييم 5 نجوم">
 						{#each Array(5) as _}
