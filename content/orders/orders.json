@@ -34,23 +34,6 @@
     "notes": ""
   },
   {
-    "id": "ORD-185661",
-    "createdAt": "2026-10-16T20:17:08.127Z",
-    "fullName": "Test",
-    "phone": "0666666666",
-    "city": "يُحدد بعد التأكيد",
-    "address": "يُحدد بعد التأكيد",
-    "product": "2 قطع + رشاشين هدية 🎁",
-    "quantity": 2,
-    "totalPrice": 349,
-    "status": "جديد",
-    "sku": "kit-tandim",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "",
-    "notes": ""
-  },
-  {
     "id": "ORD-577439",
     "createdAt": "2026-10-16T19:39:25.765Z",
     "fullName": "hamza",
