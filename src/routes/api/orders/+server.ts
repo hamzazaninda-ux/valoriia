@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const total = Number(body.total ?? body.totalPrice ?? body.price ?? 279);
-		const tier = String(body.tier || 'tier_2');
+		const tier = String(body.tier || 'tier_1');
 
 		// 15-second Sliding Window Deduplication Check
 		const dedupeKey = `${cleanPhone}_${tier}_${total}`;
@@ -94,25 +94,30 @@ export const POST: RequestHandler = async ({ request }) => {
 		const mainSku = body.mainSku || body.sku || (items.find((it: any) => !it.isUpsell)?.sku) || 'gummies_collagen';
 
 		if (items.length === 0) {
-			if (tier === 'tier_1') {
+			if (tier === 'tier_3' || total === 419 || total === 518) {
 				items.push({
 					sku: mainSku,
-					title: mainSku.includes('biotin') ? 'علكات البيوتين (علبة واحدة)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (علبة واحدة)' : 'علكات الكولاجين البحري (علبة واحدة)',
-					quantity: 1,
-					price: 199,
+					title: mainSku.includes('biotin') ? 'علكات البيوتين (4 علب VIP)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (4 علب VIP)' : 'علكات الكولاجين البحري (4 علب VIP)',
+					quantity: 4,
+					price: 419,
 					isUpsell: false
 				});
-			} else if (tier === 'tier_2') {
-				items.push(
-					{ sku: mainSku, title: mainSku.includes('biotin') ? 'علكات البيوتين للشعر' : 'علكات كولاجين البشرة', quantity: 1, price: 139.5, isUpsell: false },
-					{ sku: mainSku, title: mainSku.includes('biotin') ? 'علكات البيوتين للشعر' : 'علكات كولاجين البشرة', quantity: 1, price: 139.5, isUpsell: false }
-				);
+			} else if (tier === 'tier_2' || total === 349 || total === 448) {
+				items.push({
+					sku: mainSku,
+					title: mainSku.includes('biotin') ? 'علكات البيوتين (3 علب)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (3 علب)' : 'علكات الكولاجين البحري (3 علب)',
+					quantity: 3,
+					price: 349,
+					isUpsell: false
+				});
 			} else {
-				items.push(
-					{ sku: 'gummies_biotine', title: 'علكات البيوتين للشعر', quantity: 1, price: 116.33, isUpsell: false },
-					{ sku: 'gummies_collagen', title: 'علكات كولاجين البشرة', quantity: 1, price: 116.33, isUpsell: false },
-					{ sku: 'gumies_vitamine', title: 'علكات الفيتامينات المتعددة', quantity: 1, price: 116.34, isUpsell: false }
-				);
+				items.push({
+					sku: mainSku,
+					title: mainSku.includes('biotin') ? 'علكات البيوتين (علبتان)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (علبتان)' : 'علكات الكولاجين البحري (علبتان)',
+					quantity: 2,
+					price: 279,
+					isUpsell: false
+				});
 			}
 			if (body.hasUpsell) {
 				const upsellSku = mainSku === 'gummies_biotine' ? 'gummies_collagen' : 'gummies_biotine';

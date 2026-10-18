@@ -134,8 +134,8 @@
 	let menuOpen = $state(false);
 	let query = $state('');
 
-	// Tier Selection (Default to Tier 2 - Most Popular)
-	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_2');
+	// Tier Selection (Default to Tier 1 - 2 Bottles Most Popular @ 279 MAD)
+	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_1');
 	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
 	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
@@ -172,7 +172,13 @@
 		const cleanedPhone = phone.trim().replace(/[\s\-\(\)]/g, '');
 		const baseTierBottles = currentTier.units;
 		const bundleName =
-			baseTierBottles === 1 ? 'علبة واحدة' : baseTierBottles === 2 ? 'علبتان' : '3 علب';
+			baseTierBottles === 4
+				? '4 علب'
+				: baseTierBottles === 3
+					? '3 علب'
+					: baseTierBottles === 2
+						? 'علبتان'
+						: 'علبة واحدة';
 		const cleanName = (product?.name || 'NOVAVITA Gummies').replace(/\s*\([^)]*\)/g, '').trim();
 		const displayTitle = `${cleanName} (${bundleName})`;
 
@@ -230,11 +236,11 @@
 			baseTier: selectedTier,
 			baseBottles: baseTierBottles,
 			tierName:
-				selectedTier === 'tier_1'
-					? 'علبة واحدة (1 علبة)'
-					: selectedTier === 'tier_3'
-						? '3 علب (كورس علاجي)'
-						: 'علبتان (2 علب)',
+				selectedTier === 'tier_3'
+					? '4 علب • كورس مكثف VIP (الباقة العائلية)'
+					: selectedTier === 'tier_2'
+						? '3 علب • كورس علاجي كامل'
+						: 'علبتان • ثبّتي النتيجة',
 			totalBottles,
 			quantity: totalBottles,
 			qte: totalBottles,
@@ -529,42 +535,12 @@
 						</span>
 					</div>
 
-					<!-- Tier 1 -->
+					<!-- Tier 1 (Default Selected - Most Popular: 2 Bottles @ 279 MAD) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_1')}
-						class={`w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
-							selectedTier === 'tier_1'
-								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
-								: 'border-stone-200 hover:border-stone-300'
-						}`}
-						dir="rtl"
-					>
-						<!-- Right: Radio circle + Title & details -->
-						<div class="flex items-center gap-3 text-right">
-							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
-								{#if selectedTier === 'tier_1'}
-									<div class="w-2 h-2 rounded-full bg-white"></div>
-								{/if}
-							</div>
-							<div class="text-right">
-								<div class="font-bold text-sm sm:text-base text-[#1F2937]">علبة واحدة • شهر تجريبي</div>
-								<div class="text-xs text-stone-500">بداية استعادة الحيوية والترطيب</div>
-							</div>
-						</div>
-						<!-- Left: Price & savings -->
-						<div class="text-left shrink-0">
-							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">199 MAD</div>
-							<div class="text-[11px] text-stone-400 line-through" dir="ltr">299 MAD</div>
-						</div>
-					</button>
-
-					<!-- Tier 2 (Preselected - Most Popular) -->
-					<button
-						type="button"
-						onclick={() => selectTier('tier_2')}
 						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
-							selectedTier === 'tier_2'
+							selectedTier === 'tier_1'
 								? 'border-[#1B4332] ring-3 ring-[#1B4332]/20 shadow-md -translate-y-0.5'
 								: 'border-[#1B4332]/40 hover:border-[#1B4332]'
 						}`}
@@ -576,8 +552,8 @@
 						</div>
 						<!-- Right: Radio circle + Title & details -->
 						<div class="flex items-center gap-3 text-right">
-							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
-								{#if selectedTier === 'tier_2'}
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_1'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
@@ -589,16 +565,16 @@
 						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
 							<div class="font-black text-xl text-[#1B4332]" dir="ltr">279 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">وفّري 119 درهم</div>
+							<div class="text-xs font-bold text-[#E86A7C]">وفرّي 119 درهم</div>
 						</div>
 					</button>
 
-					<!-- Tier 3 -->
+					<!-- Tier 2 (3 Bottles @ 349 MAD) -->
 					<button
 						type="button"
-						onclick={() => selectTier('tier_3')}
+						onclick={() => selectTier('tier_2')}
 						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
-							selectedTier === 'tier_3'
+							selectedTier === 'tier_2'
 								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
@@ -610,8 +586,8 @@
 						</div>
 						<!-- Right: Radio circle + Title & details -->
 						<div class="flex items-center gap-3 text-right">
-							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
-								{#if selectedTier === 'tier_3'}
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_2'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
@@ -623,7 +599,41 @@
 						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
 							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">349 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">وفّري 248 درهم</div>
+							<div class="text-xs font-bold text-[#E86A7C]">توفير 248 درهم</div>
+						</div>
+					</button>
+
+					<!-- Tier 3 (NEW - Biggest Savings: 4 Bottles VIP @ 419 MAD) -->
+					<button
+						type="button"
+						onclick={() => selectTier('tier_3')}
+						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
+							selectedTier === 'tier_3'
+								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
+								: 'border-stone-200 hover:border-stone-300'
+						}`}
+						dir="rtl"
+					>
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-gradient-to-r from-[#E86A7C] to-[#d946ef] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
+							<span>أكبر توفير 377 درهم 🔥</span>
+						</div>
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-3 text-right">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_3'}
+									<div class="w-2 h-2 rounded-full bg-white"></div>
+								{/if}
+							</div>
+							<div class="text-right">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937]">4 علب • كورس مكثف VIP (الباقة العائلية)</div>
+								<div class="text-xs text-emerald-800 font-bold">كورس 4 أشهر متواصلة لعناية متكاملة + توصيل فابور 🚚</div>
+							</div>
+						</div>
+						<!-- Left: Price & savings -->
+						<div class="text-left shrink-0">
+							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">419 MAD</div>
+							<div class="text-[11px] text-stone-400 line-through font-bold" dir="ltr">599 MAD</div>
 						</div>
 					</button>
 				</div>

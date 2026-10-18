@@ -9,7 +9,7 @@
 	}
 
 	let {
-		selectedTier = $bindable<'tier_1' | 'tier_2' | 'tier_3'>('tier_2'),
+		selectedTier = $bindable<'tier_1' | 'tier_2' | 'tier_3'>('tier_1'),
 		isSubmitting = false,
 		onSelectTier,
 		onSubmitOrder
@@ -82,19 +82,24 @@
 		<!-- 3 Tier Cards Grid -->
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 items-stretch">
 			
-			<!-- Tier 1: Trial (1 Bottle) -->
+			<!-- Tier 1: Duo (2 Bottles) — Best Value Pre-selected -->
 			<button
 				type="button"
 				onclick={() => selectTier('tier_1')}
 				class={`relative flex flex-col text-start rounded-3xl p-5 sm:p-6 transition-all duration-300 bg-white border-2 cursor-pointer ${
 					selectedTier === 'tier_1'
-						? 'border-[#1B4332] shadow-xl ring-2 ring-[#1B4332]/20 -translate-y-1'
-						: 'border-stone-200/80 shadow-sm hover:border-stone-300'
+						? 'border-[#1B4332] shadow-2xl ring-4 ring-[#1B4332]/20 -translate-y-2'
+						: 'border-[#1B4332]/60 shadow-md hover:border-[#1B4332]'
 				}`}
 			>
-				<div class="flex items-center justify-between">
-					<span class="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
-						{PRICING_TIERS.tier_1.badge}
+				<!-- Top Floating Badge -->
+				<div class="absolute -top-3.5 inset-x-0 mx-auto w-max px-4 py-1 rounded-full bg-[#1B4332] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1">
+					<span>الأكثر طلباً ⭐ • وفرّي 119 درهم</span>
+				</div>
+
+				<div class="flex items-center justify-between mt-2">
+					<span class="text-xs font-extrabold text-[#E86A7C] bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
+						كورس شهرين متكامل
 					</span>
 					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 						{#if selectedTier === 'tier_1'}
@@ -104,56 +109,8 @@
 				</div>
 
 				<div class="mt-4">
-					<h3 class="font-display text-lg font-black text-[#1F2937]">باقة التجربة (علبة واحدة)</h3>
-					<p class="text-xs text-stone-500 mt-1">كورس تجريبي (25 علكة مضغ شهية)</p>
-				</div>
-
-				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">199 MAD</span>
-					<span class="text-sm text-stone-400 line-through" dir="ltr">299 MAD</span>
-				</div>
-
-				<div class="mt-3 text-xs font-semibold text-stone-500 flex items-center gap-1.5">
-					<span>🚚</span>
-					<span>مصاريف الشحن القياسي: 29 درهم</span>
-				</div>
-
-				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 1 علبة من اختيارك (25 علكة)</li>
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> تكفي شهراً كاملاً</li>
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> الدفع عند الاستلام بعد المعاينة</li>
-				</ul>
-			</button>
-
-			<!-- Tier 2: Duo (2 Bottles) — Best Value Pre-selected -->
-			<button
-				type="button"
-				onclick={() => selectTier('tier_2')}
-				class={`relative flex flex-col text-start rounded-3xl p-5 sm:p-6 transition-all duration-300 bg-white border-2 cursor-pointer ${
-					selectedTier === 'tier_2'
-						? 'border-[#1B4332] shadow-2xl ring-4 ring-[#1B4332]/20 -translate-y-2'
-						: 'border-[#1B4332]/60 shadow-md hover:border-[#1B4332]'
-				}`}
-			>
-				<!-- Top Floating Badge -->
-				<div class="absolute -top-3.5 inset-x-0 mx-auto w-max px-4 py-1 rounded-full bg-[#1B4332] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1">
-					<span>⭐ الأكثر طلباً - توفير 119 درهم</span>
-				</div>
-
-				<div class="flex items-center justify-between mt-2">
-					<span class="text-xs font-extrabold text-[#E86A7C] bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
-						كورس شهرين متكامل
-					</span>
-					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
-						{#if selectedTier === 'tier_2'}
-							<div class="w-2 h-2 rounded-full bg-white"></div>
-						{/if}
-					</div>
-				</div>
-
-				<div class="mt-4">
-					<h3 class="font-display text-lg font-black text-[#1F2937]">باقة الثنائي (علبتان)</h3>
-					<p class="text-xs text-stone-500 mt-1">كورس كامل لوقف التساقط وظهور البيبي هير</p>
+					<h3 class="font-display text-lg font-black text-[#1F2937]">علبتان • ثبّتي النتيجة</h3>
+					<p class="text-xs text-stone-500 mt-1">شهرين متواصلين + توصيل فابور 🚚</p>
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
@@ -170,34 +127,34 @@
 					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (50 علكة) لكورس شهرين كامل</strong></li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 119 MAD</strong> مقارنة بالسعر الفردي</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>وفرّي 119 درهم</strong> مقارنة بالسعر الفردي</li>
 				</ul>
 			</button>
 
-			<!-- Tier 3: Trio (3 Bottles) — Ultimate Transformation -->
+			<!-- Tier 2: Trio (3 Bottles) -->
 			<button
 				type="button"
-				onclick={() => selectTier('tier_3')}
+				onclick={() => selectTier('tier_2')}
 				class={`relative flex flex-col text-start rounded-3xl p-5 sm:p-6 transition-all duration-300 bg-white border-2 cursor-pointer ${
-					selectedTier === 'tier_3'
+					selectedTier === 'tier_2'
 						? 'border-[#1B4332] shadow-xl ring-2 ring-[#1B4332]/20 -translate-y-1'
 						: 'border-stone-200/80 shadow-sm hover:border-stone-300'
 				}`}
 			>
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-						{PRICING_TIERS.tier_3.badge}
+						توفير 248 درهم
 					</span>
-					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
-						{#if selectedTier === 'tier_3'}
+					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+						{#if selectedTier === 'tier_2'}
 							<div class="w-2 h-2 rounded-full bg-white"></div>
 						{/if}
 					</div>
 				</div>
 
 				<div class="mt-4">
-					<h3 class="font-display text-lg font-black text-[#1F2937]">التحول الشامل (3 علب)</h3>
-					<p class="text-xs text-stone-500 mt-1">كورس 3 أشهر للشعر، البشرة والأظافر</p>
+					<h3 class="font-display text-lg font-black text-[#1F2937]">3 علب • كورس علاجي كامل</h3>
+					<p class="text-xs text-stone-500 mt-1">كورس 3 أشهر متواصلة + توصيل فابور 🚚</p>
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
@@ -214,7 +171,51 @@
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 116 MAD للعلبة</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>أقصى توفير (248 MAD)</strong> لكورس متواصل</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 248 درهم</strong> لكورس متواصل</li>
+				</ul>
+			</button>
+
+			<!-- Tier 3: VIP Family (4 Bottles) — Biggest Savings -->
+			<button
+				type="button"
+				onclick={() => selectTier('tier_3')}
+				class={`relative flex flex-col text-start rounded-3xl p-5 sm:p-6 transition-all duration-300 bg-white border-2 cursor-pointer ${
+					selectedTier === 'tier_3'
+						? 'border-[#1B4332] shadow-xl ring-2 ring-[#1B4332]/20 -translate-y-1'
+						: 'border-stone-200/80 shadow-sm hover:border-stone-300'
+				}`}
+			>
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-black text-white bg-gradient-to-r from-[#E86A7C] to-[#d946ef] px-3 py-1 rounded-full shadow-xs">
+						أكبر توفير 377 درهم 🔥
+					</span>
+					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+						{#if selectedTier === 'tier_3'}
+							<div class="w-2 h-2 rounded-full bg-white"></div>
+						{/if}
+					</div>
+				</div>
+
+				<div class="mt-4">
+					<h3 class="font-display text-lg font-black text-[#1F2937]">4 علب • كورس مكثف VIP (الباقة العائلية)</h3>
+					<p class="text-xs text-stone-500 mt-1">كورس 4 أشهر متواصلة لعناية متكاملة + توصيل فابور 🚚</p>
+				</div>
+
+				<div class="mt-6 flex items-baseline gap-2">
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">419 MAD</span>
+					<span class="text-sm text-stone-400 line-through" dir="ltr">599 MAD</span>
+				</div>
+
+				<div class="mt-3 text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-max flex items-center gap-1">
+					<span>🚚</span>
+					<span>توصيل فابور مجاني وسريع</span>
+				</div>
+
+				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 4 علب (100 علكة) — فقط 104 MAD للعلبة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> كورس 4 أشهر متواصلة لعناية متكاملة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>أكبر توفير 377 درهم 🔥</strong></li>
 				</ul>
 			</button>
 

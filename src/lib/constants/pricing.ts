@@ -23,49 +23,49 @@ export interface PricingTier {
 export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
   tier_1: {
     id: 'tier_1',
-    units: 1,
-    months: 1,
-    price: 199,
-    originalPrice: 299,
-    savings: 100,
-    title: 'باقة التجربة (علبة واحدة)',
-    subtitle: 'كورس شهر واحد لتجربة النكهة والنتائج الأولية',
-    shipping: 29,
-    isFreeShipping: false,
-    isPopular: false,
-    badge: 'سعر التجربة'
-  },
-  tier_2: {
-    id: 'tier_2',
     units: 2,
     months: 2,
     price: 279,
     originalPrice: 398,
     savings: 119,
-    title: 'باقة الثنائي (علبتان)',
-    subtitle: 'كورس شهرين لوقف التساقط ونضارة البشرة + توصيل مجاني',
+    title: 'علبتان • ثبّتي النتيجة',
+    subtitle: 'شهرين متواصلين + توصيل فابور 🚚',
     shipping: 0,
     isFreeShipping: true,
     isPopular: true,
-    badge: '⭐ الأكثر طلباً - توفير 119 درهم'
+    badge: 'الأكثر طلباً ⭐'
   },
-  tier_3: {
-    id: 'tier_3',
+  tier_2: {
+    id: 'tier_2',
     units: 3,
     months: 3,
     price: 349,
     originalPrice: 597,
     savings: 248,
-    title: 'باقة التحول الشامل (3 علب)',
-    subtitle: 'الروتين المتكامل لنتائج دائمة للشعر، البشرة والأظافر + توصيل فابور 🚚',
+    title: '3 علب • كورس علاجي كامل',
+    subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
     shipping: 0,
     isFreeShipping: true,
     isPopular: false,
-    badge: '🏆 التحول الشامل - توفير 248 درهم'
+    badge: 'توفير 248 درهم'
+  },
+  tier_3: {
+    id: 'tier_3',
+    units: 4,
+    months: 4,
+    price: 419,
+    originalPrice: 599,
+    savings: 377,
+    title: '4 علب • كورس مكثف VIP (الباقة العائلية)',
+    subtitle: 'كورس 4 أشهر متواصلة لعناية متكاملة + توصيل فابور 🚚',
+    shipping: 0,
+    isFreeShipping: true,
+    isPopular: false,
+    badge: 'أكبر توفير 377 درهم 🔥'
   }
 };
 
-export const DEFAULT_TIER_ID: 'tier_1' | 'tier_2' | 'tier_3' = 'tier_2';
+export const DEFAULT_TIER_ID: 'tier_1' | 'tier_2' | 'tier_3' = 'tier_1';
 
 export const FLASH_UPSELL_PRICE = 99; // MAD
 export const FREE_SHIPPING_THRESHOLD = 250; // MAD

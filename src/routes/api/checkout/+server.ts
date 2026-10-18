@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			} catch {}
 		}
 
-		const tier = String(body.tier || body.baseTier || 'tier_2');
+		const tier = String(body.tier || body.baseTier || 'tier_1');
 		const physicalBottleCount = calculatePhysicalBottleCount({
 			tier,
 			items,

@@ -112,22 +112,22 @@
 		}
 
 		if (items.length === 0) {
-			const tier = rawOrder?.tier || urlParams?.get('tier') || 'tier_2';
+			const tier = rawOrder?.tier || urlParams?.get('tier') || 'tier_1';
 			const mainSku = rawOrder?.sku || rawOrder?.mainSku || urlParams?.get('sku') || 'gummies_collagen';
 			const baseTitle = mainSku.includes('biotine')
 				? 'علكات البيوتين 3000mcg والزنك'
 				: mainSku.includes('vitamine')
 					? 'علكات الملتي فيتامين المتكاملة'
 					: 'علكات الكولاجين البحري';
-			if (tier === 'tier_1') {
+			if (tier === 'tier_3' || totalPrice === 419 || totalPrice === 518) {
 				items.push({
 					sku: mainSku,
-					title: `${baseTitle} (علبة واحدة)`,
-					quantity: 1,
-					unitPrice: 199,
-					price: 199
+					title: `${baseTitle} (4 علب - كورس مكثف VIP)`,
+					quantity: 4,
+					unitPrice: 104.75,
+					price: 419
 				});
-			} else if (tier === 'tier_3') {
+			} else if (tier === 'tier_2' || totalPrice === 349 || totalPrice === 448) {
 				items.push({
 					sku: mainSku,
 					title: `${baseTitle} (3 علب - كورس علاجي كامل)`,
@@ -165,7 +165,7 @@
 			productTitle:
 				rawOrder?.productTitle || rawOrder?.product || 'باقة حلوى الفيتامينات الطبيعية NOVAVITA',
 			hasUpsell: !!(rawOrder?.hasUpsell || paramUpsell),
-			tier: rawOrder?.tier || 'tier_2',
+			tier: rawOrder?.tier || 'tier_1',
 			items
 		};
 

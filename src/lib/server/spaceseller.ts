@@ -128,27 +128,25 @@ export function calculateOrderTotals(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const upsellPrice = hasUpsell ? 99 : 0;
 
-	let baseOfferPrice = 279; // Default tier_2
+	let baseOfferPrice = 279; // Default tier_1 (2 bottles @ 279 MAD)
+	const r = typeof options.rawTotal === 'number' && options.rawTotal > 0 ? options.rawTotal : 0;
 
-	if (options.tier === 'tier_1') {
+	if (r === 199 || r === 298 || r === 297) {
 		baseOfferPrice = 199;
-	} else if (options.tier === 'tier_3') {
-		baseOfferPrice = 349;
-	} else if (options.tier === 'tier_2') {
+	} else if (r === 279 || r === 378 || r === 377) {
 		baseOfferPrice = 279;
-	} else if (typeof options.rawTotal === 'number' && options.rawTotal > 0) {
-		const r = options.rawTotal;
-		if (r === 199 || r === 298 || r === 297) {
-			baseOfferPrice = 199;
-		} else if (r === 279 || r === 378 || r === 377) {
-			baseOfferPrice = 279;
-		} else if (r === 349 || r === 448 || r === 447) {
-			baseOfferPrice = 349;
-		} else if (hasUpsell && r > 99) {
-			baseOfferPrice = r - 99;
-		} else {
-			baseOfferPrice = r;
-		}
+	} else if (r === 349 || r === 448 || r === 447) {
+		baseOfferPrice = 349;
+	} else if (r === 419 || r === 518 || r === 517) {
+		baseOfferPrice = 419;
+	} else if (options.tier === 'tier_3' || options.tier === 'tier_4') {
+		baseOfferPrice = 419;
+	} else if (options.tier === 'tier_2') {
+		baseOfferPrice = 349;
+	} else if (options.tier === 'tier_1') {
+		baseOfferPrice = 279;
+	} else if (r > 0) {
+		baseOfferPrice = hasUpsell && r > 99 ? r - 99 : r;
 	} else if (Array.isArray(options.items) && options.items.length > 0) {
 		const baseItems = options.items.filter((it: any) => !it.isUpsell);
 		const sumBase = baseItems.reduce(
@@ -406,10 +404,10 @@ export function resolveUpsellArabicName(options: {
 
 /**
  * Calculates the TRUE total number of physical bottles in the order:
- * - 1 bottle offer (199 DH) + Upsell (99 DH) -> qte = 2
  * - 2 bottles offer (279 DH) + Upsell (99 DH) -> qte = 3
  * - 3 bottles offer (349 DH) + Upsell (99 DH) -> qte = 4
- * - Without upsell -> qte = 1, 2, or 3 according to selected tier
+ * - 4 bottles offer (419 DH) + Upsell (99 DH) -> qte = 5
+ * - Without upsell -> qte = 2, 3, or 4 according to selected tier
  */
 export function calculatePhysicalBottleCount(options: {
 	tier?: string;
@@ -418,29 +416,48 @@ export function calculatePhysicalBottleCount(options: {
 	rawTotal?: number;
 	price?: number;
 }): number {
-	let baseBottles = 2; // Default tier_2
+	let baseBottles = 2; // Default tier_1 (2 bottles @ 279 MAD)
 	const rawTier = String(options.tier || '').toLowerCase();
 	const hasUpsell = hasUpsellOrder(options);
+	const total = Number(options.rawTotal ?? options.price ?? 0);
 
-	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
+	if (total === 199 || total === 298 || total === 297 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
 		baseBottles = 1;
-	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
+	} else if (
+		total === 419 ||
+		total === 518 ||
+		total === 517 ||
+		rawTier === 'tier_3' ||
+		rawTier === 'tier_4' ||
+		rawTier.includes('4') ||
+		rawTier.includes('vip') ||
+		rawTier.includes('العائلية')
+	) {
+		baseBottles = 4;
+	} else if (
+		total === 349 ||
+		total === 448 ||
+		total === 447 ||
+		rawTier === 'tier_2' ||
+		rawTier.includes('3') ||
+		rawTier.includes('التحول') ||
+		rawTier.includes('علاجي')
+	) {
 		baseBottles = 3;
-	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
+	} else if (
+		total === 279 ||
+		total === 378 ||
+		total === 377 ||
+		rawTier === 'tier_1' ||
+		rawTier.includes('2') ||
+		rawTier.includes('الثنائي') ||
+		rawTier.includes('علبتان')
+	) {
 		baseBottles = 2;
-	} else {
-		const total = Number(options.rawTotal ?? options.price ?? 0);
-		if (total === 199 || total === 298 || total === 297) {
-			baseBottles = 1;
-		} else if (total === 279 || total === 378 || total === 377) {
-			baseBottles = 2;
-		} else if (total === 349 || total === 448 || total === 447) {
-			baseBottles = 3;
-		} else if (Array.isArray(options.items) && options.items.length > 0) {
-			const baseItems = options.items.filter((it: any) => !it.isUpsell);
-			const sumBaseQty = baseItems.reduce((acc: number, it: any) => acc + (Number(it.quantity || it.qty) || 1), 0);
-			if (sumBaseQty > 0) baseBottles = sumBaseQty;
-		}
+	} else if (Array.isArray(options.items) && options.items.length > 0) {
+		const baseItems = options.items.filter((it: any) => !it.isUpsell);
+		const sumBaseQty = baseItems.reduce((acc: number, it: any) => acc + (Number(it.quantity || it.qty) || 1), 0);
+		if (sumBaseQty > 0) baseBottles = sumBaseQty;
 	}
 
 	let upsellBottles = 0;
@@ -489,19 +506,40 @@ export function buildConfirmationBreakdown(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const baseName = resolveProductArabicName(options.mainSku || options.productLabel);
 
-	// Resolve tier bottle text: "1 علبة", "2 علب", "3 علب"
+	// Resolve tier bottle text: "2 علب", "3 علب", "4 علب" (or legacy "1 علبة")
 	const rawTier = String(options.tier || '').toLowerCase();
 	let tierUnitText = '2 علب';
-	if (rawTier === 'tier_1' || rawTier.includes('1') || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
+	if (
+		options.totalPrice === 199 ||
+		options.totalPrice === 298 ||
+		options.totalPrice === 297 ||
+		rawTier.includes('التجربة') ||
+		rawTier.includes('واحدة')
+	) {
 		tierUnitText = '1 علبة';
-	} else if (rawTier === 'tier_3' || rawTier.includes('3') || rawTier.includes('التحول')) {
+	} else if (
+		options.totalPrice === 419 ||
+		options.totalPrice === 518 ||
+		options.totalPrice === 517 ||
+		rawTier === 'tier_3' ||
+		rawTier === 'tier_4' ||
+		rawTier.includes('4') ||
+		rawTier.includes('vip') ||
+		rawTier.includes('العائلية')
+	) {
+		tierUnitText = '4 علب';
+	} else if (
+		options.totalPrice === 349 ||
+		options.totalPrice === 448 ||
+		options.totalPrice === 447 ||
+		rawTier === 'tier_2' ||
+		rawTier.includes('3') ||
+		rawTier.includes('التحول') ||
+		rawTier.includes('علاجي')
+	) {
 		tierUnitText = '3 علب';
-	} else if (rawTier === 'tier_2' || rawTier.includes('2') || rawTier.includes('الثنائي')) {
+	} else {
 		tierUnitText = '2 علب';
-	} else if (options.totalPrice === 199 || options.totalPrice === 298 || options.totalPrice === 297) {
-		tierUnitText = '1 علبة';
-	} else if (options.totalPrice === 349 || options.totalPrice === 448 || options.totalPrice === 447) {
-		tierUnitText = '3 علب';
 	}
 
 	if (hasUpsell) {
