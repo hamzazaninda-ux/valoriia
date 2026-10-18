@@ -1,5 +1,22 @@
 [
   {
+    "id": "NV-825967",
+    "createdAt": "2026-10-18T22:26:49.006Z",
+    "fullName": "أمينة حوراني",
+    "phone": "0620467293",
+    "city": "تأكيد العنوان عبر الهاتف",
+    "address": "العرض: 2 علب كولاجين + أبسيل: علبة بيوتين وزنك (+99 DH) | المجموع: 378 DH (تأكيد عبر الهاتف) | تأكيد العنوان عبر الهاتف",
+    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة) + علبة بيوتين (العرض الخاطف)",
+    "quantity": 3,
+    "totalPrice": 378,
+    "status": "جديد",
+    "sku": "gummies_biotine",
+    "pageUrl": "",
+    "orderType": "upsell",
+    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبتان)\",\"quantity\":2,\"unitPrice\":139.5,\"price\":279,\"isUpsell\":false},{\"sku\":\"gummies_biotine\",\"slug\":\"gummies_biotine\",\"title\":\"علكات البيوتين والزنك 3000mcg (عرض خاص)\",\"quantity\":1,\"unitPrice\":99,\"price\":99,\"isUpsell\":true}]",
+    "notes": "العرض: 2 علب كولاجين + أبسيل: علبة بيوتين وزنك (+99 DH) | المجموع: 378 DH (تأكيد عبر الهاتف) [طلب: NV-825967]"
+  },
+  {
     "id": "NV-469356",
     "createdAt": "2026-10-18T22:11:59.584Z",
     "fullName": "8 7",
