@@ -3,13 +3,23 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import type { LayoutData } from './$types';
 	import { afterNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { captureAdClickIds, ensureCurrentUrlHasSnapClickId } from '$lib/utils/tracking';
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
 
 	const tracking = $derived(data?.settings?.tracking);
 
+	onMount(() => {
+		captureAdClickIds();
+		ensureCurrentUrlHasSnapClickId();
+	});
+
 	let isFirstNav = true;
 	afterNavigate(() => {
+		captureAdClickIds();
+		ensureCurrentUrlHasSnapClickId();
+
 		if (isFirstNav) {
 			isFirstNav = false;
 			return;

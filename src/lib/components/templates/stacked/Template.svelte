@@ -6,8 +6,8 @@
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
-	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
+	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
 
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
@@ -352,7 +352,24 @@
 					}
 				} catch {}
 
-				window.location.href = `/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${price}&promptAddress=1`;
+				try {
+					trackSnapPurchase({
+						orderId,
+						price,
+						currency: 'MAD',
+						phone: customerPhone.trim(),
+						title: productTitle,
+						sku: payload.sku,
+						quantity
+					});
+				} catch (snapErr) {
+					console.warn('Snap Purchase tracking error:', snapErr);
+				}
+
+				const destinationUrl = preserveTrackingParams(
+					`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${price}&promptAddress=1`
+				);
+				window.location.href = destinationUrl;
 			}
 		} catch (err: any) {
 			console.error('Direct checkout failed:', err);

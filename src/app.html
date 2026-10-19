@@ -22,6 +22,37 @@
 		</script>
 		<!-- TikTok Pixel Code End -->
 
+		<!-- Snap Click ID (ScCid) & Ad Attribution Persistence -->
+		<script type='text/javascript'>
+		(function() {
+			try {
+				var params = new URLSearchParams(window.location.search);
+				var sccid = params.get('ScCid') || params.get('sccid') || params.get('sc_cid') || params.get('sc_clid');
+				if (sccid && sccid.trim()) {
+					var val = sccid.trim();
+					localStorage.setItem('snap_sccid', val);
+					sessionStorage.setItem('snap_sccid', val);
+					var d = new Date();
+					d.setTime(d.getTime() + (30 * 24 * 60 * 60 * 1000));
+					document.cookie = '_sccid=' + encodeURIComponent(val) + '; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
+					document.cookie = '_scid=' + encodeURIComponent(val) + '; expires=' + d.toUTCString() + '; path=/; SameSite=Lax';
+				} else {
+					var saved = sessionStorage.getItem('snap_sccid') || localStorage.getItem('snap_sccid');
+					if (!saved) {
+						var m = document.cookie.match(new RegExp('(^| )(_sccid|_scid)=([^;]+)'));
+						if (m && m[3]) saved = decodeURIComponent(m[3]);
+					}
+					if (saved && !params.has('ScCid') && !params.has('sccid') && window.history && window.history.replaceState) {
+						params.set('ScCid', saved);
+						var newSearch = params.toString();
+						var newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash;
+						window.history.replaceState(null, '', newUrl);
+					}
+				}
+			} catch(e) {}
+		})();
+		</script>
+
 		<!-- Snapchat Pixel Code -->
 		<script type='text/javascript'>
 		(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()

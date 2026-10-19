@@ -2,6 +2,7 @@
 	import { cart, cartUi, type CompletedOrder } from '$lib/stores/cart.svelte';
 	import { buildOrderPayload, sendOrder } from '$lib/utils/checkout';
 	import { isValidMoroccanPhone } from '$lib/utils/phone';
+	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
 
 	let {
 		currency = 'درهم',
@@ -105,8 +106,7 @@
 				const orderTotal = (payload.price as number) || 229;
 				const orderProductName = ((payload.productTitle as string) || productTitle || 'منتج').trim();
 				const orderQuantity = (payload.quantity as number) || 1;
-				const phone = ((payload.phoneNumber as string) || (payload.phone as string) || '').trim();
-				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
+				const phone = ((payload.phoneNumber as string) || '').trim();
 
 				// Instant Firing on API Success (Before Redirect to avoid mobile drop-off)
 				if (typeof window !== 'undefined' && (window as any).ttq) {
@@ -120,29 +120,18 @@
 						console.warn('[Pixel] ttq CompletePayment error:', err);
 					}
 				}
-				const snapKey = 'snap_tracked_' + orderId;
-				if (!sessionStorage.getItem(snapKey) && typeof window !== 'undefined' && (window as any).snaptr) {
-					try {
-						// 1. تمرير رقم الهاتف لمطابقة حساب الزبون في سناب شات (Advanced Matching)
-						if (formattedPhone && formattedPhone !== '+212') {
-							(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
-								'user_phone_number': formattedPhone
-							});
-						}
-
-						// 2. إطلاق حدث الشراء الفوري
-						(window as any).snaptr('track', 'PURCHASE', {
-							currency: 'MAD',
-							price: orderTotal,
-							transaction_id: orderId,
-							item_category: orderProductName
-						});
-
-						sessionStorage.setItem(snapKey, 'true');
-						localStorage.setItem(snapKey, 'true');
-					} catch (err) {
-						console.warn('[Pixel] snap PURCHASE error:', err);
-					}
+				try {
+					trackSnapPurchase({
+						orderId,
+						price: orderTotal,
+						currency: 'MAD',
+						phone,
+						title: orderProductName,
+						sku,
+						quantity: orderQuantity
+					});
+				} catch (err) {
+					console.warn('[Pixel] snap PURCHASE error:', err);
 				}
 				const gadsKey = 'gads_tracked_' + orderId;
 				if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
@@ -188,7 +177,7 @@
 					onDone(completed);
 				} else {
 					cartUi.resetAll();
-					window.location.href = '/thank-you';
+					window.location.href = preserveTrackingParams('/thank-you');
 				}
 			},
 			() => {

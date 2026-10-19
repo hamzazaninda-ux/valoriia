@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { trackSnapPurchase, ensureCurrentUrlHasSnapClickId } from '$lib/utils/tracking';
 
 	let { data }: { data?: { whatsappNumber?: string } } = $props();
 
@@ -31,6 +32,7 @@
 	const currentTotal = $derived(order?.price || 229);
 
 	onMount(async () => {
+		ensureCurrentUrlHasSnapClickId();
 		const hour = new Date().getHours();
 		isDaytime = hour >= 9 && hour < 21;
 
@@ -146,24 +148,18 @@
 		}
 
 		// 2. Snapchat Purchase Firing:
-		if (typeof window !== 'undefined' && (window as any).snaptr) {
-			try {
-				const phone = ((order as any)?.phoneNumber || (order as any)?.phone || '').trim();
-				const formattedPhone = phone.startsWith('+') ? phone : ('+212' + phone.replace(/^0/, ''));
-				if (formattedPhone && formattedPhone !== '+212') {
-					(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
-						'user_phone_number': formattedPhone
-					});
-				}
-				(window as any).snaptr('track', 'PURCHASE', {
-					currency: 'MAD',
-					price: orderTotal || 229,
-					transaction_id: orderId
-				});
-				console.log('✅ [SNAP SUCCESS] Purchase Fired', { orderId });
-			} catch (err) {
-				console.warn('[Pixel] Snap PURCHASE error:', err);
-			}
+		try {
+			trackSnapPurchase({
+				orderId,
+				price: orderTotal,
+				currency: 'MAD',
+				phone: phoneNumber,
+				title: orderProductName,
+				sku: order?.sku,
+				quantity: orderQuantity
+			});
+		} catch (snapErr) {
+			console.warn('[Pixel] Snap trackSnapPurchase error:', snapErr);
 		}
 
 		// 3. TikTok CompletePayment Firing:

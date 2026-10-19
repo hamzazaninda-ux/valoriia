@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { sendOrder } from '$lib/utils/checkout';
+	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
 	import { validateOrderForm } from '$lib/utils/validation';
 	import { formatPrice, buildWhatsappUrl } from '$lib/utils/format';
 	import StarRating from '$lib/components/shared/StarRating.svelte';
@@ -154,28 +155,18 @@
 					console.warn('[Pixel] ttq CompletePayment error:', err);
 				}
 			}
-			const snapKey = 'snap_tracked_' + orderId;
-			if (!sessionStorage.getItem(snapKey) && typeof window !== 'undefined' && (window as any).snaptr) {
-				try {
-					// 1. تمرير رقم الهاتف لمطابقة حساب الزبون في سناب شات (Advanced Matching)
-					if (formattedPhone && formattedPhone !== '+212') {
-						(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
-							'user_phone_number': formattedPhone
-						});
-					}
-
-					// 2. إطلاق حدث الشراء الفوري
-					(window as any).snaptr('track', 'PURCHASE', {
-						currency: 'MAD',
-						price: orderTotal,
-						transaction_id: orderId,
-						item_category: orderProductName
-					});
-					sessionStorage.setItem(snapKey, 'true');
-					localStorage.setItem(snapKey, 'true');
-				} catch (err) {
-					console.warn('[Pixel] snap PURCHASE error:', err);
-				}
+			try {
+				trackSnapPurchase({
+					orderId,
+					price: orderTotal,
+					currency: 'MAD',
+					phone,
+					title: orderProductName,
+					sku: orderData.sku,
+					quantity: orderQuantity
+				});
+			} catch (err) {
+				console.warn('[Pixel] snap PURCHASE error:', err);
 			}
 			const gadsKey = 'gads_tracked_' + orderId;
 			if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
@@ -213,7 +204,7 @@
 
 			// Network Flush Buffer (400ms)
 			await new Promise((resolve) => setTimeout(resolve, 400));
-			window.location.href = '/thank-you';
+			window.location.href = preserveTrackingParams('/thank-you');
 		};
 
 		sendOrder(orderData, sheetsUrl).finally(saveAndRedirect);

@@ -3,6 +3,7 @@
 // Extra fields are ignored by existing sheet scripts; legacy columns keep working.
 
 import type { CartLine } from '$lib/stores/cart.svelte';
+import { trackSnapPurchase } from '$lib/utils/tracking';
 
 export interface CheckoutCustomer {
 	fullName: string;
@@ -229,23 +230,14 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 
 	// 2. Snapchat Pixel
 	try {
-		if (typeof (window as any).snaptr === 'function') {
-			if (phoneNumber) {
-				const phoneClean = phoneNumber.trim();
-				const formattedPhone = phoneClean.startsWith('+') ? phoneClean : ('+212' + phoneClean.replace(/^0/, ''));
-				if (formattedPhone && formattedPhone !== '+212') {
-					(window as any).snaptr('init', '0f0bf0bb-3983-47ea-9a39-90f43b1cf3ce', {
-						'user_phone_number': formattedPhone
-					});
-				}
-			}
-			(window as any).snaptr('track', 'PURCHASE', {
-				price: numPrice,
-				currency: 'MAD',
-				transaction_id: txnId,
-				item_category: title || 'منتج'
-			});
-		}
+		trackSnapPurchase({
+			orderId: txnId,
+			price: numPrice,
+			currency: 'MAD',
+			phone: phoneNumber,
+			title,
+			sku: 'kit-tandim'
+		});
 	} catch (err) {
 		console.warn('[Pixel] Snap PURCHASE error:', err);
 	}
