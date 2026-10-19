@@ -1,5 +1,22 @@
 [
   {
+    "id": "NV-733990",
+    "createdAt": "2026-10-19T17:24:31.401Z",
+    "fullName": "حسناء",
+    "phone": "0613272463",
+    "city": "تأكيد العنوان عبر الهاتف",
+    "address": "العرض: 2 علب كولاجين (بدون أبسيل) | المجموع: 279 DH (تأكيد عبر الهاتف) | تأكيد العنوان عبر الهاتف",
+    "product": "NOVAVITA كولاجين - باقة التجربة (1 علبة)",
+    "quantity": 2,
+    "totalPrice": 279,
+    "status": "جديد",
+    "sku": "gummies_collagen",
+    "pageUrl": "",
+    "orderType": "direct",
+    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبتان)\",\"quantity\":2,\"unitPrice\":139.5,\"price\":279,\"isUpsell\":false}]",
+    "notes": "العرض: 2 علب كولاجين (بدون أبسيل) | المجموع: 279 DH (تأكيد عبر الهاتف) [طلب: NV-733990]"
+  },
+  {
     "id": "NV-414706",
     "createdAt": "2026-10-19T14:03:07.726Z",
     "fullName": "حسناء",
