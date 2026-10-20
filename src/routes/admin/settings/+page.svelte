@@ -15,43 +15,61 @@
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = JSON.parse(e.postData.contents);
     
-    var date_order    = data.date || new Date().toLocaleString("ar-MA");
-    var full_name     = data.fullName || "";
-    var phone         = data.phoneNumber || "";
-    var address       = data.address || "";
-    var sku           = data.sku || "pack-pack-alpha-vital---sleep-&-relax";
-    var qte           = data.qte !== undefined ? data.qte : 1;
-    var price         = data.price !== undefined ? data.price : 0;
-    var note          = data.orderId || "";
-    var delivery_note = "";
-    
-    var lastRow = sheet.getLastRow();
-    var targetRow = lastRow + 1;
-    
-    if (targetRow < 5) {
-      targetRow = 5;
-    }
-    
-    var range = sheet.getRange(targetRow, 1, 1, 9);
-    range.setValues([[
+    // Normalize input fields supporting both new and legacy keys
+    var date_order = data.date_order || data.date || data.orderDate || new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" });
+    var order_id = data.order_id || data.orderId || data.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000));
+    var full_name = (data.full_name || data.fullName || data.name || "").trim();
+    var phone = (data.phone || data.phoneNumber || "").trim();
+    var city_address = (data.city_address || (data.city && data.address && data.city !== data.address ? (data.city + " - " + data.address) : (data.address || data.city || "")) || "").trim();
+    var sku = data.sku || data.selectedBundleName || data.selectedOfferTitle || data.offer || data.productTitle || data.product || "علكات الكولاجين";
+    var qte = Number(data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1)) || 1;
+    var price = Number(data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 0))) || 0;
+    var note = data.note || data.customerNote || data.notes || "";
+
+    // Strictly ordered row matching: [date_order, order_id, full_name, phone, city_address, sku, qte, price, note]
+    var rowData = [
       date_order,
+      order_id,
       full_name,
       phone,
-      address,
+      city_address,
       sku,
       qte,
       price,
-      note,
-      delivery_note
-    ]]);
-    
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", orderId: data.orderId }))
+      note
+    ];
+
+    // Smart Column Header Mapping to guarantee zero column shift even if sheet columns differ
+    var lastCol = Math.max(sheet.getLastColumn(), 1);
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    var hasHeaders = headers.some(function(h) { return h && String(h).trim() !== ""; });
+
+    if (hasHeaders) {
+      var row = [];
+      for (var i = 0; i < headers.length; i++) {
+        var h = String(headers[i]).toLowerCase().trim().replace(/[\s\-_]/g, "");
+        if (h === "dateorder" || h === "date") row.push(date_order);
+        else if (h === "orderid" || h === "id" || h === "num") row.push(order_id);
+        else if (h === "fullname" || h === "name" || h === "client" || h === "customer") row.push(full_name);
+        else if (h === "phone" || h === "tel" || h === "telephone" || h === "mobile") row.push(phone);
+        else if (h === "cityaddress" || h === "address" || h === "adresse" || h === "city" || h === "ville") row.push(city_address);
+        else if (h === "sku" || h === "product" || h === "produit" || h === "offer" || h === "pack") row.push(sku);
+        else if (h === "qte" || h === "qty" || h === "quantity" || h === "quantite") row.push(qte);
+        else if (h === "price" || h === "prix" || h === "total") row.push(price);
+        else if (h === "note" || h === "notes") row.push(note);
+        else row.push("");
+      }
+      sheet.appendRow(row);
+    } else {
+      sheet.appendRow(rowData);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", order_id: order_id, rowData: rowData }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
       });
-      
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON)
@@ -60,6 +78,11 @@
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS"
       });
   }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("AI-STORE-ACTIVE-OK")
+    .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doOptions(e) {

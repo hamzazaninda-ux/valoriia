@@ -39,20 +39,45 @@ export function buildOrderPayload(
 
 	const offerDetail = titles.join(' + ');
 	const fullProductLabel = offerDetail ? `${ctx.productTitle} (${offerDetail})` : ctx.productTitle;
+	const cityAddress = customer.city?.trim() || 'يُحدد عند التأكيد';
+	const casablancaDate = now.toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+	const selectedSku = fullProductLabel || ctx.sku || 'علكات الكولاجين';
 
 	return {
+		// Strictly matching Google Sheet schema
+		date_order: casablancaDate,
+		order_id: orderId,
+		full_name: customer.fullName.trim(),
+		phone: customer.phoneNumber.trim(),
+		city_address: cityAddress,
+		sku: selectedSku,
+		qte: totalQty,
+		price: subtotal,
+		note: '',
+		rowData: [
+			casablancaDate,
+			orderId,
+			customer.fullName.trim(),
+			customer.phoneNumber.trim(),
+			cityAddress,
+			selectedSku,
+			totalQty,
+			subtotal,
+			''
+		],
+
+		// Legacy aliases
 		orderId,
 		fullName: customer.fullName.trim(),
 		phoneNumber: customer.phoneNumber.trim(),
-		// City is collected on the confirmation call for popup orders.
-		address: customer.city?.trim() || 'يُحدد عند التأكيد',
-		city: customer.city?.trim() || 'يُحدد عند التأكيد',
+		address: cityAddress,
+		city: cityAddress,
 		offer: offerDetail,
 		selectedOfferTitle: fullProductLabel,
 		price: subtotal,
 		quantity: totalQty,
 		qte: totalQty,
-		sku: ctx.sku,
+		sku: selectedSku,
 		productTitle: fullProductLabel,
 		product: fullProductLabel,
 		pageUrl: ctx.pageUrl,

@@ -1,11 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { saveOrder, updateOrderAddress } from '$lib/content/orders';
-import { sendOrderToGoogleSheets, getSheetsWebhookUrl } from '$lib/server/sheets';
-
-const GOOGLE_SHEETS_WEBHOOK =
-	process.env.GOOGLE_SHEETS_URL ||
-	'https://script.google.com/macros/s/AKfycbw_IupQuynkwQCrYJNyYdbDhq3R_Ab1DoMkcknXZ9C9vRKYVzJefYKUKN9RSJKOjWWLhQ/exec';
+import { sendOrderToGoogleSheets } from '$lib/server/sheets';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -15,8 +11,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'بيانات الطلب غير صالحة' }, { status: 400 });
 		}
 
-		const fullName = String(body.fullName || body.name || '').trim();
-		const phone = String(body.phoneNumber || body.phone || '').trim();
+		const fullName = String(body.full_name || body.fullName || body.name || '').trim();
+		const phone = String(body.phone || body.phoneNumber || '').trim();
 
 		if (!fullName) {
 			return json({ error: 'الرجاء إدخال الاسم الكامل' }, { status: 400 });
@@ -27,15 +23,70 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Ensure default values for city & address if not provided initially
-		body.city = String(body.city || '').trim() || 'يُحدد بعد التأكيد';
-		body.address = String(body.address || '').trim() || 'يُحدد بعد التأكيد';
+		const city = String(body.city || '').trim() || 'يُحدد بعد التأكيد';
+		const address = String(body.address || '').trim() || 'يُحدد بعد التأكيد';
+		body.city = city;
+		body.address = address;
+
+		let city_address = String(body.city_address || '').trim();
+		if (!city_address) {
+			if (city && address && city !== address) {
+				city_address = `${city} - ${address}`.trim();
+			} else {
+				city_address = (address || city || 'يُحدد بعد التأكيد').trim();
+			}
+		}
+		body.city_address = city_address;
 
 		// Ensure consistent orderId across both internal storage and Google Sheets
 		const orderId = String(
-			body.orderId || body.id || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
+			body.order_id || body.orderId || body.id || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
 		body.orderId = orderId;
 		body.id = orderId;
+		body.order_id = orderId;
+		body.fullName = fullName;
+		body.full_name = fullName;
+		body.name = fullName;
+		body.phone = phone;
+		body.phoneNumber = phone;
+
+		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		body.date_order = body.date_order || body.date || casablancaTime;
+
+		const qte = Number(body.qte ?? body.quantity ?? 1) || 1;
+		const price = Number(body.price ?? body.totalPrice ?? body.total ?? 0);
+		body.qte = qte;
+		body.quantity = qte;
+		body.price = price;
+		body.totalPrice = price;
+		body.total = price;
+
+		const sku = String(
+			body.sku ||
+			body.selectedBundleName ||
+			body.selectedOfferTitle ||
+			body.offer ||
+			body.productTitle ||
+			body.product ||
+			'علكات الكولاجين'
+		).trim();
+		body.sku = sku;
+
+		const note = String(body.note || body.customerNote || body.notes || '').trim();
+		body.note = note;
+
+		body.rowData = [
+			body.date_order,
+			orderId,
+			fullName,
+			phone,
+			city_address,
+			sku,
+			qte,
+			price,
+			note
+		];
 
 		// Deduplication check: if order has already been marked as synced
 		if (body.sheetsSynced) {
@@ -71,7 +122,7 @@ export const POST: RequestHandler = async ({ request }) => {
 export const PATCH: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
-		const orderId = String(body.orderId || body.id || '').trim();
+		const orderId = String(body.order_id || body.orderId || body.id || '').trim();
 		const address = String(body.address || body.city || '').trim();
 		const city = String(body.city || body.address || '').trim();
 

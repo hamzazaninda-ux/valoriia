@@ -39,6 +39,8 @@ const syncedOrderIds = new Set<string>();
 /**
  * Sends an order to Google Sheets via the Apps Script Webhook.
  * Guaranteed single-dispatch, zero-duplication, with full payload contract.
+ * Strictly adheres to the schema:
+ * [date_order, order_id, full_name, phone, city_address, sku, qte, price, note]
  */
 export async function sendOrderToGoogleSheets(
 	order: Record<string, any>,
@@ -46,7 +48,7 @@ export async function sendOrderToGoogleSheets(
 ): Promise<{ ok: boolean; status: number; error?: string; skipped?: boolean }> {
 	try {
 		const orderId = String(
-			order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
+			order.order_id || order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
 
 		// STRICT DEDUPLICATION GUARD: If already synced or marked as synced, skip immediately
@@ -72,49 +74,87 @@ export async function sendOrderToGoogleSheets(
 		order.sheetsSynced = true;
 
 		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const dateStr = order.date || order.orderDate || casablancaTime;
+		const date_order = String(order.date_order || order.date || order.orderDate || casablancaTime).trim();
+		const order_id = orderId;
 
-		const fullName = String(order.fullName || order.name || '').trim();
-		const phone = String(order.phoneNumber || order.phone || '').trim();
+		const full_name = String(order.full_name || order.fullName || order.name || '').trim();
+		const phone = String(order.phone || order.phoneNumber || '').trim();
 
-		// Resolve full selected offer title (detailed offer takes absolute precedence)
-		const productLabel = String(
+		const city = String(order.city || order.ville || '').trim();
+		const address = String(order.address || order.adresse || '').trim();
+
+		let city_address = String(order.city_address || '').trim();
+		if (!city_address) {
+			if (city && address && city !== address) {
+				city_address = `${city} - ${address}`.trim();
+			} else {
+				city_address = (address || city || 'يُحدد بعد التأكيد').trim();
+			}
+		}
+
+		// Resolve full selected offer title / sku
+		const sku = String(
+			order.sku ||
+			order.selectedBundleName ||
 			order.selectedOfferTitle ||
 			(order.offer && order.productTitle && order.offer.trim() && order.offer.trim() !== order.productTitle.trim()
 				? `${order.productTitle} (${order.offer})`
 				: order.offer) ||
 			order.productTitle ||
 			order.product ||
-			'طقم التنظيم المنزلي'
+			'علكات الكولاجين'
 		).trim();
 
-		const quantity = Number(order.quantity ?? order.qte ?? 1) || 1;
-		const finalTotal = Number(order.totalPrice ?? order.total ?? order.price ?? 0);
+		const qte = Number(order.qte ?? order.quantity ?? 1) || 1;
+		const price = Number(order.price ?? order.totalPrice ?? order.total ?? 0);
+		const note = String(order.note || order.customerNote || order.notes || '').trim();
 
-		const city = String(order.city || order.ville || '').trim() || 'يُحدد بعد التأكيد';
-		const address = String(order.address || order.adresse || '').trim() || 'يُحدد بعد التأكيد';
+		// Schema matching the Google Sheet columns strictly in order:
+		// [date_order, order_id, full_name, phone, city_address, sku, qte, price, note]
+		const rowData = [
+			date_order,
+			order_id,
+			full_name,
+			phone,
+			city_address,
+			sku,
+			qte,
+			price,
+			note
+		];
 
 		const sheetsPayload = {
-			orderDate: dateStr,
-			date: dateStr,
-			orderId,
-			id: orderId,
-			name: fullName,
-			fullName,
+			// Strict schema matching user specification
+			date_order,
+			order_id,
+			full_name,
 			phone,
+			city_address,
+			sku,
+			qte,
+			price,
+			note,
+			rowData,
+
+			// Backwards-compatible aliases for existing Apps Script webhooks
+			orderId: order_id,
+			id: order_id,
+			date: date_order,
+			orderDate: date_order,
+			name: full_name,
+			fullName: full_name,
 			phoneNumber: phone,
-			city,
-			ville: city,
-			address,
-			adresse: address,
-			product: productLabel,
-			productTitle: productLabel,
-			selectedOfferTitle: productLabel,
-			quantity,
-			qte: quantity,
-			total: finalTotal,
-			totalPrice: finalTotal,
-			price: finalTotal
+			city: city || city_address,
+			ville: city || city_address,
+			address: address || city_address,
+			adresse: address || city_address,
+			product: sku,
+			productTitle: sku,
+			selectedOfferTitle: sku,
+			selectedBundleName: sku,
+			quantity: qte,
+			total: price,
+			totalPrice: price
 		};
 
 		console.log('📦 Sent Sheets Payload:', sheetsPayload);

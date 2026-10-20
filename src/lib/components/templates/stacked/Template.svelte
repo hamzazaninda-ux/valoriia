@@ -282,8 +282,31 @@
 			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
 			const offerTitle = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁');
 			const productTitle = content.title || 'طقم التنظيم المنزلي + هدية';
+			const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+			const skuName = offerTitle || productTitle || 'علكات الكولاجين';
+			const city_address = 'يُحدد بعد التأكيد';
 
 			const payload = {
+				date_order,
+				order_id: orderId,
+				full_name: customerName.trim(),
+				phone: customerPhone.trim(),
+				city_address,
+				sku: skuName,
+				qte: quantity,
+				price,
+				note: '',
+				rowData: [
+					date_order,
+					orderId,
+					customerName.trim(),
+					customerPhone.trim(),
+					city_address,
+					skuName,
+					quantity,
+					price,
+					''
+				],
 				orderId,
 				id: orderId,
 				fullName: customerName.trim(),
