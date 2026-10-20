@@ -15,18 +15,40 @@
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var data = JSON.parse(e.postData.contents);
     
-    // Normalize input fields supporting both new and legacy keys
+    // 1. Phone Formatter: Always enforce '212' country code without '+' or leading '0'
+    function formatMoroccanPhone(rawPhone) {
+      if (!rawPhone) return '';
+      var clean = String(rawPhone).replace(/[^0-9]/g, '');
+      if (clean.indexOf('0') === 0) {
+        clean = '212' + clean.substring(1);
+      } else if (clean.indexOf('212') !== 0) {
+        clean = '212' + clean;
+      }
+      return clean; // e.g. 212666666666
+    }
+
     var date_order = data.date_order || data.date || data.orderDate || new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" });
     var order_id = data.order_id || data.orderId || data.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000));
     var full_name = (data.full_name || data.fullName || data.name || "").trim();
-    var phone = (data.phone || data.phoneNumber || "").trim();
+    var phone = formatMoroccanPhone(data.phone || data.phoneNumber || "");
     var city_address = (data.city_address || (data.city && data.address && data.city !== data.address ? (data.city + " - " + data.address) : (data.address || data.city || "")) || "").trim();
-    var sku = data.sku || data.selectedBundleName || data.selectedOfferTitle || data.offer || data.productTitle || data.product || "علكات الكولاجين";
-    var qte = Number(data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1)) || 1;
-    var price = Number(data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 0))) || 0;
-    var note = data.note || data.customerNote || data.notes || "";
+    
+    // 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
+    var sku = (data.selectedOfferTitle || data.offer || data.selectedBundleName || data.offerSku || data.sku || data.productTitle || data.product || "العرض المختار").trim();
+    if (sku === "kit-tandim" || sku === "SKU-GENERAL") {
+      sku = (Number(data.qte || data.quantity || 1) === 2) ? "2 قطع + رشاشين هدية 🎁" : "1 قطعة + رشاشة هدية 🎁";
+    }
 
-    // Strictly ordered row matching: [date_order, order_id, full_name, phone, city_address, sku, qte, price, note]
+    var qte = Number(data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1)) || 1;
+    
+    // 2. Price Formatter: Strictly integer value without decimal points or commas
+    var rawPrice = data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 349));
+    var price = Math.round(Number(rawPrice) || 349);
+    
+    var note = data.note || data.customerNote || data.notes || "";
+    var delivery_note = data.delivery_note || data.deliveryNote || "";
+
+    // Strictly ordered row matching Google Sheet columns:
     var rowData = [
       date_order,
       order_id,
@@ -36,7 +58,8 @@
       sku,
       qte,
       price,
-      note
+      note,
+      delivery_note
     ];
 
     // Smart Column Header Mapping to guarantee zero column shift even if sheet columns differ
@@ -51,20 +74,32 @@
         if (h === "dateorder" || h === "date") row.push(date_order);
         else if (h === "orderid" || h === "id" || h === "num") row.push(order_id);
         else if (h === "fullname" || h === "name" || h === "client" || h === "customer") row.push(full_name);
-        else if (h === "phone" || h === "tel" || h === "telephone" || h === "mobile") row.push(phone);
+        else if (h === "phone" || h === "tel" || h === "telephone" || h === "mobile") row.push("'" + phone);
         else if (h === "cityaddress" || h === "address" || h === "adresse" || h === "city" || h === "ville") row.push(city_address);
         else if (h === "sku" || h === "product" || h === "produit" || h === "offer" || h === "pack") row.push(sku);
         else if (h === "qte" || h === "qty" || h === "quantity" || h === "quantite") row.push(qte);
         else if (h === "price" || h === "prix" || h === "total") row.push(price);
         else if (h === "note" || h === "notes") row.push(note);
+        else if (h === "deliverynote" || h === "deliverynotes" || h === "remarque") row.push(delivery_note);
         else row.push("");
       }
       sheet.appendRow(row);
     } else {
-      sheet.appendRow(rowData);
+      sheet.appendRow([
+        date_order,
+        order_id,
+        full_name,
+        "'" + phone,
+        city_address,
+        sku,
+        qte,
+        price,
+        note,
+        delivery_note
+      ]);
     }
 
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", order_id: order_id, rowData: rowData }))
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", order_id: order_id, sku: sku, phone: phone, price: price }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({
         "Access-Control-Allow-Origin": "*",

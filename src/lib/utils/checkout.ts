@@ -4,6 +4,7 @@
 
 import type { CartLine } from '$lib/stores/cart.svelte';
 import { trackSnapPurchase } from '$lib/utils/tracking';
+import { formatMoroccanPhone } from '$lib/utils/phone';
 
 export interface CheckoutCustomer {
 	fullName: string;
@@ -42,39 +43,43 @@ export function buildOrderPayload(
 	const cityAddress = customer.city?.trim() || 'يُحدد عند التأكيد';
 	const casablancaDate = now.toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
 	const selectedSku = fullProductLabel || ctx.sku || 'علكات الكولاجين';
+	const formattedPhone = formatMoroccanPhone(customer.phoneNumber);
+	const formattedPrice = Math.round(Number(subtotal) || 349);
 
 	return {
 		// Strictly matching Google Sheet schema
 		date_order: casablancaDate,
 		order_id: orderId,
 		full_name: customer.fullName.trim(),
-		phone: customer.phoneNumber.trim(),
+		phone: formattedPhone,
 		city_address: cityAddress,
 		sku: selectedSku,
 		qte: totalQty,
-		price: subtotal,
+		price: formattedPrice,
 		note: '',
+		delivery_note: '',
 		rowData: [
 			casablancaDate,
 			orderId,
 			customer.fullName.trim(),
-			customer.phoneNumber.trim(),
+			formattedPhone,
 			cityAddress,
 			selectedSku,
 			totalQty,
-			subtotal,
+			formattedPrice,
+			'',
 			''
 		],
 
 		// Legacy aliases
 		orderId,
 		fullName: customer.fullName.trim(),
-		phoneNumber: customer.phoneNumber.trim(),
+		phoneNumber: formattedPhone,
 		address: cityAddress,
 		city: cityAddress,
 		offer: offerDetail,
 		selectedOfferTitle: fullProductLabel,
-		price: subtotal,
+		price: formattedPrice,
 		quantity: totalQty,
 		qte: totalQty,
 		sku: selectedSku,

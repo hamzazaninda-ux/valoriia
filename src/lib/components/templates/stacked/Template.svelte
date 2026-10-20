@@ -250,6 +250,18 @@
 		return /^(?:(?:\+|00)212|0)[5-7]\d{8}$/.test(cleaned);
 	}
 
+	// 1. Phone Formatter: Always enforce '212' country code without '+' or leading '0'
+	function formatMoroccanPhone(rawPhone) {
+		if (!rawPhone) return '';
+		let clean = String(rawPhone).replace(/[^0-9]/g, '');
+		if (clean.startsWith('0')) {
+			clean = '212' + clean.substring(1);
+		} else if (!clean.startsWith('212')) {
+			clean = '212' + clean;
+		}
+		return clean; // e.g. 212666666666
+	}
+
 	async function handleDirectCheckout() {
 		formError = '';
 
@@ -278,52 +290,55 @@
 
 		try {
 			const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-			const price = Number(activeOffer?.price || 349);
+			// 2. Price Formatter: Strictly integer value without decimal points or commas
+			const formattedPrice = Math.round(Number(activeOffer?.price || 349));
 			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
-			const offerTitle = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁');
-			const productTitle = content.title || 'طقم التنظيم المنزلي + هدية';
+
+			// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
+			const offerSku = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁') || 'العرض المختار';
 			const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-			const skuName = offerTitle || productTitle || 'علكات الكولاجين';
+			const formattedPhone = formatMoroccanPhone(customerPhone);
 			const city_address = 'يُحدد بعد التأكيد';
 
 			const payload = {
 				date_order,
 				order_id: orderId,
 				full_name: customerName.trim(),
-				phone: customerPhone.trim(),
+				phone: formattedPhone,
 				city_address,
-				sku: skuName,
+				sku: offerSku,
 				qte: quantity,
-				price,
+				price: formattedPrice,
 				note: '',
+				delivery_note: '',
 				rowData: [
 					date_order,
 					orderId,
 					customerName.trim(),
-					customerPhone.trim(),
+					formattedPhone,
 					city_address,
-					skuName,
+					offerSku,
 					quantity,
-					price,
+					formattedPrice,
+					'',
 					''
 				],
 				orderId,
 				id: orderId,
 				fullName: customerName.trim(),
 				name: customerName.trim(),
-				phoneNumber: customerPhone.trim(),
-				phone: customerPhone.trim(),
+				phoneNumber: formattedPhone,
 				city: 'يُحدد بعد التأكيد',
 				address: 'يُحدد بعد التأكيد',
-				productTitle,
-				selectedOfferTitle: offerTitle,
-				offer: offerTitle,
+				productTitle: offerSku,
+				selectedOfferTitle: offerSku,
+				offer: offerSku,
+				offerSku,
 				quantity,
 				qte: quantity,
-				totalPrice: price,
-				price,
-				total: price,
-				sku: (product as any)?.published?.order?.sku || (product as any)?.draft?.order?.sku || 'kit-tandim',
+				totalPrice: formattedPrice,
+				price: formattedPrice,
+				total: formattedPrice,
 				sheetsUrl
 			};
 

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { saveOrder, updateOrderAddress } from '$lib/content/orders';
-import { sendOrderToGoogleSheets } from '$lib/server/sheets';
+import { sendOrderToGoogleSheets, formatMoroccanPhone } from '$lib/server/sheets';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
@@ -12,15 +12,18 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const fullName = String(body.full_name || body.fullName || body.name || '').trim();
-		const phone = String(body.phone || body.phoneNumber || '').trim();
+		const rawPhone = String(body.phone || body.phoneNumber || '').trim();
 
 		if (!fullName) {
 			return json({ error: 'الرجاء إدخال الاسم الكامل' }, { status: 400 });
 		}
 
-		if (!phone) {
+		if (!rawPhone) {
 			return json({ error: 'الرجاء إدخال رقم الهاتف' }, { status: 400 });
 		}
+
+		// 1. Phone Formatter: Always enforce '212' country code without '+' or leading '0'
+		const phone = formatMoroccanPhone(rawPhone);
 
 		// Ensure default values for city & address if not provided initially
 		const city = String(body.city || '').trim() || 'يُحدد بعد التأكيد';
@@ -54,27 +57,44 @@ export const POST: RequestHandler = async ({ request }) => {
 		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
 		body.date_order = body.date_order || body.date || casablancaTime;
 
-		const qte = Number(body.qte ?? body.quantity ?? 1) || 1;
-		const price = Number(body.price ?? body.totalPrice ?? body.total ?? 0);
+		const qte = Number(body.qte !== undefined ? body.qte : (body.quantity !== undefined ? body.quantity : 1)) || 1;
+		
+		// 2. Price Formatter: Strictly integer value without decimal points or commas
+		const rawPrice = body.price !== undefined ? body.price : (body.totalPrice !== undefined ? body.totalPrice : (body.total !== undefined ? body.total : 349));
+		const price = Math.round(Number(rawPrice) || 349);
 		body.qte = qte;
 		body.quantity = qte;
 		body.price = price;
 		body.totalPrice = price;
 		body.total = price;
 
-		const sku = String(
-			body.sku ||
-			body.selectedBundleName ||
+		// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
+		let offerSku = String(
 			body.selectedOfferTitle ||
+			body.selectedBundleName ||
 			body.offer ||
-			body.productTitle ||
-			body.product ||
-			'علكات الكولاجين'
+			body.offerSku ||
+			''
 		).trim();
-		body.sku = sku;
+
+		if (!offerSku || offerSku === 'kit-tandim' || offerSku === 'SKU-GENERAL') {
+			const candidate = String(body.sku || body.productTitle || body.product || '').trim();
+			if (candidate && candidate !== 'kit-tandim' && candidate !== 'SKU-GENERAL') {
+				offerSku = candidate;
+			} else {
+				offerSku = qte === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁';
+			}
+		}
+
+		body.sku = offerSku;
+		body.selectedOfferTitle = offerSku;
+		body.offer = offerSku;
+		body.offerSku = offerSku;
 
 		const note = String(body.note || body.customerNote || body.notes || '').trim();
+		const delivery_note = String(body.delivery_note || body.deliveryNote || '').trim();
 		body.note = note;
+		body.delivery_note = delivery_note;
 
 		body.rowData = [
 			body.date_order,
@@ -82,10 +102,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			fullName,
 			phone,
 			city_address,
-			sku,
+			offerSku,
 			qte,
 			price,
-			note
+			note,
+			delivery_note
 		];
 
 		// Deduplication check: if order has already been marked as synced
