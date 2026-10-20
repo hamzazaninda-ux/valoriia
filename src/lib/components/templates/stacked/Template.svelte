@@ -244,6 +244,7 @@
 	let customerPhone = $state('');
 	let formError = $state('');
 	let isSubmitting = $state(false);
+	let submittedOrderId = $state<string | null>(null);
 
 	function validateMoroccanPhone(val: string): boolean {
 		const cleaned = val.replace(/[\s\-\(\)\.]/g, '');
@@ -262,7 +263,18 @@
 		return clean; // e.g. 212666666666
 	}
 
-	async function handleDirectCheckout() {
+	async function handleDirectCheckout(event?: Event) {
+		event?.preventDefault();
+
+		// Guard: prevent execution if already submitting
+		if (isSubmitting) return;
+
+		// Guard: if this session already successfully submitted an order, redirect immediately
+		if (submittedOrderId && typeof window !== 'undefined' && sessionStorage.getItem(`order_sent_${submittedOrderId}`)) {
+			window.location.href = `/thank-you?orderId=${submittedOrderId}`;
+			return;
+		}
+
 		formError = '';
 
 		if (!customerName.trim()) {
@@ -286,10 +298,19 @@
 			return;
 		}
 
+		// Immediate submit lock & debounce: Instantly disable button
 		isSubmitting = true;
 
+		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+		submittedOrderId = orderId;
+
+		// Guard against duplicate session submissions
+		if (typeof window !== 'undefined' && sessionStorage.getItem(`order_sent_${orderId}`)) {
+			window.location.href = `/thank-you?orderId=${orderId}`;
+			return;
+		}
+
 		try {
-			const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 			// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
 			const rawPrice = activeOffer?.price || 349;
 			const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
@@ -297,6 +318,7 @@
 
 			// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
 			const offerSku = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁') || 'العرض المختار';
+			const productTitleStr = (content?.title || (product as any)?.title || offerSku || 'طقم التنظيم المنزلي').trim();
 			const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
 			const formattedPhone = formatMoroccanPhone(customerPhone);
 			const city_address = 'يُحدد بعد التأكيد';
@@ -331,7 +353,7 @@
 				phoneNumber: formattedPhone,
 				city: 'يُحدد بعد التأكيد',
 				address: 'يُحدد بعد التأكيد',
-				productTitle: offerSku,
+				productTitle: productTitleStr,
 				selectedOfferTitle: offerSku,
 				offer: offerSku,
 				offerSku,
@@ -355,6 +377,11 @@
 				throw new Error(data?.error || 'حدث خطأ أثناء إرسال الطلب');
 			}
 
+			// Guard against duplicate session submissions: mark sent immediately
+			if (typeof window !== 'undefined') {
+				sessionStorage.setItem(`order_sent_${orderId}`, 'true');
+			}
+
 			const savedOrder = {
 				orderId,
 				fullName: customerName.trim(),
@@ -362,10 +389,10 @@
 				city: 'يُحدد بعد التأكيد',
 				address: 'يُحدد بعد التأكيد',
 				date: new Date().toLocaleDateString('ar-MA'),
-				price,
-				total: price,
-				productTitle,
-				offer: offerTitle,
+				price: cleanPrice,
+				total: cleanPrice,
+				productTitle: productTitleStr,
+				offer: offerSku,
 				quantity,
 				qte: quantity,
 				sku: payload.sku
@@ -384,7 +411,7 @@
 					if (typeof (window as any).gtag === 'function') {
 						(window as any).gtag('event', 'conversion', {
 							'send_to': 'AW-18405009405',
-							'value': price,
+							'value': cleanPrice,
 							'currency': 'MAD',
 							'transaction_id': orderId
 						});
@@ -394,10 +421,10 @@
 				try {
 					trackSnapPurchase({
 						orderId,
-						price,
+						price: cleanPrice,
 						currency: 'MAD',
 						phone: customerPhone.trim(),
-						title: productTitle,
+						title: productTitleStr,
 						sku: payload.sku,
 						quantity
 					});
@@ -406,7 +433,7 @@
 				}
 
 				const destinationUrl = preserveTrackingParams(
-					`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${price}&promptAddress=1`
+					`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${cleanPrice}&promptAddress=1`
 				);
 				window.location.href = destinationUrl;
 			}
@@ -730,7 +757,7 @@
 					</div>
 
 					<!-- Direct Embedded COD Form (Strictly 2 Fields: fullName & phone) -->
-					<div class="space-y-3 pt-1" dir="rtl">
+					<form onsubmit={handleDirectCheckout} class="space-y-3 pt-1" dir="rtl">
 						<div class="flex items-center gap-1.5 text-xs font-black text-neutral-800">
 							<span>✍️</span>
 							<span>معلومات التوصيل (الدفع عند الاستلام بعد المعاينة):</span>
@@ -778,22 +805,21 @@
 								<span>{formError}</span>
 							</div>
 						{/if}
-					</div>
 
-					<!-- Dynamic Conversion CTA Button -->
-					<button
-						type="button"
-						onclick={handleDirectCheckout}
-						disabled={isSubmitting}
-						class="w-full flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#15803D] hover:bg-[#166534] py-3.5 sm:py-4 px-4 text-base sm:text-lg font-black text-white shadow-xl shadow-green-700/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed select-none"
-					>
-						{#if isSubmitting}
-							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-							<span>جاري تأكيد طلبك...</span>
-						{:else}
-							<span>للطلب اضغط هنا</span>
-						{/if}
-					</button>
+						<!-- Submit button disabled immediately when isSubmitting is true -->
+						<button
+							type="submit"
+							disabled={isSubmitting}
+							class="w-full flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#15803D] hover:bg-[#166534] py-3.5 sm:py-4 px-4 text-base sm:text-lg font-black text-white shadow-xl shadow-green-700/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+						>
+							{#if isSubmitting}
+								<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+								<span>جاري تأكيد الطلب...</span>
+							{:else}
+								<span>تأكيد الطلب الآن</span>
+							{/if}
+						</button>
+					</form>
 
 					<!-- Trust Box Placed Directly Below CTA Button (Fixed RTL Livreur text) -->
 					<div class="flex items-start gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 sm:p-4 text-right">

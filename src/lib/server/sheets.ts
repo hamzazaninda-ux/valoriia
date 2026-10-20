@@ -50,6 +50,7 @@ export async function getSheetsWebhookUrl(customUrl?: string): Promise<string> {
 
 // In-memory deduplication set to guarantee zero duplicate Google Sheets dispatches per order
 const syncedOrderIds = new Set<string>();
+const recentPhoneTimestamps = new Map<string, number>();
 
 /**
  * Sends an order to Google Sheets via the Apps Script Webhook.
@@ -68,10 +69,28 @@ export async function sendOrderToGoogleSheets(
 			order.order_id || order.id || order.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000))
 		).trim();
 
-		// STRICT DEDUPLICATION GUARD: If already synced or marked as synced, skip immediately
+		// STRICT DEDUPLICATION GUARD 1: Order ID check
 		if (order.sheetsSynced || (orderId && syncedOrderIds.has(orderId))) {
 			console.log(`🛡️ [Google Sheets Deduplication] Order ${orderId} already synced. Skipping duplicate dispatch.`);
 			return { ok: true, status: 200, skipped: true };
+		}
+
+		// STRICT DEDUPLICATION GUARD 2: Phone Number rate-limit (prevent rapid dual-firing within 30s)
+		const rawPhone = order.phone || order.phoneNumber;
+		const cleanPhone = formatMoroccanPhone(rawPhone);
+		const now = Date.now();
+		if (cleanPhone) {
+			const lastSeen = recentPhoneTimestamps.get(cleanPhone);
+			if (lastSeen && (now - lastSeen) < 30000) {
+				console.warn(`🛡️ [Google Sheets Deduplication] Duplicate order detected for phone ${cleanPhone} within 30s. Skipping duplicate Google Sheets row.`);
+				return { ok: true, status: 200, skipped: true };
+			}
+			recentPhoneTimestamps.set(cleanPhone, now);
+			if (recentPhoneTimestamps.size > 2000) {
+				for (const [p, time] of recentPhoneTimestamps.entries()) {
+					if (now - time > 120000) recentPhoneTimestamps.delete(p);
+				}
+			}
 		}
 
 		const webhookUrl = await getSheetsWebhookUrl(customUrl);

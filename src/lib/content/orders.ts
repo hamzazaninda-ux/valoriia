@@ -44,6 +44,16 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     return existing;
   }
 
+  // Prevent duplicate orders for the same phone number submitted within 30 seconds
+  const cleanPhone = (input.phoneNumber || input.phone || '').trim();
+  const recentDuplicate = currentOrders.find(
+    (o) => o.phone === cleanPhone && (Date.now() - new Date(o.createdAt).getTime()) < 30000
+  );
+  if (recentDuplicate) {
+    console.warn(`[Orders] Recent order ${recentDuplicate.id} already exists for phone ${cleanPhone}. Returning existing order.`);
+    return recentDuplicate;
+  }
+
   const productTitle = (
     input.product ||
     input.offer ||

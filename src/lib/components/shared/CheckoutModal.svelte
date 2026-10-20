@@ -23,6 +23,8 @@
 	let errors = $state({ fullName: '', phoneNumber: '' });
 	let submitError = $state('');
 	let loading = $state(false);
+	let isSubmitting = $state(false);
+	let submittedOrderId = $state<string | null>(null);
 
 	$effect(() => {
 		if (cartUi.checkout && typeof window !== 'undefined') {
@@ -78,7 +80,7 @@
 		if (cart.lines.length === 0) return;
 
 		loading = true;
-
+		isSubmitting = true;
 		const payload = buildOrderPayload(
 			{ fullName, phoneNumber },
 			cart.lines,
@@ -91,6 +93,13 @@
 			'cart'
 		);
 
+		const orderId = (payload.orderId as string) || 'ORD-' + Date.now();
+		submittedOrderId = orderId;
+		if (typeof window !== 'undefined' && sessionStorage.getItem('order_sent_' + orderId)) {
+			window.location.href = preserveTrackingParams('/thank-you?orderId=' + orderId);
+			return;
+		}
+
 		const completed: CompletedOrder = {
 			orderId: payload.orderId as string,
 			fullName: payload.fullName as string,
@@ -102,6 +111,9 @@
 
 		sendOrder(payload as Record<string, unknown>, sheetsUrl).then(
 			async () => {
+				if (typeof window !== 'undefined') {
+					sessionStorage.setItem('order_sent_' + orderId, 'true');
+				}
 				const orderId = (payload.orderId as string) || 'ORD-' + Date.now();
 				const orderTotal = (payload.price as number) || 229;
 				const orderProductName = ((payload.productTitle as string) || productTitle || 'منتج').trim();
@@ -182,6 +194,7 @@
 			},
 			() => {
 				loading = false;
+				isSubmitting = false;
 				submitError = 'تعذر إرسال الطلب. المرجو المحاولة مرة أخرى.';
 			}
 		);
