@@ -42,8 +42,9 @@
     var qte = Number(data.qte !== undefined ? data.qte : (data.quantity !== undefined ? data.quantity : 1)) || 1;
     
     // 2. Price Formatter: Strictly integer value without decimal points or commas
+    // Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
     var rawPrice = data.price !== undefined ? data.price : (data.totalPrice !== undefined ? data.totalPrice : (data.total !== undefined ? data.total : 349));
-    var price = Math.round(Number(rawPrice) || 349);
+    var cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, '').replace(/[^0-9]/g, ''), 10) || 349;
     
     var note = data.note || data.customerNote || data.notes || "";
     var delivery_note = data.delivery_note || data.deliveryNote || "";
@@ -57,7 +58,7 @@
       city_address,
       sku,
       qte,
-      price,
+      cleanPrice,
       note,
       delivery_note
     ];
@@ -78,12 +79,19 @@
         else if (h === "cityaddress" || h === "address" || h === "adresse" || h === "city" || h === "ville") row.push(city_address);
         else if (h === "sku" || h === "product" || h === "produit" || h === "offer" || h === "pack") row.push(sku);
         else if (h === "qte" || h === "qty" || h === "quantity" || h === "quantite") row.push(qte);
-        else if (h === "price" || h === "prix" || h === "total") row.push(price);
+        else if (h === "price" || h === "prix" || h === "total") row.push(cleanPrice);
         else if (h === "note" || h === "notes") row.push(note);
         else if (h === "deliverynote" || h === "deliverynotes" || h === "remarque") row.push(delivery_note);
         else row.push("");
       }
       sheet.appendRow(row);
+      var lastR = sheet.getLastRow();
+      for (var colIdx = 0; colIdx < headers.length; colIdx++) {
+        var colName = String(headers[colIdx]).toLowerCase().trim().replace(/[\s\-_]/g, "");
+        if (colName === "price" || colName === "prix" || colName === "total") {
+          sheet.getRange(lastR, colIdx + 1).setNumberFormat("0");
+        }
+      }
     } else {
       sheet.appendRow([
         date_order,
@@ -93,13 +101,14 @@
         city_address,
         sku,
         qte,
-        price,
+        cleanPrice,
         note,
         delivery_note
       ]);
+      sheet.getRange(sheet.getLastRow(), 8).setNumberFormat("0");
     }
 
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", order_id: order_id, sku: sku, phone: phone, price: price }))
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", order_id: order_id, sku: sku, phone: phone, price: cleanPrice }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders({
         "Access-Control-Allow-Origin": "*",

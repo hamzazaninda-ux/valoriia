@@ -290,8 +290,9 @@
 
 		try {
 			const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-			// 2. Price Formatter: Strictly integer value without decimal points or commas
-			const formattedPrice = Math.round(Number(activeOffer?.price || 349));
+			// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
+			const rawPrice = activeOffer?.price || 349;
+			const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
 			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
 
 			// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
@@ -308,7 +309,7 @@
 				city_address,
 				sku: offerSku,
 				qte: quantity,
-				price: formattedPrice,
+				price: cleanPrice,
 				note: '',
 				delivery_note: '',
 				rowData: [
@@ -319,7 +320,7 @@
 					city_address,
 					offerSku,
 					quantity,
-					formattedPrice,
+					cleanPrice,
 					'',
 					''
 				],
@@ -336,9 +337,9 @@
 				offerSku,
 				quantity,
 				qte: quantity,
-				totalPrice: formattedPrice,
-				price: formattedPrice,
-				total: formattedPrice,
+				totalPrice: cleanPrice,
+				price: cleanPrice,
+				total: cleanPrice,
 				sheetsUrl
 			};
 

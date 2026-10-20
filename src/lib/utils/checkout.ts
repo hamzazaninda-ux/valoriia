@@ -44,7 +44,9 @@ export function buildOrderPayload(
 	const casablancaDate = now.toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
 	const selectedSku = fullProductLabel || ctx.sku || 'علكات الكولاجين';
 	const formattedPhone = formatMoroccanPhone(customer.phoneNumber);
-	const formattedPrice = Math.round(Number(subtotal) || 349);
+	// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
+	const rawPrice = subtotal || 349;
+	const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
 
 	return {
 		// Strictly matching Google Sheet schema
@@ -55,7 +57,7 @@ export function buildOrderPayload(
 		city_address: cityAddress,
 		sku: selectedSku,
 		qte: totalQty,
-		price: formattedPrice,
+		price: cleanPrice,
 		note: '',
 		delivery_note: '',
 		rowData: [
@@ -66,7 +68,7 @@ export function buildOrderPayload(
 			cityAddress,
 			selectedSku,
 			totalQty,
-			formattedPrice,
+			cleanPrice,
 			'',
 			''
 		],
@@ -79,7 +81,7 @@ export function buildOrderPayload(
 		city: cityAddress,
 		offer: offerDetail,
 		selectedOfferTitle: fullProductLabel,
-		price: formattedPrice,
+		price: cleanPrice,
 		quantity: totalQty,
 		qte: totalQty,
 		sku: selectedSku,

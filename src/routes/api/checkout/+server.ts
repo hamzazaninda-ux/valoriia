@@ -59,14 +59,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const qte = Number(body.qte !== undefined ? body.qte : (body.quantity !== undefined ? body.quantity : 1)) || 1;
 		
-		// 2. Price Formatter: Strictly integer value without decimal points or commas
+		// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
 		const rawPrice = body.price !== undefined ? body.price : (body.totalPrice !== undefined ? body.totalPrice : (body.total !== undefined ? body.total : 349));
-		const price = Math.round(Number(rawPrice) || 349);
+		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
 		body.qte = qte;
 		body.quantity = qte;
-		body.price = price;
-		body.totalPrice = price;
-		body.total = price;
+		body.price = cleanPrice;
+		body.totalPrice = cleanPrice;
+		body.total = cleanPrice;
 
 		// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
 		let offerSku = String(
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			city_address,
 			offerSku,
 			qte,
-			price,
+			cleanPrice,
 			note,
 			delivery_note
 		];

@@ -110,9 +110,9 @@ export async function sendOrderToGoogleSheets(
 			}
 		}
 
-		// 2. Price Formatter: Strictly integer value without decimal points or commas
+		// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
 		const rawPrice = order.price !== undefined ? order.price : (order.totalPrice !== undefined ? order.totalPrice : (order.total !== undefined ? order.total : 349));
-		const price = Math.round(Number(rawPrice) || 349);
+		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
 
 		const qte = Number(order.qte !== undefined ? order.qte : (order.quantity !== undefined ? order.quantity : 1)) || 1;
 
@@ -148,7 +148,7 @@ export async function sendOrderToGoogleSheets(
 			city_address,
 			offerSku,
 			qte,
-			price,
+			cleanPrice,
 			note,
 			delivery_note
 		];
@@ -162,7 +162,7 @@ export async function sendOrderToGoogleSheets(
 			city_address,
 			sku: offerSku,
 			qte,
-			price,
+			cleanPrice,
 			note,
 			delivery_note,
 			rowData,
@@ -186,8 +186,8 @@ export async function sendOrderToGoogleSheets(
 			offer: offerSku,
 			offerSku: offerSku,
 			quantity: qte,
-			total: price,
-			totalPrice: price
+			total: cleanPrice,
+			totalPrice: cleanPrice
 		};
 
 		console.log('📦 Sent Sheets Payload:', sheetsPayload);
