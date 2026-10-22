@@ -5,6 +5,7 @@
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
+	import OfferTiers from '$lib/components/OfferTiers.svelte';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
@@ -671,89 +672,26 @@
 			<div class="px-2 sm:px-3 pb-4">
 				<div class="space-y-4">
 					<!-- Offers Selection -->
-					<div class="space-y-2.5 pb-3 border-b border-gray-100" dir="rtl">
-						<span class="block text-right font-extrabold text-sm text-black mb-1 select-none">
-							اختر العرض المناسب لك:
-						</span>
-
-						<div class="flex flex-col gap-2 pt-1">
-							{#each offersList as offer}
-								<label
-									class="w-full grid items-center gap-2.5 p-3 rounded-xl cursor-pointer transition-all duration-150 select-none {offer.id === 2 ? 'relative mt-4' : 'relative'} {currentPackId === offer.id ? 'border-2 border-emerald-600 bg-emerald-50/40' : 'border border-gray-300 bg-white'}"
-									style="grid-template-columns: 56px 1fr auto;"
-									dir="rtl"
-								>
-									<!-- Floating Pill Badge on Top of Offer 2 -->
-									{#if offer.id === 2}
-										<span class="absolute -top-3 right-4 bg-amber-400 text-amber-950 text-[11px] font-extrabold px-3 py-0.5 rounded-full shadow-sm z-10 flex items-center gap-1 whitespace-nowrap">
-											الأكثر طلباً ⭐
-										</span>
-									{/if}
-
-									<input
-										type="radio"
-										name="selectedPack-stacked"
-										value={offer.id}
-										checked={currentPackId === offer.id}
-										onchange={() => {
-											selectedPack = offer.id;
-										}}
-										class="sr-only"
-									/>
-
-									<!-- Column 1 (Right - Image): 56px -->
-									<div class="w-14 h-14 rounded-lg overflow-hidden border border-neutral-200 shrink-0 bg-neutral-50 shadow-2xs">
-										{#if offer.image}
-											<img src={offer.image} alt={offer.title} class="w-full h-full object-cover" loading="lazy" />
-										{:else}
-											<div class="w-full h-full flex items-center justify-center text-neutral-400">🎁</div>
-										{/if}
-									</div>
-
-									<!-- Column 2 (Middle - Title & Single Badge) -->
-									<div class="min-w-0 text-right pr-1">
-										{#if offer.id === 2}
-											<span class="block text-[13px] sm:text-sm font-extrabold text-gray-900 leading-snug break-words">
-												2 قطع + رشاشين هدية 🎁
-											</span>
-											<div class="mt-1.5">
-												<span class="inline-block bg-emerald-100 text-emerald-800 border border-emerald-300 text-[11px] font-bold px-2.5 py-0.5 rounded whitespace-nowrap">
-													وفّر 109 درهم
-												</span>
-											</div>
-										{:else}
-											<span class="block text-[13px] sm:text-sm font-extrabold text-gray-900 leading-snug break-words">
-												1 قطعة + رشاشة هدية 🎁
-											</span>
-											<div class="mt-1.5">
-												<span class="inline-block bg-sky-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded whitespace-nowrap">
-													توصيل مجاني
-												</span>
-											</div>
-										{/if}
-									</div>
-
-									<!-- Column 3 (Left - Price): Protected with subtle divider and padding -->
-									<div class="flex flex-col items-end justify-center shrink-0 pl-1 border-r border-gray-100 pr-2.5 text-left">
-										{#if offer.id === 2}
-											<span class="text-[11px] text-gray-400 line-through leading-none mb-1 whitespace-nowrap">
-												458 درهم
-											</span>
-											<span class="text-[15px] sm:text-base font-black text-emerald-700 leading-none whitespace-nowrap">
-												349 درهم
-											</span>
-										{:else}
-											<span class="text-[11px] text-gray-400 line-through leading-none mb-1 whitespace-nowrap">
-												299 درهم
-											</span>
-											<span class="text-[15px] sm:text-base font-black text-gray-900 leading-none whitespace-nowrap">
-												229 درهم
-											</span>
-										{/if}
-									</div>
-								</label>
-							{/each}
-						</div>
+					<div class="pb-3 border-b border-gray-100" dir="rtl">
+						<OfferTiers
+							offers={offersList}
+							selectedId={currentPackId}
+							onSelect={(offer) => {
+								selectedPack = offer.id;
+								try {
+									if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+										(window as any).gtag('event', 'select_item', {
+											item_list_name: 'Offer Tiers',
+											items: [{
+												item_id: String(offer.id),
+												item_name: offer.title || 'عرض خاص',
+												price: offer.price || 349
+											}]
+										});
+									}
+								} catch {}
+							}}
+						/>
 					</div>
 
 					<!-- Direct Embedded COD Form (Strictly 2 Fields: fullName & phone) -->
