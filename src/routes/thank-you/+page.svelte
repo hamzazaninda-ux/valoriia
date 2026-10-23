@@ -125,13 +125,13 @@
 		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 			try {
 				(window as any).gtag('event', 'conversion', {
-					'send_to': 'AW-18405009405',
+					'send_to': 'AW-18531557898',
 					'value': orderTotal || 229,
 					'currency': 'MAD',
 					'transaction_id': orderId || ('ORD-' + Date.now())
 				});
 				(window as any).gtag('event', 'purchase', {
-					'send_to': 'AW-18405009405',
+					'send_to': 'AW-18531557898',
 					transaction_id: orderId || ('ORD-' + Date.now()),
 					value: orderTotal || 229,
 					currency: 'MAD',
@@ -141,7 +141,7 @@
 						quantity: orderQuantity
 					}]
 				});
-				console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-18405009405', { orderId, orderTotal });
+				console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-18531557898', { orderId, orderTotal });
 			} catch (err) {
 				console.warn('[Pixel] GAds purchase error:', err);
 			}

@@ -411,7 +411,7 @@
 				try {
 					if (typeof (window as any).gtag === 'function') {
 						(window as any).gtag('event', 'conversion', {
-							'send_to': 'AW-18405009405',
+							'send_to': 'AW-18531557898',
 							'value': cleanPrice,
 							'currency': 'MAD',
 							'transaction_id': orderId
