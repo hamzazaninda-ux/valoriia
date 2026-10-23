@@ -23,5 +23,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+
+	// Edge & Browser Caching for Public Storefront Pages (Sub-1.5s Load Optimization)
+	if (
+		event.request.method === 'GET' &&
+		!url.pathname.startsWith('/admin') &&
+		!url.pathname.startsWith('/api') &&
+		!url.pathname.startsWith('/thank-you')
+	) {
+		response.headers.set(
+			'Cache-Control',
+			'public, max-age=0, s-maxage=120, stale-while-revalidate=600'
+		);
+	}
+
+	return response;
 };

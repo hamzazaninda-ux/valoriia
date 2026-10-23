@@ -28,7 +28,7 @@
 
 	const UPSELL_PRICE = 99;
 	const BIOTINE_UPSELL_IMAGE =
-		'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png';
+		'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_520/v1791752602/mockup-Biotine_gummies-main.png';
 
 	onMount(() => {
 		if (
@@ -388,11 +388,26 @@
 			a: 'الطلب فوري وسهل بدون أداء مسبق. التوصيل مجاني وسريع لكافة مدن المغرب خلال 24 إلى 48 ساعة، والدفع نقداً عند الاستلام بعد فتح ومعاينة الطرد بنفسك والتأكد من أمانه.'
 		}
 	];
+	const lcpHeroImage = $derived.by(() => {
+		const key = ((product?.slug || '') + ' ' + (product?.sku || '')) as string;
+		if (key.includes('collagen')) {
+			return 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png';
+		}
+		if (key.includes('biotine')) {
+			return 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png';
+		}
+		if (key.includes('vitamine') || key.includes('multivit')) {
+			return 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png';
+		}
+		return activeImage;
+	});
 </script>
 
 <svelte:head>
 	<title>{product.name} | NOVAVITA Clinical</title>
 	<meta name="description" content={product.headline} />
+	<link rel="preload" as="image" href={lcpHeroImage} fetchpriority="high" />
+	<link rel="preload" as="image" href={BIOTINE_UPSELL_IMAGE} />
 </svelte:head>
 
 <!-- Global scroll binding for scroll-triggered sticky mobile CTA -->
@@ -426,8 +441,10 @@
 					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
-								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791999610/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA__%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D8%A7%D9%84%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%A8%D8%B4%D8%B1%D8%A9.png" 
 								alt="نتائج كولاجين نوفافيتا قبل وبعد - نضارة البشرة والجمال من الداخل" 
+								width="800"
+								height="800"
 								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
@@ -439,8 +456,10 @@
 					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
-								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791748565/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D8%A8%D9%8A%D9%88%D8%AA%D9%8A%D9%86.png" 
 								alt="نتائج علكات بيوتين نوفافيتا قبل وبعد - إنبات الشعر وتكثيف الفراغات" 
+								width="800"
+								height="800"
 								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
@@ -452,8 +471,10 @@
 					<div class="w-full max-w-md mx-auto mb-1 sm:mb-4">
 						<div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-black/5 bg-[#FAF8F5]">
 							<img 
-								src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
+								src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_800/v1791748841/%D8%AA%D8%AD%D9%88%D9%91%D9%84_%D9%85%D8%B4%D8%B1%D9%82_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D9%86%D9%88%D9%81%D8%A7%D9%81%D9%8A%D8%AA%D8%A7.png" 
 								alt="نتائج علكات ملتي فيتامين نوفافيتا قبل وبعد - التخلص من الخمول والنشاط اليومي" 
+								width="800"
+								height="800"
 								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto"
 								loading="eager"
 								fetchpriority="high"
@@ -467,6 +488,8 @@
 							<img
 								src={activeImage}
 								alt={product.name}
+								width="800"
+								height="800"
 								class="w-full max-h-[360px] sm:max-h-none h-auto object-contain block mx-auto transition-transform duration-500 hover:scale-105"
 								onerror={(e: any) => {
 									e.currentTarget.onerror = null;
@@ -699,24 +722,30 @@
 		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
 			{#if (product.slug || '').includes('biotine')}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748575/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_2.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791748575/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_2.png" 
 					alt="معاناة تساقط الشعر وظهور الفراغات بسبب الماء الكلسي وضعف البصيلات" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"
 				/>
 			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748847/%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%AA%D8%B9%D8%A8_%D8%AD%D9%88%D9%84_%D8%A7%D9%84%D9%82%D9%87%D9%88%D8%A9.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791748847/%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%AA%D8%B9%D8%A8_%D8%AD%D9%88%D9%84_%D8%A7%D9%84%D9%82%D9%87%D9%88%D8%A9.png" 
 					alt="معاناة الإرهاق الصباحي والسخفة والاعتماد على المنبهات والقهوة" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"
 				/>
 			{:else}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791747892/%D9%82%D9%84%D9%82_%D8%A3%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D9%85%D8%B1%D8%A2%D8%A9_%D9%88%D8%AA%D8%B3%D8%A7%D9%82%D8%B7_%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_1.png" 
 					alt="معاناة تساقط الشعر وشحوب البشرة بسبب الماء الكلسي والتعب" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"
@@ -794,24 +823,30 @@
 		<div class="relative w-full max-w-md mx-auto aspect-[4/5] bg-[#FAF8F5] rounded-[24px] overflow-hidden shadow-sm border border-black/5 my-6">
 			{#if (product.slug || '').includes('biotine')}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748630/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%85%D8%B4%D8%B1%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%81%D9%8A_%D8%A7%D9%84%D8%AD%D9%85%D9%91%D8%A7%D9%85.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791748630/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%85%D8%B4%D8%B1%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%86%D8%A7%D9%8A%D8%A9_%D8%A8%D8%A7%D9%84%D8%B4%D8%B9%D8%B1_%D9%81%D9%8A_%D8%A7%D9%84%D8%AD%D9%85%D9%91%D8%A7%D9%85.png" 
 					alt="الحل الجذري: شعر كثيف وصحي وتوقف التساقط مع علكات بيوتين نوفافيتا" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"
 				/>
 			{:else if (product.slug || '').includes('vitamine') || (product.slug || '').includes('multivit')}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791748884/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%81%D9%8A%D8%AA%D8%A7%D9%85%D9%8A%D9%86%D8%A7%D8%AA.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791748884/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%AD_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%81%D9%8A%D8%AA%D8%A7%D9%85%D9%8A%D9%86%D8%A7%D8%AA.png" 
 					alt="الحل الجذري: طاقة طبيعية ونشاط مستمر مع علكات ملتي فيتامين نوفافيتا" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"
 				/>
 			{:else}
 				<img 
-					src="https://res.cloudinary.com/uqfy0kku/image/upload/v1791747975/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%88%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86.png" 
+					src="https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_720/v1791747975/%D8%A7%D8%A8%D8%AA%D8%B3%D8%A7%D9%85%D8%A9_%D9%88%D8%A5%D8%B4%D8%B1%D8%A7%D9%82%D8%A9_%D9%85%D8%B9_%D8%B9%D9%84%D9%83%D8%A7%D8%AA_%D8%A7%D9%84%D9%83%D9%88%D9%84%D8%A7%D8%AC%D9%8A%D9%86.png" 
 					alt="الحل الجذري: شعر صحي وبشرة مشرقة بفضل علكات كولاجين نوفافيتا" 
+					width="720"
+					height="900"
 					class="w-full h-full object-cover object-center block"
 					loading="lazy"
 					decoding="async"

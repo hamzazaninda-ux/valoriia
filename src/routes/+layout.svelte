@@ -65,8 +65,8 @@
 
 	<!-- Google Analytics (GA4) -->
 	{#if tracking?.googleAnalyticsId}
-		<script async src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAnalyticsId}"></script>
-		<script>
+		<script type="text/plain" data-deferred src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAnalyticsId}"></script>
+		<script type="text/plain" data-deferred>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
@@ -76,8 +76,8 @@
 
 	<!-- Google Ads Tag -->
 	{#if tracking?.googleAdsId && tracking.googleAdsId !== 'AW-18531557898'}
-		<script async src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAdsId}"></script>
-		<script>
+		<script type="text/plain" data-deferred src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAdsId}"></script>
+		<script type="text/plain" data-deferred>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());

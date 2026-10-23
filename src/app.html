@@ -7,26 +7,64 @@
 		<meta name="application-name" content="NOVAVITA" />
 		<meta name="description" content="حلوى الفيتامينات والجمال الطبيعية رقم 1 في المغرب. بيوتين مركز للشعر، كولاجين بحري للبشرة، وملتي فيتامين للحيوية والنشاط اليومي." />
 		<meta name="theme-color" content="#1B4332" />
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap"
+			rel="stylesheet"
+			media="print"
+			onload="this.media='all'"
+		/>
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Alexandria:wght@600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap"
+				rel="stylesheet"
+			/>
+		</noscript>
 
-		<!-- High-Speed CDN & Ad Pixel Pre-connects for Instant Cold-Traffic Delivery -->
+		<!-- High-Speed CDN & Ad Pixel DNS Pre-connects -->
 		<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
-		<link rel="preconnect" href="https://analytics.tiktok.com" crossorigin />
-		<link rel="preconnect" href="https://connect.facebook.net" crossorigin />
-		<link rel="preconnect" href="https://sc-static.net" crossorigin />
+		<link rel="dns-prefetch" href="https://analytics.tiktok.com" />
+		<link rel="dns-prefetch" href="https://connect.facebook.net" />
+		<link rel="dns-prefetch" href="https://sc-static.net" />
+		<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-		<!-- Google Tag Manager -->
-		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+		<!-- Lightweight Non-Blocking Pixel Queue Stubs (Zero Main-Thread Blocking, Zero Dropped Events) -->
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+			if (!window.fbq) {
+				var n = window.fbq = function(){n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);};
+				if (!window._fbq) window._fbq = n;
+				n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+			}
+			if (!window.snaptr) {
+				var a = window.snaptr = function(){a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments);};
+				a.queue = [];
+			}
+			if (!window.ttq) {
+				window.TiktokAnalyticsObject = 'ttq';
+				var ttq = window.ttq = window.ttq || [];
+				ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+				ttq.setAndDefer = function(t, e){t[e] = function(){t.push([e].concat(Array.prototype.slice.call(arguments, 0)));};};
+				for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+			}
+		</script>
+
+		<!-- Deferred Google Tag Manager -->
+		<script type="text/plain" data-deferred>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 		})(window,document,'script','dataLayer','GTM-TNFHPGTV');</script>
-		<!-- End Google Tag Manager -->
 
-		<!-- TikTok Pixel Code Start -->
-		<script>
+		<!-- Deferred TikTok Pixel Code -->
+		<script type="text/plain" data-deferred>
 		!function (w, d, t) {
 		  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
 		var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
@@ -36,13 +74,12 @@
 		  ttq.page();
 		}(window, document, 'ttq');
 		</script>
-		<!-- TikTok Pixel Code End -->
 
-		<!-- Snapchat Pixel Code -->
-		<script type='text/javascript'>
-		(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+		<!-- Deferred Snapchat Pixel Code -->
+		<script type="text/plain" data-deferred>
+		(function(e,t,n){if(e.snaptr&&e.snaptr.handleRequest)return;var a=e.snaptr=e.snaptr||function()
 		{a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
-		a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+		a.queue=a.queue||[];var s='script',r=t.createElement(s);r.async=!0;
 		r.src=n;var u=t.getElementsByTagName(s)[0];
 		u.parentNode.insertBefore(r,u);})(window,document,
 		'https://sc-static.net/scevent.min.js');
@@ -50,11 +87,10 @@
 		snaptr('init', '451b9c4c-9641-4b83-9f0a-319889a52302', {});
 		snaptr('track', 'PAGE_VIEW');
 		</script>
-		<!-- End Snap Pixel Code -->
 
-		<!-- Google tag (gtag.js) -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18531557898"></script>
-		<script>
+		<!-- Deferred Google tag (gtag.js) -->
+		<script type="text/plain" data-deferred src="https://www.googletagmanager.com/gtag/js?id=AW-18531557898"></script>
+		<script type="text/plain" data-deferred>
 		  window.dataLayer = window.dataLayer || [];
 		  function gtag(){dataLayer.push(arguments);}
 		  gtag('js', new Date());
@@ -63,15 +99,14 @@
 		    allow_enhanced_conversions: true
 		  });
 		</script>
-		<!-- End Google tag -->
 
-		<!-- Meta Pixel Code -->
-		<script>
+		<!-- Deferred Meta Pixel Code -->
+		<script type="text/plain" data-deferred>
 		  !function(f,b,e,v,n,t,s)
-		  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+		  {if(f.fbq&&f.fbq.callMethod)return;n=f.fbq=f.fbq||function(){n.callMethod?
 		  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
 		  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-		  n.queue=[];t=b.createElement(e);t.async=!0;
+		  n.queue=n.queue||[];t=b.createElement(e);t.async=!0;
 		  t.src=v;s=b.getElementsByTagName(e)[0];
 		  s.parentNode.insertBefore(t,s)}(window, document,'script',
 		  'https://connect.facebook.net/en_US/fbevents.js');
@@ -82,7 +117,37 @@
 		  <img height="1" width="1" style="display:none" 
 		       src="https://www.facebook.com/tr?id=2180716089518389&ev=PageView&noscript=1"/>
 		</noscript>
-		<!-- End Meta Pixel Code -->
+
+		<!-- Safe Deferred Third-Party Tracking Loader -->
+		<script>
+		if (typeof window !== 'undefined') {
+		  const loadAdTrackers = () => {
+		    if (window._trackersLoaded) return;
+		    window._trackersLoaded = true;
+
+		    // Trigger deferred script loading
+		    const triggerScripts = document.querySelectorAll('script[type="text/plain"][data-deferred]');
+		    triggerScripts.forEach(script => {
+		      const activeScript = document.createElement('script');
+		      if (script.src) activeScript.src = script.src;
+		      if (script.innerHTML) activeScript.innerHTML = script.innerHTML;
+		      activeScript.async = true;
+		      document.head.appendChild(activeScript);
+		    });
+		  };
+
+		  // Trigger on user engagement or requestIdleCallback
+		  ['scroll', 'touchstart', 'mousemove', 'click', 'keydown'].forEach(ev => {
+		    window.addEventListener(ev, loadAdTrackers, { once: true, passive: true });
+		  });
+
+		  if ('requestIdleCallback' in window) {
+		    requestIdleCallback(() => setTimeout(loadAdTrackers, 1800));
+		  } else {
+		    setTimeout(loadAdTrackers, 2000);
+		  }
+		}
+		</script>
 
 		%sveltekit.head%
 	</head>

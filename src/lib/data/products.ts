@@ -56,7 +56,7 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.9,
     reviewCount: 420,
     badge: 'الأفضل لنضارة البشرة',
-    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-collagen_gummies-main_1.png',
+    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_640/v1791752600/mockup-collagen_gummies-main_1.png',
     gallery: [
       '/images/products/gummies_collagen.svg',
       '/images/products/gummies_biotine.svg',
@@ -112,7 +112,7 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.9,
     reviewCount: 580,
     badge: 'المكمّل الأساسي للكولاجين',
-    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752602/mockup-Biotine_gummies-main.png',
+    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_640/v1791752602/mockup-Biotine_gummies-main.png',
     gallery: [
       '/images/products/gummies_biotine.svg',
       '/images/products/gummies_collagen.svg',
@@ -172,7 +172,7 @@ export const PRODUCTS: CatalogProduct[] = [
     rating: 4.8,
     reviewCount: 310,
     badge: 'لتسريع الامتصاص وطرد التعب',
-    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/v1791752600/mockup-Melatonine_Gummies-main.png',
+    image: 'https://res.cloudinary.com/uqfy0kku/image/upload/f_auto,q_auto,w_640/v1791752600/mockup-Melatonine_Gummies-main.png',
     gallery: [
       '/images/products/gumies_vitamine.svg',
       '/images/products/gummies_biotine.svg',
