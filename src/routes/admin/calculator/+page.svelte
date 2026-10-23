@@ -142,15 +142,13 @@
 	const isWinning = $derived(netProfitAfterAds >= 0 && marginPerDeliveredOrder > 0);
 
 	// =========================================================================
-	// SECTION 3: ULTRA-SIMPLE OFFERS TABLE (ACTIVE 2, 3, AND 4 BOTTLE TIERS)
+	// SECTION 3: ULTRA-SIMPLE OFFERS TABLE (ACTIVE 2 AND 3 BOTTLE TIERS)
 	// =========================================================================
 	const OFFERS_LIST = [
 		{ name: 'باقة علبتين (2 علب - الأكثر طلباً ⭐)', bottles: 2, price: 279 },
 		{ name: 'باقة علبتين + أبسيل (3 علب)', bottles: 3, price: 378 },
 		{ name: 'باقة 3 علب (كورس علاجي كامل)', bottles: 3, price: 349 },
-		{ name: 'باقة 3 علب + أبسيل (4 علب)', bottles: 4, price: 448 },
-		{ name: 'باقة 4 علب VIP (الباقة العائلية 🔥)', bottles: 4, price: 419 },
-		{ name: 'باقة 4 علب VIP + أبسيل (5 علب)', bottles: 5, price: 518 }
+		{ name: 'باقة 3 علب + أبسيل (4 علب)', bottles: 4, price: 448 }
 	];
 
 	const offerRows = $derived(

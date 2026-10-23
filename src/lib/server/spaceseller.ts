@@ -137,13 +137,9 @@ export function calculateOrderTotals(options: {
 		baseOfferPrice = 279;
 	} else if (r === 349 || r === 448 || r === 447) {
 		baseOfferPrice = 349;
-	} else if (r === 419 || r === 518 || r === 517) {
-		baseOfferPrice = 419;
-	} else if (options.tier === 'tier_3' || options.tier === 'tier_4') {
-		baseOfferPrice = 419;
-	} else if (options.tier === 'tier_2') {
+	} else if (options.tier === 'tier_2' || options.tier === 'tier-3-tubs') {
 		baseOfferPrice = 349;
-	} else if (options.tier === 'tier_1') {
+	} else if (options.tier === 'tier_1' || options.tier === 'tier-2-tubs') {
 		baseOfferPrice = 279;
 	} else if (r > 0) {
 		baseOfferPrice = hasUpsell && r > 99 ? r - 99 : r;
@@ -406,8 +402,7 @@ export function resolveUpsellArabicName(options: {
  * Calculates the TRUE total number of physical bottles in the order:
  * - 2 bottles offer (279 DH) + Upsell (99 DH) -> qte = 3
  * - 3 bottles offer (349 DH) + Upsell (99 DH) -> qte = 4
- * - 4 bottles offer (419 DH) + Upsell (99 DH) -> qte = 5
- * - Without upsell -> qte = 2, 3, or 4 according to selected tier
+ * - Without upsell -> qte = 2 or 3 according to selected tier
  */
 export function calculatePhysicalBottleCount(options: {
 	tier?: string;
@@ -424,21 +419,11 @@ export function calculatePhysicalBottleCount(options: {
 	if (total === 199 || total === 298 || total === 297 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
 		baseBottles = 1;
 	} else if (
-		total === 419 ||
-		total === 518 ||
-		total === 517 ||
-		rawTier === 'tier_3' ||
-		rawTier === 'tier_4' ||
-		rawTier.includes('4') ||
-		rawTier.includes('vip') ||
-		rawTier.includes('العائلية')
-	) {
-		baseBottles = 4;
-	} else if (
 		total === 349 ||
 		total === 448 ||
 		total === 447 ||
 		rawTier === 'tier_2' ||
+		rawTier === 'tier-3-tubs' ||
 		rawTier.includes('3') ||
 		rawTier.includes('التحول') ||
 		rawTier.includes('علاجي')
@@ -449,6 +434,7 @@ export function calculatePhysicalBottleCount(options: {
 		total === 378 ||
 		total === 377 ||
 		rawTier === 'tier_1' ||
+		rawTier === 'tier-2-tubs' ||
 		rawTier.includes('2') ||
 		rawTier.includes('الثنائي') ||
 		rawTier.includes('علبتان')
@@ -506,7 +492,7 @@ export function buildConfirmationBreakdown(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const baseName = resolveProductArabicName(options.mainSku || options.productLabel);
 
-	// Resolve tier bottle text: "2 علب", "3 علب", "4 علب" (or legacy "1 علبة")
+	// Resolve tier bottle text: "2 علب" or "3 علب" (or legacy "1 علبة")
 	const rawTier = String(options.tier || '').toLowerCase();
 	let tierUnitText = '2 علب';
 	if (
@@ -518,21 +504,11 @@ export function buildConfirmationBreakdown(options: {
 	) {
 		tierUnitText = '1 علبة';
 	} else if (
-		options.totalPrice === 419 ||
-		options.totalPrice === 518 ||
-		options.totalPrice === 517 ||
-		rawTier === 'tier_3' ||
-		rawTier === 'tier_4' ||
-		rawTier.includes('4') ||
-		rawTier.includes('vip') ||
-		rawTier.includes('العائلية')
-	) {
-		tierUnitText = '4 علب';
-	} else if (
 		options.totalPrice === 349 ||
 		options.totalPrice === 448 ||
 		options.totalPrice === 447 ||
 		rawTier === 'tier_2' ||
+		rawTier === 'tier-3-tubs' ||
 		rawTier.includes('3') ||
 		rawTier.includes('التحول') ||
 		rawTier.includes('علاجي')

@@ -278,13 +278,9 @@ export function buildOrderFulfillmentLabel(params: {
 
   const rawTier = String(params.tier || 'tier_1');
   const tierText =
-    rawTier === 'tier_3' || rawTier === 'tier_4' || rawTier.includes('4') || rawTier.includes('VIP') || rawTier.includes('العائلية')
-      ? 'باقة الكورس المكثف VIP (4 علب)'
-      : rawTier === 'tier_2' || rawTier.includes('3') || rawTier.includes('التحول') || rawTier.includes('علاجي')
-        ? 'باقة الكورس العلاجي الكامل (3 علب)'
-        : rawTier.includes('1') || rawTier.includes('التجربة') || rawTier.includes('واحدة')
-          ? 'باقة التجربة (1 علبة)'
-          : 'باقة الثنائي الأكثر طلباً (2 علب)';
+    rawTier === 'tier_2' || rawTier === 'tier-3-tubs' || rawTier.includes('3') || rawTier.includes('التحول') || rawTier.includes('علاجي')
+      ? 'باقة الكورس العلاجي الكامل (3 علب)'
+      : 'باقة الثنائي الأكثر طلباً (2 علب)';
 
   // 1. Determine main product SKU or title
   let mainSku = params.mainSku;

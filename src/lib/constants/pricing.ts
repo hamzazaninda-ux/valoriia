@@ -3,7 +3,7 @@
 // Single Source of Truth for CRO Offers
 // =============================================================================
 
-export type PricingTierId = 'tier_1' | 'tier_2' | 'tier_3';
+export type PricingTierId = 'tier_1' | 'tier_2';
 
 export interface PricingTier {
   id: PricingTierId;
@@ -19,6 +19,29 @@ export interface PricingTier {
   isPopular: boolean;
   badge: string;
 }
+
+export const tiers = [
+  {
+    id: 'tier-2-tubs',
+    title: 'علبتان • ثبّتي النتيجة',
+    subtitle: 'شهرين متواصلين + توصيل فابور 🚚',
+    price: 279,
+    savings: 'وفّري 119 درهم',
+    qty: 2,
+    badge: 'الأكثر طلباً ⭐',
+    isPopular: true
+  },
+  {
+    id: 'tier-3-tubs',
+    title: '3 علب • كورس علاجي كامل',
+    subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
+    price: 349,
+    savings: 'توفير 248 درهم',
+    qty: 3,
+    badge: 'توفير 248 درهم',
+    isPopular: false
+  }
+];
 
 export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
   tier_1: {
@@ -48,24 +71,10 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
     isFreeShipping: true,
     isPopular: false,
     badge: 'توفير 248 درهم'
-  },
-  tier_3: {
-    id: 'tier_3',
-    units: 4,
-    months: 4,
-    price: 419,
-    originalPrice: 599,
-    savings: 377,
-    title: '4 علب • كورس مكثف VIP (الباقة العائلية)',
-    subtitle: 'كورس 4 أشهر متواصلة لعناية متكاملة + توصيل فابور 🚚',
-    shipping: 0,
-    isFreeShipping: true,
-    isPopular: false,
-    badge: 'أكبر توفير 377 درهم 🔥'
   }
 };
 
-export const DEFAULT_TIER_ID: 'tier_1' | 'tier_2' | 'tier_3' = 'tier_1';
+export const DEFAULT_TIER_ID: PricingTierId = 'tier_1';
 
 export const FLASH_UPSELL_PRICE = 99; // MAD
 export const FREE_SHIPPING_THRESHOLD = 250; // MAD

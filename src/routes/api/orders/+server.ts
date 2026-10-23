@@ -94,15 +94,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const mainSku = body.mainSku || body.sku || (items.find((it: any) => !it.isUpsell)?.sku) || 'gummies_collagen';
 
 		if (items.length === 0) {
-			if (tier === 'tier_3' || total === 419 || total === 518) {
-				items.push({
-					sku: mainSku,
-					title: mainSku.includes('biotin') ? 'علكات البيوتين (4 علب VIP)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (4 علب VIP)' : 'علكات الكولاجين البحري (4 علب VIP)',
-					quantity: 4,
-					price: 419,
-					isUpsell: false
-				});
-			} else if (tier === 'tier_2' || total === 349 || total === 448) {
+			if (tier === 'tier_2' || tier === 'tier-3-tubs' || total === 349 || total === 448) {
 				items.push({
 					sku: mainSku,
 					title: mainSku.includes('biotin') ? 'علكات البيوتين (3 علب)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (3 علب)' : 'علكات الكولاجين البحري (3 علب)',
