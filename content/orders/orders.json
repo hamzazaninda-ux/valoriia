@@ -1,5 +1,22 @@
 [
   {
+    "id": "ORD-674232",
+    "createdAt": "2026-10-23T20:11:01.794Z",
+    "fullName": "Haamza zaira",
+    "phone": "212635183899",
+    "city": "يُحدد بعد التأكيد",
+    "address": "يُحدد بعد التأكيد",
+    "product": "2 قطع + رشاشين هدية 🎁",
+    "quantity": 2,
+    "totalPrice": 349,
+    "status": "جديد",
+    "sku": "2 قطع + رشاشين هدية 🎁",
+    "pageUrl": "",
+    "orderType": "direct",
+    "items": "",
+    "notes": ""
+  },
+  {
     "id": "ORD-278239",
     "createdAt": "2026-10-23T16:25:59.932Z",
     "fullName": "Bilal",
