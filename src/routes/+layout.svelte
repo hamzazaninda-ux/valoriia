@@ -75,13 +75,15 @@
 	{/if}
 
 	<!-- Google Ads Tag -->
-	{#if tracking?.googleAdsId}
+	{#if tracking?.googleAdsId && tracking.googleAdsId !== 'AW-18531557898'}
 		<script async src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAdsId}"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
-			gtag('config', '{tracking.googleAdsId}');
+			gtag('config', '{tracking.googleAdsId}', {
+				allow_enhanced_conversions: true
+			});
 		</script>
 	{/if}
 
