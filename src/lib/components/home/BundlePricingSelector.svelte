@@ -143,7 +143,7 @@
 			>
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-						توفير 248 درهم
+						توفير 198 درهم
 					</span>
 					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 						{#if selectedTier === 'tier_2'}
@@ -158,7 +158,7 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">349 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">399 MAD</span>
 					<span class="text-sm text-stone-400 line-through" dir="ltr">597 MAD</span>
 				</div>
 
@@ -168,10 +168,10 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 116 MAD للعلبة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 133 درهم للعلبة ⚡</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 248 درهم</strong> لكورس متواصل</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 198 درهم</strong> لكورس متواصل</li>
 				</ul>
 			</button>
 

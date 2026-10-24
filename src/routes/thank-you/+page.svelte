@@ -119,13 +119,13 @@
 				: mainSku.includes('vitamine')
 					? 'علكات الملتي فيتامين المتكاملة'
 					: 'علكات الكولاجين البحري';
-			if (tier === 'tier_2' || tier === 'tier-3-tubs' || totalPrice === 349 || totalPrice === 448) {
+			if (tier === 'tier_2' || tier === 'tier-3-tubs' || totalPrice === 399 || totalPrice === 498 || totalPrice === 349 || totalPrice === 448) {
 				items.push({
 					sku: mainSku,
 					title: `${baseTitle} (3 علب - كورس علاجي كامل)`,
 					quantity: 3,
-					unitPrice: 116.33,
-					price: 349
+					unitPrice: 133,
+					price: 399
 				});
 			} else {
 				items.push({

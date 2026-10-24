@@ -94,12 +94,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		const mainSku = body.mainSku || body.sku || (items.find((it: any) => !it.isUpsell)?.sku) || 'gummies_collagen';
 
 		if (items.length === 0) {
-			if (tier === 'tier_2' || tier === 'tier-3-tubs' || total === 349 || total === 448) {
+			if (tier === 'tier_2' || tier === 'tier-3-tubs' || total === 399 || total === 498 || total === 349 || total === 448) {
 				items.push({
 					sku: mainSku,
 					title: mainSku.includes('biotin') ? 'علكات البيوتين (3 علب)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (3 علب)' : 'علكات الكولاجين البحري (3 علب)',
 					quantity: 3,
-					price: 349,
+					price: 399,
 					isUpsell: false
 				});
 			} else {

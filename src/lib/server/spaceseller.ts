@@ -138,9 +138,12 @@ export function calculateOrderTotals(options: {
 	} else if (r === 299 || r === 398 || r === 397) {
 		baseOfferPrice = 299;
 	} else if (r === 349 || r === 448 || r === 447) {
-		baseOfferPrice = 349;
+		baseOfferPrice = 349; // legacy 3-tubs
+	} else if (r === 399 || r === 498 || r === 497) {
+		baseOfferPrice = 399;
+		baseOfferPrice = 399;
 	} else if (options.tier === 'tier_2' || options.tier === 'tier-3-tubs') {
-		baseOfferPrice = 349;
+		baseOfferPrice = 399;
 	} else if (options.tier === 'tier_1' || options.tier === 'tier-2-tubs') {
 		baseOfferPrice = 299;
 	} else if (r > 0) {
@@ -421,6 +424,9 @@ export function calculatePhysicalBottleCount(options: {
 	if (total === 199 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
 		baseBottles = 1;
 	} else if (
+		total === 399 ||
+		total === 498 ||
+		total === 497 ||
 		total === 349 ||
 		total === 448 ||
 		total === 447 ||
@@ -509,6 +515,9 @@ export function buildConfirmationBreakdown(options: {
 	) {
 		tierUnitText = '1 علبة';
 	} else if (
+		options.totalPrice === 399 ||
+		options.totalPrice === 498 ||
+		options.totalPrice === 497 ||
 		options.totalPrice === 349 ||
 		options.totalPrice === 448 ||
 		options.totalPrice === 447 ||

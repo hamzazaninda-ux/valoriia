@@ -171,6 +171,11 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		prodText.includes('ثلاث') ||
 		prodText.includes('التحول الشامل') ||
 		prodText.includes('علاجي') ||
+		priceWithoutKnownUpsells === 399 ||
+		priceWithoutLegacyUpsells === 399 ||
+		totalPrice === 399 ||
+		totalPrice === 498 ||
+		totalPrice === 497 ||
 		priceWithoutKnownUpsells === 349 ||
 		priceWithoutLegacyUpsells === 349 ||
 		totalPrice === 349 ||
@@ -196,7 +201,7 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	}
 
 	const baseOfferPrice =
-		baseBottles === 3 ? 349 : baseBottles === 2 ? (totalPrice === 279 || totalPrice === 378 ? 279 : 299) : 199;
+		baseBottles === 3 ? (totalPrice === 349 || totalPrice === 448 ? 349 : 399) : baseBottles === 2 ? (totalPrice === 279 || totalPrice === 378 ? 279 : 299) : 199;
 
 	// If upsellLines was empty but totalPrice or product text indicates upsells:
 	if (upsellCount === 0) {
@@ -254,7 +259,7 @@ export function resolveOrderEconomics(order: StoredOrder) {
 
 	const baseOfferLabel =
 		baseBottles === 3
-			? 'باقة 3 علب (349 MAD)'
+			? `باقة 3 علب (${baseOfferPrice} MAD)`
 			: baseBottles === 2
 				? `باقة علبتين (${baseOfferPrice} MAD)`
 				: 'باقة 1 علبة (199 MAD)';

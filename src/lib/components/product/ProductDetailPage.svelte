@@ -583,7 +583,7 @@
 						</div>
 					</button>
 
-					<!-- Tier 2 (3 Bottles @ 349 MAD) -->
+					<!-- Tier 2 (3 Bottles @ 399 MAD) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_2')}
@@ -596,7 +596,7 @@
 					>
 						<!-- Badge in top right above radio circle -->
 						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
-							<span>توفير 248 درهم</span>
+							<span>توفير 198 درهم</span>
 						</div>
 						<!-- Right: Radio circle + Title & details -->
 						<div class="flex items-center gap-3 text-right">
@@ -607,13 +607,13 @@
 							</div>
 							<div class="text-right">
 								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب • كورس علاجي كامل</div>
-								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر متواصلة + توصيل فابور 🚚</div>
+								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر متواصلة + توصيل فابور 🚚 (فقط 133 درهم للعلبة ⚡)</div>
 							</div>
 						</div>
 						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
-							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">349 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">توفير 248 درهم</div>
+							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">399 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C]">توفير 198 درهم</div>
 						</div>
 					</button>
 				</div>

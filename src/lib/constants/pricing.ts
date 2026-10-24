@@ -25,23 +25,24 @@ export const tiers = [
     id: 'tier-2-tubs',
     title: 'علبتان • ثبّتي النتيجة',
     subtitle: 'شهرين متواصلين + توصيل فابور 🚚',
-    price: 299, // Updated from 279 to 299 MAD
+    price: 299,
     oldPrice: 398,
     savings: 'وفّري 99 درهم',
     qty: 2,
-    badge: 'الأكثر طلباً ⭐',
-    isPopular: true
+    badge: 'النتيجة من العلبة الأولى ✨',
+    isPopular: false
   },
   {
     id: 'tier-3-tubs',
     title: '3 علب • كورس علاجي كامل',
     subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
-    price: 349,
+    price: 399, // Updated to 399 MAD
     oldPrice: 597,
-    savings: 'توفير 248 درهم',
+    unitPrice: 'فقط 133 درهم للعلبة',
+    savings: 'توفير 198 درهم',
     qty: 3,
-    badge: 'توفير 248 درهم',
-    isPopular: false
+    badge: '⭐ الأكثر طلباً',
+    isPopular: true
   }
 ];
 
@@ -64,15 +65,15 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
     id: 'tier_2',
     units: 3,
     months: 3,
-    price: 349,
+    price: 399,
     originalPrice: 597,
-    savings: 248,
+    savings: 198,
     title: '3 علب • كورس علاجي كامل',
     subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
     shipping: 0,
     isFreeShipping: true,
     isPopular: false,
-    badge: 'توفير 248 درهم'
+    badge: 'توفير 198 درهم'
   }
 };
 
