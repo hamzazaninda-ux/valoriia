@@ -134,7 +134,7 @@
 	let menuOpen = $state(false);
 	let query = $state('');
 
-	// Tier Selection (Default to Tier 1 - 2 Bottles Most Popular @ 279 MAD)
+	// Tier Selection (Default to Tier 1 - 2 Bottles Most Popular @ 299 MAD)
 	let selectedTier = $state<'tier_1' | 'tier_2'>('tier_1');
 	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
@@ -144,7 +144,7 @@
 
 	function scrollToOffers() {
 		if (typeof window !== 'undefined') {
-			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 279);
+			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 299);
 		}
 
 		const el =
@@ -549,7 +549,7 @@
 						</span>
 					</div>
 
-					<!-- Tier 1 (Default Selected - Most Popular: 2 Bottles @ 279 MAD) -->
+					<!-- Tier 1 (Default Selected - Most Popular: 2 Bottles @ 299 MAD) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_1')}
@@ -578,8 +578,8 @@
 						</div>
 						<!-- Left: Price & savings -->
 						<div class="text-left shrink-0">
-							<div class="font-black text-xl text-[#1B4332]" dir="ltr">279 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">وفّري 119 درهم</div>
+							<div class="font-black text-xl text-[#1B4332]" dir="ltr">299 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C]">وفّري 99 درهم</div>
 						</div>
 					</button>
 

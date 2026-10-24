@@ -94,7 +94,7 @@
 			>
 				<!-- Top Floating Badge -->
 				<div class="absolute -top-3.5 inset-x-0 mx-auto w-max px-4 py-1 rounded-full bg-[#1B4332] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1">
-					<span>الأكثر طلباً ⭐ • وفّري 119 درهم</span>
+					<span>الأكثر طلباً ⭐ • وفّري 99 درهم</span>
 				</div>
 
 				<div class="flex items-center justify-between mt-2">
@@ -114,7 +114,7 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">279 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">299 MAD</span>
 					<span class="text-sm text-stone-400 line-through" dir="ltr">398 MAD</span>
 				</div>
 
@@ -127,7 +127,7 @@
 					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (50 علكة) لكورس شهرين كامل</strong></li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>وفّري 119 درهم</strong> مقارنة بالسعر الفردي</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>وفّري 99 درهم</strong> مقارنة بالسعر الفردي</li>
 				</ul>
 			</button>
 

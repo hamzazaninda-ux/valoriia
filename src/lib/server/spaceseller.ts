@@ -128,19 +128,21 @@ export function calculateOrderTotals(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const upsellPrice = hasUpsell ? 99 : 0;
 
-	let baseOfferPrice = 279; // Default tier_1 (2 bottles @ 279 MAD)
+	let baseOfferPrice = 299; // Default tier_1 (2 bottles @ 299 MAD)
 	const r = typeof options.rawTotal === 'number' && options.rawTotal > 0 ? options.rawTotal : 0;
 
-	if (r === 199 || r === 298 || r === 297) {
+	if (r === 199) {
 		baseOfferPrice = 199;
 	} else if (r === 279 || r === 378 || r === 377) {
 		baseOfferPrice = 279;
+	} else if (r === 299 || r === 398 || r === 397) {
+		baseOfferPrice = 299;
 	} else if (r === 349 || r === 448 || r === 447) {
 		baseOfferPrice = 349;
 	} else if (options.tier === 'tier_2' || options.tier === 'tier-3-tubs') {
 		baseOfferPrice = 349;
 	} else if (options.tier === 'tier_1' || options.tier === 'tier-2-tubs') {
-		baseOfferPrice = 279;
+		baseOfferPrice = 299;
 	} else if (r > 0) {
 		baseOfferPrice = hasUpsell && r > 99 ? r - 99 : r;
 	} else if (Array.isArray(options.items) && options.items.length > 0) {
@@ -400,7 +402,7 @@ export function resolveUpsellArabicName(options: {
 
 /**
  * Calculates the TRUE total number of physical bottles in the order:
- * - 2 bottles offer (279 DH) + Upsell (99 DH) -> qte = 3
+ * - 2 bottles offer (299 DH) + Upsell (99 DH) -> qte = 3
  * - 3 bottles offer (349 DH) + Upsell (99 DH) -> qte = 4
  * - Without upsell -> qte = 2 or 3 according to selected tier
  */
@@ -411,12 +413,12 @@ export function calculatePhysicalBottleCount(options: {
 	rawTotal?: number;
 	price?: number;
 }): number {
-	let baseBottles = 2; // Default tier_1 (2 bottles @ 279 MAD)
+	let baseBottles = 2; // Default tier_1 (2 bottles @ 299 MAD)
 	const rawTier = String(options.tier || '').toLowerCase();
 	const hasUpsell = hasUpsellOrder(options);
 	const total = Number(options.rawTotal ?? options.price ?? 0);
 
-	if (total === 199 || total === 298 || total === 297 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
+	if (total === 199 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
 		baseBottles = 1;
 	} else if (
 		total === 349 ||
@@ -430,6 +432,9 @@ export function calculatePhysicalBottleCount(options: {
 	) {
 		baseBottles = 3;
 	} else if (
+		total === 299 ||
+		total === 398 ||
+		total === 397 ||
 		total === 279 ||
 		total === 378 ||
 		total === 377 ||

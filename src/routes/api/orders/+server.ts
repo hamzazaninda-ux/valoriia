@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			);
 		}
 
-		const total = Number(body.total ?? body.totalPrice ?? body.price ?? 279);
+		const total = Number(body.total ?? body.totalPrice ?? body.price ?? 299);
 		const tier = String(body.tier || 'tier_1');
 
 		// 15-second Sliding Window Deduplication Check
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					sku: mainSku,
 					title: mainSku.includes('biotin') ? 'علكات البيوتين (علبتان)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (علبتان)' : 'علكات الكولاجين البحري (علبتان)',
 					quantity: 2,
-					price: 279,
+					price: 299,
 					isUpsell: false
 				});
 			}

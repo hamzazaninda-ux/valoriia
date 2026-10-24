@@ -36,7 +36,7 @@
 	// Time check: daytime (9:00 - 21:00) vs night
 	let isDaytime = $state(true);
 
-	const currentTotal = $derived(order?.price || 279);
+	const currentTotal = $derived(order?.price || 299);
 
 	onMount(async () => {
 		const hour = new Date().getHours();
@@ -97,7 +97,7 @@
 			rawOrder?.address || rawOrder?.city || paramCity || 'تحدد عند اتصال التأكيد';
 
 		const totalPrice = Number(
-			rawOrder?.total || rawOrder?.price || rawOrder?.totalPrice || paramTotal || 279
+			rawOrder?.total || rawOrder?.price || rawOrder?.totalPrice || paramTotal || 299
 		);
 
 		let items: OrderItemDetail[] = [];
@@ -132,8 +132,8 @@
 					sku: mainSku,
 					title: `${baseTitle} (علبتان - الأكثر طلباً)`,
 					quantity: 2,
-					unitPrice: 139.5,
-					price: 279
+					unitPrice: 149.5,
+					price: 299
 				});
 			}
 			if (rawOrder?.hasUpsell || paramUpsell) {

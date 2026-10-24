@@ -196,7 +196,7 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	}
 
 	const baseOfferPrice =
-		baseBottles === 3 ? 349 : baseBottles === 2 ? 279 : 199;
+		baseBottles === 3 ? 349 : baseBottles === 2 ? (totalPrice === 279 || totalPrice === 378 ? 279 : 299) : 199;
 
 	// If upsellLines was empty but totalPrice or product text indicates upsells:
 	if (upsellCount === 0) {
@@ -256,7 +256,7 @@ export function resolveOrderEconomics(order: StoredOrder) {
 		baseBottles === 3
 			? 'باقة 3 علب (349 MAD)'
 			: baseBottles === 2
-				? 'باقة علبتين (279 MAD)'
+				? `باقة علبتين (${baseOfferPrice} MAD)`
 				: 'باقة 1 علبة (199 MAD)';
 
 	const baseOfferBadge =

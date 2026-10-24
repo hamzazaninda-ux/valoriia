@@ -23,7 +23,7 @@
 
 	// Manual simulation simple whole numbers
 	let manualLeads = $state(50);
-	let manualAOV = $state(279);
+	let manualAOV = $state(299);
 	let manualAvgBottles = $state(2);
 
 	let hydrated = $state(false);
@@ -145,8 +145,8 @@
 	// SECTION 3: ULTRA-SIMPLE OFFERS TABLE (ACTIVE 2 AND 3 BOTTLE TIERS)
 	// =========================================================================
 	const OFFERS_LIST = [
-		{ name: 'باقة علبتين (2 علب - الأكثر طلباً ⭐)', bottles: 2, price: 279 },
-		{ name: 'باقة علبتين + أبسيل (3 علب)', bottles: 3, price: 378 },
+		{ name: 'باقة علبتين (2 علب - الأكثر طلباً ⭐)', bottles: 2, price: 299 },
+		{ name: 'باقة علبتين + أبسيل (3 علب)', bottles: 3, price: 398 },
 		{ name: 'باقة 3 علب (كورس علاجي كامل)', bottles: 3, price: 349 },
 		{ name: 'باقة 3 علب + أبسيل (4 علب)', bottles: 4, price: 448 }
 	];
