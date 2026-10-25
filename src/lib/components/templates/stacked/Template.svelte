@@ -617,7 +617,7 @@
 </script>
 
 <div
-	class="max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-stone-200/70 pb-28"
+	class="cta-wiggle-scope max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-stone-200/70 pb-28 overflow-x-clip"
 	style="{buildThemeCssVars(t)}; background-color: #FAF9F6; color: #14231B;"
 	dir="rtl"
 >
@@ -789,7 +789,7 @@
 					<button
 						type="submit"
 						disabled={isSubmitting || isSubmittingFinal}
-						class="w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+						class="cta-wiggle w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
 					>
 						{#if isSubmitting || isSubmittingFinal}
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -1075,11 +1075,11 @@
 
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-2.5 inset-x-0 z-50 px-3 sm:px-4 pointer-events-none" dir="rtl">
+		<div class="fixed bottom-2.5 inset-x-0 z-50 px-3 sm:px-4 overflow-x-clip pointer-events-none" dir="rtl">
 			<button
 				type="button"
 				onclick={scrollToOrderForm}
-				class="w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
+				class="cta-wiggle w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
 			>
 				<span>أطلب الآن • الدفع عند الاستلام</span>
 				<svg
@@ -1129,3 +1129,52 @@
 		onDeclineUpsell={handleDeclineDrainUpsell}
 	/>
 </div>
+
+<style>
+	@keyframes cta-wiggle {
+		0% {
+			transform: translateX(0);
+		}
+		3.5% {
+			transform: translateX(-6px);
+		}
+		7% {
+			transform: translateX(6px);
+		}
+		10.5% {
+			transform: translateX(-4px);
+		}
+		14% {
+			transform: translateX(4px);
+		}
+		17.5%,
+		100% {
+			transform: translateX(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.cta-wiggle {
+			will-change: transform;
+			animation: cta-wiggle 4s ease-in-out 2s infinite;
+		}
+
+		.cta-wiggle:hover,
+		.cta-wiggle:active,
+		.cta-wiggle:focus,
+		.cta-wiggle:focus-visible,
+		.cta-wiggle:disabled,
+		form:focus-within .cta-wiggle,
+		.cta-wiggle-scope:has(#order-form form:focus-within) .cta-wiggle {
+			animation-play-state: paused;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cta-wiggle {
+			animation: none !important;
+			transform: none !important;
+			will-change: auto;
+		}
+	}
+</style>
