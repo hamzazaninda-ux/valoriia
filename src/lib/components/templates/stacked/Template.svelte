@@ -246,144 +246,272 @@
 	let customerPhone = $state('');
 	let formError = $state('');
 	let isSubmitting = $state(false);
+	let isSubmittingFinal = $state(false);
 	let submittedOrderId = $state<string | null>(null);
 
 	let showDrainUpsell = $state(false);
-	let pendingUpsellOrder = $state<{
+	let pendingOrder = $state<{
 		orderId: string;
-		total: number;
+		date_order: string;
+		customerName: string;
 		phone: string;
-		name: string;
-		destinationUrl: string;
-		savedOrder: any;
-	}>({
-		orderId: '',
-		total: 349,
-		phone: '',
-		name: '',
-		destinationUrl: '',
-		savedOrder: null
-	});
+		city_address: string;
+		offerSku: string;
+		productTitleStr: string;
+		quantity: number;
+		basePrice: number;
+		sheetsUrl: string;
+	} | null>(null);
 
-	async function handleAcceptDrainUpsell(updatedOrder: any) {
-		const orderId = pendingUpsellOrder.orderId;
-		const upsellPrice = updatedOrder.upsellPrice || 29;
-		const upsellOrderId = `${orderId}-U1`;
-		const formattedPhone = pendingUpsellOrder.phone || formatMoroccanPhone(customerPhone);
-		const customerNameVal = pendingUpsellOrder.name || customerName.trim();
-		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const upsellSku = updatedOrder.upsellItem || 'سدادة وفلتر مصرف الأرضية (+29 MAD)';
+	async function handleAcceptDrainUpsell() {
+		if (!pendingOrder || isSubmittingFinal) return;
+		isSubmittingFinal = true;
 
-		const upsellPayload = {
-			date_order,
-			order_id: upsellOrderId,
-			orderId: upsellOrderId,
-			id: upsellOrderId,
-			full_name: customerNameVal,
-			fullName: customerNameVal,
-			name: customerNameVal,
-			phone: formattedPhone,
-			phoneNumber: formattedPhone,
-			city_address: 'يُحدد بعد التأكيد',
-			city: 'يُحدد بعد التأكيد',
-			address: 'يُحدد بعد التأكيد',
-			sku: upsellSku,
-			selectedOfferTitle: upsellSku,
-			productTitle: upsellSku,
-			offer: upsellSku,
-			offerSku: upsellSku,
-			qte: 1,
-			quantity: 1,
-			price: upsellPrice,
-			totalPrice: upsellPrice,
-			total: upsellPrice,
-			note: `إضافة للطلب الأساسي ${orderId}`,
+		const order = pendingOrder;
+		const upsellPrice = 29;
+		const finalPrice = order.basePrice + upsellPrice;
+		const finalSku = `${order.offerSku} + سدادة وفلتر مصرف الأرضية`;
+		const fullProductLabel = `${order.productTitleStr} + سدادة وفلتر مصرف الأرضية`;
+		const orderNote = 'مع عرض السدادة (+29 درهم)';
+
+		const payload = {
+			date_order: order.date_order,
+			order_id: order.orderId,
+			full_name: order.customerName,
+			phone: order.phone,
+			city_address: order.city_address,
+			sku: finalSku,
+			qte: order.quantity,
+			price: finalPrice,
+			note: orderNote,
 			delivery_note: '',
-			orderType: 'upsell',
-			isUpsell: true,
-			parentOrderId: orderId,
-			sheetsUrl,
 			rowData: [
-				date_order,
-				upsellOrderId,
-				customerNameVal,
-				formattedPhone,
-				'يُحدد بعد التأكيد',
-				upsellSku,
-				1,
-				upsellPrice,
-				`إضافة للطلب الأساسي ${orderId}`,
+				order.date_order,
+				order.orderId,
+				order.customerName,
+				order.phone,
+				order.city_address,
+				finalSku,
+				order.quantity,
+				finalPrice,
+				orderNote,
 				''
-			]
+			],
+			orderId: order.orderId,
+			id: order.orderId,
+			fullName: order.customerName,
+			name: order.customerName,
+			phoneNumber: order.phone,
+			city: order.city_address,
+			address: order.city_address,
+			productTitle: fullProductLabel,
+			selectedOfferTitle: finalSku,
+			offer: finalSku,
+			offerSku: finalSku,
+			quantity: order.quantity,
+			totalPrice: finalPrice,
+			total: finalPrice,
+			sheetsUrl: order.sheetsUrl
 		};
 
-		// 1. Send Upsell to /api/checkout
+		// 1. Dispatch the SINGLE consolidated webhook call
 		try {
-			await fetch('/api/checkout', {
+			const res = await fetch('/api/checkout', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(upsellPayload)
+				body: JSON.stringify(payload)
 			});
+			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
 		} catch (err) {
-			console.warn('Upsell submission non-blocking error:', err);
+			console.error('Checkout error:', err);
 		}
 
-		// 2. Track Upsell Purchase
+		// 2. Mark order sent to prevent duplicate session submissions
 		if (typeof window !== 'undefined') {
+			sessionStorage.setItem(`order_sent_${order.orderId}`, 'true');
+
+			// 3. Save latestOrder in localStorage & sessionStorage
+			const savedOrder = {
+				orderId: order.orderId,
+				fullName: order.customerName,
+				phoneNumber: order.phone,
+				city: order.city_address,
+				address: order.city_address,
+				date: new Date().toLocaleDateString('ar-MA'),
+				price: finalPrice,
+				total: finalPrice,
+				productTitle: fullProductLabel,
+				offer: finalSku,
+				quantity: order.quantity,
+				qte: order.quantity,
+				sku: finalSku,
+				hasUpsell: true,
+				upsellPrice: 29
+			};
+
+			try {
+				localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+				sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+			} catch (e) {
+				console.warn('Storage save error:', e);
+			}
+
+			// 4. Fire Single Conversion Tracking
 			try {
 				if (typeof (window as any).gtag === 'function') {
 					(window as any).gtag('event', 'conversion', {
 						'send_to': 'AW-18531557898',
-						'value': upsellPrice,
+						'value': finalPrice,
 						'currency': 'MAD',
-						'transaction_id': upsellOrderId
+						'transaction_id': order.orderId
 					});
 				}
 			} catch {}
 
 			try {
 				trackSnapPurchase({
-					orderId: upsellOrderId,
-					price: upsellPrice,
+					orderId: order.orderId,
+					price: finalPrice,
 					currency: 'MAD',
-					phone: formattedPhone,
-					title: upsellSku,
-					sku: 'filter-baloua',
-					quantity: 1
+					phone: order.phone,
+					title: fullProductLabel,
+					sku: finalSku,
+					quantity: order.quantity
 				});
 			} catch (snapErr) {
-				console.warn('Snap Upsell tracking error:', snapErr);
+				console.warn('Snap Purchase tracking error:', snapErr);
 			}
 
-			// 3. Update localStorage & sessionStorage with combined total
-			const combinedTotal = Number(pendingUpsellOrder.total || 0) + upsellPrice;
-			const updatedSavedOrder = {
-				...(pendingUpsellOrder.savedOrder || {}),
-				price: combinedTotal,
-				total: combinedTotal,
-				hasUpsell: true,
-				upsellPrice,
-				upsellItem: upsellSku
-			};
-
-			try {
-				localStorage.setItem('latestOrder', JSON.stringify(updatedSavedOrder));
-				sessionStorage.setItem('latestOrder', JSON.stringify(updatedSavedOrder));
-				sessionStorage.setItem('latestUpsell', JSON.stringify(upsellPayload));
-			} catch {}
-
-			const finalUrl = preserveTrackingParams(
-				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerNameVal)}&phone=${encodeURIComponent(formattedPhone)}&total=${combinedTotal}&upsell=1&promptAddress=1`
-			);
+			// 5. Redirect to Thank You page
 			showDrainUpsell = false;
+			const finalUrl = preserveTrackingParams(
+				`/thank-you?orderId=${order.orderId}&name=${encodeURIComponent(order.customerName)}&phone=${encodeURIComponent(order.phone)}&total=${finalPrice}&upsell=1&promptAddress=1`
+			);
 			window.location.href = finalUrl;
 		}
 	}
 
-	function handleDeclineDrainUpsell() {
-		showDrainUpsell = false;
+	async function handleDeclineDrainUpsell() {
+		if (!pendingOrder || isSubmittingFinal) return;
+		isSubmittingFinal = true;
+
+		const order = pendingOrder;
+		const finalPrice = order.basePrice;
+		const finalSku = order.offerSku;
+		const fullProductLabel = order.productTitleStr;
+
+		const payload = {
+			date_order: order.date_order,
+			order_id: order.orderId,
+			full_name: order.customerName,
+			phone: order.phone,
+			city_address: order.city_address,
+			sku: finalSku,
+			qte: order.quantity,
+			price: finalPrice,
+			note: '',
+			delivery_note: '',
+			rowData: [
+				order.date_order,
+				order.orderId,
+				order.customerName,
+				order.phone,
+				order.city_address,
+				finalSku,
+				order.quantity,
+				finalPrice,
+				'',
+				''
+			],
+			orderId: order.orderId,
+			id: order.orderId,
+			fullName: order.customerName,
+			name: order.customerName,
+			phoneNumber: order.phone,
+			city: order.city_address,
+			address: order.city_address,
+			productTitle: fullProductLabel,
+			selectedOfferTitle: finalSku,
+			offer: finalSku,
+			offerSku: finalSku,
+			quantity: order.quantity,
+			totalPrice: finalPrice,
+			total: finalPrice,
+			sheetsUrl: order.sheetsUrl
+		};
+
+		// 1. Dispatch the SINGLE original order webhook call
+		try {
+			const res = await fetch('/api/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
+		} catch (err) {
+			console.error('Checkout error:', err);
+		}
+
+		// 2. Mark order sent to prevent duplicate session submissions
 		if (typeof window !== 'undefined') {
-			window.location.href = pendingUpsellOrder.destinationUrl || `/thank-you?orderId=${submittedOrderId}`;
+			sessionStorage.setItem(`order_sent_${order.orderId}`, 'true');
+
+			// 3. Save latestOrder in localStorage & sessionStorage
+			const savedOrder = {
+				orderId: order.orderId,
+				fullName: order.customerName,
+				phoneNumber: order.phone,
+				city: order.city_address,
+				address: order.city_address,
+				date: new Date().toLocaleDateString('ar-MA'),
+				price: finalPrice,
+				total: finalPrice,
+				productTitle: fullProductLabel,
+				offer: finalSku,
+				quantity: order.quantity,
+				qte: order.quantity,
+				sku: finalSku
+			};
+
+			try {
+				localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+				sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+			} catch (e) {
+				console.warn('Storage save error:', e);
+			}
+
+			// 4. Fire Single Conversion Tracking
+			try {
+				if (typeof (window as any).gtag === 'function') {
+					(window as any).gtag('event', 'conversion', {
+						'send_to': 'AW-18531557898',
+						'value': finalPrice,
+						'currency': 'MAD',
+						'transaction_id': order.orderId
+					});
+				}
+			} catch {}
+
+			try {
+				trackSnapPurchase({
+					orderId: order.orderId,
+					price: finalPrice,
+					currency: 'MAD',
+					phone: order.phone,
+					title: fullProductLabel,
+					sku: finalSku,
+					quantity: order.quantity
+				});
+			} catch (snapErr) {
+				console.warn('Snap Purchase tracking error:', snapErr);
+			}
+
+			// 5. Redirect to Thank You page
+			showDrainUpsell = false;
+			const finalUrl = preserveTrackingParams(
+				`/thank-you?orderId=${order.orderId}&name=${encodeURIComponent(order.customerName)}&phone=${encodeURIComponent(order.phone)}&total=${finalPrice}&promptAddress=1`
+			);
+			window.location.href = finalUrl;
 		}
 	}
 
@@ -404,11 +532,11 @@
 		return clean; // e.g. 212666666666
 	}
 
-	async function handleDirectCheckout(event?: Event) {
+	function handleDirectCheckout(event?: Event) {
 		event?.preventDefault();
 
-		// Guard: prevent execution if already submitting
-		if (isSubmitting) return;
+		// Guard: prevent execution if modal is open or final order submitting
+		if (showDrainUpsell || isSubmittingFinal) return;
 
 		// Guard: if this session already successfully submitted an order, redirect immediately
 		if (submittedOrderId && typeof window !== 'undefined' && sessionStorage.getItem(`order_sent_${submittedOrderId}`)) {
@@ -439,159 +567,34 @@
 			return;
 		}
 
-		// Immediate submit lock & debounce: Instantly disable button
-		isSubmitting = true;
-
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		submittedOrderId = orderId;
 
-		// Guard against duplicate session submissions
-		if (typeof window !== 'undefined' && sessionStorage.getItem(`order_sent_${orderId}`)) {
-			window.location.href = `/thank-you?orderId=${orderId}`;
-			return;
-		}
+		const rawPrice = activeOffer?.price || 349;
+		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
+		const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
 
-		try {
-			// Force pure integer: remove any trailing decimal/fraction (e.g. 349.0 or 349,0 -> 349)
-			const rawPrice = activeOffer?.price || 349;
-			const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
-			const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
+		const offerSku = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁') || 'العرض المختار';
+		const productTitleStr = (content?.title || (product as any)?.title || offerSku || 'طقم التنظيم المنزلي').trim();
+		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		const formattedPhone = formatMoroccanPhone(customerPhone);
+		const city_address = 'يُحدد بعد التأكيد';
 
-			// 3. SKU Formatter: Capture the human-readable selected offer name/tier label instead of product slug
-			const offerSku = activeOffer?.title || (currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁') || 'العرض المختار';
-			const productTitleStr = (content?.title || (product as any)?.title || offerSku || 'طقم التنظيم المنزلي').trim();
-			const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-			const formattedPhone = formatMoroccanPhone(customerPhone);
-			const city_address = 'يُحدد بعد التأكيد';
+		pendingOrder = {
+			orderId,
+			date_order,
+			customerName: customerName.trim(),
+			phone: formattedPhone,
+			city_address,
+			offerSku,
+			productTitleStr,
+			quantity,
+			basePrice: cleanPrice,
+			sheetsUrl
+		};
 
-			const payload = {
-				date_order,
-				order_id: orderId,
-				full_name: customerName.trim(),
-				phone: formattedPhone,
-				city_address,
-				sku: offerSku,
-				qte: quantity,
-				price: cleanPrice,
-				note: '',
-				delivery_note: '',
-				rowData: [
-					date_order,
-					orderId,
-					customerName.trim(),
-					formattedPhone,
-					city_address,
-					offerSku,
-					quantity,
-					cleanPrice,
-					'',
-					''
-				],
-				orderId,
-				id: orderId,
-				fullName: customerName.trim(),
-				name: customerName.trim(),
-				phoneNumber: formattedPhone,
-				city: 'يُحدد بعد التأكيد',
-				address: 'يُحدد بعد التأكيد',
-				productTitle: productTitleStr,
-				selectedOfferTitle: offerSku,
-				offer: offerSku,
-				offerSku,
-				quantity,
-				qte: quantity,
-				totalPrice: cleanPrice,
-				price: cleanPrice,
-				total: cleanPrice,
-				sheetsUrl
-			};
-
-			const res = await fetch('/api/checkout', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
-			});
-
-			const data = await res.json();
-
-			if (!res.ok && !data?.order) {
-				throw new Error(data?.error || 'حدث خطأ أثناء إرسال الطلب');
-			}
-
-			// Guard against duplicate session submissions: mark sent immediately
-			if (typeof window !== 'undefined') {
-				sessionStorage.setItem(`order_sent_${orderId}`, 'true');
-			}
-
-			const savedOrder = {
-				orderId,
-				fullName: customerName.trim(),
-				phoneNumber: customerPhone.trim(),
-				city: 'يُحدد بعد التأكيد',
-				address: 'يُحدد بعد التأكيد',
-				date: new Date().toLocaleDateString('ar-MA'),
-				price: cleanPrice,
-				total: cleanPrice,
-				productTitle: productTitleStr,
-				offer: offerSku,
-				quantity,
-				qte: quantity,
-				sku: payload.sku
-			};
-
-			if (typeof window !== 'undefined') {
-				try {
-					localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-					sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-					sessionStorage.setItem('lastCompletedOrder', JSON.stringify(savedOrder));
-				} catch (e) {
-					console.warn('Storage save error:', e);
-				}
-
-				try {
-					if (typeof (window as any).gtag === 'function') {
-						(window as any).gtag('event', 'conversion', {
-							'send_to': 'AW-18531557898',
-							'value': cleanPrice,
-							'currency': 'MAD',
-							'transaction_id': orderId
-						});
-					}
-				} catch {}
-
-				try {
-					trackSnapPurchase({
-						orderId,
-						price: cleanPrice,
-						currency: 'MAD',
-						phone: customerPhone.trim(),
-						title: productTitleStr,
-						sku: payload.sku,
-						quantity
-					});
-				} catch (snapErr) {
-					console.warn('Snap Purchase tracking error:', snapErr);
-				}
-
-				const destinationUrl = preserveTrackingParams(
-					`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${cleanPrice}&promptAddress=1`
-				);
-
-				pendingUpsellOrder = {
-					orderId,
-					total: cleanPrice,
-					phone: formattedPhone,
-					name: customerName.trim(),
-					destinationUrl,
-					savedOrder
-				};
-				showDrainUpsell = true;
-			}
-		} catch (err: any) {
-			console.error('Direct checkout failed:', err);
-			formError = err?.message || 'تعذر إرسال الطلب، يرجى المحاولة مرة أخرى أو الاتصال بنا عبر الواتساب';
-			isSubmitting = false;
-		}
+		// Open Upsell Modal without sending to Google Sheets yet!
+		showDrainUpsell = true;
 	}
 
 	function scrollToOffers() {
@@ -1163,32 +1166,20 @@
 		sheetsUrl={sheetsUrl}
 		productTitle={content.title}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
-		onDone={(completed) => {
-			cartUi.closeCheckout();
-			const completedOrderId = completed.orderId || ('ORD-' + Date.now());
-			const destinationUrl = preserveTrackingParams(
-				`/thank-you?orderId=${completedOrderId}&name=${encodeURIComponent(completed.fullName || '')}&phone=${encodeURIComponent(completed.phoneNumber || '')}&total=${completed.subtotal || 229}&promptAddress=1`
-			);
-			pendingUpsellOrder = {
-				orderId: completedOrderId,
-				total: completed.subtotal || 229,
-				phone: completed.phoneNumber || '',
-				name: completed.fullName || '',
-				destinationUrl,
-				savedOrder: completed
-			};
-			showDrainUpsell = true;
+		onDone={() => {
+			cartUi.resetAll();
+			window.location.href = preserveTrackingParams('/thank-you');
 		}}
 	/>
 
-	<!-- Post-Purchase Drain Filter Upsell Modal -->
+	<!-- Post-Purchase Drain Filter Upsell Modal (Single-Row Merge) -->
 	<DrainUpsellModal
 		bind:isOpen={showDrainUpsell}
 		orderDetails={{
-			orderId: pendingUpsellOrder.orderId,
-			total: pendingUpsellOrder.total,
-			phone: pendingUpsellOrder.phone,
-			name: pendingUpsellOrder.name
+			orderId: pendingOrder?.orderId || '',
+			total: pendingOrder?.basePrice || 349,
+			phone: pendingOrder?.phone || '',
+			name: pendingOrder?.customerName || ''
 		}}
 		onAcceptUpsell={handleAcceptDrainUpsell}
 		onDeclineUpsell={handleDeclineDrainUpsell}

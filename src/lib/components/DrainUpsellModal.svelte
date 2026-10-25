@@ -30,6 +30,7 @@
 
 	let secondsLeft = $state(initialSeconds);
 	let isSubmitting = $state(false);
+	let isDeclining = $state(false);
 	let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 	function stopTimer() {
@@ -48,7 +49,7 @@
 			} else {
 				secondsLeft = 0;
 				stopTimer();
-				if (!isSubmitting) {
+				if (!isSubmitting && !isDeclining) {
 					handleDecline();
 				}
 			}
@@ -58,6 +59,7 @@
 	$effect(() => {
 		if (isOpen) {
 			isSubmitting = false;
+			isDeclining = false;
 			startTimer();
 		} else {
 			stopTimer();
@@ -72,7 +74,7 @@
 	});
 
 	async function handleAccept() {
-		if (isSubmitting) return;
+		if (isSubmitting || isDeclining) return;
 		isSubmitting = true;
 		stopTimer();
 
@@ -96,10 +98,15 @@
 		}
 	}
 
-	function handleDecline() {
-		if (isSubmitting) return;
+	async function handleDecline() {
+		if (isSubmitting || isDeclining) return;
+		isDeclining = true;
 		stopTimer();
-		onDeclineUpsell();
+		try {
+			await onDeclineUpsell();
+		} catch (err) {
+			console.error('Failed to decline upsell:', err);
+		}
 	}
 </script>
 
@@ -171,12 +178,12 @@
 				<button
 					type="button"
 					onclick={handleAccept}
-					disabled={isSubmitting}
+					disabled={isSubmitting || isDeclining}
 					class="w-full min-h-[48px] py-3.5 px-4 bg-[#0B5E3C] hover:bg-[#08482E] active:scale-[0.98] transition-all text-white font-black text-base sm:text-lg rounded-2xl shadow-lg shadow-emerald-950/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
 				>
 					{#if isSubmitting}
 						<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-						<span>جاري إضافة العرض للطلب...</span>
+						<span>جاري تأكيد الطلب مع العرض...</span>
 					{:else}
 						<span>أضف للطلب • 29 درهم فقط</span>
 						<span class="bg-white/20 px-1.5 py-0.5 rounded-lg text-sm">✅</span>
@@ -186,10 +193,15 @@
 				<button
 					type="button"
 					onclick={handleDecline}
-					disabled={isSubmitting}
-					class="w-full min-h-[42px] py-2.5 px-4 bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all text-gray-600 hover:text-gray-800 font-bold text-sm sm:text-base rounded-2xl text-center cursor-pointer"
+					disabled={isSubmitting || isDeclining}
+					class="w-full min-h-[42px] py-2.5 px-4 bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition-all text-gray-600 hover:text-gray-800 font-bold text-sm sm:text-base rounded-2xl text-center cursor-pointer disabled:opacity-75 flex items-center justify-center gap-2"
 				>
-					لا شكراً
+					{#if isDeclining}
+						<span class="h-4 w-4 animate-spin rounded-full border-2 border-gray-600 border-t-transparent"></span>
+						<span>جاري تأكيد الطلب...</span>
+					{:else}
+						<span>لا شكراً</span>
+					{/if}
 				</button>
 			</div>
 		</div>
