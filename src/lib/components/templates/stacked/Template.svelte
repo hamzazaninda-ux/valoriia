@@ -587,32 +587,41 @@
 	}
 
 	onMount(() => {
+		const heroElement = document.getElementById('hero-section');
 		const formElement = document.getElementById('order-form');
 
-		function syncFormDirection() {
-			if (!formElement) return;
-			isFormAbove = formElement.getBoundingClientRect().top < 0;
+		let heroVisible = true;
+		let formVisible = false;
+
+		function updateStickyState() {
+			showStickyBtn = !heroVisible && !formVisible;
+			if (formElement) {
+				isFormAbove = formElement.getBoundingClientRect().top < 0;
+			}
 		}
 
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					showStickyBtn = !entry.isIntersecting;
-					isFormAbove = entry.boundingClientRect.top < 0;
+					if (entry.target.id === 'hero-section') {
+						heroVisible = entry.isIntersecting;
+					} else if (entry.target.id === 'order-form') {
+						formVisible = entry.isIntersecting;
+					}
 				}
+				updateStickyState();
 			},
 			{ threshold: 0.08, rootMargin: '0px 0px 20px 0px' }
 		);
 
-		if (formElement) {
-			syncFormDirection();
-			observer.observe(formElement);
-		}
-		window.addEventListener('scroll', syncFormDirection, { passive: true });
+		if (heroElement) observer.observe(heroElement);
+		if (formElement) observer.observe(formElement);
+		updateStickyState();
+		window.addEventListener('scroll', updateStickyState, { passive: true });
 
 		return () => {
 			observer.disconnect();
-			window.removeEventListener('scroll', syncFormDirection);
+			window.removeEventListener('scroll', updateStickyState);
 		};
 	});
 </script>
@@ -628,13 +637,16 @@
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 1. HERO SECTION (أعلى الصفحة — Compact Mobile Viewport)         -->
+	<!-- 1. HERO SECTION (أعلى الصفحة — Zero-Scroll Mobile Fit)          -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<header class="relative overflow-hidden bg-gradient-to-b from-[#0E291E] via-[#133829] to-[#FAF9F6] pt-2.5 sm:pt-4 pb-2.5 px-2.5 sm:px-5">
+	<header
+		id="hero-section"
+		class="relative overflow-hidden bg-gradient-to-b from-[#0E291E] via-[#133829] to-[#FAF9F6] pt-1.5 sm:pt-3.5 pb-2 px-2 sm:px-5"
+	>
 		<!-- Subtle Moroccan 8-point Khatam geometric motif (ambient header texture <= 5% opacity) -->
 		<svg
 			aria-hidden="true"
-			class="pointer-events-none absolute inset-x-0 top-0 h-44 w-full opacity-[0.045] text-amber-200"
+			class="pointer-events-none absolute inset-x-0 top-0 h-36 w-full opacity-[0.045] text-amber-200"
 			xmlns="http://www.w3.org/2000/svg"
 		>
 			<defs>
@@ -650,36 +662,36 @@
 			<rect width="100%" height="100%" fill="url(#khatam-hero)" />
 		</svg>
 
-		<div class="relative z-10 text-center">
-			<!-- Hero Badge -->
-			<div class="inline-flex items-center justify-center mb-1.5">
-				<span class="inline-flex items-center gap-1.5 rounded-full bg-amber-400/95 px-3 py-0.5 text-xs sm:text-[13px] font-black text-amber-950 shadow-sm">
+		<div class="relative z-10">
+			<!-- Top Yellow Badge (Keep compact) -->
+			<div class="mb-1 text-center">
+				<span class="inline-block bg-amber-400 text-slate-950 font-black text-[11px] sm:text-xs px-3 py-0.5 rounded-full shadow-sm">
 					🔥 العرض الأكثر طلباً في المغرب
 				</span>
 			</div>
 
-			<!-- Concise 2-Line Punchy Headline (H1) — Subtitle Removed to Keep Product Image Above the Fold -->
-			<h1 class="font-display text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight mb-2">
-				باك الحمام الذكي <span class="text-emerald-300">(بدون حفير 🛠️)</span>
+			<!-- Compact Pain-Point Headline -->
+			<h1 class="font-display text-center font-black text-white text-base sm:text-lg leading-snug mb-1.5 px-2">
+				تهنّاي من كركبة الدوش وتضييع الزليج بالمسامير 🛠️
 				<br />
-				<span class="text-amber-400 text-xl sm:text-2xl">+ رشاش زيادة الضغط هدية فابور 🎁</span>
+				<span class="text-amber-300 text-sm sm:text-base font-bold">+ رشاش زيادة الضغط هدية فابور 🎁</span>
 			</h1>
 		</div>
 
-		<!-- Hero Visual Frame (Brought Above the Fold, clickable to jump to #order-form) -->
-		<div class="relative z-10 overflow-hidden rounded-3xl border-2 border-white/80 bg-[#F5F2EB] shadow-xl">
+		<!-- Hero Visual Frame (100svh-bounded so 100% of image fits on mobile screen without scrolling) -->
+		<div class="relative z-10 flex justify-center">
 			<a
 				href="#order-form"
 				onclick={scrollToOrderForm}
-				class="block w-full focus:outline-none"
+				class="block overflow-hidden rounded-2xl border-2 border-white/85 bg-[#F5F2EB] shadow-xl focus:outline-none"
 				aria-label="انتقل إلى استمارة الطلب"
 			>
 				<img
 					src={HERO_IMAGE_URL}
-					alt="باك الحمام الذكي (بدون حفير) + رشاش زيادة الضغط هدية فابور"
+					alt="تهنّاي من كركبة الدوش وتضييع الزليج بالمسامير + رشاش زيادة الضغط هدية فابور"
 					width="1024"
 					height="1536"
-					class="block w-full h-auto"
+					class="block h-auto w-auto max-w-full max-h-[calc(100svh-136px)] sm:max-h-none sm:w-full object-contain"
 					loading="eager"
 					fetchpriority="high"
 				/>
@@ -687,7 +699,7 @@
 		</div>
 
 		<!-- Micro Trust Badges -->
-		<div class="relative z-10 mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
+		<div class="relative z-10 mt-2 grid grid-cols-3 gap-1.5 sm:gap-2">
 			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
 				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
