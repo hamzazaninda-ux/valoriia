@@ -3,20 +3,45 @@
   "slug": "kit-tandim",
   "status": "published",
   "createdAt": "2026-10-01T21:43:04.640Z",
-  "updatedAt": "2026-10-16T19:20:29.115Z",
+  "updatedAt": "2026-10-25T18:35:00.000Z",
   "template": "stacked",
   "published": {
     "content": {
-      "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
-      "title": "طقم التنظيم المنزلي + هدية",
-      "subtitle": "المنظم الذكي للحمام (بدون حفر) + رشاش فابور",
+      "heroImage": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951366/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%A8%D8%A7%D9%83_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D8%B0%D9%83%D9%8A_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6.png",
+      "title": "باك الحمام الذكي: تنظيم شامل بدون حفير + رشاش زيادة ضغط المياه فابور!",
+      "subtitle": "وداعاً لتضييع لافايونس بالمسامير وفوضى القراعي.. رتّبي دوشك فـ 5 دقايق بأناقة وثبات دائم، وخلّصي بعد المعاينة.",
       "rating": 4.9,
       "reviewCount": 203,
-      "gallery": [],
+      "gallery": [
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951366/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%A8%D8%A7%D9%83_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D8%B0%D9%83%D9%8A_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6.png",
+          "alt": "باك الحمام الذكي"
+        },
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951490/Screenshot_2026-10-25_180133.png",
+          "alt": "تركيب سهل بدون حفر"
+        },
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png",
+          "alt": "قوة تحمل فائقة حتى 20 كلغ"
+        },
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png",
+          "alt": "رشاش التوربو المزدوج هدية"
+        },
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180213.png",
+          "alt": "تحول قبل وبعد"
+        },
+        {
+          "src": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg",
+          "alt": "تصميم عصري يناسب أي ديكور"
+        }
+      ],
       "carousel": [
         {
-          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790893177/ChatGPT_Image_Sep_4_2026_11_06_09_PM.png",
-          "alt": "",
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951366/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%A8%D8%A7%D9%83_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D8%B0%D9%83%D9%8A_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6.png",
+          "alt": "باك الحمام الذكي",
           "title": "",
           "bgGradient": "",
           "badge": null
@@ -106,8 +131,8 @@
       "whatsappNumber": "212626558375"
     },
     "seo": {
-      "metaTitle": "طقم التنظيم المنزلي + هدية | Lhamza Shop",
-      "metaDescription": "طقم التنظيم المنزلي: ثلاث قطع أساسية + رشاش هدية. التوصيل لجميع المدن المغربية والدفع عند الاستلام.",
+      "metaTitle": "باك الحمام الذكي: تنظيم شامل بدون حفير + رشاش زيادة ضغط المياه فابور! | Lhamza Shop",
+      "metaDescription": "وداعاً لتضييع لافايونس بالمسامير وفوضى القراعي.. رتّبي دوشك فـ 5 دقايق بأناقة وثبات دائم، وخلّصي بعد المعاينة. توصيل فابور لجميع المدن.",
       "noindex": false
     }
   },
@@ -122,31 +147,11 @@
       },
       {
         "action": "published",
-        "timestamp": "2026-10-01T21:43:11.219Z"
-      },
-      {
-        "action": "published",
-        "timestamp": "2026-10-01T22:21:02.512Z"
-      },
-      {
-        "action": "published",
-        "timestamp": "2026-10-01T22:34:54.580Z"
-      },
-      {
-        "action": "published",
-        "timestamp": "2026-10-02T15:32:23.504Z"
-      },
-      {
-        "action": "published",
-        "timestamp": "2026-10-02T15:47:10.938Z"
-      },
-      {
-        "action": "published",
-        "timestamp": "2026-10-03T16:54:57.634Z"
-      },
-      {
-        "action": "published",
         "timestamp": "2026-10-16T19:20:29.115Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-10-25T18:35:00.000Z"
       }
     ]
   }
