@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
-	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import OfferTiers from '$lib/components/OfferTiers.svelte';
 	import DrainUpsellModal from '$lib/components/DrainUpsellModal.svelte';
@@ -151,7 +150,7 @@
 			offersList[0] || { title: '', price: 349, quantity: 2 }
 	);
 
-	let showStickyBtn = $state(false);
+	let showStickyBtn = $state(true);
 	let isFormAbove = $state(false);
 
 	const sheetsUrl = $derived(
@@ -587,14 +586,11 @@
 	}
 
 	onMount(() => {
-		const heroElement = document.getElementById('hero-section');
 		const formElement = document.getElementById('order-form');
-
-		let heroVisible = true;
 		let formVisible = false;
 
 		function updateStickyState() {
-			showStickyBtn = !heroVisible && !formVisible;
+			showStickyBtn = !formVisible;
 			if (formElement) {
 				isFormAbove = formElement.getBoundingClientRect().top < 0;
 			}
@@ -603,9 +599,7 @@
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					if (entry.target.id === 'hero-section') {
-						heroVisible = entry.isIntersecting;
-					} else if (entry.target.id === 'order-form') {
+					if (entry.target.id === 'order-form') {
 						formVisible = entry.isIntersecting;
 					}
 				}
@@ -614,7 +608,6 @@
 			{ threshold: 0.08, rootMargin: '0px 0px 20px 0px' }
 		);
 
-		if (heroElement) observer.observe(heroElement);
 		if (formElement) observer.observe(formElement);
 		updateStickyState();
 		window.addEventListener('scroll', updateStickyState, { passive: true });
@@ -631,75 +624,41 @@
 	style="{buildThemeCssVars(t)}; background-color: #FAF9F6; color: #14231B;"
 	dir="rtl"
 >
-	<!-- Top Announcement Bar -->
-	<div class="sticky top-0 z-40 w-full">
-		<AnnouncementBar isStatic={true} />
+	<!-- 1. Top Announcement Bar -->
+	<div class="sticky top-0 z-40 w-full bg-[#073824] text-white py-2 px-3 text-xs font-bold text-center border-b border-white/10 select-none" dir="rtl">
+		<span>🚚 توصيل مجاني وفابور</span>
+		<span class="mx-2 text-amber-400">✦</span>
+		<span>📦 الدفع بعد المعاينة والتأكد</span>
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 1. HERO SECTION (أعلى الصفحة — Zero-Scroll Mobile Fit)          -->
+	<!-- 2. HERO IMAGE ATTACHED DIRECTLY BELOW (ZERO TEXT IN BETWEEN)    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header
 		id="hero-section"
-		class="relative overflow-hidden bg-gradient-to-b from-[#0E291E] via-[#133829] to-[#FAF9F6] pt-1.5 sm:pt-3.5 pb-2 px-2 sm:px-5"
+		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-45% to-[#FAF9F6] pt-1 pb-2"
 	>
-		<!-- Subtle Moroccan 8-point Khatam geometric motif (ambient header texture <= 5% opacity) -->
-		<svg
-			aria-hidden="true"
-			class="pointer-events-none absolute inset-x-0 top-0 h-36 w-full opacity-[0.045] text-amber-200"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<defs>
-				<pattern id="khatam-hero" width="48" height="48" patternUnits="userSpaceOnUse">
-					<path
-						d="M24 4L29 19L44 24L29 29L24 44L19 29L4 24L19 19Z"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1"
-					/>
-				</pattern>
-			</defs>
-			<rect width="100%" height="100%" fill="url(#khatam-hero)" />
-		</svg>
-
-		<div class="relative z-10">
-			<!-- Top Yellow Badge (Keep compact) -->
-			<div class="mb-1 text-center">
-				<span class="inline-block bg-amber-400 text-slate-950 font-black text-[11px] sm:text-xs px-3 py-0.5 rounded-full shadow-sm">
-					🔥 العرض الأكثر طلباً في المغرب
-				</span>
-			</div>
-
-			<!-- Compact Pain-Point Headline -->
-			<h1 class="font-display text-center font-black text-white text-base sm:text-lg leading-snug mb-1.5 px-2">
-				تهنّاي من كركبة الدوش وتضييع الزليج بالمسامير 🛠️
-				<br />
-				<span class="text-amber-300 text-sm sm:text-base font-bold">+ رشاش زيادة الضغط هدية فابور 🎁</span>
-			</h1>
-		</div>
-
-		<!-- Hero Visual Frame (100svh-bounded so 100% of image fits on mobile screen without scrolling) -->
-		<div class="relative z-10 flex justify-center">
+		<div class="w-full max-w-[380px] sm:max-w-[420px] mx-auto px-2">
 			<a
 				href="#order-form"
 				onclick={scrollToOrderForm}
-				class="block overflow-hidden rounded-2xl border-2 border-white/85 bg-[#F5F2EB] shadow-xl focus:outline-none"
+				class="block relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 focus:outline-none"
 				aria-label="انتقل إلى استمارة الطلب"
 			>
 				<img
 					src={HERO_IMAGE_URL}
-					alt="تهنّاي من كركبة الدوش وتضييع الزليج بالمسامير + رشاش زيادة الضغط هدية فابور"
+					alt="باك الحمام الذكي"
 					width="1024"
 					height="1536"
-					class="block h-auto w-auto max-w-full max-h-[calc(100svh-136px)] sm:max-h-none sm:w-full object-contain"
-					loading="eager"
 					fetchpriority="high"
+					loading="eager"
+					class="w-full h-auto block"
 				/>
 			</a>
 		</div>
 
 		<!-- Micro Trust Badges -->
-		<div class="relative z-10 mt-2 grid grid-cols-3 gap-1.5 sm:gap-2">
+		<div class="px-2.5 sm:px-5 mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
 			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
 				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
