@@ -267,12 +267,12 @@
 
 	async function handleAcceptDrainUpsell(updatedOrder: any) {
 		const orderId = pendingUpsellOrder.orderId;
-		const upsellPrice = updatedOrder.upsellPrice || 79;
+		const upsellPrice = updatedOrder.upsellPrice || 29;
 		const upsellOrderId = `${orderId}-U1`;
 		const formattedPhone = pendingUpsellOrder.phone || formatMoroccanPhone(customerPhone);
 		const customerNameVal = pendingUpsellOrder.name || customerName.trim();
 		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const upsellSku = 'سدادة وفلتر مصرف الأرضية الذكية (مضاد للروائح والحشرات)';
+		const upsellSku = updatedOrder.upsellItem || 'سدادة وفلتر مصرف الأرضية (+29 MAD)';
 
 		const upsellPayload = {
 			date_order,

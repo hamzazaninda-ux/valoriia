@@ -24,8 +24,8 @@
 	} = $props();
 
 	// Easily configurable pricing & timer
-	const upsellPrice = 79; // Price to add to order (e.g. 79 or 99 MAD)
-	const oldPrice = 149; // Anchor crossed-out price
+	const upsellPrice = 29; // Updated from 79 to 29 MAD
+	const oldPrice = 99; // Anchor crossed-out price
 	const initialSeconds = 15; // 15 to 30 seconds countdown
 
 	let secondsLeft = $state(initialSeconds);
@@ -85,7 +85,7 @@
 			price: newTotal,
 			hasUpsell: true,
 			upsellPrice,
-			upsellItem: 'سدادة وفلتر مصرف الأرضية الذكية (مضاد للروائح والحشرات)',
+			upsellItem: 'سدادة وفلتر مصرف الأرضية (+29 MAD)',
 			upsellSku: 'filter-baloua'
 		};
 
@@ -178,7 +178,7 @@
 						<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
 						<span>جاري إضافة العرض للطلب...</span>
 					{:else}
-						<span>أضيفي للطلب • {upsellPrice} درهم فقط</span>
+						<span>أضف للطلب • 29 درهم فقط</span>
 						<span class="bg-white/20 px-1.5 py-0.5 rounded-lg text-sm">✅</span>
 					{/if}
 				</button>
