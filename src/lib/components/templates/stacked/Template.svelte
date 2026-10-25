@@ -685,24 +685,24 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 2. COD ORDER FORM (مباشرة تحت الهيرو - مكانها الثابت)           -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="px-2.5 sm:px-4 pt-3 pb-5 w-full scroll-mt-12" dir="rtl">
+	<section id="order-form" class="px-2 sm:px-4 pt-3 pb-5 w-full scroll-mt-12" dir="rtl">
 		<div
 			id="offers"
 			data-section="offers"
-			class="overflow-hidden rounded-3xl border-2 border-[#0B3B24]/20 bg-white shadow-xl shadow-emerald-950/5"
+			class="overflow-hidden rounded-[14px] border-[1.5px] border-[#D9D4C7] bg-white shadow-sm"
 		>
-			<div class="bg-[#0B3B24] px-4 py-3 text-center text-white">
-				<h2 class="font-display text-lg sm:text-xl font-black tracking-tight">
-					{t.sections.orderForm.title || 'استمارة الطلب المباشر'}
+			<div class="bg-[#1F5C4B] px-4 py-3.5 text-center text-white">
+				<h2 class="font-display text-[20px] sm:text-[22px] font-extrabold tracking-tight leading-snug">
+					أكمل طلبك الآن
 				</h2>
-				<p class="text-xs font-medium text-emerald-100/90 mt-0.5">
-					عمّري المعلومات ديالك دابا • التوصيل فابور والدفع حتى تشدّي سلعتك
+				<p class="text-[14px] font-medium text-[#E3F0EA] mt-1 leading-relaxed">
+					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
 				</p>
 			</div>
 
-			<div class="p-3 sm:p-4 space-y-4">
+			<div class="p-2.5 sm:p-4 space-y-4">
 				<!-- Bundle Selectors (1 Piece: 229 MAD vs 2 Pieces: 349 MAD pre-selected) -->
-				<div class="pb-3 border-b border-stone-100">
+				<div class="pb-3.5 border-b border-[#D9D4C7]/70">
 					<OfferTiers
 						offers={offersList}
 						selectedId={currentPackId}
@@ -727,18 +727,15 @@
 				</div>
 
 				<!-- Direct COD Form: Full Name, Phone Number, City/Address -->
-				<form onsubmit={handleDirectCheckout} class="space-y-3" dir="rtl">
-					<div class="flex items-center gap-2 text-xs font-extrabold text-stone-800">
-						<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-						</svg>
-						<span>معلومات التوصيل السريع (0 درهم تسبيق):</span>
-					</div>
+				<form onsubmit={handleDirectCheckout} class="space-y-3.5" dir="rtl">
+					<h3 class="text-[16px] font-extrabold text-[#1A1A1A] text-start">
+						معلومات التوصيل
+					</h3>
 
 					<!-- Field 1: Full Name -->
 					<div>
-						<label for="order-fullName" class="block text-xs font-bold text-stone-700 mb-1 text-start">
-							الاسم الكامل <span class="text-red-500">*</span>
+						<label for="order-fullName" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
+							الاسم الكامل <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
 							id="order-fullName"
@@ -747,14 +744,14 @@
 							placeholder="الاسم الشخصي والعائلي"
 							autocomplete="name"
 							required
-							class="w-full px-3.5 py-3 text-sm rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 bg-stone-50/40 focus:bg-white transition-all text-start font-medium"
+							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-start font-medium"
 						/>
 					</div>
 
 					<!-- Field 2: Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-xs font-bold text-stone-700 mb-1 text-start">
-							رقم الهاتف <span class="text-red-500">*</span>
+						<label for="order-phone" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
+							رقم الهاتف <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
 							id="order-phone"
@@ -764,14 +761,14 @@
 							placeholder="06XXXXXXXX / 07XXXXXXXX"
 							autocomplete="tel"
 							required
-							class="w-full px-3.5 py-3 text-sm rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 bg-stone-50/40 focus:bg-white transition-all text-left font-mono font-bold"
+							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-left font-mono font-bold"
 						/>
 					</div>
 
 					<!-- Field 3: City / Address -->
 					<div>
-						<label for="order-city" class="block text-xs font-bold text-stone-700 mb-1 text-start">
-							المدينة والعنوان <span class="text-red-500">*</span>
+						<label for="order-city" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
+							المدينة والعنوان <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
 							id="order-city"
@@ -780,42 +777,32 @@
 							placeholder="المدينة والحي / العنوان"
 							autocomplete="street-address"
 							required
-							class="w-full px-3.5 py-3 text-sm rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 bg-stone-50/40 focus:bg-white transition-all text-start font-medium"
+							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-start font-medium"
 						/>
 					</div>
 
 					{#if formError}
-						<div class="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold text-start flex items-center gap-2">
-							<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<div class="p-3 rounded-[14px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[14px] font-bold text-start flex items-center gap-2">
+							<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
 							</svg>
 							<span>{formError}</span>
 						</div>
 					{/if}
 
-					<!-- Green Direct Order Submit Button -->
+					<!-- Main Submit Button (CTA Orange #F28C28) -->
 					<button
 						type="submit"
 						disabled={isSubmitting || isSubmittingFinal}
-						class="w-full flex min-h-[54px] items-center justify-center gap-2 rounded-2xl bg-[#15803D] hover:bg-[#166534] py-3.5 px-4 text-base sm:text-lg font-black text-white shadow-lg shadow-emerald-900/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+						class="w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
 					>
 						{#if isSubmitting || isSubmittingFinal}
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
 							<span>جاري تأكيد الطلب...</span>
 						{:else}
-							<svg aria-hidden="true" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
-							<span>أكّد الطلب الآن • {activeOffer.price} درهم</span>
+							<span>تأكيد الطلب • {activeOffer.price} درهم</span>
 						{/if}
 					</button>
-
-					<!-- Immediate Reassurance Banner Under Submit Button -->
-					<div class="rounded-2xl border border-emerald-200/90 bg-emerald-50/80 px-3.5 py-3 text-center">
-						<p class="text-xs sm:text-[13px] font-extrabold text-emerald-950 leading-relaxed">
-							🔒 حق المعاينة مضمون: فتح الكولية وتأكد من سلعتك مع الـ Livreur عاد خلّص.
-						</p>
-					</div>
 				</form>
 			</div>
 		</div>
