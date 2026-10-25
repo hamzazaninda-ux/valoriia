@@ -134,20 +134,17 @@
 		return rawOffers;
 	});
 
-	let selectedPack = $state<number | null>(2);
+	let selectedPack = $state<number | null>(1);
 
 	const currentPackId = $derived(
 		selectedPack ??
-			offersList.find((o: ProductOffer) => o.isPopular)?.id ??
-			offersList[1]?.id ??
 			offersList[0]?.id ??
-			2
+			1
 	);
 
 	const activeOffer = $derived(
 		offersList.find((o: ProductOffer) => o.id === currentPackId) ||
-			offersList[1] ||
-			offersList[0] || { title: '', price: 349, quantity: 2 }
+			offersList[0] || { title: '1 قطعة + رشاشة هدية 🎁', price: 229, quantity: 1 }
 	);
 
 	let showStickyBtn = $state(true);
@@ -525,8 +522,8 @@
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		submittedOrderId = orderId;
 
-		const rawPrice = activeOffer?.price || 349;
-		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 349;
+		const rawPrice = activeOffer?.price || 229;
+		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 229;
 		const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
 
 		const offerSku =
@@ -564,7 +561,7 @@
 		e?.preventDefault();
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(activeOffer?.price || 349);
+				const itemPrice = Number(activeOffer?.price || 229);
 				const itemName = (product as any)?.title || content?.title || 'باك الحمام الذكي';
 
 				(window as any).gtag('event', 'add_to_cart', {
@@ -625,10 +622,8 @@
 	dir="rtl"
 >
 	<!-- 1. Top Announcement Bar -->
-	<div class="sticky top-0 z-40 w-full bg-[#073824] text-white py-2 px-3 text-xs font-bold text-center border-b border-white/10 select-none" dir="rtl">
-		<span>🚚 توصيل مجاني وفابور</span>
-		<span class="mx-2 text-amber-400">✦</span>
-		<span>📦 الدفع بعد المعاينة والتأكد</span>
+	<div class="sticky top-0 z-40 w-full bg-[#073824] text-white py-2 px-3 text-[12px] font-bold text-center border-b border-white/10 whitespace-nowrap select-none" dir="rtl">
+		🚚 توصيل مجاني · 📦 الدفع بعد المعاينة
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
@@ -685,24 +680,24 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 2. COD ORDER FORM (مباشرة تحت الهيرو - مكانها الثابت)           -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="px-2 sm:px-4 pt-3 pb-5 w-full scroll-mt-12" dir="rtl">
+	<section id="order-form" class="px-1.5 sm:px-4 pt-3 pb-5 w-full scroll-mt-12" dir="rtl">
 		<div
 			id="offers"
 			data-section="offers"
 			class="overflow-hidden rounded-[14px] border-[1.5px] border-[#D9D4C7] bg-white shadow-sm"
 		>
-			<div class="bg-[#1F5C4B] px-4 py-3.5 text-center text-white">
+			<div class="bg-[#1F5C4B] px-3 py-3 text-center text-white">
 				<h2 class="font-display text-[20px] sm:text-[22px] font-extrabold tracking-tight leading-snug">
 					أكمل طلبك الآن
 				</h2>
-				<p class="text-[14px] font-medium text-[#E3F0EA] mt-1 leading-relaxed">
+				<p class="text-[13px] sm:text-[14px] font-medium text-[#E3F0EA] mt-0.5 leading-relaxed">
 					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
 				</p>
 			</div>
 
-			<div class="p-2.5 sm:p-4 space-y-4">
-				<!-- Bundle Selectors (1 Piece: 229 MAD vs 2 Pieces: 349 MAD pre-selected) -->
-				<div class="pb-3.5 border-b border-[#D9D4C7]/70">
+			<div class="px-1.5 py-3 sm:p-4 space-y-3.5">
+				<!-- Bundle Selectors (1 Piece: 229 MAD pre-selected vs 2 Pieces: 349 MAD) -->
+				<div class="pb-3 border-b border-[#D9D4C7]/70">
 					<OfferTiers
 						offers={offersList}
 						selectedId={currentPackId}
@@ -716,7 +711,7 @@
 											{
 												item_id: String(offer.id),
 												item_name: offer.title || 'عرض خاص',
-												price: offer.price || 349
+												price: offer.price || 229
 											}
 										]
 									});
@@ -727,7 +722,7 @@
 				</div>
 
 				<!-- Direct COD Form: Full Name, Phone Number, City/Address -->
-				<form onsubmit={handleDirectCheckout} class="space-y-3.5" dir="rtl">
+				<form onsubmit={handleDirectCheckout} class="px-1 sm:px-0 space-y-3.5" dir="rtl">
 					<h3 class="text-[16px] font-extrabold text-[#1A1A1A] text-start">
 						معلومات التوصيل
 					</h3>
@@ -1126,7 +1121,7 @@
 		bind:isOpen={showDrainUpsell}
 		orderDetails={{
 			orderId: pendingOrder?.orderId || '',
-			total: pendingOrder?.basePrice || 349,
+			total: pendingOrder?.basePrice || activeOffer?.price || 229,
 			phone: pendingOrder?.phone || '',
 			name: pendingOrder?.customerName || ''
 		}}
