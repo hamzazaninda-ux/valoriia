@@ -77,9 +77,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			''
 		).trim();
 
-		if (!offerSku || offerSku === 'kit-tandim' || offerSku === 'SKU-GENERAL') {
+		if (!offerSku || offerSku === 'kit-tandim' || offerSku === 'SKU-GENERAL' || offerSku === 'filter-baloua') {
 			const candidate = String(body.sku || body.productTitle || body.product || '').trim();
-			if (candidate && candidate !== 'kit-tandim' && candidate !== 'SKU-GENERAL') {
+			if (candidate === 'filter-baloua' || body.orderType === 'upsell' || body.isUpsell) {
+				offerSku = body.productTitle || 'سدادة وفلتر مصرف الأرضية الذكية (مضاد للروائح والحشرات)';
+			} else if (candidate && candidate !== 'kit-tandim' && candidate !== 'SKU-GENERAL') {
 				offerSku = candidate;
 			} else {
 				offerSku = qte === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁';

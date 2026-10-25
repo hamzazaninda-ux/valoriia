@@ -6,6 +6,7 @@
 	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import OfferTiers from '$lib/components/OfferTiers.svelte';
+	import DrainUpsellModal from '$lib/components/DrainUpsellModal.svelte';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
@@ -247,6 +248,145 @@
 	let isSubmitting = $state(false);
 	let submittedOrderId = $state<string | null>(null);
 
+	let showDrainUpsell = $state(false);
+	let pendingUpsellOrder = $state<{
+		orderId: string;
+		total: number;
+		phone: string;
+		name: string;
+		destinationUrl: string;
+		savedOrder: any;
+	}>({
+		orderId: '',
+		total: 349,
+		phone: '',
+		name: '',
+		destinationUrl: '',
+		savedOrder: null
+	});
+
+	async function handleAcceptDrainUpsell(updatedOrder: any) {
+		const orderId = pendingUpsellOrder.orderId;
+		const upsellPrice = updatedOrder.upsellPrice || 79;
+		const upsellOrderId = `${orderId}-U1`;
+		const formattedPhone = pendingUpsellOrder.phone || formatMoroccanPhone(customerPhone);
+		const customerNameVal = pendingUpsellOrder.name || customerName.trim();
+		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
+		const upsellSku = 'سدادة وفلتر مصرف الأرضية الذكية (مضاد للروائح والحشرات)';
+
+		const upsellPayload = {
+			date_order,
+			order_id: upsellOrderId,
+			orderId: upsellOrderId,
+			id: upsellOrderId,
+			full_name: customerNameVal,
+			fullName: customerNameVal,
+			name: customerNameVal,
+			phone: formattedPhone,
+			phoneNumber: formattedPhone,
+			city_address: 'يُحدد بعد التأكيد',
+			city: 'يُحدد بعد التأكيد',
+			address: 'يُحدد بعد التأكيد',
+			sku: upsellSku,
+			selectedOfferTitle: upsellSku,
+			productTitle: upsellSku,
+			offer: upsellSku,
+			offerSku: upsellSku,
+			qte: 1,
+			quantity: 1,
+			price: upsellPrice,
+			totalPrice: upsellPrice,
+			total: upsellPrice,
+			note: `إضافة للطلب الأساسي ${orderId}`,
+			delivery_note: '',
+			orderType: 'upsell',
+			isUpsell: true,
+			parentOrderId: orderId,
+			sheetsUrl,
+			rowData: [
+				date_order,
+				upsellOrderId,
+				customerNameVal,
+				formattedPhone,
+				'يُحدد بعد التأكيد',
+				upsellSku,
+				1,
+				upsellPrice,
+				`إضافة للطلب الأساسي ${orderId}`,
+				''
+			]
+		};
+
+		// 1. Send Upsell to /api/checkout
+		try {
+			await fetch('/api/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(upsellPayload)
+			});
+		} catch (err) {
+			console.warn('Upsell submission non-blocking error:', err);
+		}
+
+		// 2. Track Upsell Purchase
+		if (typeof window !== 'undefined') {
+			try {
+				if (typeof (window as any).gtag === 'function') {
+					(window as any).gtag('event', 'conversion', {
+						'send_to': 'AW-18531557898',
+						'value': upsellPrice,
+						'currency': 'MAD',
+						'transaction_id': upsellOrderId
+					});
+				}
+			} catch {}
+
+			try {
+				trackSnapPurchase({
+					orderId: upsellOrderId,
+					price: upsellPrice,
+					currency: 'MAD',
+					phone: formattedPhone,
+					title: upsellSku,
+					sku: 'filter-baloua',
+					quantity: 1
+				});
+			} catch (snapErr) {
+				console.warn('Snap Upsell tracking error:', snapErr);
+			}
+
+			// 3. Update localStorage & sessionStorage with combined total
+			const combinedTotal = Number(pendingUpsellOrder.total || 0) + upsellPrice;
+			const updatedSavedOrder = {
+				...(pendingUpsellOrder.savedOrder || {}),
+				price: combinedTotal,
+				total: combinedTotal,
+				hasUpsell: true,
+				upsellPrice,
+				upsellItem: upsellSku
+			};
+
+			try {
+				localStorage.setItem('latestOrder', JSON.stringify(updatedSavedOrder));
+				sessionStorage.setItem('latestOrder', JSON.stringify(updatedSavedOrder));
+				sessionStorage.setItem('latestUpsell', JSON.stringify(upsellPayload));
+			} catch {}
+
+			const finalUrl = preserveTrackingParams(
+				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerNameVal)}&phone=${encodeURIComponent(formattedPhone)}&total=${combinedTotal}&upsell=1&promptAddress=1`
+			);
+			showDrainUpsell = false;
+			window.location.href = finalUrl;
+		}
+	}
+
+	function handleDeclineDrainUpsell() {
+		showDrainUpsell = false;
+		if (typeof window !== 'undefined') {
+			window.location.href = pendingUpsellOrder.destinationUrl || `/thank-you?orderId=${submittedOrderId}`;
+		}
+	}
+
 	function validateMoroccanPhone(val: string): boolean {
 		const cleaned = val.replace(/[\s\-\(\)\.]/g, '');
 		return /^(?:(?:\+|00)212|0)[5-7]\d{8}$/.test(cleaned);
@@ -436,7 +576,16 @@
 				const destinationUrl = preserveTrackingParams(
 					`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(customerPhone.trim())}&total=${cleanPrice}&promptAddress=1`
 				);
-				window.location.href = destinationUrl;
+
+				pendingUpsellOrder = {
+					orderId,
+					total: cleanPrice,
+					phone: formattedPhone,
+					name: customerName.trim(),
+					destinationUrl,
+					savedOrder
+				};
+				showDrainUpsell = true;
 			}
 		} catch (err: any) {
 			console.error('Direct checkout failed:', err);
@@ -1014,7 +1163,35 @@
 		sheetsUrl={sheetsUrl}
 		productTitle={content.title}
 		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'SKU-GENERAL'}
-		onDone={() => { cartUi.resetAll(); window.location.href = '/thank-you'; }}
+		onDone={(completed) => {
+			cartUi.closeCheckout();
+			const completedOrderId = completed.orderId || ('ORD-' + Date.now());
+			const destinationUrl = preserveTrackingParams(
+				`/thank-you?orderId=${completedOrderId}&name=${encodeURIComponent(completed.fullName || '')}&phone=${encodeURIComponent(completed.phoneNumber || '')}&total=${completed.subtotal || 229}&promptAddress=1`
+			);
+			pendingUpsellOrder = {
+				orderId: completedOrderId,
+				total: completed.subtotal || 229,
+				phone: completed.phoneNumber || '',
+				name: completed.fullName || '',
+				destinationUrl,
+				savedOrder: completed
+			};
+			showDrainUpsell = true;
+		}}
+	/>
+
+	<!-- Post-Purchase Drain Filter Upsell Modal -->
+	<DrainUpsellModal
+		bind:isOpen={showDrainUpsell}
+		orderDetails={{
+			orderId: pendingUpsellOrder.orderId,
+			total: pendingUpsellOrder.total,
+			phone: pendingUpsellOrder.phone,
+			name: pendingUpsellOrder.name
+		}}
+		onAcceptUpsell={handleAcceptDrainUpsell}
+		onDeclineUpsell={handleDeclineDrainUpsell}
 	/>
 </div>
 

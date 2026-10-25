@@ -114,7 +114,6 @@
 				if (typeof window !== 'undefined') {
 					sessionStorage.setItem('order_sent_' + orderId, 'true');
 				}
-				const orderId = (payload.orderId as string) || 'ORD-' + Date.now();
 				const orderTotal = (payload.price as number) || 229;
 				const orderProductName = ((payload.productTitle as string) || productTitle || 'منتج').trim();
 				const orderQuantity = (payload.quantity as number) || 1;

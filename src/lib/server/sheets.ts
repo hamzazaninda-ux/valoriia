@@ -76,10 +76,11 @@ export async function sendOrderToGoogleSheets(
 		}
 
 		// STRICT DEDUPLICATION GUARD 2: Phone Number rate-limit (prevent rapid dual-firing within 30s)
+		const isUpsellOrder = order.orderType === 'upsell' || order.isUpsell || order.hasUpsell || String(orderId).includes('-U');
 		const rawPhone = order.phone || order.phoneNumber;
 		const cleanPhone = formatMoroccanPhone(rawPhone);
 		const now = Date.now();
-		if (cleanPhone) {
+		if (cleanPhone && !isUpsellOrder) {
 			const lastSeen = recentPhoneTimestamps.get(cleanPhone);
 			if (lastSeen && (now - lastSeen) < 30000) {
 				console.warn(`🛡️ [Google Sheets Deduplication] Duplicate order detected for phone ${cleanPhone} within 30s. Skipping duplicate Google Sheets row.`);
