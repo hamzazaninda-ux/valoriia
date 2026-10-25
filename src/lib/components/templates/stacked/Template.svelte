@@ -152,6 +152,7 @@
 	);
 
 	let showStickyBtn = $state(false);
+	let isFormAbove = $state(false);
 
 	const sheetsUrl = $derived(
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
@@ -588,19 +589,30 @@
 	onMount(() => {
 		const formElement = document.getElementById('order-form');
 
+		function syncFormDirection() {
+			if (!formElement) return;
+			isFormAbove = formElement.getBoundingClientRect().top < 0;
+		}
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
 					showStickyBtn = !entry.isIntersecting;
+					isFormAbove = entry.boundingClientRect.top < 0;
 				}
 			},
 			{ threshold: 0.08, rootMargin: '0px 0px 20px 0px' }
 		);
 
-		if (formElement) observer.observe(formElement);
+		if (formElement) {
+			syncFormDirection();
+			observer.observe(formElement);
+		}
+		window.addEventListener('scroll', syncFormDirection, { passive: true });
 
 		return () => {
 			observer.disconnect();
+			window.removeEventListener('scroll', syncFormDirection);
 		};
 	});
 </script>
@@ -616,13 +628,13 @@
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 1. HERO SECTION (أعلى الصفحة)                                   -->
+	<!-- 1. HERO SECTION (أعلى الصفحة — Compact Mobile Viewport)         -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<header class="relative overflow-hidden bg-gradient-to-b from-[#0E291E] via-[#133829] to-[#FAF9F6] pt-5 pb-3 px-3 sm:px-5">
+	<header class="relative overflow-hidden bg-gradient-to-b from-[#0E291E] via-[#133829] to-[#FAF9F6] pt-2.5 sm:pt-4 pb-2.5 px-2.5 sm:px-5">
 		<!-- Subtle Moroccan 8-point Khatam geometric motif (ambient header texture <= 5% opacity) -->
 		<svg
 			aria-hidden="true"
-			class="pointer-events-none absolute inset-x-0 top-0 h-56 w-full opacity-[0.045] text-amber-200"
+			class="pointer-events-none absolute inset-x-0 top-0 h-44 w-full opacity-[0.045] text-amber-200"
 			xmlns="http://www.w3.org/2000/svg"
 		>
 			<defs>
@@ -638,27 +650,24 @@
 			<rect width="100%" height="100%" fill="url(#khatam-hero)" />
 		</svg>
 
-		<div class="relative z-10 text-center space-y-3">
+		<div class="relative z-10 text-center">
 			<!-- Hero Badge -->
-			<div class="inline-flex items-center justify-center">
-				<span class="inline-flex items-center gap-1.5 rounded-full bg-amber-400/95 px-3.5 py-1 text-xs sm:text-[13px] font-black text-amber-950 shadow-sm">
+			<div class="inline-flex items-center justify-center mb-1.5">
+				<span class="inline-flex items-center gap-1.5 rounded-full bg-amber-400/95 px-3 py-0.5 text-xs sm:text-[13px] font-black text-amber-950 shadow-sm">
 					🔥 العرض الأكثر طلباً في المغرب
 				</span>
 			</div>
 
-			<!-- Headline (H1) -->
-			<h1 class="font-display text-[22px] sm:text-[27px] font-black leading-[1.35] text-white tracking-tight px-1">
-				باك الحمام الذكي: تنظيم شامل بدون حفير + رشاش زيادة ضغط المياه فابور!
+			<!-- Concise 2-Line Punchy Headline (H1) — Subtitle Removed to Keep Product Image Above the Fold -->
+			<h1 class="font-display text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight mb-2">
+				باك الحمام الذكي <span class="text-emerald-300">(بدون حفير 🛠️)</span>
+				<br />
+				<span class="text-amber-400 text-xl sm:text-2xl">+ رشاش زيادة الضغط هدية فابور 🎁</span>
 			</h1>
-
-			<!-- Sub-headline -->
-			<p class="text-xs sm:text-sm leading-relaxed font-medium text-emerald-50/90 max-w-md mx-auto px-1">
-				وداعاً لتضييع لافايونس بالمسامير وفوضى القراعي.. رتّبي دوشك فـ 5 دقايق بأناقة وثبات دائم، وخلّصي بعد المعاينة.
-			</p>
 		</div>
 
-		<!-- Hero Visual Frame (Uncropped natural aspect ratio, clickable to jump to #order-form) -->
-		<div class="relative z-10 mt-4 overflow-hidden rounded-3xl border-2 border-white/80 bg-[#F5F2EB] shadow-xl">
+		<!-- Hero Visual Frame (Brought Above the Fold, clickable to jump to #order-form) -->
+		<div class="relative z-10 overflow-hidden rounded-3xl border-2 border-white/80 bg-[#F5F2EB] shadow-xl">
 			<a
 				href="#order-form"
 				onclick={scrollToOrderForm}
@@ -667,7 +676,7 @@
 			>
 				<img
 					src={HERO_IMAGE_URL}
-					alt="باك الحمام الذكي: تنظيم شامل بدون حفير + رشاش زيادة ضغط المياه فابور"
+					alt="باك الحمام الذكي (بدون حفير) + رشاش زيادة الضغط هدية فابور"
 					width="1024"
 					height="1536"
 					class="block w-full h-auto"
@@ -678,7 +687,7 @@
 		</div>
 
 		<!-- Micro Trust Badges -->
-		<div class="relative z-10 mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2">
+		<div class="relative z-10 mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
 			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
 				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
@@ -1120,8 +1129,15 @@
 				class="w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
 			>
 				<span>أطلب الآن • الدفع عند الاستلام</span>
-				<svg aria-hidden="true" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
+				<svg
+					aria-hidden="true"
+					class="h-4 w-4 shrink-0 transition-transform duration-300 {isFormAbove ? 'rotate-180' : ''}"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					stroke-width="2.5"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
 				</svg>
 			</button>
 		</div>
