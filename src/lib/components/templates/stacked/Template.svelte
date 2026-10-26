@@ -593,7 +593,79 @@
 			}
 		} catch {}
 
-		document.getElementById('order-form')?.scrollIntoView({ behavior: 'smooth' });
+		if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+		const targetEl = document.getElementById('offers') || document.getElementById('order-form');
+		if (!targetEl) return;
+
+		// Re-measure live at tap time (handles rotation, address bar collapse/expand, dynamic font scale)
+		const stickyBar = document.getElementById('top-announcement-bar');
+		const stickyHeight = stickyBar ? Math.ceil(stickyBar.getBoundingClientRect().height) : 0;
+
+		const vv = window.visualViewport;
+		const viewportHeight =
+			vv && vv.height > 0
+				? vv.height
+				: window.innerHeight || document.documentElement.clientHeight || 640;
+		const viewportOffsetTop = vv && typeof vv.offsetTop === 'number' ? vv.offsetTop : 0;
+
+		const currentScrollY =
+			window.scrollY !== undefined
+				? window.scrollY
+				: window.pageYOffset || document.documentElement.scrollTop || 0;
+
+		const blockRect = targetEl.getBoundingClientRect();
+		const submitBtn = targetEl.querySelector('button[type="submit"]') as HTMLElement | null;
+
+		const topSpace = stickyHeight + 8;
+		let desiredScrollY = currentScrollY + blockRect.top - viewportOffsetTop - topSpace;
+
+		const distanceHeadingToSubmitBottom = submitBtn
+			? submitBtn.getBoundingClientRect().bottom - blockRect.top
+			: blockRect.height;
+		const availableHeight = viewportHeight - topSpace;
+
+		// If taller than visible area, try to show submit button with 12px bottom margin without ever hiding heading
+		if (
+			blockRect.height > availableHeight ||
+			distanceHeadingToSubmitBottom + 12 > availableHeight
+		) {
+			const alignSubmitBottomY =
+				currentScrollY +
+				blockRect.top -
+				viewportOffsetTop +
+				distanceHeadingToSubmitBottom -
+				(viewportHeight - 12);
+			const maxScrollWithoutHidingHeading =
+				currentScrollY + blockRect.top - viewportOffsetTop - stickyHeight;
+
+			if (alignSubmitBottomY > desiredScrollY) {
+				desiredScrollY = Math.min(alignSubmitBottomY, maxScrollWithoutHidingHeading);
+			}
+		}
+
+		const docEl = document.documentElement;
+		const maxScrollY = Math.max(0, (docEl.scrollHeight || document.body.scrollHeight) - viewportHeight);
+		const finalScrollY = Math.max(0, Math.min(Math.round(desiredScrollY), Math.ceil(maxScrollY)));
+
+		let prefersReducedMotion = false;
+		try {
+			prefersReducedMotion =
+				typeof window.matchMedia === 'function' &&
+				window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		} catch {}
+
+		const supportsSmooth = 'scrollBehavior' in docEl.style;
+
+		try {
+			if (!prefersReducedMotion && supportsSmooth) {
+				window.scrollTo({ top: finalScrollY, left: 0, behavior: 'smooth' });
+			} else {
+				window.scrollTo(0, finalScrollY);
+			}
+		} catch {
+			window.scrollTo(0, finalScrollY);
+		}
 	}
 
 	onMount(() => {
@@ -631,12 +703,16 @@
 </script>
 
 <div
-	class="cta-wiggle-scope max-w-xl mx-auto shadow-2xl min-h-screen flex flex-col relative border-x border-stone-200/70 pb-28 overflow-x-clip"
+	class="kit-page-shell cta-wiggle-scope max-w-xl mx-auto shadow-2xl flex flex-col relative border-x border-stone-200/70 overflow-x-clip"
 	style="{buildThemeCssVars(t)}; background-color: #FAF9F6; color: #14231B;"
 	dir="rtl"
 >
 	<!-- 1. Top Announcement Bar -->
-	<div class="sticky top-0 z-40 w-full bg-[#073824] text-white py-2 px-3 text-[12px] font-bold text-center border-b border-white/10 whitespace-nowrap select-none" dir="rtl">
+	<div
+		id="top-announcement-bar"
+		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-2 px-2.5 text-[12px] font-bold text-center border-b border-white/10 truncate select-none"
+		dir="rtl"
+	>
 		🚚 توصيل مجاني · 📦 الدفع بعد المعاينة
 	</div>
 
@@ -694,24 +770,24 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 2. COD ORDER FORM (مباشرة تحت الهيرو - مكانها الثابت)           -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="px-1.5 sm:px-4 pt-3 pb-5 w-full scroll-mt-12" dir="rtl">
+	<section id="order-form" class="order-section-outer" dir="rtl">
 		<div
 			id="offers"
 			data-section="offers"
-			class="overflow-hidden rounded-[14px] border-[1.5px] border-[#D9D4C7] bg-white shadow-sm"
+			class="order-block-card"
 		>
-			<div class="bg-[#1F5C4B] px-3 py-3 text-center text-white">
-				<h2 class="font-display text-[20px] sm:text-[22px] font-extrabold tracking-tight leading-snug">
+			<div class="order-block-header">
+				<h2 class="font-display order-block-title">
 					أكمل طلبك الآن
 				</h2>
-				<p class="text-[13px] sm:text-[14px] font-medium text-[#E3F0EA] mt-0.5 leading-relaxed">
+				<p class="order-block-subtitle">
 					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
 				</p>
 			</div>
 
-			<div class="px-1.5 py-3 sm:p-4 space-y-3">
+			<div class="order-block-body">
 				<!-- Bundle Selectors (1 Piece: 229 MAD pre-selected vs 2 Pieces: 349 MAD) -->
-				<div class="pb-3 border-b border-[#D9D4C7]/70">
+				<div class="order-tiers-divider">
 					<OfferTiers
 						offers={offersList}
 						selectedId={currentPackId}
@@ -736,14 +812,14 @@
 				</div>
 
 				<!-- Direct COD Form: Full Name & Phone Number Only -->
-				<form onsubmit={handleDirectCheckout} novalidate class="px-1 sm:px-0 flex flex-col gap-3" dir="rtl">
-					<h3 class="text-[16px] font-extrabold text-[#1A1A1A] text-start leading-tight">
+				<form onsubmit={handleDirectCheckout} novalidate class="cod-form-grid" dir="rtl">
+					<h3 class="cod-form-heading">
 						معلومات التوصيل
 					</h3>
 
 					<!-- Field 1: Full Name -->
-					<div>
-						<label for="order-fullName" class="block text-[14px] font-bold text-[#1A1A1A] mb-1 text-start">
+					<div class="cod-field-group">
+						<label for="order-fullName" class="cod-field-label">
 							الاسم الكامل <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
@@ -756,20 +832,18 @@
 							autocapitalize="words"
 							aria-invalid={showNameError}
 							required
-							class="w-full h-[52px] px-3.5 text-[16px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] focus:outline-none focus:ring-2 bg-white transition-colors text-start font-medium {showNameError
-								? 'border-red-600 focus:border-red-600 focus:ring-red-600/15'
-								: 'border-[#D9D4C7] focus:border-[#1F5C4B] focus:ring-[#1F5C4B]/20'}"
+							class="cod-input cod-name-input {showNameError ? 'is-invalid' : ''}"
 						/>
 						{#if showNameError}
-							<p class="mt-1 text-[12px] font-semibold text-red-600 text-start leading-snug" role="alert">
+							<p class="cod-inline-error" role="alert">
 								المرجو إدخال الاسم الكامل (3 أحرف على الأقل)
 							</p>
 						{/if}
 					</div>
 
-					<!-- Field 2: Phone Number (WhatsApp) -->
-					<div>
-						<label for="order-phone" class="block text-[14px] font-bold text-[#1A1A1A] mb-1 text-start">
+					<!-- Field 2: Phone Number (WhatsApp) — LTR digits aligned RIGHT for RTL page -->
+					<div class="cod-field-group">
+						<label for="order-phone" class="cod-field-label">
 							رقم الهاتف (واتساب) <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
@@ -783,22 +857,20 @@
 							autocomplete="tel"
 							aria-invalid={showPhoneError}
 							required
-							class="w-full h-[52px] px-3.5 text-[16px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] focus:outline-none focus:ring-2 bg-white transition-colors text-left font-mono font-bold {showPhoneError
-								? 'border-red-600 focus:border-red-600 focus:ring-red-600/15'
-								: 'border-[#D9D4C7] focus:border-[#1F5C4B] focus:ring-[#1F5C4B]/20'}"
+							class="cod-input cod-phone-input {showPhoneError ? 'is-invalid' : ''}"
 						/>
 						{#if showPhoneError}
-							<p class="mt-1 text-[12px] font-semibold text-red-600 text-start leading-snug" role="alert">
+							<p class="cod-inline-error" role="alert">
 								المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)
 							</p>
 						{/if}
-						<p class="mt-1.5 text-[13px] font-normal text-[#6B6B6B] text-start leading-snug">
+						<p class="cod-phone-hint">
 							سيتصل بك الموزع لتأكيد العنوان قبل التوصيل
 						</p>
 					</div>
 
 					{#if formError}
-						<div class="p-3 rounded-[14px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[14px] font-bold text-start flex items-center gap-2" role="alert">
+						<div class="p-2.5 rounded-[12px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[13px] font-bold text-start flex items-center gap-2" role="alert">
 							<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
 							</svg>
@@ -807,11 +879,11 @@
 					{/if}
 
 					<!-- Main Submit Button (CTA Orange #F28C28) + Privacy Note -->
-					<div class="flex flex-col gap-2">
+					<div class="cod-submit-wrap">
 						<button
 							type="submit"
 							disabled={isSubmitting || isSubmittingFinal}
-							class="cta-wiggle w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+							class="cta-wiggle cod-submit-btn"
 						>
 							{#if isSubmitting || isSubmittingFinal}
 								<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -821,7 +893,7 @@
 							{/if}
 						</button>
 
-						<p class="text-center text-[12px] font-normal text-[#6B6B6B] leading-snug">
+						<p class="cod-privacy-note">
 							🔒 معلوماتك محفوظة ولن تُستعمل إلا لتوصيل طلبك
 						</p>
 					</div>
@@ -1102,11 +1174,11 @@
 
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="fixed bottom-2.5 inset-x-0 z-50 px-3 sm:px-4 overflow-x-clip pointer-events-none" dir="rtl">
+		<div class="sticky-cta-wrap fixed bottom-2.5 inset-x-0 z-50 px-3 sm:px-4 overflow-x-clip pointer-events-none" dir="rtl">
 			<button
 				type="button"
 				onclick={scrollToOrderForm}
-				class="cta-wiggle w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
+				class="cta-wiggle sticky-cta-btn w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
 			>
 				<span>أطلب الآن • الدفع عند الاستلام</span>
 				<svg
@@ -1158,6 +1230,299 @@
 </div>
 
 <style>
+	/* Page shell: safe dvh/svh with vh fallback + iOS text-size-adjust & safe-area inset */
+	.kit-page-shell {
+		min-height: 100vh;
+		min-height: 100svh;
+		min-height: 100dvh;
+		-webkit-text-size-adjust: 100%;
+		text-size-adjust: 100%;
+		padding-bottom: 7rem;
+		padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	.sticky-cta-wrap {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.sticky-cta-btn {
+		-webkit-appearance: none;
+		appearance: none;
+	}
+
+	/* ── Order Section Outer & Centered 480px Responsive Container ── */
+	.order-section-outer {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 10px 12px;
+		scroll-margin-top: 42px;
+	}
+
+	.order-block-card {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		border-radius: 14px;
+		border: 1.5px solid #D9D4C7;
+		background-color: #FFFFFF;
+		box-shadow: 0 1px 3px rgba(20, 35, 27, 0.05);
+		overflow: hidden;
+		scroll-margin-top: 42px;
+	}
+
+	@media (min-width: 601px) {
+		.order-block-card {
+			max-width: 480px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+
+	.order-block-header {
+		background-color: #1F5C4B;
+		color: #FFFFFF;
+		text-align: center;
+		padding: 5px 12px;
+	}
+
+	.order-block-title {
+		margin: 0;
+		font-size: 18px;
+		font-size: clamp(1.0625rem, 5vw, 1.1875rem);
+		font-weight: 800;
+		line-height: 1.18;
+		letter-spacing: -0.01em;
+	}
+
+	.order-block-subtitle {
+		margin: 1px 0 0 0;
+		font-size: 12px;
+		font-size: clamp(0.75rem, 3.3vw, 0.8125rem);
+		font-weight: 500;
+		color: #E3F0EA;
+		line-height: 1.2;
+	}
+
+	.order-block-body {
+		padding: 8px 10px 9px;
+	}
+
+	.order-tiers-divider {
+		padding-bottom: 6px;
+		margin-bottom: 6px;
+		border-bottom: 1px solid rgba(217, 212, 199, 0.7);
+	}
+
+	/* ── Compact COD Form (CSS Grid for Safari 14+ reliable row-gap) ── */
+	.cod-form-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-row-gap: 9px;
+		row-gap: 9px;
+		min-width: 0;
+	}
+
+	.cod-form-heading {
+		margin: 0 0 -3px 0;
+		font-size: 16px;
+		font-size: clamp(0.9375rem, 4.3vw, 1rem);
+		font-weight: 800;
+		color: #1A1A1A;
+		line-height: 1.18;
+		text-align: right;
+		text-align: start;
+	}
+
+	.cod-field-group {
+		min-width: 0;
+	}
+
+	.cod-field-label {
+		display: block;
+		font-size: 13px;
+		font-size: clamp(0.8125rem, 3.6vw, 0.875rem);
+		font-weight: 700;
+		color: #1A1A1A;
+		line-height: 1.18;
+		margin-bottom: 4px;
+		text-align: right;
+		text-align: start;
+	}
+
+	.cod-input {
+		width: 100%;
+		min-width: 0;
+		box-sizing: border-box;
+		min-height: 46px;
+		padding: 9px 12px;
+		font-size: 16px;
+		font-size: max(16px, 1rem);
+		line-height: 1.25;
+		color: #1A1A1A;
+		background-color: #FFFFFF;
+		border: 1.5px solid #D9D4C7;
+		border-radius: 12px;
+		-webkit-appearance: none;
+		appearance: none;
+		scroll-margin-bottom: 96px;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	.cod-input::placeholder {
+		color: #6B6B6B;
+		opacity: 1;
+	}
+
+	.cod-input:focus {
+		outline: none;
+		border-color: #1F5C4B;
+		box-shadow: 0 0 0 2.5px rgba(31, 92, 75, 0.18);
+	}
+
+	.cod-input:focus-visible {
+		outline: 2px solid #1F5C4B;
+		outline-offset: 1px;
+	}
+
+	.cod-input.is-invalid {
+		border-color: #DC2626;
+	}
+
+	.cod-input.is-invalid:focus {
+		border-color: #DC2626;
+		box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.15);
+	}
+
+	/* Name input: standard RTL alignment */
+	.cod-name-input {
+		font-weight: 500;
+		text-align: right;
+		text-align: start;
+	}
+
+	/* Phone input: LTR digit order (+212 / 06XXXXXXXX never scrambled), aligned RIGHT for RTL page */
+	.cod-phone-input {
+		direction: ltr;
+		text-align: right;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.cod-phone-input::placeholder {
+		direction: ltr;
+		text-align: right;
+		font-weight: 500;
+	}
+
+	.cod-phone-input::-webkit-input-placeholder {
+		direction: ltr;
+		text-align: right;
+		font-weight: 500;
+	}
+
+	.cod-phone-input::-moz-placeholder {
+		direction: ltr;
+		text-align: right;
+		font-weight: 500;
+	}
+
+	.cod-inline-error {
+		margin: 3px 0 0 0;
+		font-size: 12px;
+		font-size: clamp(0.75rem, 3.2vw, 0.78125rem);
+		font-weight: 600;
+		color: #DC2626;
+		line-height: 1.25;
+		text-align: right;
+		text-align: start;
+	}
+
+	.cod-phone-hint {
+		margin: 2px 0 0 0;
+		font-size: 12px;
+		font-size: clamp(0.75rem, 3.3vw, 0.8125rem);
+		font-weight: 400;
+		color: #6B6B6B;
+		line-height: 1.2;
+		text-align: right;
+		text-align: start;
+	}
+
+	.cod-submit-wrap {
+		min-width: 0;
+	}
+
+	.cod-submit-btn {
+		width: 100%;
+		min-height: 52px;
+		padding: 10px 16px;
+		border: none;
+		border-radius: 12px;
+		background-color: #F28C28;
+		color: #FFFFFF;
+		font-size: 16px;
+		font-size: clamp(1rem, 4.5vw, 1.0625rem);
+		font-weight: 700;
+		line-height: 1.2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		cursor: pointer;
+		user-select: none;
+		-webkit-user-select: none;
+		-webkit-appearance: none;
+		appearance: none;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+		transition: filter 0.15s ease, transform 0.12s ease, opacity 0.15s ease;
+	}
+
+	.cod-submit-btn:hover:not(:disabled) {
+		filter: brightness(0.96);
+	}
+
+	.cod-submit-btn:active:not(:disabled) {
+		transform: scale(0.99);
+	}
+
+	.cod-submit-btn:focus-visible {
+		outline: 2px solid #1F5C4B;
+		outline-offset: 2px;
+	}
+
+	.cod-submit-btn:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	.cod-privacy-note {
+		margin: 3px 0 0 0;
+		font-size: 12px;
+		font-size: clamp(0.75rem, 3.1vw, 0.75rem);
+		font-weight: 400;
+		color: #6B6B6B;
+		line-height: 1.2;
+		text-align: center;
+	}
+
+	/* Tall screens (>800px height): comfortable breathing room while keeping 1-screen fit */
+	@media (min-height: 801px) {
+		.order-block-header {
+			padding: 10px 16px;
+		}
+		.order-block-body {
+			padding: 14px 16px;
+		}
+		.order-tiers-divider {
+			padding-bottom: 10px;
+			margin-bottom: 10px;
+		}
+		.cod-form-grid {
+			grid-row-gap: 12px;
+			row-gap: 12px;
+		}
+	}
+
 	@keyframes cta-wiggle {
 		0% {
 			transform: translateX(0);
@@ -1191,9 +1556,14 @@
 		.cta-wiggle:focus,
 		.cta-wiggle:focus-visible,
 		.cta-wiggle:disabled,
-		form:focus-within .cta-wiggle,
-		.cta-wiggle-scope:has(#order-form form:focus-within) .cta-wiggle {
+		form:focus-within .cta-wiggle {
 			animation-play-state: paused;
+		}
+
+		@supports selector(:has(*)) {
+			.cta-wiggle-scope:has(#order-form form:focus-within) .cta-wiggle {
+				animation-play-state: paused;
+			}
 		}
 	}
 
