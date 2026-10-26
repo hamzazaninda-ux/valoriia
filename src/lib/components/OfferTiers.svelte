@@ -41,9 +41,7 @@
 			{@const savings = getSavings(offer)}
 			<label
 				for="offer-tier-{offer.id}"
-				class="offer-card {offer.id === 2 || offer.isPopular
-					? 'offer-card--tier2'
-					: 'offer-card--tier1'} {isSelected ? 'is-selected' : ''}"
+				class="offer-card {isSelected ? 'is-selected' : ''}"
 			>
 				<!-- Real Accessible Radio Input -->
 				<input
@@ -56,17 +54,10 @@
 					class="offer-radio-native sr-only"
 				/>
 
-				<!-- Card 2 Best Value Badge: Top-Right (RTL start), absolute so zero added height -->
+				<!-- Card 2 Best Value Badge: small, absolute, adds zero height, never overlaps heading -->
 				{#if offer.id === 2 || offer.isPopular}
-					<span class="offer-badge offer-badge--start">
+					<span class="offer-badge">
 						الأوفر
-					</span>
-				{/if}
-
-				<!-- Selected State Label: Top-Left (RTL end), absolute so zero added height / zero layout shift -->
-				{#if isSelected}
-					<span class="offer-badge offer-badge--end">
-						✓ تم الاختيار
 					</span>
 				{/if}
 
@@ -82,7 +73,7 @@
 					{/if}
 				</span>
 
-				<!-- 2. Compact Thumbnail (44px, shrinks to 40px at <=345px) -->
+				<!-- 2. Clean Product Thumbnail -->
 				<div class="offer-thumb">
 					{#if offer.image}
 						<img
@@ -100,7 +91,7 @@
 					{/if}
 				</div>
 
-				<!-- 3. Text Column (min-width: 0 so it wraps cleanly at 320px and 130% font scale) -->
+				<!-- 3. Text Column (1-line target title with text-wrap: balance fallback) -->
 				<div class="offer-content">
 					<div class="offer-title">
 						{#if hasGiftSuffix(offer)}
@@ -110,7 +101,7 @@
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke="currentColor"
-								stroke-width="2"
+								stroke-width="1.8"
 							>
 								<path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
 							</svg></span>
@@ -119,7 +110,7 @@
 						{/if}
 					</div>
 
-					<!-- Savings chip + per-piece line on the same row whenever width fits -->
+					<!-- Savings chip + per-piece line -->
 					<div class="offer-meta-row">
 						<span class="offer-savings-chip {isSelected ? 'is-selected' : ''}">
 							وفّر {savings} درهم
@@ -132,7 +123,7 @@
 					</div>
 				</div>
 
-				<!-- 4. Price Column (RTL far left, strictly single-line prices) -->
+				<!-- 4. Price Column (RTL far left) -->
 				<div class="offer-price-col">
 					<span class="offer-price-current">
 						{offer.price}{' '}<span class="offer-price-currency">درهم</span>
@@ -152,52 +143,48 @@
 	.offer-tiers-root {
 		width: 100%;
 		min-width: 0;
+		letter-spacing: 0;
 	}
 
 	.offer-cards-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		grid-row-gap: 8px;
-		row-gap: 8px;
-		padding-top: 2px;
+		grid-row-gap: 10px;
+		row-gap: 10px;
 	}
 
 	.offer-card {
 		position: relative;
 		width: 100%;
 		min-width: 0;
+		min-height: 62px;
 		box-sizing: border-box;
-		padding: 7px 9px;
+		padding: 10px 12px;
 		border-radius: 12px;
-		border: 1.5px solid #D9D4C7;
+		border: 1px solid #D9D4C7;
 		background-color: #FFFFFF;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 		cursor: pointer;
 		user-select: none;
 		-webkit-user-select: none;
 		display: grid;
-		grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+		grid-template-columns: 16px 38px minmax(0, 1fr) auto;
 		grid-column-gap: 6px;
 		column-gap: 6px;
 		align-items: center;
+		letter-spacing: 0;
 		transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 	}
 
-	.offer-card--tier1 {
-		min-height: 68px;
-	}
-
-	.offer-card--tier2 {
-		min-height: 78px;
-	}
-
 	.offer-card:hover {
-		border-color: rgba(31, 92, 75, 0.55);
+		border-color: rgba(31, 92, 75, 0.45);
 	}
 
+	/* 1.5px visual border via 1px border + 0.5px inset stroke -> 0.0px layout shift, no heavy shadow */
 	.offer-card.is-selected {
 		border-color: #1F5C4B;
 		background-color: #E3F0EA;
-		box-shadow: inset 0 0 0 0.5px #1F5C4B, 0 0 0 2.5px rgba(31, 92, 75, 0.14);
+		box-shadow: inset 0 0 0 0.5px #1F5C4B;
 	}
 
 	/* Keyboard focus fallback for older Safari (<15.4) + modern :has(:focus-visible) */
@@ -223,34 +210,26 @@
 	.offer-badge {
 		position: absolute;
 		top: -8px;
+		right: 12px;
+		inset-inline-start: 12px;
 		background-color: #1F5C4B;
 		color: #FFFFFF;
 		font-size: 11.5px;
-		font-size: clamp(0.71875rem, 3.1vw, 0.75rem);
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1;
-		padding: 2px 7px;
+		letter-spacing: 0;
+		padding: 2.5px 8px;
 		border-radius: 9999px;
 		z-index: 10;
 		white-space: nowrap;
 		pointer-events: none;
 	}
 
-	.offer-badge--start {
-		right: 10px;
-		inset-inline-start: 10px;
-	}
-
-	.offer-badge--end {
-		left: 10px;
-		inset-inline-end: 10px;
-	}
-
 	.offer-radio-dot {
-		width: 18px;
-		height: 18px;
+		width: 16px;
+		height: 16px;
 		border-radius: 9999px;
-		border: 1.5px solid #8C8C8C;
+		border: 1.5px solid #B8B2A6;
 		background-color: #FFFFFF;
 		display: flex;
 		align-items: center;
@@ -266,18 +245,18 @@
 	}
 
 	.offer-radio-check {
-		width: 11px;
-		height: 11px;
+		width: 10px;
+		height: 10px;
 		color: #FFFFFF;
-		stroke-width: 3;
+		stroke-width: 2.6;
 	}
 
 	.offer-thumb {
-		width: 44px;
-		height: 44px;
+		width: 38px;
+		height: 38px;
 		border-radius: 8px;
 		overflow: hidden;
-		border: 1px solid #D9D4C7;
+		border: 1px solid #EAE6DC;
 		background-color: #FFFFFF;
 		flex-shrink: 0;
 	}
@@ -306,12 +285,19 @@
 	}
 
 	.offer-title {
-		font-size: 14px;
-		font-size: clamp(0.8125rem, 3.8vw, 0.9375rem);
-		font-weight: 700;
+		font-size: 13.5px;
+		font-size: clamp(0.8125rem, 3.7vw, 0.875rem);
+		font-weight: 600;
 		color: #1A1A1A;
-		line-height: 1.2;
+		line-height: 1.32;
+		letter-spacing: 0;
 		overflow-wrap: break-word;
+	}
+
+	@media (max-width: 350px) {
+		.offer-title {
+			text-wrap: balance;
+		}
 	}
 
 	.offer-gift-tail {
@@ -320,30 +306,30 @@
 
 	.offer-gift-icon {
 		display: inline-block;
-		width: 13px;
-		height: 13px;
+		width: 12px;
+		height: 12px;
 		vertical-align: -2px;
 		color: #1F5C4B;
 	}
 
 	.offer-meta-row {
-		margin-top: 3px;
+		margin-top: 2px;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		margin-left: -3px;
-		margin-right: -3px;
+		margin-left: -2px;
+		margin-right: -2px;
 	}
 
 	.offer-meta-row > * {
-		margin: 1px 3px;
+		margin: 1px 2px;
 	}
 
 	@supports (gap: 4px) {
 		.offer-meta-row {
 			margin-left: 0;
 			margin-right: 0;
-			gap: 2px 5px;
+			gap: 2px 4px;
 		}
 		.offer-meta-row > * {
 			margin: 0;
@@ -356,10 +342,10 @@
 		border-radius: 9999px;
 		padding: 1px 5px;
 		font-size: 11.5px;
-		font-size: clamp(0.71875rem, 3.1vw, 0.75rem);
-		font-weight: 700;
+		font-weight: 600;
 		color: #1F5C4B;
-		line-height: 1.15;
+		line-height: 1.3;
+		letter-spacing: 0;
 		white-space: nowrap;
 		max-width: 100%;
 		background-color: #E3F0EA;
@@ -368,15 +354,15 @@
 
 	.offer-savings-chip.is-selected {
 		background-color: #FFFFFF;
-		border-color: rgba(31, 92, 75, 0.22);
+		border-color: rgba(31, 92, 75, 0.18);
 	}
 
 	.offer-per-unit {
-		font-size: 11.5px;
-		font-size: clamp(0.71875rem, 3.1vw, 0.75rem);
-		font-weight: 700;
+		font-size: 12px;
+		font-weight: 500;
 		color: #1F5C4B;
-		line-height: 1.15;
+		line-height: 1.3;
+		letter-spacing: 0;
 		white-space: nowrap;
 		max-width: 100%;
 	}
@@ -389,71 +375,67 @@
 		justify-content: center;
 		text-align: left;
 		text-align: end;
-		line-height: 1;
+		line-height: 1.2;
 	}
 
 	.offer-price-current {
 		font-size: 20px;
-		font-size: clamp(1.125rem, 5.5vw, 1.3125rem);
+		font-size: clamp(1.15625rem, 5.5vw, 1.28125rem);
 		font-weight: 700;
 		color: #1F5C4B;
-		line-height: 1.05;
+		line-height: 1.15;
+		letter-spacing: 0;
 		white-space: nowrap;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.offer-price-currency {
-		font-size: 13px;
-		font-size: clamp(0.75rem, 3.4vw, 0.875rem);
-		font-weight: 700;
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0;
 	}
 
 	.offer-price-old {
 		margin-top: 2px;
-		font-size: 13px;
-		font-size: clamp(0.75rem, 3.5vw, 0.8125rem);
+		font-size: 12.5px;
+		font-size: clamp(0.75rem, 3.45vw, 0.8125rem);
 		font-weight: 400;
-		color: #595959;
+		color: #666666;
 		text-decoration: line-through;
-		line-height: 1.1;
+		line-height: 1.2;
+		letter-spacing: 0;
 		white-space: nowrap;
 		font-variant-numeric: tabular-nums;
 	}
 
-	/* Ultra-small phones (320px - 345px): shrink thumbnail to 40px & tighten horizontal padding */
+	/* Ultra-small phones (320px - 345px): graceful fit with zero horizontal overflow */
 	@media (max-width: 345px) {
 		.offer-card {
-			padding: 6px 7px;
-			grid-template-columns: 17px 40px minmax(0, 1fr) auto;
+			padding: 8px 9px;
+			grid-template-columns: 16px 36px minmax(0, 1fr) auto;
 			grid-column-gap: 5px;
 			column-gap: 5px;
 		}
 		.offer-thumb {
-			width: 40px;
-			height: 40px;
-		}
-		.offer-radio-dot {
-			width: 17px;
-			height: 17px;
+			width: 36px;
+			height: 36px;
 		}
 	}
 
-	/* Tall viewports (>800px height): add +8px card breathing room without breaking one-screen fit */
-	@media (min-height: 801px) {
-		.offer-cards-grid {
-			grid-row-gap: 10px;
-			row-gap: 10px;
-		}
+	/* Larger screens: 18px radio + 44px thumbnail while keeping single-line balance */
+	@media (min-width: 400px) {
 		.offer-card {
-			padding: 10px 12px;
-			grid-column-gap: 8px;
-			column-gap: 8px;
+			grid-template-columns: 18px 44px minmax(0, 1fr) auto;
+			grid-column-gap: 9px;
+			column-gap: 9px;
 		}
-		.offer-card--tier1 {
-			min-height: 76px;
+		.offer-radio-dot {
+			width: 18px;
+			height: 18px;
 		}
-		.offer-card--tier2 {
-			min-height: 86px;
+		.offer-thumb {
+			width: 44px;
+			height: 44px;
 		}
 	}
 </style>

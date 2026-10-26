@@ -184,8 +184,8 @@
 
 	let customerName = $state('');
 	let customerPhone = $state('');
-	let nameTouched = $state(false);
-	let phoneTouched = $state(false);
+	let nameBlurredInvalid = $state(false);
+	let phoneBlurredInvalid = $state(false);
 	let submitAttempted = $state(false);
 	let formError = $state('');
 	let isSubmitting = $state(false);
@@ -479,7 +479,7 @@
 	}
 
 	function validateFullName(val: string): boolean {
-		return val.trim().length >= 3;
+		return val.replace(/\s+/g, '').length >= 2;
 	}
 
 	function validateMoroccanPhone(val: string): boolean {
@@ -496,8 +496,50 @@
 
 	const isNameValid = $derived(validateFullName(customerName));
 	const isPhoneValid = $derived(validateMoroccanPhone(customerPhone));
-	const showNameError = $derived((nameTouched || submitAttempted) && !isNameValid);
-	const showPhoneError = $derived((phoneTouched || submitAttempted) && !isPhoneValid);
+
+	$effect(() => {
+		if (isNameValid) {
+			nameBlurredInvalid = false;
+		}
+		if (isPhoneValid) {
+			phoneBlurredInvalid = false;
+		}
+		if (isNameValid && isPhoneValid && submitAttempted) {
+			submitAttempted = false;
+		}
+	});
+
+	const showNameError = $derived(!isNameValid && (submitAttempted || nameBlurredInvalid));
+	const showPhoneError = $derived(!isPhoneValid && (submitAttempted || phoneBlurredInvalid));
+
+	function scrollAndFocusInvalid(fieldId: string) {
+		if (typeof document === 'undefined') return;
+		const input = document.getElementById(fieldId) as HTMLElement | null;
+		if (!input) return;
+
+		let prefersReduced = false;
+		try {
+			prefersReduced =
+				typeof window !== 'undefined' &&
+				typeof window.matchMedia === 'function' &&
+				window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		} catch {}
+
+		try {
+			input.scrollIntoView({
+				behavior: prefersReduced ? 'auto' : 'smooth',
+				block: 'center'
+			});
+		} catch {
+			input.scrollIntoView();
+		}
+
+		try {
+			input.focus({ preventScroll: true });
+		} catch {
+			input.focus();
+		}
+	}
 
 	function handleDirectCheckout(event?: Event) {
 		event?.preventDefault();
@@ -517,16 +559,14 @@
 		submitAttempted = true;
 
 		if (!validateFullName(customerName)) {
-			nameTouched = true;
-			const input = document.getElementById('order-fullName');
-			if (input) input.focus();
+			nameBlurredInvalid = true;
+			scrollAndFocusInvalid('order-fullName');
 			return;
 		}
 
 		if (!validateMoroccanPhone(customerPhone)) {
-			phoneTouched = true;
-			const input = document.getElementById('order-phone');
-			if (input) input.focus();
+			phoneBlurredInvalid = true;
+			scrollAndFocusInvalid('order-phone');
 			return;
 		}
 
@@ -811,40 +851,47 @@
 					/>
 				</div>
 
-				<!-- Direct COD Form: Full Name & Phone Number Only -->
-				<form onsubmit={handleDirectCheckout} novalidate class="cod-form-grid" dir="rtl">
+				<!-- Direct COD Form: Name & Phone Number Only -->
+				<form onsubmit={handleDirectCheckout} novalidate class="cod-form-stack" dir="rtl">
 					<h3 class="cod-form-heading">
 						معلومات التوصيل
 					</h3>
 
-					<!-- Field 1: Full Name -->
+					<!-- Field 1: Name -->
 					<div class="cod-field-group">
 						<label for="order-fullName" class="cod-field-label">
-							الاسم الكامل <span class="text-[#6B6B6B]">*</span>
+							الاسم
 						</label>
 						<input
 							id="order-fullName"
 							type="text"
 							bind:value={customerName}
-							onblur={() => (nameTouched = true)}
-							placeholder="الاسم الشخصي والعائلي"
+							onblur={(e) => {
+								const raw = (e.currentTarget as HTMLInputElement).value;
+								if (raw.trim().length > 0 && !validateFullName(raw)) {
+									nameBlurredInvalid = true;
+								}
+							}}
+							placeholder="اكتب اسمك"
 							autocomplete="name"
 							autocapitalize="words"
 							aria-invalid={showNameError}
 							required
 							class="cod-input cod-name-input {showNameError ? 'is-invalid' : ''}"
 						/>
-						{#if showNameError}
-							<p class="cod-inline-error" role="alert">
-								المرجو إدخال الاسم الكامل (3 أحرف على الأقل)
-							</p>
-						{/if}
+						<div class="cod-error-slot cod-error-slot--between" aria-live="polite">
+							{#if showNameError}
+								<p class="cod-inline-error" role="alert">
+									المرجو إدخال الاسم (حرفان على الأقل)
+								</p>
+							{/if}
+						</div>
 					</div>
 
 					<!-- Field 2: Phone Number (WhatsApp) — LTR digits aligned RIGHT for RTL page -->
 					<div class="cod-field-group">
 						<label for="order-phone" class="cod-field-label">
-							رقم الهاتف (واتساب) <span class="text-[#6B6B6B]">*</span>
+							رقم الهاتف (واتساب)
 						</label>
 						<input
 							id="order-phone"
@@ -852,33 +899,34 @@
 							inputmode="numeric"
 							dir="ltr"
 							bind:value={customerPhone}
-							onblur={() => (phoneTouched = true)}
+							onblur={(e) => {
+								const raw = (e.currentTarget as HTMLInputElement).value;
+								if (raw.trim().length > 0 && !validateMoroccanPhone(raw)) {
+									phoneBlurredInvalid = true;
+								}
+							}}
 							placeholder="06XXXXXXXX"
 							autocomplete="tel"
 							aria-invalid={showPhoneError}
 							required
 							class="cod-input cod-phone-input {showPhoneError ? 'is-invalid' : ''}"
 						/>
-						{#if showPhoneError}
-							<p class="cod-inline-error" role="alert">
-								المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)
-							</p>
-						{/if}
-						<p class="cod-phone-hint">
-							سيتصل بك الموزع لتأكيد العنوان قبل التوصيل
-						</p>
+						<div class="cod-error-slot cod-error-slot--before-btn" aria-live="polite">
+							{#if showPhoneError}
+								<p class="cod-inline-error" role="alert">
+									المرجو إدخال رقم هاتف مغربي صحيح (مثال: <bdi>0612345678</bdi>)
+								</p>
+							{/if}
+						</div>
 					</div>
 
 					{#if formError}
-						<div class="p-2.5 rounded-[12px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[13px] font-bold text-start flex items-center gap-2" role="alert">
-							<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-							</svg>
+						<div class="cod-submit-alert" role="alert">
 							<span>{formError}</span>
 						</div>
 					{/if}
 
-					<!-- Main Submit Button (CTA Orange #F28C28) + Privacy Note -->
+					<!-- Main Submit Button (CTA Orange #F28C28) + Merged Reassurance Line -->
 					<div class="cod-submit-wrap">
 						<button
 							type="submit"
@@ -886,15 +934,15 @@
 							class="cta-wiggle cod-submit-btn"
 						>
 							{#if isSubmitting || isSubmittingFinal}
-								<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+								<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
 								<span>جاري الإرسال...</span>
 							{:else}
 								<span>تأكيد الطلب • {activeOffer.price} درهم</span>
 							{/if}
 						</button>
 
-						<p class="cod-privacy-note">
-							🔒 معلوماتك محفوظة ولن تُستعمل إلا لتوصيل طلبك
+						<p class="cod-merged-footer">
+							سيتصل بك الموزع لتأكيد طلبك • 🔒 معلوماتك محمية
 						</p>
 					</div>
 				</form>
@@ -1250,11 +1298,11 @@
 		appearance: none;
 	}
 
-	/* ── Order Section Outer & Centered 480px Responsive Container ── */
+	/* ── Order Section Outer & Cream #F5F0E6 Centered 480px Container ── */
 	.order-section-outer {
 		width: 100%;
 		box-sizing: border-box;
-		padding: 10px 12px;
+		padding: 6px 8px;
 		scroll-margin-top: 42px;
 	}
 
@@ -1262,15 +1310,19 @@
 		width: 100%;
 		min-width: 0;
 		box-sizing: border-box;
-		border-radius: 14px;
-		border: 1.5px solid #D9D4C7;
-		background-color: #FFFFFF;
-		box-shadow: 0 1px 3px rgba(20, 35, 27, 0.05);
+		border-radius: 12px;
+		border: 1px solid #D9D4C7;
+		background-color: #F5F0E6;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 		overflow: hidden;
 		scroll-margin-top: 42px;
+		letter-spacing: 0;
 	}
 
 	@media (min-width: 601px) {
+		.order-section-outer {
+			padding: 12px 16px;
+		}
 		.order-block-card {
 			max-width: 480px;
 			margin-left: auto;
@@ -1283,52 +1335,60 @@
 		color: #FFFFFF;
 		text-align: center;
 		padding: 5px 12px;
+		margin-bottom: 12px;
 	}
 
 	.order-block-title {
 		margin: 0;
-		font-size: 18px;
-		font-size: clamp(1.0625rem, 5vw, 1.1875rem);
-		font-weight: 800;
-		line-height: 1.18;
-		letter-spacing: -0.01em;
+		font-size: 17px;
+		font-size: clamp(1.03125rem, 4.7vw, 1.09375rem);
+		font-weight: 700;
+		line-height: 1.3;
+		letter-spacing: 0;
 	}
 
 	.order-block-subtitle {
 		margin: 1px 0 0 0;
 		font-size: 12px;
-		font-size: clamp(0.75rem, 3.3vw, 0.8125rem);
-		font-weight: 500;
-		color: #E3F0EA;
-		line-height: 1.2;
+		font-size: clamp(0.75rem, 3.3vw, 0.78125rem);
+		font-weight: 400;
+		color: rgba(255, 255, 255, 0.88);
+		line-height: 1.35;
+		letter-spacing: 0;
 	}
 
 	.order-block-body {
-		padding: 8px 10px 9px;
+		padding: 0 8px 8px;
+	}
+
+	@media (min-width: 400px) {
+		.order-block-body {
+			padding: 0 12px 10px;
+		}
 	}
 
 	.order-tiers-divider {
 		padding-bottom: 6px;
 		margin-bottom: 6px;
-		border-bottom: 1px solid rgba(217, 212, 199, 0.7);
+		border-bottom: 1px solid rgba(217, 212, 199, 0.85);
 	}
 
-	/* ── Compact COD Form (CSS Grid for Safari 14+ reliable row-gap) ── */
-	.cod-form-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		grid-row-gap: 9px;
-		row-gap: 9px;
+	/* ── Calm Airy COD Form (zero layout shift on validation) ── */
+	.cod-form-stack {
+		display: flex;
+		flex-direction: column;
 		min-width: 0;
+		letter-spacing: 0;
 	}
 
 	.cod-form-heading {
-		margin: 0 0 -3px 0;
-		font-size: 16px;
-		font-size: clamp(0.9375rem, 4.3vw, 1rem);
-		font-weight: 800;
+		margin: 0 0 4px 0;
+		font-size: 15px;
+		font-size: clamp(0.90625rem, 4.15vw, 0.96875rem);
+		font-weight: 600;
 		color: #1A1A1A;
-		line-height: 1.18;
+		line-height: 1.35;
+		letter-spacing: 0;
 		text-align: right;
 		text-align: start;
 	}
@@ -1340,11 +1400,12 @@
 	.cod-field-label {
 		display: block;
 		font-size: 13px;
-		font-size: clamp(0.8125rem, 3.6vw, 0.875rem);
-		font-weight: 700;
-		color: #1A1A1A;
-		line-height: 1.18;
-		margin-bottom: 4px;
+		font-size: clamp(0.8125rem, 3.6vw, 0.84375rem);
+		font-weight: 500;
+		color: #333333;
+		line-height: 1.3;
+		letter-spacing: 0;
+		margin-bottom: 6px;
 		text-align: right;
 		text-align: start;
 	}
@@ -1354,29 +1415,33 @@
 		min-width: 0;
 		box-sizing: border-box;
 		min-height: 46px;
-		padding: 9px 12px;
+		height: 46px;
+		padding: 0 12px;
 		font-size: 16px;
 		font-size: max(16px, 1rem);
-		line-height: 1.25;
+		font-weight: 400;
+		line-height: 1.5;
+		letter-spacing: 0;
 		color: #1A1A1A;
 		background-color: #FFFFFF;
-		border: 1.5px solid #D9D4C7;
+		border: 1px solid #D9D4C7;
 		border-radius: 12px;
 		-webkit-appearance: none;
 		appearance: none;
 		scroll-margin-bottom: 96px;
-		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+		transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.cod-input::placeholder {
-		color: #6B6B6B;
+		color: #9A9A9A;
+		font-weight: 400;
 		opacity: 1;
 	}
 
 	.cod-input:focus {
 		outline: none;
 		border-color: #1F5C4B;
-		box-shadow: 0 0 0 2.5px rgba(31, 92, 75, 0.18);
+		box-shadow: 0 0 0 3px rgba(31, 92, 75, 0.15);
 	}
 
 	.cod-input:focus-visible {
@@ -1385,17 +1450,19 @@
 	}
 
 	.cod-input.is-invalid {
-		border-color: #DC2626;
+		border-color: #C0392B;
+		background-color: #FFF8F7;
 	}
 
 	.cod-input.is-invalid:focus {
-		border-color: #DC2626;
-		box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.15);
+		border-color: #C0392B;
+		background-color: #FFF8F7;
+		box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.14);
 	}
 
-	/* Name input: standard RTL alignment */
+	/* Name input: standard RTL alignment, calm regular weight */
 	.cod-name-input {
-		font-weight: 500;
+		font-weight: 400;
 		text-align: right;
 		text-align: start;
 	}
@@ -1404,46 +1471,76 @@
 	.cod-phone-input {
 		direction: ltr;
 		text-align: right;
-		font-weight: 700;
+		font-weight: 400;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.cod-phone-input::placeholder {
 		direction: ltr;
 		text-align: right;
-		font-weight: 500;
+		color: #9A9A9A;
+		font-weight: 400;
 	}
 
 	.cod-phone-input::-webkit-input-placeholder {
 		direction: ltr;
 		text-align: right;
-		font-weight: 500;
+		color: #9A9A9A;
+		font-weight: 400;
 	}
 
 	.cod-phone-input::-moz-placeholder {
 		direction: ltr;
 		text-align: right;
-		font-weight: 500;
+		color: #9A9A9A;
+		font-weight: 400;
+	}
+
+	/* Reserved error slots: provide 14px field gap & zero layout shift when error appears */
+	.cod-error-slot {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+	}
+
+	.cod-error-slot--between {
+		min-height: 15px;
+		padding-top: 1px;
+	}
+
+	.cod-error-slot--before-btn {
+		min-height: 16px;
+		padding-top: 1px;
 	}
 
 	.cod-inline-error {
-		margin: 3px 0 0 0;
+		margin: 0;
 		font-size: 12px;
-		font-size: clamp(0.75rem, 3.2vw, 0.78125rem);
-		font-weight: 600;
-		color: #DC2626;
-		line-height: 1.25;
+		font-weight: 400;
+		color: #B3261E;
+		line-height: 1.2;
+		letter-spacing: 0;
+		white-space: nowrap;
 		text-align: right;
 		text-align: start;
 	}
 
-	.cod-phone-hint {
-		margin: 2px 0 0 0;
+	@media (max-width: 345px) {
+		.cod-inline-error {
+			word-spacing: -0.5px;
+		}
+	}
+
+	.cod-submit-alert {
+		margin-bottom: 8px;
+		padding: 8px 10px;
+		border-radius: 12px;
+		background-color: #FFF8F7;
+		border: 1px solid #C0392B;
+		color: #B3261E;
 		font-size: 12px;
-		font-size: clamp(0.75rem, 3.3vw, 0.8125rem);
 		font-weight: 400;
-		color: #6B6B6B;
-		line-height: 1.2;
+		line-height: 1.4;
 		text-align: right;
 		text-align: start;
 	}
@@ -1455,15 +1552,17 @@
 	.cod-submit-btn {
 		width: 100%;
 		min-height: 52px;
-		padding: 10px 16px;
+		height: 52px;
+		padding: 0 16px;
 		border: none;
 		border-radius: 12px;
 		background-color: #F28C28;
 		color: #FFFFFF;
 		font-size: 16px;
-		font-size: clamp(1rem, 4.5vw, 1.0625rem);
-		font-weight: 700;
-		line-height: 1.2;
+		font-size: clamp(1rem, 4.4vw, 1.03125rem);
+		font-weight: 600;
+		line-height: 1.35;
+		letter-spacing: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1473,12 +1572,12 @@
 		-webkit-user-select: none;
 		-webkit-appearance: none;
 		appearance: none;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+		box-shadow: 0 4px 12px rgba(242, 140, 40, 0.3);
 		transition: filter 0.15s ease, transform 0.12s ease, opacity 0.15s ease;
 	}
 
 	.cod-submit-btn:hover:not(:disabled) {
-		filter: brightness(0.96);
+		filter: brightness(0.97);
 	}
 
 	.cod-submit-btn:active:not(:disabled) {
@@ -1495,31 +1594,36 @@
 		cursor: not-allowed;
 	}
 
-	.cod-privacy-note {
-		margin: 3px 0 0 0;
+	.cod-merged-footer {
+		margin: 5px 0 0 0;
 		font-size: 12px;
-		font-size: clamp(0.75rem, 3.1vw, 0.75rem);
 		font-weight: 400;
-		color: #6B6B6B;
-		line-height: 1.2;
+		color: #6C6C6C;
+		line-height: 1.35;
+		letter-spacing: 0;
 		text-align: center;
+		white-space: nowrap;
 	}
 
-	/* Tall screens (>800px height): comfortable breathing room while keeping 1-screen fit */
+	/* Allow inputs/buttons/merged line to grow if user sets large system font scale */
+	@media (max-width: 319px) {
+		.cod-merged-footer,
+		.cod-inline-error {
+			white-space: normal;
+		}
+	}
+
+	/* Tall screens (>800px height): subtle extra breathing room while keeping 1-screen fit */
 	@media (min-height: 801px) {
 		.order-block-header {
-			padding: 10px 16px;
+			padding: 9px 14px;
 		}
 		.order-block-body {
-			padding: 14px 16px;
+			padding: 0 12px 12px;
 		}
 		.order-tiers-divider {
-			padding-bottom: 10px;
-			margin-bottom: 10px;
-		}
-		.cod-form-grid {
-			grid-row-gap: 12px;
-			row-gap: 12px;
+			padding-bottom: 11px;
+			margin-bottom: 11px;
 		}
 	}
 
