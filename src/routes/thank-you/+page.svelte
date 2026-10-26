@@ -119,21 +119,29 @@
 				: mainSku.includes('vitamine')
 					? 'علكات الملتي فيتامين المتكاملة'
 					: 'علكات الكولاجين البحري';
-			if (tier === 'tier_2' || tier === 'tier-3-tubs' || totalPrice === 399 || totalPrice === 498 || totalPrice === 349 || totalPrice === 448) {
+			if (tier === 'tier_3' || tier === 'tier-4-tubs' || totalPrice === 419 || totalPrice === 518) {
+				items.push({
+					sku: mainSku,
+					title: `${baseTitle} (4 علب - كورس مكثف VIP)`,
+					quantity: 4,
+					unitPrice: 104.75,
+					price: 419
+				});
+			} else if (tier === 'tier_2' || tier === 'tier-3-tubs' || totalPrice === 399 || totalPrice === 498 || totalPrice === 349 || totalPrice === 448) {
 				items.push({
 					sku: mainSku,
 					title: `${baseTitle} (3 علب - كورس علاجي كامل)`,
 					quantity: 3,
-					unitPrice: 133,
-					price: 399
+					unitPrice: 116.33,
+					price: 349
 				});
 			} else {
 				items.push({
 					sku: mainSku,
 					title: `${baseTitle} (علبتان - الأكثر طلباً)`,
 					quantity: 2,
-					unitPrice: 149.5,
-					price: 299
+					unitPrice: 139.5,
+					price: 279
 				});
 			}
 			if (rawOrder?.hasUpsell || paramUpsell) {

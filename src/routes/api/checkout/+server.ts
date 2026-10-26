@@ -49,8 +49,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			tier,
 			items,
 			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell)),
-			rawTotal: Number(body.totalPrice ?? body.total ?? body.price ?? 299),
-			price: Number(body.totalPrice ?? body.total ?? body.price ?? 299)
+			rawTotal: Number(body.totalPrice ?? body.total ?? body.price ?? 279),
+			price: Number(body.totalPrice ?? body.total ?? body.price ?? 279)
 		});
 
 		const productLabel = buildOrderFulfillmentLabel({
@@ -80,12 +80,12 @@ export const POST: RequestHandler = async ({ request }) => {
 			productLabel,
 			items,
 			hasUpsell: Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell)),
-			total: Number(body.totalPrice ?? body.total ?? body.price ?? 299),
+			total: Number(body.totalPrice ?? body.total ?? body.price ?? 279),
 			customerNote: body.notes || body.note
 		});
 
 		const hasUpsellFlag = Boolean(body.hasUpsell || items.some((it: any) => it.isUpsell));
-		const finalTotal = spaceSellerPayload.total || Number(body.totalPrice ?? body.total ?? 299);
+		const finalTotal = spaceSellerPayload.total || Number(body.totalPrice ?? body.total ?? 279);
 		body.total = finalTotal;
 		body.totalPrice = finalTotal;
 		body.price = finalTotal;

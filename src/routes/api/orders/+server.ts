@@ -94,12 +94,20 @@ export const POST: RequestHandler = async ({ request }) => {
 		const mainSku = body.mainSku || body.sku || (items.find((it: any) => !it.isUpsell)?.sku) || 'gummies_collagen';
 
 		if (items.length === 0) {
-			if (tier === 'tier_2' || tier === 'tier-3-tubs' || total === 399 || total === 498 || total === 349 || total === 448) {
+			if (tier === 'tier_3' || tier === 'tier-4-tubs' || total === 419 || total === 518) {
+				items.push({
+					sku: mainSku,
+					title: mainSku.includes('biotin') ? 'علكات البيوتين (4 علب)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (4 علب)' : 'علكات الكولاجين البحري (4 علب)',
+					quantity: 4,
+					price: 419,
+					isUpsell: false
+				});
+			} else if (tier === 'tier_2' || tier === 'tier-3-tubs' || total === 399 || total === 498 || total === 349 || total === 448) {
 				items.push({
 					sku: mainSku,
 					title: mainSku.includes('biotin') ? 'علكات البيوتين (3 علب)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (3 علب)' : 'علكات الكولاجين البحري (3 علب)',
 					quantity: 3,
-					price: 399,
+					price: 349,
 					isUpsell: false
 				});
 			} else {
@@ -107,7 +115,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					sku: mainSku,
 					title: mainSku.includes('biotin') ? 'علكات البيوتين (علبتان)' : mainSku.includes('vitam') ? 'علكات الفيتامينات (علبتان)' : 'علكات الكولاجين البحري (علبتان)',
 					quantity: 2,
-					price: 299,
+					price: 279,
 					isUpsell: false
 				});
 			}

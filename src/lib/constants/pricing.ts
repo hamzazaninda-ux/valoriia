@@ -3,7 +3,7 @@
 // Single Source of Truth for CRO Offers
 // =============================================================================
 
-export type PricingTierId = 'tier_1' | 'tier_2';
+export type PricingTierId = 'tier_1' | 'tier_2' | 'tier_3';
 
 export interface PricingTier {
   id: PricingTierId;
@@ -25,24 +25,34 @@ export const tiers = [
     id: 'tier-2-tubs',
     title: 'علبتان • ثبّتي النتيجة',
     subtitle: 'شهرين متواصلين + توصيل فابور 🚚',
-    price: 299,
+    price: 279,
     oldPrice: 398,
-    savings: 'وفّري 99 درهم',
+    savings: 'وفّري 119 درهم',
     qty: 2,
-    badge: 'النتيجة من العلبة الأولى ✨',
-    isPopular: false
+    badge: 'الأكثر طلباً ⭐',
+    isPopular: true
   },
   {
     id: 'tier-3-tubs',
     title: '3 علب • كورس علاجي كامل',
     subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
-    price: 399, // Updated to 399 MAD
+    price: 349,
     oldPrice: 597,
-    unitPrice: 'فقط 133 درهم للعلبة',
-    savings: 'توفير 198 درهم',
+    savings: 'توفير 248 درهم',
     qty: 3,
-    badge: '⭐ الأكثر طلباً',
-    isPopular: true
+    badge: 'توفير 248 درهم',
+    isPopular: false
+  },
+  {
+    id: 'tier-4-tubs',
+    title: '4 علب • كورس مكثف VIP (الباقة العائلية)',
+    subtitle: 'كورس 4 أشهر متواصلة + توصيل فابور 🚚',
+    price: 419,
+    oldPrice: 599,
+    savings: 'أكبر توفير 377 درهم 🔥',
+    qty: 4,
+    badge: 'أكبر توفير 377 درهم 🔥',
+    isPopular: false
   }
 ];
 
@@ -51,9 +61,9 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
     id: 'tier_1',
     units: 2,
     months: 2,
-    price: 299,
+    price: 279,
     originalPrice: 398,
-    savings: 99,
+    savings: 119,
     title: 'علبتان • ثبّتي النتيجة',
     subtitle: 'شهرين متواصلين + توصيل فابور 🚚',
     shipping: 0,
@@ -65,15 +75,29 @@ export const PRICING_TIERS: Record<PricingTierId, PricingTier> = {
     id: 'tier_2',
     units: 3,
     months: 3,
-    price: 399,
+    price: 349,
     originalPrice: 597,
-    savings: 198,
+    savings: 248,
     title: '3 علب • كورس علاجي كامل',
     subtitle: 'كورس 3 أشهر متواصلة + توصيل فابور 🚚',
     shipping: 0,
     isFreeShipping: true,
     isPopular: false,
-    badge: 'توفير 198 درهم'
+    badge: 'توفير 248 درهم'
+  },
+  tier_3: {
+    id: 'tier_3',
+    units: 4,
+    months: 4,
+    price: 419,
+    originalPrice: 599,
+    savings: 377,
+    title: '4 علب • كورس مكثف VIP (الباقة العائلية)',
+    subtitle: 'كورس 4 أشهر متواصلة + توصيل فابور 🚚',
+    shipping: 0,
+    isFreeShipping: true,
+    isPopular: false,
+    badge: 'أكبر توفير 377 درهم 🔥'
   }
 };
 

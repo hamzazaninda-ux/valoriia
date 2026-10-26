@@ -135,16 +135,16 @@
 	let query = $state('');
 
 	// Tier Selection (Default to Tier 1 - 2 Bottles Most Popular @ 299 MAD)
-	let selectedTier = $state<'tier_1' | 'tier_2'>('tier_1');
+	let selectedTier = $state<'tier_1' | 'tier_2' | 'tier_3'>('tier_1');
 	const currentTier = $derived(PRICING_TIERS[selectedTier]);
 
-	function selectTier(tierId: 'tier_1' | 'tier_2') {
+	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
 		selectedTier = tierId;
 	}
 
 	function scrollToOffers() {
 		if (typeof window !== 'undefined') {
-			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 299);
+			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 279);
 		}
 
 		const el =
@@ -171,7 +171,7 @@
 			pendingOrderId || 'NV-' + Math.floor(100000 + Math.random() * 900000);
 		const cleanedPhone = phone.trim().replace(/[\s\-\(\)]/g, '');
 		const baseTierBottles = currentTier.units;
-		const bundleName = baseTierBottles === 3 ? '3 علب' : 'علبتان';
+		const bundleName = baseTierBottles === 4 ? '4 علب' : baseTierBottles === 3 ? '3 علب' : 'علبتان';
 		const cleanName = (product?.name || 'NOVAVITA Gummies').replace(/\s*\([^)]*\)/g, '').trim();
 		const displayTitle = `${cleanName} (${bundleName})`;
 
@@ -229,7 +229,9 @@
 			baseTier: selectedTier,
 			baseBottles: baseTierBottles,
 			tierName:
-				selectedTier === 'tier_2'
+				selectedTier === 'tier_3'
+					? '4 علب • كورس مكثف VIP (الباقة العائلية)'
+					: selectedTier === 'tier_2'
 					? '3 علب • كورس علاجي كامل'
 					: 'علبتان • ثبّتي النتيجة',
 			totalBottles,
@@ -541,7 +543,7 @@
 				</div>
 
 				<!-- محدد العروض والطلب (Strict RTL & Right Badges) -->
-				<div id="offers" class="space-y-3 scroll-mt-24" dir="rtl">
+				<div id="offers" class="space-y-3.5 scroll-mt-24" dir="rtl">
 					<div class="flex items-center justify-between mb-2" dir="rtl">
 						<span class="text-base font-bold text-gray-900">اختاري باقتك:</span>
 						<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -549,7 +551,7 @@
 						</span>
 					</div>
 
-					<!-- Tier 1 (Default Selected - Most Popular: 2 Bottles @ 299 MAD) -->
+					<!-- Tier 1 (Default Selected - Most Popular: 2 Bottles @ 279 MAD) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_1')}
@@ -561,63 +563,98 @@
 						dir="rtl"
 					>
 						<!-- Badge in top right above radio circle -->
-						<div class="absolute -top-3 right-4 bg-[#C99738] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 z-10">
+						<div class="absolute -top-3 right-4 bg-[#C99738] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 z-10 whitespace-nowrap">
 							<span>الأكثر طلباً ⭐</span>
 						</div>
 						<!-- Right: Radio circle + Title & details -->
-						<div class="flex items-center gap-3 text-right">
+						<div class="flex items-center gap-2.5 sm:gap-3 text-right min-w-0 flex-1">
 							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_1' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_1'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div class="text-right">
-								<div class="font-bold text-sm sm:text-base text-[#1B4332]">علبتان • ثبّتي النتيجة</div>
-								<div class="text-xs text-emerald-800 font-bold">شهرين متواصلين + توصيل فابور 🚚</div>
+							<div class="text-right min-w-0 flex-1">
+								<div class="font-bold text-sm sm:text-base text-[#1B4332] leading-snug break-words">علبتان • ثبّتي النتيجة</div>
+								<div class="text-xs text-emerald-800 font-bold leading-normal mt-0.5 break-words">شهرين متواصلين + توصيل فابور 🚚</div>
 							</div>
 						</div>
 						<!-- Left: Price & savings -->
-						<div class="text-left shrink-0">
-							<div class="font-black text-xl text-[#1B4332]" dir="ltr">299 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">وفّري 99 درهم</div>
+						<div class="text-left shrink-0 ps-2">
+							<div class="font-black text-xl text-[#1B4332] whitespace-nowrap" dir="ltr">279 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C] whitespace-nowrap">وفّري 119 درهم</div>
 						</div>
 					</button>
 
-					<!-- Tier 2 (3 Bottles @ 399 MAD) -->
+					<!-- Tier 2 (3 Bottles @ 349 MAD) -->
 					<button
 						type="button"
 						onclick={() => selectTier('tier_2')}
-						class={`relative w-full p-3.5 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
+						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
 							selectedTier === 'tier_2'
-								? 'border-[#1B4332] ring-2 ring-[#1B4332]/20 shadow-md'
+								? 'border-[#1B4332] ring-3 ring-[#1B4332]/20 shadow-md -translate-y-0.5'
 								: 'border-stone-200 hover:border-stone-300'
 						}`}
 						dir="rtl"
 					>
 						<!-- Badge in top right above radio circle -->
-						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10">
-							<span>توفير 198 درهم</span>
+						<div class="absolute -top-3 right-4 bg-[#1B4332] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10 whitespace-nowrap">
+							<span>توفير 248 درهم</span>
 						</div>
 						<!-- Right: Radio circle + Title & details -->
-						<div class="flex items-center gap-3 text-right">
+						<div class="flex items-center gap-2.5 sm:gap-3 text-right min-w-0 flex-1">
 							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 								{#if selectedTier === 'tier_2'}
 									<div class="w-2 h-2 rounded-full bg-white"></div>
 								{/if}
 							</div>
-							<div class="text-right">
-								<div class="font-bold text-sm sm:text-base text-[#1F2937]">3 علب • كورس علاجي كامل</div>
-								<div class="text-xs text-amber-800 font-bold">كورس 3 أشهر متواصلة + توصيل فابور 🚚 (فقط 133 درهم للعلبة ⚡)</div>
+							<div class="text-right min-w-0 flex-1">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937] leading-snug break-words">3 علب • كورس علاجي كامل</div>
+								<div class="text-xs text-amber-800 font-bold leading-normal mt-0.5 break-words">كورس 3 أشهر متواصلة + توصيل فابور 🚚</div>
 							</div>
 						</div>
 						<!-- Left: Price & savings -->
-						<div class="text-left shrink-0">
-							<div class="font-black text-lg sm:text-xl text-[#1B4332]" dir="ltr">399 MAD</div>
-							<div class="text-xs font-bold text-[#E86A7C]">توفير 198 درهم</div>
+						<div class="text-left shrink-0 ps-2">
+							<div class="font-black text-lg sm:text-xl text-[#1B4332] whitespace-nowrap" dir="ltr">349 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C] whitespace-nowrap">توفير 248 درهم</div>
+						</div>
+					</button>
+
+					<!-- Tier 3 (4 Bottles VIP @ 419 MAD) -->
+					<button
+						type="button"
+						onclick={() => selectTier('tier_3')}
+						class={`relative w-full p-3.5 sm:p-4 rounded-2xl border-2 flex items-center justify-between transition-all cursor-pointer bg-white ${
+							selectedTier === 'tier_3'
+								? 'border-[#1B4332] ring-3 ring-[#1B4332]/20 shadow-md -translate-y-0.5'
+								: 'border-stone-200 hover:border-stone-300'
+						}`}
+						dir="rtl"
+					>
+						<!-- Badge in top right above radio circle -->
+						<div class="absolute -top-3 right-4 bg-gradient-to-r from-[#E86A7C] to-[#d946ef] text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs z-10 whitespace-nowrap">
+							<span>أكبر توفير 377 درهم 🔥</span>
+						</div>
+						<!-- Right: Radio circle + Title & details -->
+						<div class="flex items-center gap-2.5 sm:gap-3 text-right min-w-0 flex-1">
+							<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+								{#if selectedTier === 'tier_3'}
+									<div class="w-2 h-2 rounded-full bg-white"></div>
+								{/if}
+							</div>
+							<div class="text-right min-w-0 flex-1">
+								<div class="font-bold text-sm sm:text-base text-[#1F2937] leading-snug break-words">
+									4 علب • كورس مكثف <bdi>VIP</bdi> <span class="whitespace-nowrap">(الباقة العائلية)</span>
+								</div>
+								<div class="text-xs text-emerald-800 font-bold leading-normal mt-0.5 break-words">كورس 4 أشهر متواصلة + توصيل فابور 🚚</div>
+							</div>
+						</div>
+						<!-- Left: Price & savings -->
+						<div class="text-left shrink-0 ps-2">
+							<div class="font-black text-lg sm:text-xl text-[#1B4332] whitespace-nowrap" dir="ltr">419 MAD</div>
+							<div class="text-xs font-bold text-[#E86A7C] whitespace-nowrap">أكبر توفير 377 درهم 🔥</div>
 						</div>
 					</button>
 				</div>
-
 
 				<!-- نموذج الطلب المباشر عالي التحويل (Direct Inline COD Form) -->
 				<form

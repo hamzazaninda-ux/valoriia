@@ -2,14 +2,14 @@
 	import { PRICING_TIERS, type PricingTier } from '$lib/constants/pricing';
 
 	interface Props {
-		selectedTier?: 'tier_1' | 'tier_2';
+		selectedTier?: 'tier_1' | 'tier_2' | 'tier_3';
 		isSubmitting?: boolean;
-		onSelectTier?: (tier: 'tier_1' | 'tier_2') => void;
-		onSubmitOrder?: (orderData: { fullName: string; phone: string; tier: 'tier_1' | 'tier_2' }) => void;
+		onSelectTier?: (tier: 'tier_1' | 'tier_2' | 'tier_3') => void;
+		onSubmitOrder?: (orderData: { fullName: string; phone: string; tier: 'tier_1' | 'tier_2' | 'tier_3' }) => void;
 	}
 
 	let {
-		selectedTier = $bindable<'tier_1' | 'tier_2'>('tier_1'),
+		selectedTier = $bindable<'tier_1' | 'tier_2' | 'tier_3'>('tier_1'),
 		isSubmitting = false,
 		onSelectTier,
 		onSubmitOrder
@@ -20,14 +20,14 @@
 	let phoneError = $state('');
 	let localSubmitting = $state(false);
 
-	function selectTier(tierId: 'tier_1' | 'tier_2') {
+	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
 		selectedTier = tierId;
 		onSelectTier?.(tierId);
 	}
 
-	function validatePhone(input: string): boolean {
-		const cleaned = input.replace(/[\s\-\(\)]/g, '');
-		const regex = /^(?:(?:\+?212)|0)[67]\d{8}$/;
+	function validateMoroccanPhone(value: string): boolean {
+		const cleaned = value.replace(/[\s\-\(\)]/g, '');
+		const regex = /^(?:(?:\+?212)|0)[567]\d{8}$/;
 		return regex.test(cleaned);
 	}
 
@@ -35,52 +35,53 @@
 		e.preventDefault();
 		phoneError = '';
 
-		if (!fullName.trim() || fullName.trim().length < 2) {
-			phoneError = 'يرجى إدخال اسمك الكامل بشكل صحيح.';
+		const trimmedName = fullName.trim();
+		const trimmedPhone = phone.trim();
+
+		if (!trimmedName) {
+			phoneError = 'يرجى إدخال اسمكِ الكامل';
 			return;
 		}
 
-		if (!validatePhone(phone)) {
-			phoneError = 'يرجى كتابة رقم هاتف مغربي صحيح (مثلاً: 0612345678)';
+		if (!validateMoroccanPhone(trimmedPhone)) {
+			phoneError = 'يرجى إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)';
 			return;
 		}
 
-		if (localSubmitting || isSubmitting) return;
 		localSubmitting = true;
 
 		if (onSubmitOrder) {
 			onSubmitOrder({
-				fullName: fullName.trim(),
-				phone: phone.trim().replace(/[\s\-\(\)]/g, ''),
+				fullName: trimmedName,
+				phone: trimmedPhone,
 				tier: selectedTier
 			});
-			// Reset local debounce state after short guard
-			setTimeout(() => {
-				localSubmitting = false;
-			}, 2500);
 		}
 	}
 </script>
 
-<section id="order-section" class="scroll-mt-20 py-12 sm:py-20 bg-[#FAF8F5] border-b border-emerald-950/10">
-	<div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-10">
-		
+<section id="pricing" class="py-16 sm:py-24 bg-gradient-to-b from-[#FBF9F5] to-white relative overflow-hidden" dir="rtl">
+	<!-- Background Ambient Shapes -->
+	<div class="pointer-events-none absolute -top-40 -left-40 w-96 h-96 rounded-full bg-[#1B4332]/5 blur-3xl" aria-hidden="true"></div>
+	<div class="pointer-events-none absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-[#E86A7C]/5 blur-3xl" aria-hidden="true"></div>
+
+	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16 relative z-10">
+
 		<!-- Section Header -->
 		<div class="text-center max-w-2xl mx-auto space-y-3">
-			<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-900/10 px-3.5 py-1 text-xs font-bold text-[#1B4332]">
-				✨ عروض التوفير الحصرية بالمغرب
+			<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-[#1B4332]/10 text-[#1B4332]">
+				<span>✨</span> عروض حصرية لفترة محدودة
 			</span>
-			<h2 class="font-display text-2xl sm:text-4xl font-black text-[#1B4332]">
-				اختاري باقتك المناسبة مع التوصيل المجاني
+			<h2 class="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-[#1F2937] tracking-tight">
+				اختاري الباقة المناسبة لأهدافكِ
 			</h2>
 			<p class="text-sm sm:text-base text-stone-600 font-medium">
-				الدفع نقداً بعد الاستلام ومعاينة طلبيتك بنفسك • نتائج مضمونة من أول شهر
+				جميع الباقات تشمل توصيل مجاني سريع لجميع مدن المغرب مع إمكانية معاينة الطرد قبل الدفع نقداً للموزع
 			</p>
-			<div class="mx-auto h-1 w-20 rounded-full bg-[#1B4332]"></div>
 		</div>
 
-		<!-- 2 Tier Cards Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto gap-5 sm:gap-6 items-stretch">
+		<!-- 3 Tier Cards Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 items-stretch">
 			
 			<!-- Tier 1: Duo (2 Bottles) — Best Value Pre-selected -->
 			<button
@@ -94,7 +95,7 @@
 			>
 				<!-- Top Floating Badge -->
 				<div class="absolute -top-3.5 inset-x-0 mx-auto w-max px-4 py-1 rounded-full bg-[#1B4332] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1">
-					<span>الأكثر طلباً ⭐ • وفّري 99 درهم</span>
+					<span>الأكثر طلباً ⭐ • وفّري 119 درهم</span>
 				</div>
 
 				<div class="flex items-center justify-between mt-2">
@@ -114,7 +115,7 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">299 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">279 MAD</span>
 					<span class="text-sm text-stone-400 line-through" dir="ltr">398 MAD</span>
 				</div>
 
@@ -127,7 +128,7 @@
 					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>علبتان (50 علكة) لكورس شهرين كامل</strong></li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> إمكانية مزج البيوتين والكولاجين</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> <strong>توصيل فابور مجاني وسريع</strong> لجميع المدن</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>وفّري 99 درهم</strong> مقارنة بالسعر الفردي</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>وفّري 119 درهم</strong> مقارنة بالسعر الفردي</li>
 				</ul>
 			</button>
 
@@ -143,7 +144,7 @@
 			>
 				<div class="flex items-center justify-between">
 					<span class="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-						توفير 198 درهم
+						توفير 248 درهم
 					</span>
 					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_2' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
 						{#if selectedTier === 'tier_2'}
@@ -158,7 +159,7 @@
 				</div>
 
 				<div class="mt-6 flex items-baseline gap-2">
-					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">399 MAD</span>
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">349 MAD</span>
 					<span class="text-sm text-stone-400 line-through" dir="ltr">597 MAD</span>
 				</div>
 
@@ -168,10 +169,54 @@
 				</div>
 
 				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
-					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 133 درهم للعلبة ⚡</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 3 علب (75 علكة) — فقط 116 MAD للعلبة</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> روتين شامل متكامل</li>
 					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
-					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 198 درهم</strong> لكورس متواصل</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>توفير 248 درهم</strong> لكورس متواصل</li>
+				</ul>
+			</button>
+
+			<!-- Tier 3: VIP Family (4 Bottles) — Biggest Savings -->
+			<button
+				type="button"
+				onclick={() => selectTier('tier_3')}
+				class={`relative flex flex-col text-start rounded-3xl p-5 sm:p-6 transition-all duration-300 bg-white border-2 cursor-pointer ${
+					selectedTier === 'tier_3'
+						? 'border-[#1B4332] shadow-xl ring-2 ring-[#1B4332]/20 -translate-y-1'
+						: 'border-stone-200/80 shadow-sm hover:border-stone-300'
+				}`}
+			>
+				<div class="flex items-center justify-between">
+					<span class="text-xs font-black text-white bg-gradient-to-r from-[#E86A7C] to-[#d946ef] px-3 py-1 rounded-full shadow-xs">
+						أكبر توفير 377 درهم 🔥
+					</span>
+					<div class={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === 'tier_3' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-stone-300'}`}>
+						{#if selectedTier === 'tier_3'}
+							<div class="w-2 h-2 rounded-full bg-white"></div>
+						{/if}
+					</div>
+				</div>
+
+				<div class="mt-4">
+					<h3 class="font-display text-lg font-black text-[#1F2937]">4 علب • كورس مكثف VIP (الباقة العائلية)</h3>
+					<p class="text-xs text-stone-500 mt-1">كورس 4 أشهر متواصلة + توصيل فابور 🚚</p>
+				</div>
+
+				<div class="mt-6 flex items-baseline gap-2">
+					<span class="font-display text-3xl font-black text-[#1B4332]" dir="ltr">419 MAD</span>
+					<span class="text-sm text-stone-400 line-through" dir="ltr">599 MAD</span>
+				</div>
+
+				<div class="mt-3 text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg w-max flex items-center gap-1">
+					<span>🚚</span>
+					<span>توصيل فابور مجاني وسريع</span>
+				</div>
+
+				<ul class="mt-6 space-y-2 text-xs font-bold text-stone-600 border-t border-stone-100 pt-4">
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> 4 علب (100 علكة) — فقط 104 MAD للعلبة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> كورس 4 أشهر متواصلة لعناية متكاملة</li>
+					<li class="flex items-center gap-2"><span class="text-emerald-700">✓</span> توصيل فابور مجاني وسريع</li>
+					<li class="flex items-center gap-2 text-emerald-900"><span class="text-emerald-700">✓</span> <strong>أكبر توفير 377 درهم 🔥</strong></li>
 				</ul>
 			</button>
 

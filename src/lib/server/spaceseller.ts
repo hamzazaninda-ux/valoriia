@@ -128,7 +128,7 @@ export function calculateOrderTotals(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const upsellPrice = hasUpsell ? 99 : 0;
 
-	let baseOfferPrice = 299; // Default tier_1 (2 bottles @ 299 MAD)
+	let baseOfferPrice = 279; // Default tier_1 (2 bottles @ 279 MAD)
 	const r = typeof options.rawTotal === 'number' && options.rawTotal > 0 ? options.rawTotal : 0;
 
 	if (r === 199) {
@@ -138,14 +138,17 @@ export function calculateOrderTotals(options: {
 	} else if (r === 299 || r === 398 || r === 397) {
 		baseOfferPrice = 299;
 	} else if (r === 349 || r === 448 || r === 447) {
-		baseOfferPrice = 349; // legacy 3-tubs
+		baseOfferPrice = 349;
 	} else if (r === 399 || r === 498 || r === 497) {
 		baseOfferPrice = 399;
-		baseOfferPrice = 399;
+	} else if (r === 419 || r === 518 || r === 517) {
+		baseOfferPrice = 419;
+	} else if (options.tier === 'tier_3' || options.tier === 'tier-4-tubs') {
+		baseOfferPrice = 419;
 	} else if (options.tier === 'tier_2' || options.tier === 'tier-3-tubs') {
-		baseOfferPrice = 399;
+		baseOfferPrice = 349;
 	} else if (options.tier === 'tier_1' || options.tier === 'tier-2-tubs') {
-		baseOfferPrice = 299;
+		baseOfferPrice = 279;
 	} else if (r > 0) {
 		baseOfferPrice = hasUpsell && r > 99 ? r - 99 : r;
 	} else if (Array.isArray(options.items) && options.items.length > 0) {
@@ -416,13 +419,24 @@ export function calculatePhysicalBottleCount(options: {
 	rawTotal?: number;
 	price?: number;
 }): number {
-	let baseBottles = 2; // Default tier_1 (2 bottles @ 299 MAD)
+	let baseBottles = 2; // Default tier_1 (2 bottles @ 279 MAD)
 	const rawTier = String(options.tier || '').toLowerCase();
 	const hasUpsell = hasUpsellOrder(options);
 	const total = Number(options.rawTotal ?? options.price ?? 0);
 
 	if (total === 199 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
 		baseBottles = 1;
+	} else if (
+		total === 419 ||
+		total === 518 ||
+		total === 517 ||
+		rawTier === 'tier_3' ||
+		rawTier === 'tier-4-tubs' ||
+		rawTier.includes('4') ||
+		rawTier.includes('مكثف') ||
+		rawTier.includes('عائلية')
+	) {
+		baseBottles = 4;
 	} else if (
 		total === 399 ||
 		total === 498 ||
@@ -503,9 +517,9 @@ export function buildConfirmationBreakdown(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const baseName = resolveProductArabicName(options.mainSku || options.productLabel);
 
-	// Resolve tier bottle text: "2 علب" or "3 علب" (or legacy "1 علبة")
+	// Resolve tier bottle text: "علبتان", "3 علب", "4 علب" (or legacy "1 علبة")
 	const rawTier = String(options.tier || '').toLowerCase();
-	let tierUnitText = '2 علب';
+	let tierUnitText = 'علبتان';
 	if (
 		options.totalPrice === 199 ||
 		options.totalPrice === 298 ||
@@ -513,7 +527,18 @@ export function buildConfirmationBreakdown(options: {
 		rawTier.includes('التجربة') ||
 		rawTier.includes('واحدة')
 	) {
-		tierUnitText = '1 علبة';
+		tierUnitText = 'علبة واحدة';
+	} else if (
+		options.totalPrice === 419 ||
+		options.totalPrice === 518 ||
+		options.totalPrice === 517 ||
+		rawTier === 'tier_3' ||
+		rawTier === 'tier-4-tubs' ||
+		rawTier.includes('4') ||
+		rawTier.includes('مكثف') ||
+		rawTier.includes('عائلية')
+	) {
+		tierUnitText = '4 علب';
 	} else if (
 		options.totalPrice === 399 ||
 		options.totalPrice === 498 ||
@@ -529,7 +554,7 @@ export function buildConfirmationBreakdown(options: {
 	) {
 		tierUnitText = '3 علب';
 	} else {
-		tierUnitText = '2 علب';
+		tierUnitText = 'علبتان';
 	}
 
 	if (hasUpsell) {
@@ -544,7 +569,7 @@ export function buildConfirmationBreakdown(options: {
 		return `العرض: ${tierUnitText} ${baseName} + أبسيل: علبة ${upsellName} (+99 DH) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
 	}
 
-	return `العرض: ${tierUnitText} ${baseName} (بدون أبسيل) | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
+	return `العرض: ${tierUnitText} ${baseName} | المجموع: ${options.totalPrice} DH (تأكيد عبر الهاتف)`;
 }
 
 /**
@@ -669,7 +694,7 @@ export function buildSpaceSellerLeadPayload(options: {
 	}
 
 	const displayAddress =
-		!address || address === 'تحدد عند التأكيد' || address === 'سيتم التأكيد عبر الهاتف' || address === 'يُحدد عند التأكيد'
+		!address || address === 'تحدد عند التأكيد' || address === 'سيتم التأكيد عبر الهاتف' || address === 'يُحدد عند التأكيد' || address === 'تأكيد العنوان عبر الهاتف'
 			? breakdown
 			: `${breakdown} | ${address}`;
 

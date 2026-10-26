@@ -160,13 +160,25 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	}
 
 	// 2. Determine Base Tier (2 or 3 bottles; plus legacy 1 bottle) and infer upsells if not in items JSON
-	let baseBottles: 1 | 2 | 3 = 2;
+	let baseBottles: 1 | 2 | 3 | 4 = 2;
 
 	// Price-based exact matching first (279, 349 + n * 99; or legacy 199)
 	const priceWithoutKnownUpsells = totalPrice - upsellCount * 99;
 	const priceWithoutLegacyUpsells = totalPrice - upsellCount * 98;
 
 	if (
+		prodText.includes('4 علب') ||
+		prodText.includes('أربع') ||
+		prodText.includes('مكثف') ||
+		prodText.includes('العائلية') ||
+		priceWithoutKnownUpsells === 419 ||
+		priceWithoutLegacyUpsells === 419 ||
+		totalPrice === 419 ||
+		totalPrice === 518 ||
+		totalPrice === 517
+	) {
+		baseBottles = 4;
+	} else if (
 		prodText.includes('3 علب') ||
 		prodText.includes('ثلاث') ||
 		prodText.includes('التحول الشامل') ||
@@ -201,7 +213,13 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	}
 
 	const baseOfferPrice =
-		baseBottles === 3 ? (totalPrice === 349 || totalPrice === 448 ? 349 : 399) : baseBottles === 2 ? (totalPrice === 279 || totalPrice === 378 ? 279 : 299) : 199;
+		baseBottles === 4
+			? 419
+			: baseBottles === 3
+				? (totalPrice === 399 || totalPrice === 498 ? 399 : 349)
+				: baseBottles === 2
+					? (totalPrice === 299 || totalPrice === 398 ? 299 : 279)
+					: 199;
 
 	// If upsellLines was empty but totalPrice or product text indicates upsells:
 	if (upsellCount === 0) {
@@ -258,18 +276,22 @@ export function resolveOrderEconomics(order: StoredOrder) {
 	}
 
 	const baseOfferLabel =
-		baseBottles === 3
-			? `باقة 3 علب (${baseOfferPrice} MAD)`
-			: baseBottles === 2
-				? `باقة علبتين (${baseOfferPrice} MAD)`
-				: 'باقة 1 علبة (199 MAD)';
+		baseBottles === 4
+			? 'باقة 4 علب VIP (419 MAD)'
+			: baseBottles === 3
+				? `باقة 3 علب (${baseOfferPrice} MAD)`
+				: baseBottles === 2
+					? `باقة علبتين (${baseOfferPrice} MAD)`
+					: 'باقة 1 علبة (199 MAD)';
 
 	const baseOfferBadge =
-		baseBottles === 3
-			? 'bg-amber-50 text-amber-900 border-amber-300'
-			: baseBottles === 2
-				? 'bg-emerald-50 text-emerald-900 border-emerald-300'
-				: 'bg-neutral-100 text-neutral-800 border-neutral-300';
+		baseBottles === 4
+			? 'bg-purple-50 text-purple-900 border-purple-300'
+			: baseBottles === 3
+				? 'bg-amber-50 text-amber-900 border-amber-300'
+				: baseBottles === 2
+					? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+					: 'bg-neutral-100 text-neutral-800 border-neutral-300';
 
 	const hasUpsell = upsellCount > 0;
 	const upsellName = hasUpsell ? upsellNames.join(' + ') : 'بدون أبسيل';
