@@ -184,7 +184,9 @@
 
 	let customerName = $state('');
 	let customerPhone = $state('');
-	let customerCity = $state('');
+	let nameTouched = $state(false);
+	let phoneTouched = $state(false);
+	let submitAttempted = $state(false);
 	let formError = $state('');
 	let isSubmitting = $state(false);
 	let isSubmittingFinal = $state(false);
@@ -256,15 +258,25 @@
 		};
 
 		// 1. Dispatch the SINGLE consolidated webhook call
+		let checkoutOk = false;
 		try {
 			const res = await fetch('/api/checkout', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload)
 			});
+			checkoutOk = res.ok;
 			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
 		} catch (err) {
 			console.error('Checkout error:', err);
+		}
+
+		if (!checkoutOk) {
+			isSubmitting = false;
+			isSubmittingFinal = false;
+			showDrainUpsell = false;
+			formError = 'تعذر إرسال الطلب، المرجو المحاولة مرة أخرى';
+			return;
 		}
 
 		// 2. Mark order sent to prevent duplicate session submissions
@@ -382,15 +394,25 @@
 		};
 
 		// 1. Dispatch the SINGLE original order webhook call
+		let checkoutOk = false;
 		try {
 			const res = await fetch('/api/checkout', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload)
 			});
+			checkoutOk = res.ok;
 			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
 		} catch (err) {
 			console.error('Checkout error:', err);
+		}
+
+		if (!checkoutOk) {
+			isSubmitting = false;
+			isSubmittingFinal = false;
+			showDrainUpsell = false;
+			formError = 'تعذر إرسال الطلب، المرجو المحاولة مرة أخرى';
+			return;
 		}
 
 		// 2. Mark order sent to prevent duplicate session submissions
@@ -456,29 +478,31 @@
 		}
 	}
 
-	function validateMoroccanPhone(val: string): boolean {
-		const cleaned = val.replace(/[\s\-\(\)\.]/g, '');
-		return /^(?:(?:\+|00)212|0)[5-7]\d{8}$/.test(cleaned);
+	function validateFullName(val: string): boolean {
+		return val.trim().length >= 3;
 	}
 
-	// Phone Formatter: Always enforce '212' country code without '+' or leading '0'
-	function formatMoroccanPhone(rawPhone: string): string {
-		if (!rawPhone) return '';
-		let clean = String(rawPhone).replace(/[^0-9]/g, '');
-		if (clean.startsWith('00212')) {
-			clean = clean.substring(2);
-		} else if (clean.startsWith('0')) {
-			clean = '212' + clean.substring(1);
-		} else if (!clean.startsWith('212')) {
-			clean = '212' + clean;
-		}
-		return clean;
+	function validateMoroccanPhone(val: string): boolean {
+		const stripped = val.trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069]+/g, '');
+		return /^(?:(?:\+|00)212|0)[67]\d{8}$/.test(stripped);
 	}
+
+	// Normalize Moroccan phone to 10-digit local format starting with '0' (e.g. 0612345678)
+	function normalizeMoroccanPhone(rawPhone: string): string {
+		const stripped = String(rawPhone || '').trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069]+/g, '');
+		const match = stripped.match(/^(?:(?:\+|00)212|0)([67]\d{8})$/);
+		return match ? `0${match[1]}` : stripped;
+	}
+
+	const isNameValid = $derived(validateFullName(customerName));
+	const isPhoneValid = $derived(validateMoroccanPhone(customerPhone));
+	const showNameError = $derived((nameTouched || submitAttempted) && !isNameValid);
+	const showPhoneError = $derived((phoneTouched || submitAttempted) && !isPhoneValid);
 
 	function handleDirectCheckout(event?: Event) {
 		event?.preventDefault();
 
-		if (showDrainUpsell || isSubmittingFinal) return;
+		if (isSubmitting || isSubmittingFinal || showDrainUpsell) return;
 
 		if (
 			submittedOrderId &&
@@ -490,34 +514,23 @@
 		}
 
 		formError = '';
+		submitAttempted = true;
 
-		if (!customerName.trim()) {
-			formError = 'الرجاء إدخال الاسم الكامل';
+		if (!validateFullName(customerName)) {
+			nameTouched = true;
 			const input = document.getElementById('order-fullName');
 			if (input) input.focus();
 			return;
 		}
 
-		if (!customerPhone.trim()) {
-			formError = 'الرجاء إدخال رقم الهاتف';
-			const input = document.getElementById('order-phone');
-			if (input) input.focus();
-			return;
-		}
-
 		if (!validateMoroccanPhone(customerPhone)) {
-			formError = 'يرجى إدخال رقم هاتف مغربي صحيح يبدأ بـ 06 أو 07 (10 أرقام)';
+			phoneTouched = true;
 			const input = document.getElementById('order-phone');
 			if (input) input.focus();
 			return;
 		}
 
-		if (!customerCity.trim()) {
-			formError = 'الرجاء إدخال المدينة والعنوان';
-			const input = document.getElementById('order-city');
-			if (input) input.focus();
-			return;
-		}
+		isSubmitting = true;
 
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		submittedOrderId = orderId;
@@ -537,14 +550,15 @@
 			'طقم التنظيم المنزلي'
 		).trim();
 		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const formattedPhone = formatMoroccanPhone(customerPhone);
-		const city_address = customerCity.trim();
+		const normalizedPhone = normalizeMoroccanPhone(customerPhone);
+		customerPhone = normalizedPhone;
+		const city_address = '';
 
 		pendingOrder = {
 			orderId,
 			date_order,
 			customerName: customerName.trim(),
-			phone: formattedPhone,
+			phone: normalizedPhone,
 			city_address,
 			offerSku,
 			productTitleStr,
@@ -695,7 +709,7 @@
 				</p>
 			</div>
 
-			<div class="px-1.5 py-3 sm:p-4 space-y-3.5">
+			<div class="px-1.5 py-3 sm:p-4 space-y-3">
 				<!-- Bundle Selectors (1 Piece: 229 MAD pre-selected vs 2 Pieces: 349 MAD) -->
 				<div class="pb-3 border-b border-[#D9D4C7]/70">
 					<OfferTiers
@@ -721,63 +735,70 @@
 					/>
 				</div>
 
-				<!-- Direct COD Form: Full Name, Phone Number, City/Address -->
-				<form onsubmit={handleDirectCheckout} class="px-1 sm:px-0 space-y-3.5" dir="rtl">
-					<h3 class="text-[16px] font-extrabold text-[#1A1A1A] text-start">
+				<!-- Direct COD Form: Full Name & Phone Number Only -->
+				<form onsubmit={handleDirectCheckout} novalidate class="px-1 sm:px-0 flex flex-col gap-3" dir="rtl">
+					<h3 class="text-[16px] font-extrabold text-[#1A1A1A] text-start leading-tight">
 						معلومات التوصيل
 					</h3>
 
 					<!-- Field 1: Full Name -->
 					<div>
-						<label for="order-fullName" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
+						<label for="order-fullName" class="block text-[14px] font-bold text-[#1A1A1A] mb-1 text-start">
 							الاسم الكامل <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
 							id="order-fullName"
 							type="text"
 							bind:value={customerName}
+							onblur={() => (nameTouched = true)}
 							placeholder="الاسم الشخصي والعائلي"
 							autocomplete="name"
+							autocapitalize="words"
+							aria-invalid={showNameError}
 							required
-							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-start font-medium"
+							class="w-full h-[52px] px-3.5 text-[16px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] focus:outline-none focus:ring-2 bg-white transition-colors text-start font-medium {showNameError
+								? 'border-red-600 focus:border-red-600 focus:ring-red-600/15'
+								: 'border-[#D9D4C7] focus:border-[#1F5C4B] focus:ring-[#1F5C4B]/20'}"
 						/>
+						{#if showNameError}
+							<p class="mt-1 text-[12px] font-semibold text-red-600 text-start leading-snug" role="alert">
+								المرجو إدخال الاسم الكامل (3 أحرف على الأقل)
+							</p>
+						{/if}
 					</div>
 
-					<!-- Field 2: Phone Number -->
+					<!-- Field 2: Phone Number (WhatsApp) -->
 					<div>
-						<label for="order-phone" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
-							رقم الهاتف <span class="text-[#6B6B6B]">*</span>
+						<label for="order-phone" class="block text-[14px] font-bold text-[#1A1A1A] mb-1 text-start">
+							رقم الهاتف (واتساب) <span class="text-[#6B6B6B]">*</span>
 						</label>
 						<input
 							id="order-phone"
 							type="tel"
+							inputmode="numeric"
 							dir="ltr"
 							bind:value={customerPhone}
-							placeholder="06XXXXXXXX / 07XXXXXXXX"
+							onblur={() => (phoneTouched = true)}
+							placeholder="06XXXXXXXX"
 							autocomplete="tel"
+							aria-invalid={showPhoneError}
 							required
-							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-left font-mono font-bold"
+							class="w-full h-[52px] px-3.5 text-[16px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] focus:outline-none focus:ring-2 bg-white transition-colors text-left font-mono font-bold {showPhoneError
+								? 'border-red-600 focus:border-red-600 focus:ring-red-600/15'
+								: 'border-[#D9D4C7] focus:border-[#1F5C4B] focus:ring-[#1F5C4B]/20'}"
 						/>
-					</div>
-
-					<!-- Field 3: City / Address -->
-					<div>
-						<label for="order-city" class="block text-[14px] font-bold text-[#1A1A1A] mb-1.5 text-start">
-							المدينة والعنوان <span class="text-[#6B6B6B]">*</span>
-						</label>
-						<input
-							id="order-city"
-							type="text"
-							bind:value={customerCity}
-							placeholder="المدينة والحي / العنوان"
-							autocomplete="street-address"
-							required
-							class="w-full px-3.5 py-3 text-[15px] text-[#1A1A1A] placeholder:text-[#6B6B6B] rounded-[14px] border-[1.5px] border-[#D9D4C7] focus:outline-none focus:ring-2 focus:ring-[#1F5C4B]/20 focus:border-[#1F5C4B] bg-white transition-colors text-start font-medium"
-						/>
+						{#if showPhoneError}
+							<p class="mt-1 text-[12px] font-semibold text-red-600 text-start leading-snug" role="alert">
+								المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)
+							</p>
+						{/if}
+						<p class="mt-1.5 text-[13px] font-normal text-[#6B6B6B] text-start leading-snug">
+							سيتصل بك الموزع لتأكيد العنوان قبل التوصيل
+						</p>
 					</div>
 
 					{#if formError}
-						<div class="p-3 rounded-[14px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[14px] font-bold text-start flex items-center gap-2">
+						<div class="p-3 rounded-[14px] bg-[#F5F0E6] border-[1.5px] border-[#1A1A1A]/30 text-[#1A1A1A] text-[14px] font-bold text-start flex items-center gap-2" role="alert">
 							<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-[#1A1A1A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
 							</svg>
@@ -785,19 +806,25 @@
 						</div>
 					{/if}
 
-					<!-- Main Submit Button (CTA Orange #F28C28) -->
-					<button
-						type="submit"
-						disabled={isSubmitting || isSubmittingFinal}
-						class="cta-wiggle w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
-					>
-						{#if isSubmitting || isSubmittingFinal}
-							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-							<span>جاري تأكيد الطلب...</span>
-						{:else}
-							<span>تأكيد الطلب • {activeOffer.price} درهم</span>
-						{/if}
-					</button>
+					<!-- Main Submit Button (CTA Orange #F28C28) + Privacy Note -->
+					<div class="flex flex-col gap-2">
+						<button
+							type="submit"
+							disabled={isSubmitting || isSubmittingFinal}
+							class="cta-wiggle w-full h-[56px] flex items-center justify-center gap-2 rounded-[14px] bg-[#F28C28] hover:brightness-95 active:scale-[0.99] px-4 text-[17px] font-bold text-white shadow-sm transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none"
+						>
+							{#if isSubmitting || isSubmittingFinal}
+								<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+								<span>جاري الإرسال...</span>
+							{:else}
+								<span>تأكيد الطلب • {activeOffer.price} درهم</span>
+							{/if}
+						</button>
+
+						<p class="text-center text-[12px] font-normal text-[#6B6B6B] leading-snug">
+							🔒 معلوماتك محفوظة ولن تُستعمل إلا لتوصيل طلبك
+						</p>
+					</div>
 				</form>
 			</div>
 		</div>
