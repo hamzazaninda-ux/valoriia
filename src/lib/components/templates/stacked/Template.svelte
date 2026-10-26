@@ -19,7 +19,7 @@
 	let order = $derived(version.order);
 
 	const HERO_IMAGE_URL =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951366/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%A8%D8%A7%D9%83_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D8%B0%D9%83%D9%8A_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6.png';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg';
 
 	const defaultOffers: ProductOffer[] = [
 		{
@@ -761,9 +761,10 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header
 		id="hero-section"
-		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-45% to-[#FAF9F6] pt-1 pb-2"
+		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-45% to-[#FAF9F6] pb-2"
 	>
-		<div class="w-full max-w-[380px] sm:max-w-[420px] mx-auto px-2">
+		<!-- Hero Image Container (Directly attached under the top announcement bar) -->
+		<div class="w-full max-w-[380px] mx-auto px-2 pt-1 pb-2">
 			<a
 				href="#order-form"
 				onclick={scrollToOrderForm}
@@ -772,12 +773,13 @@
 			>
 				<img
 					src={HERO_IMAGE_URL}
-					alt="باك الحمام الذكي"
-					width="1024"
-					height="1536"
+					alt="باك الحمام الذكي مع رشاش زيادة الضغط هدية"
+					width="1536"
+					height="2752"
 					fetchpriority="high"
 					loading="eager"
-					class="w-full h-auto block"
+					decoding="sync"
+					class="w-full h-auto block object-cover"
 				/>
 			</a>
 		</div>

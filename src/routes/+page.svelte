@@ -48,7 +48,7 @@
 			slug: 'kit-tandim',
 			title: 'باك الحمام الذكي + رشاش هدية',
 			subtitle: 'تنظيم شامل بدون حفير + رشاش زيادة ضغط المياه فابور',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951366/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D8%A8%D8%A7%D9%83_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D8%A7%D9%84%D8%B0%D9%83%D9%8A_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6.png',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg',
 			price: 229,
 			oldPrice: 299,
 			discount: null,
