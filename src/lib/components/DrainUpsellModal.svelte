@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	interface OrderDetails {
 		orderId: string;
@@ -139,31 +138,22 @@
 				⚡ تهنّاي من خنقة القوادس، الحشرات والروائح الكريهة!
 			</h3>
 
-			<!-- 3. Product Image (Restricted Height to Guarantee Visibility) -->
+			<!-- 3. Product Image Showcase (Full Sharpness & No Cropping) -->
 			<div
-				class="relative w-full h-36 sm:h-44 max-h-44 sm:max-h-52 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center mb-1.5 shrink-0"
+				class="relative w-full max-w-[320px] mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-inner mb-2 flex items-center justify-center shrink-0"
 			>
 				<img
-					src={cloudinaryUrl(
-						'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png',
-						'f_auto,q_auto,w_600'
-					)}
-					srcset={cloudinarySrcset(
-						'https://res.cloudinary.com/xqjngk8y/image/upload/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png',
-						[320, 480, 600]
-					)}
-					sizes="(max-width: 450px) calc(100vw - 56px), 310px"
-					alt="سدادة وفلتر مصرف الأرضية"
-					width="600"
-					height="600"
-					class="w-full h-full object-cover"
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/q_auto:best,f_auto,w_800/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png"
+					alt="سدادة وفلتر مصرف الأرضية الذكية"
 					loading="eager"
-					decoding="async"
+					decoding="sync"
+					class="w-full h-44 sm:h-48 object-contain select-none"
+					style="image-rendering: -webkit-optimize-contrast;"
 				/>
 
 				<!-- Price Badge (Top Left in RTL) -->
 				<div
-					class="absolute top-2 start-2 bg-[#0B5E3C] text-white px-2.5 py-1 rounded-xl text-center shadow-md border border-white/20"
+					class="absolute top-2 start-2 bg-[#0B5E3C] text-white px-2.5 py-1 rounded-xl text-center shadow-lg border border-white/20"
 				>
 					<div class="text-xs sm:text-sm font-black leading-tight">{upsellPrice} درهم فقط</div>
 					<div class="text-[9px] text-emerald-200 line-through leading-none mt-0.5">{oldPrice} DH</div>
@@ -171,15 +161,15 @@
 
 				<!-- Selling Feature Banner (Bottom Overlay) -->
 				<div
-					class="absolute bottom-1.5 inset-x-3 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 text-white font-black text-[10px] sm:text-xs py-1 px-2 rounded-full text-center shadow-md truncate"
+					class="absolute bottom-1.5 inset-x-2 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 text-white font-black text-[10px] sm:text-xs py-1 px-2 rounded-full text-center shadow-md truncate"
 				>
-					توصيل فابور مع طلبيتك • تمنع انسداد الشعر والروائح
+					توصيل فابور مع طلبيتك • تمنع انسداد الشعر والروائح 100%
 				</div>
 			</div>
 
-			<!-- 4. Micro-copy -->
-			<p class="text-xs text-gray-600 text-center font-medium leading-relaxed mb-2 sm:mb-2.5 px-1 line-clamp-2 shrink-0">
-				تغلق بإحكام وتمنع صعود الروائح الكريهة والصراصير، وتحبس الشعر والأوساخ مع تصريف سريع للمياه.
+			<!-- 4. Compact Direct Benefit (No Truncation / No Ellipsis) -->
+			<p class="text-xs text-gray-700 text-center font-bold leading-relaxed mb-2 px-1 shrink-0">
+				تمنع صعود الروائح الكريهة والصراصير نهائياً، مع تصريف فوري للمياه بدون انسداد.
 			</p>
 
 			<!-- 5. Both Action Buttons (Always Visible Above The Fold) -->
