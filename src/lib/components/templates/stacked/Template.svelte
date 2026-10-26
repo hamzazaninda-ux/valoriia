@@ -8,6 +8,7 @@
 	import { cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
+	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
 
@@ -51,6 +52,8 @@
 			id: 'no-drill',
 			variant: 'ivory',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951490/Screenshot_2026-10-25_180133.png',
+			width: 391,
+			height: 493,
 			alt: 'تركيب سهل بدون حفر ولا شنيور',
 			badge: '⚡ تركيب سهل فـ 5 دقايق',
 			headline: 'بلا دريل، بلا شنيور، وبلا ما تضيّعي الزليج ديال دارك',
@@ -61,6 +64,8 @@
 			id: 'heavy-load',
 			variant: 'sage',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png',
+			width: 388,
+			height: 553,
 			alt: 'قوة تحمل فائقة حتى 20 كيلوغرام',
 			badge: '💪 قوة تحمّل فائقة حتى 20 كلغ',
 			headline: 'ثبات حديدي: هزي كاع شامبوانات ومستلزمات الدار بلا خوف',
@@ -71,6 +76,8 @@
 			id: 'exclusive-gift',
 			variant: 'amber',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png',
+			width: 390,
+			height: 496,
 			alt: 'رشاش التوربو المزدوج هدية مجانية',
 			badge: '🎁 هدية حصرية بقيمة 99 درهم فابور',
 			headline: 'رشاش التوربو المزدوج: ضغط ماء مضاعف 200% مع توفير الاستهلاك',
@@ -81,6 +88,8 @@
 			id: 'before-after',
 			variant: 'ivory',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180213.png',
+			width: 390,
+			height: 547,
 			alt: 'تحول الحمام قبل وبعد التنظيم',
 			badge: '✨ تحوّل حقيقي قبل وبعد',
 			headline: 'شوفي الفرق كيفاش كيرجع الحمام منظم ونظيف',
@@ -91,6 +100,8 @@
 			id: 'modern-aesthetics',
 			variant: 'luxury',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
+			width: 2048,
+			height: 2048,
 			alt: 'تصميم عصري ولمسة فندقية راقية للحمام',
 			badge: '🏡 تصميم عصري يناسب أي ديكور',
 			headline: 'لمسة فندقية راقية تزيد حمامك بهاءً وأناقة',
@@ -772,13 +783,15 @@
 				aria-label="انتقل إلى استمارة الطلب"
 			>
 				<img
-					src={HERO_IMAGE_URL}
+					src={cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720')}
+					srcset={cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960])}
+					sizes="(max-width: 400px) calc(100vw - 16px), 364px"
 					alt="باك الحمام الذكي مع رشاش زيادة الضغط هدية"
 					width="1536"
 					height="2752"
 					fetchpriority="high"
 					loading="eager"
-					decoding="sync"
+					decoding="async"
 					class="w-full h-auto block object-cover"
 				/>
 			</a>
@@ -955,7 +968,7 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 3–7. PERSUASIVE VISUAL CARDS (IMAGES 2 TO 6 BELOW THE FORM)     -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<div class="px-2.5 sm:px-4 space-y-5 pt-1 pb-4" dir="rtl">
+	<div class="px-2.5 sm:px-4 space-y-5 pt-1 pb-4 below-fold-lazy-section" dir="rtl">
 		<!-- Section Transition Header -->
 		<div class="text-center pt-1">
 			<span class="inline-block text-[11px] sm:text-xs font-extrabold tracking-wide text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full">
@@ -972,8 +985,12 @@
 				<article class="overflow-hidden rounded-3xl bg-[#0E291E] text-white shadow-lg border border-emerald-900/40">
 					<div class="overflow-hidden bg-[#F5F2EB]">
 						<img
-							src={card.image}
+							src={cloudinaryUrl(card.image, 'f_auto,q_auto,w_720')}
+							srcset={cloudinarySrcset(card.image, [480, 720, 960])}
+							sizes="(max-width: 600px) calc(100vw - 20px), 544px"
 							alt={card.alt}
+							width={card.width}
+							height={card.height}
 							class="block w-full h-auto"
 							loading="lazy"
 							decoding="async"
@@ -1011,8 +1028,12 @@
 				>
 					<div class="overflow-hidden bg-white">
 						<img
-							src={card.image}
+							src={cloudinaryUrl(card.image, 'f_auto,q_auto,w_720')}
+							srcset={cloudinarySrcset(card.image, [480, 720, 960])}
+							sizes="(max-width: 600px) calc(100vw - 20px), 544px"
 							alt={card.alt}
+							width={card.width}
+							height={card.height}
 							class="block w-full h-auto"
 							loading="lazy"
 							decoding="async"
@@ -1056,7 +1077,7 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 8. CUSTOMER REVIEWS & FAQ BELOW VISUAL CARDS                    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="px-2.5 sm:px-4 py-5" dir="rtl">
+	<section class="px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
 		<div class="text-center mb-5">
 			<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
 				<svg aria-hidden="true" class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1176,7 +1197,7 @@
 
 	<!-- FAQ Section -->
 	{#if t.sections.trustBadges.showFAQ && activeFaq && activeFaq.length > 0}
-		<section class="px-2.5 sm:px-4 py-5" dir="rtl">
+		<section class="px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
 			<div class="text-center mb-5">
 				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
 					<svg aria-hidden="true" class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">

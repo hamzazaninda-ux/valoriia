@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ProductOffer } from '$lib/types/templates';
+	import { cloudinaryUrl } from '$lib/utils/images';
 
 	let {
 		offers = [],
@@ -77,10 +78,13 @@
 				<div class="offer-thumb">
 					{#if offer.image}
 						<img
-							src={offer.image}
+							src={cloudinaryUrl(offer.image, 'f_auto,q_auto,w_120')}
 							alt="{offerPrefix(offer)}{hasGiftSuffix(offer) ? ' هدية' : ''}"
 							class="offer-thumb-img"
-							loading="lazy"
+							width="44"
+							height="44"
+							loading="eager"
+							decoding="async"
 						/>
 					{:else}
 						<div class="offer-thumb-fallback">

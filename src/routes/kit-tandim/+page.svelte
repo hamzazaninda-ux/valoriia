@@ -1,10 +1,15 @@
 <script lang="ts">
 	import StackedTemplate from '$lib/components/templates/stacked/Template.svelte';
+	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	let { data } = $props();
 
 	const HERO_IMAGE_URL =
 		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg';
+
+	const heroPreloadUrl = cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720');
+	const heroPreloadSrcset = cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960]);
+	const heroSizes = '(max-width: 400px) calc(100vw - 16px), 364px';
 
 	const seo = $derived(
 		data.product?.published?.seo || {
@@ -19,8 +24,16 @@
 <svelte:head>
 	<title>{seo.metaTitle}</title>
 	<meta name="description" content={seo.metaDescription} />
-	<meta property="og:image" content={HERO_IMAGE_URL} />
-	<link rel="preload" as="image" href={HERO_IMAGE_URL} fetchpriority="high" />
+	<meta property="og:image" content={heroPreloadUrl} />
+	<link rel="preconnect" href="https://res.cloudinary.com" crossorigin="" />
+	<link
+		rel="preload"
+		as="image"
+		href={heroPreloadUrl}
+		imagesrcset={heroPreloadSrcset}
+		imagesizes={heroSizes}
+		fetchpriority="high"
+	/>
 	{#if seo.noindex}
 		<meta name="robots" content="noindex" />
 	{/if}
