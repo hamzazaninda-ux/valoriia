@@ -5,7 +5,7 @@
 	let { data } = $props();
 
 	const HERO_IMAGE_URL =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png';
 
 	const heroPreloadUrl = cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720');
 	const heroPreloadSrcset = cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960]);

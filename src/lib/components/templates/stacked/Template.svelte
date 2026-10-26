@@ -20,7 +20,7 @@
 	let order = $derived(version.order);
 
 	const HERO_IMAGE_URL =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png';
 
 	const defaultOffers: ProductOffer[] = [
 		{
@@ -786,9 +786,9 @@
 					src={cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720')}
 					srcset={cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960])}
 					sizes="(max-width: 400px) calc(100vw - 16px), 364px"
-					alt="باك الحمام الذكي مع رشاش زيادة الضغط هدية"
-					width="1536"
-					height="2752"
+					alt="باك الحمام الذكي مع رشاش زيادة الضغط هدية فابور"
+					width="940"
+					height="1672"
 					fetchpriority="high"
 					loading="eager"
 					decoding="async"
