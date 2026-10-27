@@ -49,30 +49,6 @@
 
 	const visualCards = [
 		{
-			id: 'no-drill',
-			variant: 'ivory',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793122075/Gemini_Generated_Image_aqu0syaqu0syaqu0.jpg',
-			width: 1536,
-			height: 2752,
-			alt: 'حاجز حماية بارتفاع 5 سم لمنع سقوط المستلزمات',
-			badge: '⚡ تركيب سهل فـ 5 دقايق',
-			headline: 'بلا دريل، بلا شنيور، وبلا ما تضيّعي الزليج ديال دارك',
-			body: 'مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وجلدات سيليكون تثبت الحامل بإحكام بين الأرض والسقف بدون مسمار واحد.',
-			showQuickCta: true
-		},
-		{
-			id: 'heavy-load',
-			variant: 'sage',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793121027/Gemini_Generated_Image_6o8y9c6o8y9c6o8y.jpg',
-			width: 1536,
-			height: 2752,
-			alt: 'أبعاد وقياسات رفوف منظم الحمام الذكي',
-			badge: '💪 قوة تحمّل فائقة حتى 20 كلغ',
-			headline: 'ثبات حديدي: هزي كاع شامبوانات ومستلزمات الدار بلا خوف',
-			body: 'رفوف واسعة وعميقة مصنوعة من خامات مقاومة للماء والرطوبة مع أعمدة إينوكس مضادة للصدأ والتآكل. يتحمل أثقل القنينات وبيدونات الصابون بدون ما يتحرك أو يميل مليمتر واحد.',
-			showQuickCta: false
-		},
-		{
 			id: 'exclusive-gift',
 			variant: 'amber',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png',
