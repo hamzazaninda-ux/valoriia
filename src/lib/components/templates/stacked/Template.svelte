@@ -49,27 +49,16 @@
 
 	const visualCards = [
 		{
-			id: 'no-drill',
-			variant: 'ivory',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793122075/Gemini_Generated_Image_aqu0syaqu0syaqu0.jpg',
-			width: 1536,
-			height: 2752,
-			alt: 'حاجز حماية بارتفاع 5 سم لمنع سقوط المستلزمات',
-			badge: '⚡ تركيب سهل فـ 5 دقايق',
-			headline: 'بلا دريل، بلا شنيور، وبلا ما تضيّعي الزليج ديال دارك',
-			body: 'مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وجلدات سيليكون تثبت الحامل بإحكام بين الأرض والسقف بدون مسمار واحد.',
-			showQuickCta: true
-		},
-		{
 			id: 'heavy-load',
 			variant: 'sage',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793121027/Gemini_Generated_Image_6o8y9c6o8y9c6o8y.jpg',
-			width: 1536,
-			height: 2752,
-			alt: 'أبعاد وقياسات رفوف منظم الحمام الذكي',
-			badge: '💪 قوة تحمّل فائقة حتى 20 كلغ',
-			headline: 'ثبات حديدي: هزي كاع شامبوانات ومستلزمات الدار بلا خوف',
-			body: 'رفوف واسعة وعميقة مصنوعة من خامات مقاومة للماء والرطوبة مع أعمدة إينوكس مضادة للصدأ والتآكل. يتحمل أثقل القنينات وبيدونات الصابون بدون ما يتحرك أو يميل مليمتر واحد.',
+			textFirst: true,
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png',
+			width: 388,
+			height: 553,
+			alt: 'ثبات وقوة تحمل منظم الحمام الذكي',
+			badge: '💪 قوة تحمّل فائقة وثبات حديدي',
+			headline: 'هزّي كاع مستلزمات الحمام والشامبوانات بلا خوف',
+			body: 'رفوف متينة وواسعة مصنوعة من خامات مقاومة للماء والرطوبة ومدعومة بأعمدة إينوكس صلبة مضادة للصدأ والتآكل، تمنحك استقراراً تاماً بدون اهتزاز أو ميلان.',
 			showQuickCta: false
 		},
 		{
@@ -1015,6 +1004,35 @@
 								<span>أطلبي باك الحمام الذكي الآن ↑</span>
 							</a>
 						</div>
+					</div>
+				</article>
+			{:else if card.textFirst}
+				<!-- Consolidated Extreme Stability Feature Card -->
+				<article class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100/90 text-center transition-all">
+					<span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+						{card.badge}
+					</span>
+
+					<h2 class="font-display text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+						{card.headline}
+					</h2>
+
+					<p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+						{card.body}
+					</p>
+
+					<div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+						<img
+							src={cloudinaryUrl(card.image, 'f_auto,q_auto,w_720')}
+							srcset={cloudinarySrcset(card.image, [480, 720, 960])}
+							sizes="(max-width: 600px) calc(100vw - 20px), 448px"
+							alt={card.alt}
+							width={card.width}
+							height={card.height}
+							class="w-full h-auto object-cover block"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				</article>
 			{:else}
