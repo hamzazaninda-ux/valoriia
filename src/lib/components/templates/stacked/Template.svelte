@@ -1238,9 +1238,43 @@
 		</section>
 	{/if}
 
-	<footer class="bg-[#0B1F17] py-6 text-center text-xs text-emerald-100/70 px-4 space-y-1.5 mt-auto" dir="rtl">
-		<p class="font-bold text-white">Lhamza Shop — متجر مغربي متخصص في منتجات التنظيم والراحة المنزلية</p>
-		<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
+	<!-- Google Ads Compliant Transparent Footer -->
+	<footer class="bg-[#0B1F17] pt-8 pb-24 sm:pb-14 text-center text-xs text-emerald-100/75 px-4 mt-auto border-t border-emerald-900/40" dir="rtl">
+		<div class="max-w-4xl mx-auto space-y-4">
+			<!-- Store Info -->
+			<div class="space-y-1">
+				<p class="font-black text-sm sm:text-base text-white">Lhamza Shop</p>
+				<p class="text-xs text-emerald-100/70 max-w-lg mx-auto">
+					متجر مغربي موثوق متخصص في منتجات التنظيم والراحة المنزلية. توصيل سريع ومجاني لجميع المدن مع الدفع بعد المعاينة عند الاستلام.
+				</p>
+			</div>
+
+			<!-- Policy Links -->
+			<nav aria-label="روابط السياسات القانونية" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-bold text-emerald-300/90 py-2 border-y border-emerald-900/40">
+				<a href="/privacy" class="hover:text-white hover:underline transition-colors">سياسة الخصوصية</a>
+				<span class="text-emerald-700 select-none">•</span>
+				<a href="/terms" class="hover:text-white hover:underline transition-colors">الشروط والأحكام</a>
+				<span class="text-emerald-700 select-none">•</span>
+				<a href="/refund-policy" class="hover:text-white hover:underline transition-colors">سياسة الاسترجاع والاستبدال</a>
+				<span class="text-emerald-700 select-none">•</span>
+				<a href="/shipping-policy" class="hover:text-white hover:underline transition-colors">الشحن والتوصيل</a>
+				<span class="text-emerald-700 select-none">•</span>
+				<a href="/contact" class="hover:text-white hover:underline transition-colors">اتصل بنا</a>
+			</nav>
+
+			<!-- Contact Info Bar -->
+			<div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] sm:text-xs text-emerald-200/80">
+				<span>📍 الدار البيضاء، المغرب</span>
+				<span>📧 <a href="mailto:contact@lhamza.shop" class="underline hover:text-white">contact@lhamza.shop</a></span>
+				<span>📱 <span dir="ltr">+212 626-558375</span></span>
+				<span>⏰ 9:00 - 22:00</span>
+			</div>
+
+			<!-- Copyright -->
+			<p class="text-[11px] text-emerald-400/60 pt-1">
+				© {new Date().getFullYear()} Lhamza Shop (lhamza.shop). جميع الحقوق محفوظة.
+			</p>
+		</div>
 	</footer>
 
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->

@@ -543,11 +543,13 @@
 				</div>
 			</div>
 			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">المساعدة</h4>
+				<h4 class="text-sm font-bold text-white">السياسات والقوانين</h4>
 				<div class="grid gap-2 text-xs">
-					<a href="#why" class="transition-colors hover:text-[#C99738]">الشحن والتوصيل</a>
-					<a href="#offer" class="transition-colors hover:text-[#C99738]">كيفاش نطلب</a>
-					<a href="#contact" class="transition-colors hover:text-[#C99738]">اتصل بنا</a>
+					<a href="/privacy" class="transition-colors hover:text-[#C99738]">سياسة الخصوصية</a>
+					<a href="/terms" class="transition-colors hover:text-[#C99738]">الشروط والأحكام</a>
+					<a href="/refund-policy" class="transition-colors hover:text-[#C99738]">سياسة الاسترجاع والاستبدال</a>
+					<a href="/shipping-policy" class="transition-colors hover:text-[#C99738]">الشحن والتوصيل</a>
+					<a href="/contact" class="transition-colors hover:text-[#C99738]">اتصل بنا</a>
 				</div>
 			</div>
 			<div class="space-y-3">
@@ -564,6 +566,7 @@
 					راسلنا على واتساب
 				</a>
 				<p class="text-[11px] text-stone-400">متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}</p>
+				<p class="text-[11px] text-stone-400">البريد: contact@lhamza.shop</p>
 			</div>
 		</div>
 		<div class="border-t border-white/10 bg-black/30 py-5 text-center text-xs text-stone-400">
