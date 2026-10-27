@@ -1,5 +1,22 @@
 [
   {
+    "id": "NV-217697",
+    "createdAt": "2026-10-27T12:54:40.294Z",
+    "fullName": "El ouarzazi. Najia",
+    "phone": "0623200921",
+    "city": "تأكيد العنوان عبر الهاتف",
+    "address": "العرض: علبتان كولاجين | المجموع: 279 DH (تأكيد عبر الهاتف)",
+    "product": "NOVAVITA كولاجين - باقة الثنائي الأكثر طلباً (2 علب)",
+    "quantity": 2,
+    "totalPrice": 279,
+    "status": "جديد",
+    "sku": "gummies_collagen",
+    "pageUrl": "",
+    "orderType": "direct",
+    "items": "[{\"sku\":\"gummies_collagen\",\"slug\":\"gummies_collagen\",\"title\":\"علكات الكولاجين البحري (علبتان)\",\"quantity\":2,\"unitPrice\":139.5,\"price\":279,\"isUpsell\":false}]",
+    "notes": "العرض: علبتان كولاجين | المجموع: 279 DH (تأكيد عبر الهاتف) [طلب: NV-217697]"
+  },
+  {
     "id": "NV-798018",
     "createdAt": "2026-10-27T09:24:13.891Z",
     "fullName": "مريم",
