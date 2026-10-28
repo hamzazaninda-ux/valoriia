@@ -40,22 +40,22 @@
       "offers": [
         {
           "id": 1,
-          "title": "قطعة واحدة + رشاش هدية مجانية 🎁",
-          "subtitle": "توصيل مجاني لجميع المدن المغربية",
+          "title": "قطعة واحدة",
+          "subtitle": "🎁 رشاش هدية",
           "price": 279,
           "originalPrice": 399,
           "quantity": 1,
-          "badge": "وفّر 120 درهم",
+          "badge": "وفر 120 درهم",
           "isPopular": true
         },
         {
           "id": 2,
-          "title": "قطعتان + رشاشان هدية مجانية 🎁🎁",
-          "subtitle": "وفّر 250 درهم • فقط 224 درهم للقطعة!",
+          "title": "قطعتان",
+          "subtitle": "🎁 رشاش هدية",
           "price": 449,
           "originalPrice": 699,
           "quantity": 2,
-          "badge": "🔥 العرض الأوفر والأكثر طلباً",
+          "badge": "الأكثر طلباً",
           "isPopular": false
         }
       ]
