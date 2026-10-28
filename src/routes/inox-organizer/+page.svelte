@@ -4,55 +4,66 @@
 
 	let { data } = $props();
 
-	const PRODUCT_TITLE = 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً';
-	const PRODUCT_SKU = 'inox-organizer';
-
-	interface BundleOption {
+	// ============================================================
+	// ⚙️ إعدادات المنتج والعروض (قابلة للتبديل بسهولة لأي منتوج جديد)
+	// ============================================================
+	interface BundleItem {
 		id: number;
 		qty: number;
 		title: string;
 		price: number;
 		oldPrice: number;
+		saving: string;
 		badge?: string;
-		savingsText: string;
 	}
 
-	const BUNDLES: BundleOption[] = [
-		{
-			id: 1,
-			qty: 1,
-			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
-			price: 279,
-			oldPrice: 399,
-			badge: 'وفّر 120 درهم',
-			savingsText: 'وفّر 120 درهم'
-		},
-		{
-			id: 2,
-			qty: 2,
-			title: 'قطعتان + رشاشان هدية مجانية 🎁🎁',
-			price: 449,
-			oldPrice: 699,
-			badge: '🔥 العرض الأوفر والأكثر طلباً',
-			savingsText: 'وفّر 250 درهم • فقط 224 درهم للقطعة!'
-		}
-	];
+	const PRODUCT_CONFIG = {
+		title: 'منظم الحمام الفاخر (إينوكس 3 طبقات)',
+		sku: 'inox-organizer',
+		image:
+			'https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
+		giftText: '🎁 رشاش هدية',
+		bundles: [
+			{
+				id: 1,
+				qty: 1,
+				title: 'قطعة واحدة',
+				price: 279,
+				oldPrice: 399,
+				saving: 'وفر 120 درهم'
+			},
+			{
+				id: 2,
+				qty: 2,
+				title: 'قطعتان',
+				price: 449,
+				oldPrice: 699,
+				saving: 'وفر 250 درهم',
+				badge: 'الأكثر طلباً'
+			}
+		] as BundleItem[]
+	};
 
 	let selectedBundleId = $state(1);
-	const selectedBundle = $derived(BUNDLES.find((b) => b.id === selectedBundleId) || BUNDLES[0]);
+	const selectedBundle = $derived(
+		PRODUCT_CONFIG.bundles.find((b) => b.id === selectedBundleId) || PRODUCT_CONFIG.bundles[0]
+	);
 
 	let customerName = $state('');
 	let customerPhone = $state('');
-	let customerAddress = $state('');
 
 	let nameBlurred = $state(false);
 	let phoneBlurred = $state(false);
-	let addressBlurred = $state(false);
 
 	let isSubmitting = $state(false);
 	let formError = $state('');
 
-	// Phone Validation
+	// Phone Validation: 10 digits starting with 06 or 07
+	function validatePhone(phone: string): boolean {
+		const digits = phone.replace(/\D/g, '');
+		return /^(06|07)\d{8}$/.test(digits);
+	}
+
 	function normalizeMoroccanPhone(raw: string): string {
 		let digits = raw.replace(/\D/g, '');
 		if (digits.startsWith('00212')) digits = digits.slice(5);
@@ -64,28 +75,16 @@
 		return digits;
 	}
 
-	function validatePhone(phone: string): boolean {
-		const digits = phone.replace(/\D/g, '');
-		const normalized = normalizeMoroccanPhone(phone);
-		if (normalized.length === 12 && normalized.startsWith('212')) {
-			const prefix = normalized.charAt(3);
-			return ['5', '6', '7'].includes(prefix);
-		}
-		return digits.length >= 9 && digits.length <= 13;
-	}
-
 	const isNameValid = $derived(customerName.trim().length >= 2);
 	const isPhoneValid = $derived(validatePhone(customerPhone));
-	const isAddressValid = $derived(customerAddress.trim().length >= 3);
 
 	const showNameError = $derived(nameBlurred && !isNameValid);
 	const showPhoneError = $derived(phoneBlurred && !isPhoneValid);
-	const showAddressError = $derived(addressBlurred && !isAddressValid);
 
 	function scrollToOrderForm() {
 		const el = document.getElementById('order-form');
 		if (el) {
-			el.scrollIntoView({ behavior: 'smooth' });
+			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
 	}
 
@@ -93,7 +92,6 @@
 		e.preventDefault();
 		nameBlurred = true;
 		phoneBlurred = true;
-		addressBlurred = true;
 		formError = '';
 
 		if (!isNameValid) {
@@ -102,12 +100,7 @@
 		}
 
 		if (!isPhoneValid) {
-			formError = 'يرجى إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).';
-			return;
-		}
-
-		if (!isAddressValid) {
-			formError = 'يرجى إدخال مدينتك وعنوان التوصيل.';
+			formError = 'يرجى إدخال رقم هاتف مغربي صحيح (10 أرقام تبدأ بـ 06 أو 07).';
 			return;
 		}
 
@@ -117,7 +110,7 @@
 		const normalizedPhone = normalizeMoroccanPhone(customerPhone);
 		const activePrice = selectedBundle.price;
 		const activeQty = selectedBundle.qty;
-		const activeTitle = `${PRODUCT_TITLE} (${selectedBundle.title})`;
+		const activeTitle = `${PRODUCT_CONFIG.title} (${selectedBundle.title})`;
 
 		// 1. Google Ads GTAG Conversion Tracking (AW-18405009405)
 		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
@@ -135,7 +128,7 @@
 					transaction_id: orderId,
 					items: [
 						{
-							item_id: PRODUCT_SKU,
+							item_id: PRODUCT_CONFIG.sku,
 							item_name: activeTitle,
 							price: activePrice,
 							quantity: activeQty
@@ -165,9 +158,9 @@
 			name: customerName.trim(),
 			phone: normalizedPhone,
 			phoneNumber: normalizedPhone,
-			city: customerAddress.trim(),
-			address: customerAddress.trim(),
-			city_address: customerAddress.trim(),
+			city: 'المغرب',
+			address: 'سيتم التأكيد هاتفياً',
+			city_address: 'سيتم التأكيد هاتفياً',
 			price: activePrice,
 			total: activePrice,
 			totalPrice: activePrice,
@@ -176,7 +169,7 @@
 			productTitle: activeTitle,
 			productTitleStr: activeTitle,
 			selectedOfferTitle: selectedBundle.title,
-			sku: PRODUCT_SKU,
+			sku: PRODUCT_CONFIG.sku,
 			offerSku: selectedBundle.title,
 			date_order: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' }),
 			status: 'pending'
@@ -201,7 +194,7 @@
 
 			// Redirect to thank you page
 			const thankYouUrl = preserveTrackingParams(
-				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&city=${encodeURIComponent(customerAddress.trim())}&total=${activePrice}`
+				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&total=${activePrice}`
 			);
 			window.location.href = thankYouUrl;
 		} catch (err) {
@@ -263,7 +256,7 @@
 		<!-- HERO IMAGE FIRST -->
 		<div class="w-full overflow-hidden rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
 			<img
-				src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+				src={PRODUCT_CONFIG.image}
 				alt="منظم الحمام الفاخر من الإينوكس 3 طبقات مع رشاش الاستحمام التوربو المفلتر هدية مجانية"
 				loading="eager"
 				fetchpriority="high"
@@ -282,10 +275,10 @@
 			<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-0.5">
 				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ (114 تقييم)</span>
 				<span class="text-stone-300 select-none">|</span>
-				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">279 درهم</span>
-				<span class="text-sm text-stone-400 line-through font-bold">399 درهم</span>
+				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_CONFIG.bundles[0].price} درهم</span>
+				<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_CONFIG.bundles[0].oldPrice} درهم</span>
 				<span class="bg-[#C99738] text-white text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-md shadow-2xs">
-					وفر 120 درهم
+					{PRODUCT_CONFIG.bundles[0].saving}
 				</span>
 			</div>
 
@@ -308,148 +301,119 @@
 	</header>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 3. DIRECT COD ORDER FORM WITH 2-TIER BUNDLE SELECTOR              -->
+	<!-- 3. DIRECT COD ORDER FORM WITH 2-TIER PORTRAIT BUNDLE SELECTOR    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="max-w-xl mx-auto px-3 sm:px-4 py-3 sm:py-4 scroll-mt-12" dir="rtl">
+	<section id="order-form" class="max-w-xl mx-auto px-3 sm:px-4 py-2 sm:py-3 scroll-mt-12 sm:scroll-mt-14" dir="rtl">
 		<div class="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#073824] bg-white shadow-xl">
-			<!-- Header matching reference design -->
-			<div class="bg-[#073824] py-3.5 px-4 text-center text-white">
-				<h2 class="font-display text-xl sm:text-2xl font-black tracking-tight leading-tight">
+			<!-- Header -->
+			<div class="bg-[#073824] py-2.5 px-4 text-center text-white">
+				<h2 class="font-display text-lg sm:text-xl font-black tracking-tight leading-tight">
 					أكمل طلبك الآن
 				</h2>
-				<p class="text-xs sm:text-sm text-emerald-100/90 font-medium mt-1">
-					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
+				<p class="text-xs text-emerald-100/90 font-medium mt-0.5">
+					الدفع عند الاستلام • التوصيل مجاني
 				</p>
 			</div>
 
 			<!-- Body -->
-			<div class="p-3.5 sm:p-5 bg-[#FAF7F2]/60 space-y-3.5">
-				<!-- 2-Tier Bundle Selector Cards -->
-				<div class="space-y-3" role="radiogroup" aria-label="اختر باقة العرض">
-					<!-- Bundle 1: 1 Piece (Default) -->
-					<div
-						role="radio"
-						aria-checked={selectedBundleId === 1}
-						tabindex="0"
-						onclick={() => (selectedBundleId = 1)}
-						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedBundleId = 1; } }}
-						class="relative flex items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none {selectedBundleId === 1 ? 'border-[#0B5E3C] bg-white shadow-sm ring-2 ring-[#0B5E3C]/10' : 'border-stone-200 bg-white/80 hover:border-stone-300'}"
-					>
-						<!-- Right Group: Radio + Thumbnail + Title/Badge -->
-						<div class="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
-							<!-- Custom Radio Button with Checkmark -->
-							<div class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all {selectedBundleId === 1 ? 'bg-[#0B5E3C] text-white shadow-xs' : 'border-2 border-stone-300 bg-white'}">
-								{#if selectedBundleId === 1}
-									<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-									</svg>
+			<div class="p-3 sm:p-4 bg-[#FAF7F2]/60 space-y-3">
+				<!-- 2-Tier Portrait Bundle Cards (Grid 2 cols, gap 10px, items-stretch) -->
+				<div class="grid grid-cols-2 gap-2.5 items-stretch pt-1.5" role="radiogroup" aria-label="اختر باقة العرض">
+					{#each PRODUCT_CONFIG.bundles as b}
+						{@const isSelected = selectedBundleId === b.id}
+						<div
+							role="radio"
+							aria-checked={isSelected}
+							tabindex="0"
+							onclick={() => (selectedBundleId = b.id)}
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.preventDefault();
+									selectedBundleId = b.id;
+								}
+							}}
+							class="relative flex flex-col items-center justify-between p-2.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none text-center h-full {isSelected
+								? 'border-[#0B5E3C] bg-emerald-50/50 shadow-xs ring-1 ring-[#0B5E3C]/20'
+								: 'border-stone-200 bg-white hover:border-stone-300'}"
+						>
+							{#if b.badge}
+								<span
+									class="absolute -top-2.5 inset-x-0 mx-auto w-fit z-10 bg-[#073824] text-[#C99738] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs border border-[#C99738]/40 whitespace-nowrap"
+								>
+									{b.badge}
+								</span>
+							{/if}
+
+							<!-- Top Row: Radio Button in the top right corner -->
+							<div class="w-full flex justify-start mb-1">
+								<div
+									class="w-5 h-5 rounded-full flex items-center justify-center transition-all {isSelected
+										? 'bg-[#0B5E3C] text-white shadow-2xs'
+										: 'border-2 border-stone-300 bg-white'}"
+								>
+									{#if isSelected}
+										<svg
+											class="w-3 h-3"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="3.5"
+											aria-hidden="true"
+										>
+											<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+										</svg>
+									{/if}
+								</div>
+							</div>
+
+							<!-- Fixed Size Product Image (64x64px) -->
+							<div class="relative w-16 h-16 rounded-xl overflow-hidden bg-white border border-stone-100 p-0.5 shadow-2xs mb-1">
+								<img
+									src={PRODUCT_CONFIG.image}
+									alt={b.title}
+									class="w-full h-full object-cover rounded-lg"
+									loading="lazy"
+								/>
+								{#if b.qty > 1}
+									<span class="absolute bottom-0 end-0 bg-[#073824] text-[#C99738] text-[9px] font-black px-1 rounded-tl-md">
+										×{b.qty}
+									</span>
 								{/if}
 							</div>
 
-							<!-- Thumbnail -->
-							<div class="w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-white p-0.5 shadow-2xs">
-								<img
-									src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
-									alt="قطعة واحدة"
-									class="w-full h-full object-contain"
-									loading="lazy"
-								/>
-							</div>
+							<!-- Title (Max 2 words) -->
+							<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-tight">
+								{b.title}
+							</h4>
 
-							<!-- Text Info -->
-							<div class="min-w-0 flex-1 text-right">
-								<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-snug">
-									قطعة واحدة + رشاش هدية مجانية 🎁
-								</h4>
-								<span class="inline-block bg-emerald-100 text-[#073824] text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full mt-1">
-									وفّر 120 درهم
+							<!-- Gift text (Identical on both cards) -->
+							<p class="text-[11px] font-bold text-amber-700 leading-tight mt-0.5">
+								{PRODUCT_CONFIG.giftText}
+							</p>
+
+							<!-- Price row -->
+							<div class="my-1 leading-tight">
+								<span class="font-display text-lg sm:text-[22px] font-black text-[#073824] block">
+									{b.price} درهم
 								</span>
-							</div>
-						</div>
-
-						<!-- Left Group: Price Block -->
-						<div class="text-left shrink-0 pl-1">
-							<span class="font-display text-base sm:text-lg font-black text-[#073824] block leading-tight">
-								279 درهم
-							</span>
-							<span class="text-[11px] text-stone-400 line-through font-bold block leading-tight">
-								399 درهم
-							</span>
-						</div>
-					</div>
-
-					<!-- Bundle 2: 2 Pieces (Best Value Upsell) -->
-					<div
-						role="radio"
-						aria-checked={selectedBundleId === 2}
-						tabindex="0"
-						onclick={() => (selectedBundleId = 2)}
-						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedBundleId = 2; } }}
-						class="relative flex items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none {selectedBundleId === 2 ? 'border-[#0B5E3C] bg-white shadow-sm ring-2 ring-[#0B5E3C]/10' : 'border-stone-200 bg-white/80 hover:border-stone-300'}"
-					>
-						<!-- Top Floating Badge -->
-						<div class="absolute -top-3 end-4 z-10 bg-[#073824] text-[#C99738] text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 border border-[#C99738]/40">
-							<span>🔥 العرض الأوفر والأكثر طلباً</span>
-						</div>
-
-						<!-- Right Group: Radio + Thumbnail with x2 badge + Title/Savings -->
-						<div class="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
-							<!-- Custom Radio Button with Checkmark -->
-							<div class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all {selectedBundleId === 2 ? 'bg-[#0B5E3C] text-white shadow-xs' : 'border-2 border-stone-300 bg-white'}">
-								{#if selectedBundleId === 2}
-									<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-									</svg>
-								{/if}
-							</div>
-
-							<!-- Thumbnail with x2 badge -->
-							<div class="relative w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-white p-0.5 shadow-2xs">
-								<img
-									src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
-									alt="قطعتان"
-									class="w-full h-full object-contain"
-									loading="lazy"
-								/>
-								<span class="absolute bottom-0 end-0 bg-[#073824] text-[#C99738] text-[9px] font-black px-1 rounded-tl-md">
-									×2
+								<span class="text-[11px] text-stone-400 line-through font-bold block">
+									{b.oldPrice} درهم
 								</span>
 							</div>
 
-							<!-- Text Info -->
-							<div class="min-w-0 flex-1 text-right">
-								<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-snug">
-									قطعتان + رشاشان هدية مجانية 🎁🎁
-								</h4>
-								<p class="text-[10px] sm:text-[11px] font-bold text-emerald-700 mt-0.5">
-									وفّر 250 درهم • فقط 224 درهم للقطعة!
-								</p>
-							</div>
-						</div>
-
-						<!-- Left Group: Price Block -->
-						<div class="text-left shrink-0 pl-1">
-							<span class="font-display text-base sm:text-lg font-black text-[#073824] block leading-tight">
-								449 درهم
-							</span>
-							<span class="text-[11px] text-stone-400 line-through font-bold block leading-tight">
-								699 درهم
+							<!-- Pill -->
+							<span class="inline-block bg-emerald-100/90 text-[#073824] text-[10px] font-black px-2 py-0.5 rounded-full mt-0.5">
+								{b.saving}
 							</span>
 						</div>
-					</div>
+					{/each}
 				</div>
 
 				<!-- Form Inputs -->
-				<form onsubmit={handleSubmit} novalidate class="space-y-3 pt-1">
-					<div class="border-t border-stone-200/80 pt-3">
-						<h3 class="font-display text-sm font-black text-stone-900 mb-2">
-							معلومات التوصيل
-						</h3>
-					</div>
-
+				<form onsubmit={handleSubmit} novalidate class="space-y-2.5 pt-1">
 					<!-- Input 1: Full Name -->
 					<div>
-						<label for="order-fullname" class="block text-xs font-bold text-stone-800 mb-1">
+						<label for="order-fullname" class="block text-xs font-bold text-stone-800 mb-1 text-right">
 							الاسم الكامل <span class="text-red-500">*</span>
 						</label>
 						<input
@@ -458,78 +422,59 @@
 							bind:value={customerName}
 							onblur={() => (nameBlurred = true)}
 							placeholder="اكتب اسمك الكامل هنا"
-							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 text-right transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
 							required
 						/>
 						{#if showNameError}
-							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال الاسم الكامل (حرفان على الأقل).</p>
+							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال الاسم الكامل (حرفان على الأقل).</p>
 						{/if}
 					</div>
 
 					<!-- Input 2: Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-xs font-bold text-stone-800 mb-1">
-							رقم الهاتف (واتساب) <span class="text-red-500">*</span>
+						<label for="order-phone" class="block text-xs font-bold text-stone-800 mb-1 text-right">
+							رقم الهاتف <span class="text-red-500">*</span>
 						</label>
 						<input
 							id="order-phone"
 							type="tel"
+							inputmode="numeric"
 							dir="ltr"
 							bind:value={customerPhone}
 							onblur={() => (phoneBlurred = true)}
-							placeholder="06XXXXXXXX أو 07XXXXXXXX"
-							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							placeholder="06XXXXXXXX"
+							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
 							required
 						/>
 						{#if showPhoneError}
-							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
-						{/if}
-					</div>
-
-					<!-- Input 3: City and Address -->
-					<div>
-						<label for="order-address" class="block text-xs font-bold text-stone-800 mb-1">
-							المدينة والعنوان <span class="text-red-500">*</span>
-						</label>
-						<input
-							id="order-address"
-							type="text"
-							bind:value={customerAddress}
-							onblur={() => (addressBlurred = true)}
-							placeholder="مدينتك والحي أو العنوان للتوصيل"
-							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showAddressError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
-							required
-						/>
-						{#if showAddressError}
-							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال مدينتك وعنوان التوصيل.</p>
+							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال رقم هاتف مغربي صحيح (10 أرقام تبدأ بـ 06 أو 07).</p>
 						{/if}
 					</div>
 
 					{#if formError}
-						<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 font-bold text-center">
+						<div class="rounded-xl bg-red-50 border border-red-200 p-2 text-xs text-red-700 font-bold text-center">
 							{formError}
 						</div>
 					{/if}
 
-					<!-- Dynamic CTA Submit Button with Energetic Amber/Orange #E06D14 -->
+					<!-- Confirmation Button -->
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						class="w-full min-h-12.5 py-3.5 px-5 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] active:scale-[0.98] text-white font-black text-sm sm:text-base shadow-lg shadow-orange-950/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+						class="w-full h-[52px] min-h-[52px] px-4 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] active:scale-[0.98] text-white font-black text-base shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
 					>
 						{#if isSubmitting}
 							<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
 							<span>جاري تأكيد طلبك...</span>
-						{:else if selectedBundleId === 2}
-							<span>تأكيد الطلب الآن • 449 درهم (توفير 250 درهم) 🚚</span>
 						{:else}
-							<span>تأكيد الطلب الآن • 279 درهم 🚚</span>
+							<span>🚚</span>
+							<span>تأكيد الطلب الآن • {selectedBundle.price} درهم</span>
 						{/if}
 					</button>
 
-					<!-- Trust Footnote below button -->
-					<p class="text-center text-[11px] font-bold text-stone-500 pt-0.5 leading-normal">
-						🔒 الدفع عند الاستلام بعد المعاينة • توصيل مجاني وسريع لجميع المدن المغربية
+					<!-- Reassurance Footnote -->
+					<p class="text-center text-[11px] font-bold text-stone-500 pt-0.5 leading-tight">
+						🔒 الدفع عند الاستلام
 					</p>
 				</form>
 			</div>
@@ -937,13 +882,10 @@
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="flex-1 min-h-10 py-2 px-3 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1 cursor-pointer"
+					class="flex-1 h-[44px] min-h-[44px] py-2 px-3 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
 				>
-					{#if selectedBundleId === 2}
-						<span>اطلب قطعتين • 449 درهم 🎁</span>
-					{:else}
-						<span>اطلب الآن • 279 درهم 🎁</span>
-					{/if}
+					<span>🚚</span>
+					<span>اطلب الآن • {selectedBundle.price} درهم</span>
 				</button>
 			</div>
 		</div>
