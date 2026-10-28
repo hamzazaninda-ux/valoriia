@@ -27,7 +27,7 @@
 		<div class="flex items-center justify-center flex-wrap gap-x-2.5 sm:gap-x-3.5 gap-y-0.5 text-[11px] sm:text-xs font-bold text-center leading-tight">
 			<span class="inline-flex items-center gap-1 text-white">
 				<span>🚚</span>
-				<span class="sm:hidden">توصيل مجاني وفابور</span>
+				<span class="sm:hidden">توصيل مجاني وسريع</span>
 				<span class="hidden sm:inline">توصيل مجاني وسريع لجميع المدن</span>
 			</span>
 			<span class="text-amber-400 font-extrabold select-none">✦</span>

@@ -203,7 +203,7 @@
 			<!-- 2. Middle: Large 1:1 Square Product Image taking full width -->
 			{#if !currentProduct}
 				<div class="p-6 text-center text-sm font-bold text-neutral-500">
-					شكراً على طلبك! غادي نعيطو ليك للتأكيد.
+					شكراً على طلبك! سنتصل بك لتأكيد التفاصيل.
 				</div>
 			{:else}
 				{@const p = currentProduct}
@@ -233,7 +233,7 @@
 							<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
 							<span>جاري الإضافة...</span>
 						{:else}
-							<span>+ زيد للطلب</span>
+							<span>+ أضف إلى طلبي</span>
 						{/if}
 					</button>
 

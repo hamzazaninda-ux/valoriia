@@ -135,7 +135,7 @@
 
 			<!-- 2. Headline -->
 			<h3 class="text-base sm:text-lg font-black text-gray-900 text-center leading-snug mb-1.5 shrink-0">
-				⚡ تهنّاي من خنقة القوادس، الحشرات والروائح الكريهة!
+				⚡ حماية نهائية من انسداد المجاري، الحشرات والروائح الكريهة!
 			</h3>
 
 			<!-- 3. Product Image Showcase (Full Sharpness & No Cropping) -->
@@ -163,7 +163,7 @@
 				<div
 					class="absolute bottom-1.5 inset-x-2 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 text-white font-black text-[10px] sm:text-xs py-1 px-2 rounded-full text-center shadow-md truncate"
 				>
-					توصيل فابور مع طلبيتك • تمنع انسداد الشعر والروائح 100%
+					توصيل مجاني مع طلبيتك • تمنع تسرب الشعر والروائح تماماً
 				</div>
 			</div>
 

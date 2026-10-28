@@ -18,8 +18,8 @@
 	}
 
 	function offerPrefix(offer: ProductOffer): string {
-		if (offer.id === 1) return '1 قطعة + رشاشة';
-		if (offer.id === 2) return '2 قطع + رشاشين';
+		if (offer.id === 1) return 'قطعة واحدة + رشاش';
+		if (offer.id === 2) return 'قطعتان + رشاشان';
 		return (offer.title || '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim();
 	}
 
@@ -79,7 +79,7 @@
 					{#if offer.image}
 						<img
 							src={cloudinaryUrl(offer.image, 'f_auto,q_auto,w_120')}
-							alt="{offerPrefix(offer)}{hasGiftSuffix(offer) ? ' هدية' : ''}"
+							alt="{offerPrefix(offer)}{hasGiftSuffix(offer) ? ' هدية مجانية' : ''}"
 							class="offer-thumb-img"
 							width="44"
 							height="44"
@@ -99,7 +99,7 @@
 				<div class="offer-content">
 					<div class="offer-title">
 						{#if hasGiftSuffix(offer)}
-							<span>{offerPrefix(offer)}{' '}</span><span class="offer-gift-tail">هدية{' '}<svg
+							<span>{offerPrefix(offer)}{' '}</span><span class="offer-gift-tail">هدية مجانية{' '}<svg
 								aria-hidden="true"
 								class="offer-gift-icon"
 								fill="none"

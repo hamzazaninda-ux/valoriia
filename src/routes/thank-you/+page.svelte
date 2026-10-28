@@ -220,7 +220,7 @@
 	const whatsappUrl = $derived.by(() => {
 		const orderId = order?.orderId || 'ORD-000000';
 		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
-		const msg = `سلام عليكم، قمت بطلب ${order?.productTitle || 'المنتج'} من Lhamza Shop ورقم طلبي هو ${orderId}، وبغيت نأكد الطلب ديالي للتوصيل السريع.`;
+		const msg = `السلام عليكم، قمت بطلب ${order?.productTitle || 'المنتج'} من Lhamza Shop ورقم طلبي هو ${orderId}، وأود تأكيد طلبي للشحن السريع.`;
 		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
 	});
 
@@ -420,11 +420,11 @@
 				</div>
 				<div class="flex items-start gap-2.5">
 					<span class="text-base shrink-0 mt-0.5">💵</span>
-					<p class="leading-relaxed"><strong>بدون أداء مسبق:</strong> لا نطلب أي بطاقة بنكية — الخلاص كاش عند الاستلام فقط.</p>
+					<p class="leading-relaxed"><strong>بدون أداء مسبق:</strong> لا نطلب أي بطاقة بنكية — الدفع نقداً عند الاستلام فقط.</p>
 				</div>
 				<div class="flex items-start gap-2.5">
 					<span class="text-base shrink-0 mt-0.5">🔄</span>
-					<p class="leading-relaxed"><strong>إلى كنتِ مشغول:</strong> إلى ما جاوبتيش، غانصيفطو ليك رسالة تذكيرية في الواتساب.</p>
+					<p class="leading-relaxed"><strong>إذا كنت مشغولاً:</strong> في حال تعذر الرد، سنرسل لك رسالة تذكيرية عبر الواتساب.</p>
 				</div>
 			</div>
 		</div>
@@ -502,7 +502,7 @@
 					</span>
 					<div class="flex-1 pt-0.5">
 						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">3. شحن الطلبية (خلال 24 ساعة)</h5>
-						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">إرسال الكولية مباشرة مع شركة التوصيل السريع لمدينتك.</p>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">شحن الطلب مباشرة مع شركة التوصيل السريع لمدينتك.</p>
 					</div>
 				</div>
 
@@ -513,7 +513,7 @@
 					</span>
 					<div class="flex-1 pt-0.5">
 						<h5 class="text-xs sm:text-sm font-extrabold text-neutral-900">4. الاستلام والمعاينة (خلال 24-48 ساعة)</h5>
-						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">كيتصل بيك الموزع (Livreur) باش يسلمك الكولية، كتقلب سلعتك وتتأكد منها عاد كتخلص.</p>
+						<p class="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">يتصل بك مندوب التوصيل لتسليم الشحنة، ويمكنك معاينة المنتج والتأكد من جودته قبل الدفع.</p>
 					</div>
 				</div>
 			</div>
@@ -526,7 +526,7 @@
 				<div>
 					<h5 class="font-extrabold text-xs sm:text-sm text-emerald-950 mb-0.5">حق المعاينة مضمون</h5>
 					<p class="text-[11px] sm:text-xs text-emerald-900/80 leading-relaxed font-medium">
-						ملي يجيب ليك الموزع (Livreur) الطلب، فتح الكولية وتأكد من جودة الحامل والرشاشة عاد خلّص.
+						عند استلام الطلب من مندوب التوصيل، يحق لك فتح الشحنة والتأكد من جودة المنظم والرشاش قبل الدفع.
 					</p>
 				</div>
 			</div>
@@ -550,31 +550,31 @@
 			<div class="space-y-2">
 				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
 					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
-						<span>إلى كنت فخدمتي وما نقدرش نستلم الكولية؟</span>
+						<span>إذا كنت في مقر عملي أو تعذر عليّ الاستلام؟</span>
 						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
 					</summary>
 					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
-						الموزع غيتاصل بيك وتقدر تحدد معاه الوقت المناسب، أو يستلمها في بلاصتك أي شخص من العائلة، أو يجيبها ليك للخدمة.
+						سيتواصل معك مندوب التوصيل لتحديد الوقت والمكان المناسب لك، أو يمكن لأحد أفراد العائلة الاستلام نيابة عنك.
 					</div>
 				</details>
 
 				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
 					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
-						<span>واش نقدر نلغي الطلب أو نغير عدد الحبات؟</span>
+						<span>هل يمكنني إلغاء الطلب أو تعديل عدد القطع؟</span>
 						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
 					</summary>
 					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
-						نعم، فاش يتصل بيك فريق التأكيد أو تواصل معنا عبر الواتساب ونقوم بتعديل طلبك بكل سهولة.
+						نعم، يمكنك إبلاغ فريق التأكيد عند الاتصال أو التواصل معنا عبر الواتساب لتعديل طلبك بكل سهولة.
 					</div>
 				</details>
 
 				<details class="group rounded-xl border border-neutral-200/70 overflow-hidden">
 					<summary class="flex cursor-pointer list-none items-center justify-between gap-2 p-3 text-xs sm:text-sm font-extrabold text-neutral-900 select-none [&::-webkit-details-marker]:hidden bg-neutral-50/50 hover:bg-neutral-50">
-						<span>واش كاين ضمان على السلعة؟</span>
+						<span>هل يوجد ضمان على المنتج؟</span>
 						<span class="transition-transform duration-300 group-open:rotate-180 text-neutral-400">▼</span>
 					</summary>
 					<div class="p-3 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100 bg-white">
-						نعم، ضمان 14 يوماً للاستبدال والاسترجاع في حال وجود أي عيب مصنعي.
+						نعم، نوفر ضمان 14 يوماً للاستبدال والاسترجاع في حال وجود أي عيب مصنعي.
 					</div>
 				</details>
 			</div>

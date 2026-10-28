@@ -25,7 +25,7 @@
 	const defaultOffers: ProductOffer[] = [
 		{
 			id: 1,
-			title: '1 قطعة + رشاشة هدية 🎁',
+			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 229,
 			originalPrice: 299,
@@ -36,7 +36,7 @@
 		},
 		{
 			id: 2,
-			title: '2 قطع + رشاشين هدية 🎁',
+			title: 'قطعتان + رشاشان هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
 			price: 349,
 			originalPrice: 458,
@@ -49,24 +49,24 @@
 
 	const defaultFaq = [
 		{
-			question: 'واش كيركب على أي علو ديال السقف؟',
-			answer: 'نعم! العمود مصمم بتقنية تلسكوبية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار، يعني كيركب في أي حمام كيفما كان علو السقف ديالو.'
+			question: 'هل يمكن تركيبه على جميع الارتفاعات ومختلف أنواع الأسقف؟',
+			answer: 'نعم بكل تأكيد! تم تصميم العمود بتقنية تلسكوبية مبتكرة قابلة للتعديل بسلاسة من 1.10 متر حتى 3.10 أمتار، مما يجعله ملائماً ومناسباً لأي حمام مهما كان ارتفاع السقف.'
 		},
 		{
-			question: 'واش كيقدر يطيح إلى تقلت عليه بالسلعة؟',
-			answer: 'أبداً. الحامل مزود بـ Ressort داخلي قوي وجلدات مانعة للانزلاق في الأعلى والأسفل، كيتحمل وزن كيوصل حتى لـ 15-20 كيلوغرام بكل أمان وثبات.'
+			question: 'هل الثبات قوي ويتحمل الأوزان الثقيلة دون أن يسقط؟',
+			answer: 'تم تصميمه بأعلى معايير الأمان؛ الحامل مزود بنوابض داخلية قوية وقواعد تثبيت مانعة للانزلاق في الأعلى والأسفل، ويتحمل وزناً يصل إلى 15-20 كيلوغراماً بثبات تام دون أن يتحرك.'
 		},
 		{
-			question: 'واش كيتصدى مع الما والرطوبة ديال الحمام؟',
-			answer: 'المنظم مصنوع من الفولاذ المقاوم للصدأ (Inox) عالي الجودة مع رفوف بلاستيكية متينة من نوع ABS، مصمم خصيصاً ليقاوم الماء والرطوبة وسنوات من الاستعمال بدون صدأ.'
+			question: 'ما هي المواد المصنوع منها المنظم؟ وهل هو مقاوم للصدأ؟',
+			answer: 'المنظم مصنوع من الفولاذ المقاوم للصدأ عالي الجودة مع رفوف بلاستيكية مقواة من نوع ABS، مصممة خصيصاً لمقاومة الماء والرطوبة الشديدة لسنوات طويلة دون أي صدأ أو تلف.'
 		},
 		{
-			question: 'واش نقدر نقلب السلعة عاد نخلص؟',
-			answer: 'أكيد! حق المعاينة مضمون 100%. ملي يوصلك الموزع، فتح الكولية ديالك وتأكد من السلعة والجودة ديالها عاد خلص ثمن طلبك.'
+			question: 'هل يحق لي فحص ومعاينة المنتج قبل الدفع؟',
+			answer: 'بالتأكيد! حق المعاينة مضمون بالكامل. عند وصول مندوب التوصيل، يمكنك فتح الشحنة والتأكد من سلامة وجودة المنتج قبل سداد المبلغ.'
 		},
 		{
-			question: 'شحال كياخد التوصيل باش يوصلني الطلب؟',
-			answer: 'التوصيل سريع وفابور (مجاني) لجميع المدن. كيتم تأكيد الطلب معك عبر الهاتف، وكتوصلك السلعة خلال 24 إلى 48 ساعة حتى لباب دارك.'
+			question: 'كم تستغرق مدة التوصيل؟ وما هي طريقة الدفع؟',
+			answer: 'التوصيل سريع ومجاني لجميع المدن. يتم التواصل معك هاتفياً لتأكيد العنوان، ويصلك الطلب خلال 24 إلى 48 ساعة حتى باب منزلك مع الدفع نقداً عند الاستلام.'
 		}
 	];
 
@@ -92,7 +92,7 @@
 
 	const activeOffer = $derived(
 		offersList.find((o: ProductOffer) => o.id === currentPackId) ||
-			offersList[0] || { title: '1 قطعة + رشاشة هدية 🎁', price: 229, quantity: 1 }
+			offersList[0] || { title: 'قطعة واحدة + رشاش هدية مجانية 🎁', price: 229, quantity: 1 }
 	);
 
 	let showStickyBtn = $state(true);
@@ -105,8 +105,8 @@
 	// Canonical definition of Child Safety Lock product (for CartDrawer cross-sell compatibility)
 	const childLockProduct = {
 		slug: 'qofl-al-aman',
-		title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-		subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+		title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
+		subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 		heroImage:
 			'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
 		startingPrice: 49
@@ -121,8 +121,8 @@
 			{
 				...childLockProduct,
 				...(foundLock || {}),
-				title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-				subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+				title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
+				subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 				startingPrice: 49,
 				heroImage:
 					'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
@@ -529,7 +529,7 @@
 
 		const offerSku =
 			activeOffer?.title ||
-			(currentPackId === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁') ||
+			(currentPackId === 2 ? 'قطعتان + رشاشان هدية مجانية 🎁' : 'قطعة واحدة + رشاش هدية مجانية 🎁') ||
 			'العرض المختار';
 		const productTitleStr = (
 			content?.title ||
@@ -564,7 +564,7 @@
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				const itemPrice = Number(activeOffer?.price || 229);
-				const itemName = (product as any)?.title || content?.title || 'باك الحمام الذكي';
+				const itemName = (product as any)?.title || content?.title || 'طقم تنظيم الحمام الذكي';
 
 				(window as any).gtag('event', 'add_to_cart', {
 					currency: 'MAD',
@@ -723,7 +723,7 @@
 					src={cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720')}
 					srcset={cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960])}
 					sizes="(max-width: 400px) calc(100vw - 16px), 364px"
-					alt="باك الحمام الذكي مع رشاش زيادة الضغط هدية فابور"
+					alt="طقم تنظيم الحمام الذكي مع رشاش تعزيز ضغط الماء هدية مجانية"
 					width="940"
 					height="1672"
 					fetchpriority="high"
@@ -740,7 +740,7 @@
 				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
 				</svg>
-				<span class="text-[11px] sm:text-xs font-extrabold text-stone-800 leading-tight">توصيل فابور لجميع المدن</span>
+				<span class="text-[11px] sm:text-xs font-extrabold text-stone-800 leading-tight">توصيل مجاني لجميع المدن</span>
 			</div>
 
 			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
@@ -912,7 +912,7 @@
 				اكتشفي تفاصيل الجودة والعملية
 			</span>
 			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 mt-1.5">
-				لماذا يفضل زبناؤنا هذا المنظم؟
+				لماذا يفضل عملاؤنا هذا المنظم؟
 			</h2>
 		</div>
 
@@ -921,18 +921,18 @@
 <!-- ========================================== -->
 <div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
   <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    ⚡ تركيب سهل فـ 5 دقايق
+    ⚡ تركيب سريع وسهل في 5 دقائق
   </span>
   <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    بلا دريل، بلا شنيور، وبلا ما تضيّعي الزليج ديال دارك
+    تركيب سهل بدون ثقب أو إتلاف لسيراميك حمامك
   </h2>
   <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وجلدات سيليكون تثبت الحامل بإحكام بين الأرض والسقف بدون مسمار واحد.
+    مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر إلى 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وقواعد سيليكون تثبت الحامل بإحكام بين الأرض والسقف دون الحاجة لأي براغٍ أو إتلاف للجدران.
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
       src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951490/Screenshot_2026-10-25_180133.png" 
-      alt="تركيب سهل بدون حفر وبدون مسامير" 
+      alt="تركيب سهل بدون ثقب أو براغي" 
       loading="lazy"
       decoding="async"
       class="w-full h-auto object-cover block"
@@ -945,18 +945,18 @@
 <!-- ========================================== -->
 <div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
   <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    💪 قوة تحمّل فائقة وثبات حديدي
+    💪 قدرة تحمّل فائقة وثبات استثنائي
   </span>
   <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    هزّي كاع مستلزمات الحمام والشامبوانات بلا خوف
+    تحمّل عالي لجميع مستلزمات الحمام بثبات وأمان تام
   </h2>
   <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    رفوف واسعة وعميقة مصنوعة من خامات مقاومة للماء والرطوبة مع أعمدة إينوكس صلبة مضادة للصدأ والتآكل. يتحمل أثقل القنينات وبيدونات الصابون بدون ما يتحرك أو يميل مليمتر واحد.
+    رفوف واسعة وعميقة مصنوعة من مواد مقاومة للماء والرطوبة مع أعمدة صلبة من الفولاذ المقاوم للصدأ. يتحمل عبوات الشامبو ومستحضرات الاستحمام الثقيلة بثبات كامل دون أي انزلاق أو ميلان.
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
       src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png" 
-      alt="ثبات حديدي وقوة تحمل فائقة" 
+      alt="ثبات استثنائي وقدرة تحمل عالية" 
       loading="lazy"
       decoding="async"
       class="w-full h-auto object-cover block"
@@ -969,18 +969,18 @@
 <!-- ========================================== -->
 <div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-amber-100 text-center" dir="rtl">
   <span class="inline-block bg-amber-100 text-amber-900 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    🎁 هدية حصرية بقيمة 99 درهم فابور
+    🎁 هدية حصرية بقيمة 99 درهم مجاناً
   </span>
   <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
     رشاش التوربو المزدوج: تدفق ماء قوي وتوزيع متوازن
   </h2>
   <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    حل مثالي لتحسين تدفق المياه وتوزيعها بسلاسة! يحتوي على 3 أنظمة تدفق مختلفة مع زر إيقاف فوري للتحكم، وكيحميك من هدر المياه مع كل استحمام.
+    حل مثالي لزيادة تدفق المياه وتوزيعها بانسيابية تامة! يحتوي على 3 أنظمة تدفق مختلفة مع زر إيقاف فوري للتحكم، مما يمنحك تجربة استحمام مريحة مع توفير استهلاك المياه.
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
       src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793122075/Gemini_Generated_Image_aqu0syaqu0syaqu0.jpg" 
-      alt="رشاش التوربو المزدوج هدية فابور" 
+      alt="رشاش التوربو المزدوج هدية مجانية" 
       loading="lazy"
       decoding="async"
       class="w-full h-auto object-cover block"
@@ -996,15 +996,15 @@
     ✨ تحوّل حقيقي قبل وبعد
   </span>
   <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    شوفي الفرق كيفاش كيرجع الحمام منظم ونظيف
+    شاهدي كيف يتحول حمامك إلى مساحة منظمة وأنيقة
   </h2>
   <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    استغلي الزوايا الميتة في حمامك وحولي الفوضى وكركبة الأرضية إلى فضاء مرتب، واسع وسهل في التنظيف اليومي بدون أدنى مجهود.
+    استغلي زوايا الحمام غير المستغلة وحوّلي الفوضى إلى مساحة مرتبة وواسعة، تسهّل التنظيف اليومي بكل راحة ودون أي عناء.
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
       src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793121027/Gemini_Generated_Image_6o8y9c6o8y9c6o8y.jpg" 
-      alt="مقارنة الحمام قبل وبعد استعمال منظم الزاوية" 
+      alt="مقارنة شكل الحمام قبل وبعد استخدام منظم الزوايا" 
       loading="lazy"
       decoding="async"
       class="w-full h-auto object-cover block"
@@ -1017,13 +1017,13 @@
 <!-- ========================================== -->
 <div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
   <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    🏡 تصميم عصري يناسب أي ديكور
+    🏡 تصميم عصري يلائم جميع الديكورات
   </span>
   <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    لمسة فندقية راقية تزيد حمامك بهاءً وأناقة
+    لمسة راقية تمنح حمامك طابعاً فندقياً أنيقاً
   </h2>
   <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    لون أبيض ناصع مع تشطيب إينوكس يعطي انطباعاً بالنقاء والفخامة، متناسق تماماً مع مختلف ألوان الزليج والرخام.
+    لون أبيض ناصع مع لمسات من الفولاذ المقاوم للصدأ يمنح مظهراً عصرياً فخماً، يتناسق تماماً مع مختلف ألوان السيراميك والرخام.
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
@@ -1052,7 +1052,7 @@
 				آراء زبنائنا الكرام
 			</h3>
 			<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-				هذا ما يقوله زبناؤنا بعد تجربة باك الحمام الذكي والرشاش الهدية
+				هذا ما يقوله عملاؤنا الكرام بعد تجربة طقم منظم الحمام ورشاش التوربو الهدية
 			</p>
 		</div>
 
@@ -1086,7 +1086,7 @@
 				</div>
 
 				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"وصلني الكيت البارح وركبتو راسي بدون ما نحتاج راجلي ولا معلم حيت مكيحتاجش الحفير. صحيح وهز ليا كاع الشامبوانات ديال الدار كاملة. شكراً ليكم".
+					"استلمت الطلب بالأمس وقمت بتركيبه بنفسي بكل سهولة دون الحاجة إلى أدوات أو مساعدة لأنه لا يحتاج لأي ثقب بالجدار. المنتج متين وثابت جداً واتسع لجميع مستلزمات الحمام والشامبو. شكراً لكم على هذا المنتج الرائع".
 				</p>
 			</div>
 
@@ -1119,7 +1119,7 @@
 				</div>
 
 				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"الصراحة الرشاشة الهدية واعرة بزاف الجهد ديال الما تبدل عندي فالدوش. المنظم حتى هو إينوكس مكيصداش مع الفوار. تعامل احترافي وتوصيل سريع".
+					"بصراحة الرشاش الهدية ممتاز جداً وضاعف قوة تدفق الماء بشكل ملحوظ. كما أن المنظم مصنوع من خامات عالية الجودة ومقاوم للصدأ والرطوبة تماماً. تعامل راقٍ وتوصيل سريع جداً".
 				</p>
 			</div>
 
@@ -1152,7 +1152,7 @@
 				</div>
 
 				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"كنت خايفة من القياس حيت السقف عندي عالي، ولكن التيليسكوب كيتجبد مزيان وكيتبت صحيح بزاف. وليت متهنية من كركبة الحمام".
+					"كنت قلقة بشأن المقاس لأن سقف الحمام مرتفع، لكن نظام التعديل التلسكوبي امتد بسلاسة وثبت بإحكام شديد. تخلصت تماماً من فوضى الحمام وأصبح كل شيء مرتباً وأنيقاً".
 				</p>
 			</div>
 		</div>
@@ -1172,7 +1172,7 @@
 					{t.sections.trustBadges.faqTitle || 'الأسئلة الشائعة'}
 				</h3>
 				<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-					إجابات واضحة على أكثر الأسئلة اللي كيطرحوها زبناؤنا
+					إجابات شاملة ومباشرة على أكثر الأسئلة الشائعة من عملائنا
 				</p>
 			</div>
 

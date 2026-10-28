@@ -206,7 +206,7 @@
 			type="button"
 			class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"
 			onclick={() => cartUi.closeCheckout()}
-			aria-label="سد نافذة التأكيد"
+			aria-label="إغلاق نافذة التأكيد"
 		></button>
 		<div class="relative flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl" dir="rtl">
 			<div class="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
@@ -215,7 +215,7 @@
 					type="button"
 					onclick={() => cartUi.closeCheckout()}
 					class="flex h-9 w-9 items-center justify-center rounded-xl text-neutral-500 transition-colors hover:bg-neutral-100"
-					aria-label="سد نافذة التأكيد"
+					aria-label="إغلاق نافذة التأكيد"
 				>
 					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 						<path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
@@ -273,7 +273,7 @@
 					</div>
 					<div>
 						<label for="co-phone" class="mb-1 block pr-1 text-sm font-extrabold text-neutral-800">
-							رقم الهاتف <span class="font-normal text-neutral-400">(غادي نعيطو ليك نأكدو)</span>
+							رقم الهاتف <span class="font-normal text-neutral-400">(سنتصل بك لتأكيد الطلب)</span>
 						</label>
 						<input
 							id="co-phone"
@@ -309,7 +309,7 @@
 						<p class="text-center text-[11px] font-semibold text-red-600">{submitError}</p>
 					{/if}
 					<p class="text-center text-[11px] leading-relaxed text-neutral-400">
-						بالضغط على تأكيد، غادي نعيطو ليك باش نأكدو العنوان — والخلاص عند الاستلام
+						بالضغط على تأكيد، سنتصل بك لتأكيد العنوان — والدفع نقداً عند الاستلام
 					</p>
 				</form>
 			</div>

@@ -43,8 +43,8 @@
 	const crossSells = $derived.by(() => {
 		const childLock: CrossSell = {
 			slug: 'qofl-al-aman',
-			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+			title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
+			subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 			heroImage: CHILD_LOCK_IMAGE,
 			startingPrice: 49
 		};
@@ -63,7 +63,7 @@
 			isAddingCrossSell = false;
 		}, 1000);
 
-		const addedTitle = 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒';
+		const addedTitle = 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒';
 		const addedImage = CHILD_LOCK_IMAGE;
 		const addedPrice = 49;
 
@@ -85,7 +85,7 @@
 			type="button"
 			class="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
 			onclick={() => cartUi.closeDrawer()}
-			aria-label="سد السلة"
+			aria-label="إغلاق سلة التسوق"
 		></button>
 		<aside class="absolute bottom-0 left-0 top-0 flex w-full max-w-full sm:max-w-md h-full flex-col bg-white shadow-2xl" dir="rtl">
 			<div class="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
@@ -94,7 +94,7 @@
 					type="button"
 					onclick={() => cartUi.closeDrawer()}
 					class="flex h-9 w-9 items-center justify-center rounded-xl text-neutral-500 transition-colors hover:bg-neutral-100"
-					aria-label="سد السلة"
+					aria-label="إغلاق سلة التسوق"
 				>
 					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 						<path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
@@ -233,7 +233,7 @@
 					>
 						<span class="pointer-events-none" style="pointer-events: none;">أكمل الطلب ({cart.count})</span>
 					</button>
-					<p class="text-center text-[11px] text-neutral-400">الدفع عند الاستلام — ما تخلص حتى توصلك السلعة</p>
+					<p class="text-center text-[11px] text-neutral-400">الدفع عند الاستلام — لا تدفع أي شيء حتى تستلم وتفحص طلبك</p>
 				</div>
 			{/if}
 		</aside>

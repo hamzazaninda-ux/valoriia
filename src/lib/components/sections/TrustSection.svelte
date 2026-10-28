@@ -12,7 +12,7 @@
 	}: Props = $props();
 
 	const cleanWa = $derived(whatsappNumber.replace(/\D/g, '') || '212626558375');
-	const defaultWaMessage = 'السلام عليكم Lhamza Shop، بغيت نستفسر على المنتجات وعندي سؤال لخدمة الزبناء';
+	const defaultWaMessage = 'السلام عليكم Lhamza Shop، أود الاستفسار عن المنتجات ولدي سؤال لخدمة العملاء';
 	const waUrl = $derived(`https://wa.me/${cleanWa}?text=${encodeURIComponent(defaultWaMessage)}`);
 </script>
 
@@ -26,10 +26,10 @@
 			<span>التزامنا بالجودة والثقة</span>
 		</div>
 		<h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1E293B]">
-			علاش يختارونا المغاربة؟
+			لماذا يختارنا عملاؤنا في المغرب؟
 		</h2>
 		<p class="mx-auto max-w-lg text-xs sm:text-sm text-stone-500 leading-relaxed">
-			تجربة تسوق آمنة ومريحة من البداية حتى كتوصلك السلعة وتجربها بيدك.
+			تجربة تسوق آمنة ومريحة من البداية حتى استلام الطلب وتجربته بنفسك.
 		</p>
 		<div class="mx-auto mt-3 h-0.5 w-20 rounded-full bg-[#1B4332]"></div>
 	</div>
@@ -59,7 +59,7 @@
 				</div>
 				<div>
 					<h3 class="font-display text-lg font-bold text-[#1E293B]">
-						فتح الكولية وقلّب عاد خلّص
+						افحص الشحنة وتأكد من المنتج قبل الدفع
 					</h3>
 					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
 						حق المعاينة مكفول قانونياً وأخلاقياً. تأكد من جودة المنتج وجميع قطعه قبل دفع أي درهم للموزع.
@@ -97,7 +97,7 @@
 				</div>
 				<div>
 					<h3 class="font-display text-lg font-bold text-[#1E293B]">
-						توصيل مباشر حتى لباب دارك
+						توصيل مباشر وسريع حتى باب منزلك
 					</h3>
 					<p class="mt-2 text-xs sm:text-sm leading-loose text-stone-600">
 						خدمة توصيل سريعة ومجانية تغطي كافة ربوع المملكة خلال 24 إلى 48 ساعة فقط.
@@ -184,7 +184,7 @@
 						</span>
 					</div>
 					<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-xl">
-						عندك أي استفسار على طريقة الاستعمال، المقاسات، تتبع الشحنة، أو خدمة ما بعد البيع؟ مستشارو الطلبات متواجدون لمساعدتك خطوة بخطوة.
+						هل لديك أي استفسار حول طريقة الاستخدام، المقاسات، تتبع الشحنة، أو خدمة ما بعد البيع؟ مستشارو خدمة العملاء متواجدون لمساعدتك خطوة بخطوة.
 					</p>
 					<div class="flex items-center justify-center sm:justify-start gap-2 pt-1 text-xs font-semibold text-stone-500">
 						<svg class="h-4 w-4 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">

@@ -2,7 +2,7 @@
 	<title>الشحن والتوصيل | Lhamza Shop</title>
 	<meta
 		name="description"
-		content="معلومات الشحن والتوصيل السريع لجميع مدن المغرب في متجر Lhamza Shop. توصيل مجاني وفابور والدفع عند الاستلام."
+		content="معلومات الشحن والتوصيل السريع لجميع مدن المغرب في متجر Lhamza Shop. توصيل مجاني وسريع والدفع عند الاستلام بعد المعاينة."
 	/>
 </svelte:head>
 
@@ -48,7 +48,7 @@
 				<section class="space-y-2">
 					<h2 class="text-base sm:text-lg font-black text-stone-900 flex items-center gap-2">
 						<span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">1</span>
-						تكلفة الشحن: مجاني وفابور لجميع المدن
+						تكلفة الشحن: مجاني بالكامل لجميع المدن
 					</h2>
 					<div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-4 text-xs sm:text-sm text-emerald-950 font-medium">
 						🚚 <strong>توصيل مجاني 0 درهم:</strong> نحن لا نفرض أي رسوم شحن خفية أو إضافية. السعر المعلن للمنتج على صفحة الطلب هو السعر الإجمالي والنهائي الذي تدفعه للموزع.

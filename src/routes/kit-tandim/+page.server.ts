@@ -49,8 +49,8 @@ export const load: PageServerLoad = async () => {
 	const others = [
 		{
 			slug: 'qofl-al-aman',
-			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
+			title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن والأدراج 🔒',
+			subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 			heroImage:
 				'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
 			startingPrice: 49

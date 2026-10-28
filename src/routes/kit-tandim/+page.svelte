@@ -13,9 +13,9 @@
 
 	const seo = $derived(
 		data.product?.published?.seo || {
-			metaTitle: 'باك الحمام الذكي (بدون حفير) + رشاش زيادة الضغط هدية فابور | Lhamza Shop',
+			metaTitle: 'طقم تنظيم الحمام الذكي المتكامل (بدون ثقب) + رشاش تعزيز ضغط الماء هدية مجانية | Lhamza Shop',
 			metaDescription:
-				'باك الحمام الذكي بدون حفير + رشاش زيادة الضغط هدية فابور. توصيل فابور لجميع المدن والدفع بعد المعاينة.',
+				'طقم تنظيم الحمام الذكي بدون ثقب الجدران + رشاش مضاعفة ضغط الماء هدية مجانية. توصيل مجاني لجميع المدن والدفع عند الاستلام بعد المعاينة.',
 			noindex: false
 		}
 	);
@@ -24,6 +24,8 @@
 <svelte:head>
 	<title>{seo.metaTitle}</title>
 	<meta name="description" content={seo.metaDescription} />
+	<meta property="og:title" content={seo.metaTitle} />
+	<meta property="og:description" content={seo.metaDescription} />
 	<meta property="og:image" content={heroPreloadUrl} />
 	<link rel="preconnect" href="https://res.cloudinary.com" crossorigin="" />
 	<link
