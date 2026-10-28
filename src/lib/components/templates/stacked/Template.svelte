@@ -47,45 +47,6 @@
 		}
 	];
 
-	const visualCards = [
-		{
-			id: 'exclusive-gift',
-			variant: 'amber',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png',
-			width: 390,
-			height: 496,
-			alt: 'رشاش التوربو المزدوج هدية مجانية',
-			badge: '🎁 هدية حصرية مع كل طلب',
-			headline: 'رشاش التوربو المزدوج: تدفق ماء قوي وتوزيع متوازن',
-			body: 'يساعد على تحسين تدفق المياه وتوزيعها بسلاسة مع 3 أنظمة رش متنوعة وزر تحكم عملي، وكيحميك من هدر المياه مع كل استحمام.',
-			showQuickCta: false
-		},
-		{
-			id: 'before-after',
-			variant: 'ivory',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180213.png',
-			width: 390,
-			height: 547,
-			alt: 'تحول الحمام قبل وبعد التنظيم',
-			badge: '✨ تحوّل حقيقي قبل وبعد',
-			headline: 'شوفي الفرق كيفاش كيرجع الحمام منظم ونظيف',
-			body: 'استغلي الزوايا الميتة في حمامك وحولي الفوضى وكركبة الأرضية إلى فضاء مرتب، واسع وسهل في التنظيف اليومي بدون أدنى مجهود.',
-			showQuickCta: false
-		},
-		{
-			id: 'modern-aesthetics',
-			variant: 'luxury',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
-			width: 2048,
-			height: 2048,
-			alt: 'تصميم عصري ولمسة فندقية راقية للحمام',
-			badge: '🏡 تصميم عصري يناسب أي ديكور',
-			headline: 'لمسة فندقية راقية تزيد حمامك بهاءً وأناقة',
-			body: 'لون أبيض ناصع مع تشطيب إينوكس يعطي انطباعاً بالنقاء والفخامة، متناسق تماماً مع مختلف ألوان الزليج والرخام.',
-			showQuickCta: false
-		}
-	] as const;
-
 	const defaultFaq = [
 		{
 			question: 'واش كيركب على أي علو ديال السقف؟',
@@ -944,9 +905,9 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 3–7. PERSUASIVE VISUAL CARDS (IMAGES 2 TO 6 BELOW THE FORM)     -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<div class="px-2.5 sm:px-4 space-y-5 pt-1 pb-4 below-fold-lazy-section" dir="rtl">
+	<div class="px-2.5 sm:px-4 max-w-[560px] mx-auto space-y-6 pt-1 pb-4 below-fold-lazy-section" dir="rtl">
 		<!-- Section Transition Header -->
-		<div class="text-center pt-1">
+		<div class="text-center pt-1 mb-2">
 			<span class="inline-block text-[11px] sm:text-xs font-extrabold tracking-wide text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full">
 				اكتشفي تفاصيل الجودة والعملية
 			</span>
@@ -955,99 +916,125 @@
 			</h2>
 		</div>
 
-		{#each visualCards as card (card.id)}
-			{#if card.variant === 'luxury'}
-				<!-- Card 6: Deep Forest Emerald Luxury Finale Card -->
-				<article class="overflow-hidden rounded-3xl bg-[#0E291E] text-white shadow-lg border border-emerald-900/40">
-					<div class="overflow-hidden bg-[#F5F2EB]">
-						<img
-							src={cloudinaryUrl(card.image, 'f_auto,q_auto,w_720')}
-							srcset={cloudinarySrcset(card.image, [480, 720, 960])}
-							sizes="(max-width: 600px) calc(100vw - 20px), 544px"
-							alt={card.alt}
-							width={card.width}
-							height={card.height}
-							class="block w-full h-auto"
-							loading="lazy"
-							decoding="async"
-						/>
-					</div>
-					<div class="p-5 sm:p-6 space-y-3">
-						<span class="inline-flex items-center rounded-full bg-amber-400/95 px-3 py-1 text-xs font-black text-amber-950">
-							{card.badge}
-						</span>
-						<h2 class="font-display text-xl sm:text-2xl font-black leading-snug text-white">
-							{card.headline}
-						</h2>
-						<p class="text-sm sm:text-[15px] leading-relaxed text-emerald-50/90">
-							{card.body}
-						</p>
-						<div class="pt-2">
-							<a
-								href="#order-form"
-								onclick={scrollToOrderForm}
-								class="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-white text-[#0E291E] font-black text-sm sm:text-base px-4 py-3 shadow-md hover:bg-emerald-50 active:scale-[0.98] transition-all duration-200"
-							>
-								<span>أطلبي باك الحمام الذكي الآن ↑</span>
-							</a>
-						</div>
-					</div>
-				</article>
-			{:else}
-				<!-- Cards 2, 3, 4, 5 with varied editorial surfaces -->
-				<article
-					class="overflow-hidden rounded-3xl border shadow-sm transition-all {card.variant === 'amber'
-						? 'bg-gradient-to-b from-[#FFFDF5] to-white border-amber-300/80'
-						: card.variant === 'sage'
-							? 'bg-[#F3F8F5] border-emerald-900/10'
-							: 'bg-white border-stone-200/80'}"
-				>
-					<div class="overflow-hidden bg-white">
-						<img
-							src={cloudinaryUrl(card.image, 'f_auto,q_auto,w_720')}
-							srcset={cloudinarySrcset(card.image, [480, 720, 960])}
-							sizes="(max-width: 600px) calc(100vw - 20px), 544px"
-							alt={card.alt}
-							width={card.width}
-							height={card.height}
-							class="block w-full h-auto"
-							loading="lazy"
-							decoding="async"
-						/>
-					</div>
+<!-- ========================================== -->
+<!-- 1. NO-DRILL / FAST SETUP CARD -->
+<!-- ========================================== -->
+<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
+  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+    ⚡ تركيب سهل فـ 5 دقايق
+  </span>
+  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+    بلا دريل، بلا شنيور، وبلا ما تضيّعي الزليج ديال دارك
+  </h2>
+  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+    مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر حتى لـ 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وجلدات سيليكون تثبت الحامل بإحكام بين الأرض والسقف بدون مسمار واحد.
+  </p>
+  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+    <img 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951490/Screenshot_2026-10-25_180133.png" 
+      alt="تركيب سهل بدون حفر وبدون مسامير" 
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover block"
+    />
+  </div>
+</div>
 
-					<div class="p-4 sm:p-6 space-y-2.5">
-						<span
-							class="inline-flex items-center rounded-full px-3 py-1 text-xs font-extrabold {card.variant === 'amber'
-								? 'bg-amber-100 text-amber-950 border border-amber-300/70'
-								: 'bg-emerald-50 text-emerald-900 border border-emerald-200/80'}"
-						>
-							{card.badge}
-						</span>
+<!-- ========================================== -->
+<!-- 2. STABILITY & HEAVY LOAD CARD -->
+<!-- ========================================== -->
+<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
+  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+    💪 قوة تحمّل فائقة وثبات حديدي
+  </span>
+  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+    هزّي كاع مستلزمات الحمام والشامبوانات بلا خوف
+  </h2>
+  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+    رفوف واسعة وعميقة مصنوعة من خامات مقاومة للماء والرطوبة مع أعمدة إينوكس صلبة مضادة للصدأ والتآكل. يتحمل أثقل القنينات وبيدونات الصابون بدون ما يتحرك أو يميل مليمتر واحد.
+  </p>
+  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+    <img 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png" 
+      alt="ثبات حديدي وقوة تحمل فائقة" 
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover block"
+    />
+  </div>
+</div>
 
-						<h2 class="font-display text-lg sm:text-[22px] font-black leading-snug text-stone-900">
-							{card.headline}
-						</h2>
+<!-- ========================================== -->
+<!-- 3. EXCLUSIVE GIFT (TURBO SHOWER HEAD) CARD -->
+<!-- ========================================== -->
+<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-amber-100 text-center" dir="rtl">
+  <span class="inline-block bg-amber-100 text-amber-900 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+    🎁 هدية حصرية بقيمة 99 درهم فابور
+  </span>
+  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+    رشاش التوربو المزدوج: تدفق ماء قوي وتوزيع متوازن
+  </h2>
+  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+    حل مثالي لتحسين تدفق المياه وتوزيعها بسلاسة! يحتوي على 3 أنظمة تدفق مختلفة مع زر إيقاف فوري للتحكم، وكيحميك من هدر المياه مع كل استحمام.
+  </p>
+  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+    <img 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png" 
+      alt="رشاش التوربو المزدوج هدية فابور" 
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover block"
+    />
+  </div>
+</div>
 
-						<p class="text-sm sm:text-[15px] leading-relaxed text-stone-700">
-							{card.body}
-						</p>
+<!-- ========================================== -->
+<!-- 4. BEFORE & AFTER COMPARISON CARD -->
+<!-- ========================================== -->
+<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
+  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+    ✨ تحوّل حقيقي قبل وبعد
+  </span>
+  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+    شوفي الفرق كيفاش كيرجع الحمام منظم ونظيف
+  </h2>
+  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+    استغلي الزوايا الميتة في حمامك وحولي الفوضى وكركبة الأرضية إلى فضاء مرتب، واسع وسهل في التنظيف اليومي بدون أدنى مجهود.
+  </p>
+  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+    <img 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180213.png" 
+      alt="مقارنة الحمام قبل وبعد استعمال منظم الزاوية" 
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover block"
+    />
+  </div>
+</div>
 
-						{#if card.showQuickCta}
-							<div class="pt-1.5">
-								<a
-									href="#order-form"
-									onclick={scrollToOrderForm}
-									class="text-emerald-700 hover:text-emerald-800 font-bold underline underline-offset-4 text-sm inline-flex items-center gap-1"
-								>
-									أطلب باقتك الآن من الأعلى ↑
-								</a>
-							</div>
-						{/if}
-					</div>
-				</article>
-			{/if}
-		{/each}
+<!-- ========================================== -->
+<!-- 5. MODERN BATHROOM AESTHETICS CARD -->
+<!-- ========================================== -->
+<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
+  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
+    🏡 تصميم عصري يناسب أي ديكور
+  </span>
+  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
+    لمسة فندقية راقية تزيد حمامك بهاءً وأناقة
+  </h2>
+  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
+    لون أبيض ناصع مع تشطيب إينوكس يعطي انطباعاً بالنقاء والفخامة، متناسق تماماً مع مختلف ألوان الزليج والرخام.
+  </p>
+  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+    <img 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg" 
+      alt="منظم حمام عصري بتصميم فندقي راقٍ" 
+      loading="lazy"
+      decoding="async"
+      class="w-full h-auto object-cover block"
+    />
+  </div>
+</div>
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
