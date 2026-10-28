@@ -208,29 +208,6 @@
 	<meta property="og:url" content="https://lhamza.shop/inox-organizer" />
 </svelte:head>
 
-{#snippet placeholderCard(slotNum: number, label: string, desc?: string, aspect: string = 'aspect-square sm:aspect-[4/3]')}
-	<div
-		class="relative w-full {aspect} flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-dashed border-[#073824]/30 bg-gradient-to-b from-stone-50 via-white to-emerald-50/30 p-3.5 sm:p-5 text-center shadow-inner select-none transition-all duration-200 hover:border-[#073824]/60 my-2"
-	>
-		<div class="mb-2 sm:mb-2.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#073824] text-[#C99738] shadow-sm">
-			<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-				<path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-			</svg>
-		</div>
-		<span class="inline-block bg-[#073824] text-[#C99738] text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-full mb-1">
-			صورة {slotNum}
-		</span>
-		<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 max-w-sm leading-snug px-1">
-			{label}
-		</h4>
-		{#if desc}
-			<p class="text-[10px] sm:text-xs text-stone-500 font-medium mt-1 max-w-xs leading-normal px-2">
-				{desc}
-			</p>
-		{/if}
-	</div>
-{/snippet}
-
 <main class="min-h-screen bg-[#FAF9F6] text-[#1E293B] font-sans antialiased pb-20 sm:pb-12" dir="rtl">
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 1. COMPACT STICKY TOP BAR                                         -->
@@ -420,12 +397,14 @@
 	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
 		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
 			<!-- Image Slot 2 First -->
-			{@render placeholderCard(
-				2,
-				'صورة / فيديو 2: تصوير حقيقي للمنتج والقطع من المستودع',
-				'فولاذ سميك وأطقم التركيب الكاملة لتوضيح الجودة الواقعية',
-				'aspect-square sm:aspect-[16/10]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793219497/%D8%B9%D8%B1%D8%B6_%D8%A3%D9%86%D9%8A%D9%82_%D9%84%D9%82%D8%B7%D8%B9_%D8%B1%D9%81_%D9%85%D8%B9%D8%AF%D9%86%D9%8A_%D9%85%D9%86_%D8%A7%D9%84%D8%B3%D8%AA%D8%A7%D9%86%D9%84%D8%B3_%D8%B3%D8%AA%D9%8A%D9%84.png"
+					alt="قطع منظم الحمام الفولاذي المقاوم للصدأ مع أطقم التثبيت كاملة"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug mt-3 mb-1">
 				معدن إينوكس صلب يدوم لسنوات
 			</h2>
@@ -442,12 +421,14 @@
 		<!-- Card 1: مقاومة الصدأ -->
 		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
 			<!-- Image Slot 3 First -->
-			{@render placeholderCard(
-				3,
-				'صورة رقم 3: رفوف الإينوكس المقاومة للماء والصدأ',
-				'رفوف مثقبة لتصريف المياه الفوري ومقاومة الرطوبة',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793219698/Gemini_Generated_Image_a4rouka4rouka4ro.jpg"
+					alt="رفوف إينوكس مثقبة لتصريف المياه ومقاومة الصدأ والرطوبة"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
 				مقاوم للصدأ والماء 100%
 			</h3>
@@ -459,12 +440,14 @@
 		<!-- Card 2: سعة التخزين -->
 		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
 			<!-- Image Slot 4 First -->
-			{@render placeholderCard(
-				4,
-				'صورة رقم 4: المنظم ممتلئ بجميع لوازم الحمام والمناشف',
-				'سعة واسعة لكافة قوارير الشامبو الكبيرة والمناشف والخطافات',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793219878/Gemini_Generated_Image_sa8rmtsa8rmtsa8r.jpg"
+					alt="سعة تخزين واسعة لترتيب مستلزمات الحمام والشامبو وحمل الفوط"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
 				سعة كبيرة (3 طوابق + حامل فوط)
 			</h3>
@@ -476,12 +459,14 @@
 		<!-- Card 3: سهولة التركيب -->
 		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
 			<!-- Image Slot 5 First -->
-			{@render placeholderCard(
-				5,
-				'صورة رقم 5: طريقة التثبيت باللصاق الذكي أو البراغي',
-				'تثبيت مزدوج باللاصق القوي بدون ثقب أو بالبراغي المرفقة',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793219977/Redesigning_product_image_in_Arabic_202609022112.webp"
+					alt="طريقتان للتركيب: لاصق قوي بدون ثقب السيراميك أو تثبيت بالبراغي"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
 				تركيب مزدوج بدون إتلاف الزليج
 			</h3>
@@ -501,12 +486,14 @@
 			</span>
 
 			<!-- Image Slot 6 First -->
-			{@render placeholderCard(
-				6,
-				'صورة رقم 6: رشاش الاستحمام التوربو المفلتر مع الفلاتر',
-				'رشاش التوربو المفلتر بشعيرات التدليك وزر الإيقاف الفوري',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-amber-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793220431/Gemini_Generated_Image_glaw65glaw65glaw.jpg"
+					alt="رشاش الاستحمام التوربو المفلتر هدية مجانية مع منظم الحمام"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 
 			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug mt-3 mb-2">
 				رشاش الاستحمام التوربو المفلتر مجاناً!
@@ -551,12 +538,14 @@
 	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
 		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
 			<!-- Image Slot 7 First -->
-			{@render placeholderCard(
-				7,
-				'صورة رقم 7: مخطط الأبعاد والمقاسات التقنية (60 سم)',
-				'العرض 60 سم × الارتفاع 58.5 سم × العمق 15.3 سم',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+			<div class="w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+				<img
+					src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793220227/Redesigning_product_image_in_Arabic_202609070301.webp"
+					alt="مخطط الأبعاد والمقاسات الدقيقة لمنظم الحمام الإينوكس 60 سم"
+					loading="lazy"
+					class="w-full h-auto object-contain rounded-xl sm:rounded-2xl"
+				/>
+			</div>
 
 			<h2 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-2">
 				المقاسات الدقيقة للمنظم
