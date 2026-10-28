@@ -5,9 +5,41 @@
 	let { data } = $props();
 
 	const PRODUCT_TITLE = 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً';
-	const PRODUCT_PRICE = 249;
-	const PRODUCT_OLD_PRICE = 399;
 	const PRODUCT_SKU = 'inox-organizer';
+
+	interface BundleOption {
+		id: number;
+		qty: number;
+		title: string;
+		price: number;
+		oldPrice: number;
+		badge?: string;
+		savingsText: string;
+	}
+
+	const BUNDLES: BundleOption[] = [
+		{
+			id: 1,
+			qty: 1,
+			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
+			price: 279,
+			oldPrice: 399,
+			badge: 'وفّر 120 درهم',
+			savingsText: 'وفّر 120 درهم'
+		},
+		{
+			id: 2,
+			qty: 2,
+			title: 'قطعتان + رشاشان هدية مجانية 🎁🎁',
+			price: 449,
+			oldPrice: 699,
+			badge: '🔥 العرض الأوفر والأكثر طلباً',
+			savingsText: 'وفّر 250 درهم • فقط 224 درهم للقطعة!'
+		}
+	];
+
+	let selectedBundleId = $state(1);
+	const selectedBundle = $derived(BUNDLES.find((b) => b.id === selectedBundleId) || BUNDLES[0]);
 
 	let customerName = $state('');
 	let customerPhone = $state('');
@@ -83,31 +115,34 @@
 
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		const normalizedPhone = normalizeMoroccanPhone(customerPhone);
+		const activePrice = selectedBundle.price;
+		const activeQty = selectedBundle.qty;
+		const activeTitle = `${PRODUCT_TITLE} (${selectedBundle.title})`;
 
 		// 1. Google Ads GTAG Conversion Tracking (AW-18405009405)
 		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 			try {
 				(window as any).gtag('event', 'conversion', {
 					send_to: 'AW-18405009405',
-					value: PRODUCT_PRICE,
+					value: activePrice,
 					currency: 'MAD',
 					transaction_id: orderId
 				});
 				(window as any).gtag('event', 'purchase', {
 					send_to: 'AW-18405009405',
-					value: PRODUCT_PRICE,
+					value: activePrice,
 					currency: 'MAD',
 					transaction_id: orderId,
 					items: [
 						{
 							item_id: PRODUCT_SKU,
-							item_name: PRODUCT_TITLE,
-							price: PRODUCT_PRICE,
-							quantity: 1
+							item_name: activeTitle,
+							price: activePrice,
+							quantity: activeQty
 						}
 					]
 				});
-				console.log('✅ [GTAG SUCCESS] Purchase conversion fired for AW-18405009405');
+				console.log('✅ [GTAG SUCCESS] Purchase conversion fired for AW-18405009405 with value', activePrice);
 			} catch (err) {
 				console.warn('Gtag conversion error:', err);
 			}
@@ -115,7 +150,7 @@
 
 		// 2. Snapchat Purchase Pixel Tracking
 		try {
-			trackSnapPurchase(PRODUCT_PRICE, 'MAD', orderId);
+			trackSnapPurchase(activePrice, 'MAD', orderId);
 		} catch (err) {
 			console.warn('Snapchat tracking error:', err);
 		}
@@ -133,16 +168,16 @@
 			city: customerAddress.trim(),
 			address: customerAddress.trim(),
 			city_address: customerAddress.trim(),
-			price: PRODUCT_PRICE,
-			total: PRODUCT_PRICE,
-			totalPrice: PRODUCT_PRICE,
-			quantity: 1,
-			qte: 1,
-			productTitle: PRODUCT_TITLE,
-			productTitleStr: PRODUCT_TITLE,
-			selectedOfferTitle: PRODUCT_TITLE,
+			price: activePrice,
+			total: activePrice,
+			totalPrice: activePrice,
+			quantity: activeQty,
+			qte: activeQty,
+			productTitle: activeTitle,
+			productTitleStr: activeTitle,
+			selectedOfferTitle: selectedBundle.title,
 			sku: PRODUCT_SKU,
-			offerSku: PRODUCT_TITLE,
+			offerSku: selectedBundle.title,
 			date_order: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' }),
 			status: 'pending'
 		};
@@ -166,13 +201,12 @@
 
 			// Redirect to thank you page
 			const thankYouUrl = preserveTrackingParams(
-				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&city=${encodeURIComponent(customerAddress.trim())}&total=${PRODUCT_PRICE}`
+				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&city=${encodeURIComponent(customerAddress.trim())}&total=${activePrice}`
 			);
 			window.location.href = thankYouUrl;
 		} catch (err) {
 			console.error('Checkout error:', err);
-			// Even on network error, ensure user reaches confirmation
-			window.location.href = preserveTrackingParams(`/thank-you?orderId=${orderId}&total=${PRODUCT_PRICE}`);
+			window.location.href = preserveTrackingParams(`/thank-you?orderId=${orderId}&total=${activePrice}`);
 		}
 	}
 
@@ -226,7 +260,7 @@
 	<!-- 2. HERO SECTION (MOBILE-FIRST: IMAGE FIRST -> TITLE -> BADGES)    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header class="pt-2 sm:pt-4 pb-2 px-3 sm:px-4 max-w-xl mx-auto">
-		<!-- HERO IMAGE FIRST (IMAGE SLOT 1) -->
+		<!-- HERO IMAGE FIRST -->
 		<div class="w-full overflow-hidden rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
 			<img
 				src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
@@ -244,14 +278,14 @@
 				منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً
 			</h1>
 
-			<!-- Rating & Price Row -->
+			<!-- Rating & Price Row (Default 279 DH) -->
 			<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-0.5">
 				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ (114 تقييم)</span>
 				<span class="text-stone-300 select-none">|</span>
-				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_PRICE} درهم</span>
-				<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_OLD_PRICE} درهم</span>
+				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">279 درهم</span>
+				<span class="text-sm text-stone-400 line-through font-bold">399 درهم</span>
 				<span class="bg-[#C99738] text-white text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-md shadow-2xs">
-					وفر 150 درهم
+					وفر 120 درهم
 				</span>
 			</div>
 
@@ -274,120 +308,231 @@
 	</header>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 3. DIRECT COD ORDER FORM IMMEDIATELY BELOW BADGES                -->
+	<!-- 3. DIRECT COD ORDER FORM WITH 2-TIER BUNDLE SELECTOR              -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<section id="order-form" class="max-w-xl mx-auto px-3 sm:px-4 py-3 sm:py-4 scroll-mt-12" dir="rtl">
-		<div class="rounded-2xl sm:rounded-3xl border-2 border-[#073824]/30 bg-white p-4 sm:p-6 shadow-lg">
-			<!-- Header -->
-			<div class="text-center pb-3 border-b border-stone-100">
-				<span class="inline-block bg-emerald-100 text-emerald-800 text-[11px] sm:text-xs font-black px-3 py-0.5 rounded-full mb-1">
-					استمارة الطلب السريع ⚡
-				</span>
-				<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug">
-					املأ الاستمارة لطلب العرض (المنظم + الرشاش مجاناً)
+		<div class="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#073824] bg-white shadow-xl">
+			<!-- Header matching reference design -->
+			<div class="bg-[#073824] py-3.5 px-4 text-center text-white">
+				<h2 class="font-display text-xl sm:text-2xl font-black tracking-tight leading-tight">
+					أكمل طلبك الآن
 				</h2>
-				<p class="text-xs text-stone-500 font-medium mt-0.5">
-					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني لجميع مدن المغرب
+				<p class="text-xs sm:text-sm text-emerald-100/90 font-medium mt-1">
+					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
 				</p>
 			</div>
 
-			<!-- Price Box -->
-			<div class="my-3.5 rounded-xl bg-gradient-to-r from-emerald-50 via-emerald-100/60 to-emerald-50 border border-emerald-200 p-3 text-center">
-				<div class="flex items-center justify-center gap-2.5">
-					<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_PRICE} درهم</span>
-					<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_OLD_PRICE} درهم</span>
-					<span class="bg-[#C99738] text-white text-[11px] font-black px-2 py-0.5 rounded-md">وفّر 150 درهم</span>
-				</div>
-				<p class="text-xs font-extrabold text-emerald-900 mt-0.5">
-					المجموع: 249 درهم فقط (توصيل مجاني لباب الدار)
-				</p>
-			</div>
+			<!-- Body -->
+			<div class="p-3.5 sm:p-5 bg-[#FAF7F2]/60 space-y-3.5">
+				<!-- 2-Tier Bundle Selector Cards -->
+				<div class="space-y-3" role="radiogroup" aria-label="اختر باقة العرض">
+					<!-- Bundle 1: 1 Piece (Default) -->
+					<div
+						role="radio"
+						aria-checked={selectedBundleId === 1}
+						tabindex="0"
+						onclick={() => (selectedBundleId = 1)}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedBundleId = 1; } }}
+						class="relative flex items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none {selectedBundleId === 1 ? 'border-[#0B5E3C] bg-white shadow-sm ring-2 ring-[#0B5E3C]/10' : 'border-stone-200 bg-white/80 hover:border-stone-300'}"
+					>
+						<!-- Right Group: Radio + Thumbnail + Title/Badge -->
+						<div class="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+							<!-- Custom Radio Button with Checkmark -->
+							<div class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all {selectedBundleId === 1 ? 'bg-[#0B5E3C] text-white shadow-xs' : 'border-2 border-stone-300 bg-white'}">
+								{#if selectedBundleId === 1}
+									<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" aria-hidden="true">
+										<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+									</svg>
+								{/if}
+							</div>
 
-			<!-- Form Inputs -->
-			<form onsubmit={handleSubmit} novalidate class="space-y-3">
-				<!-- Input 1: Full Name -->
-				<div>
-					<label for="order-fullname" class="block text-xs sm:text-sm font-bold text-stone-800 mb-1">
-						الاسم الكامل <span class="text-red-500">*</span>
-					</label>
-					<input
-						id="order-fullname"
-						type="text"
-						bind:value={customerName}
-						onblur={() => (nameBlurred = true)}
-						placeholder="اكتب اسمك الكامل"
-						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
-						required
-					/>
-					{#if showNameError}
-						<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال الاسم الكامل (حرفان على الأقل).</p>
-					{/if}
-				</div>
+							<!-- Thumbnail -->
+							<div class="w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-white p-0.5 shadow-2xs">
+								<img
+									src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+									alt="قطعة واحدة"
+									class="w-full h-full object-contain"
+									loading="lazy"
+								/>
+							</div>
 
-				<!-- Input 2: Phone Number -->
-				<div>
-					<label for="order-phone" class="block text-xs sm:text-sm font-bold text-stone-800 mb-1">
-						رقم الهاتف (واتساب) <span class="text-red-500">*</span>
-					</label>
-					<input
-						id="order-phone"
-						type="tel"
-						dir="ltr"
-						bind:value={customerPhone}
-						onblur={() => (phoneBlurred = true)}
-						placeholder="0612345678"
-						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
-						required
-					/>
-					{#if showPhoneError}
-						<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
-					{/if}
-				</div>
+							<!-- Text Info -->
+							<div class="min-w-0 flex-1 text-right">
+								<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-snug">
+									قطعة واحدة + رشاش هدية مجانية 🎁
+								</h4>
+								<span class="inline-block bg-emerald-100 text-[#073824] text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full mt-1">
+									وفّر 120 درهم
+								</span>
+							</div>
+						</div>
 
-				<!-- Input 3: City and Address -->
-				<div>
-					<label for="order-address" class="block text-xs sm:text-sm font-bold text-stone-800 mb-1">
-						المدينة والعنوان <span class="text-red-500">*</span>
-					</label>
-					<input
-						id="order-address"
-						type="text"
-						bind:value={customerAddress}
-						onblur={() => (addressBlurred = true)}
-						placeholder="مثال: الدار البيضاء، حي المعاريف، شارع..."
-						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showAddressError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
-						required
-					/>
-					{#if showAddressError}
-						<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال مدينتك وعنوان التوصيل.</p>
-					{/if}
-				</div>
-
-				{#if formError}
-					<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 font-bold text-center">
-						{formError}
+						<!-- Left Group: Price Block -->
+						<div class="text-left shrink-0 pl-1">
+							<span class="font-display text-base sm:text-lg font-black text-[#073824] block leading-tight">
+								279 درهم
+							</span>
+							<span class="text-[11px] text-stone-400 line-through font-bold block leading-tight">
+								399 درهم
+							</span>
+						</div>
 					</div>
-				{/if}
 
-				<!-- Submit Button -->
-				<button
-					type="submit"
-					disabled={isSubmitting}
-					class="w-full min-h-12 py-3 px-5 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-950/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
-				>
-					{#if isSubmitting}
-						<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-						<span>جاري تأكيد طلبك...</span>
-					{:else}
-						<span>تأكيد الطلب • الدفع عند الاستلام 🚚</span>
+					<!-- Bundle 2: 2 Pieces (Best Value Upsell) -->
+					<div
+						role="radio"
+						aria-checked={selectedBundleId === 2}
+						tabindex="0"
+						onclick={() => (selectedBundleId = 2)}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedBundleId = 2; } }}
+						class="relative flex items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none {selectedBundleId === 2 ? 'border-[#0B5E3C] bg-white shadow-sm ring-2 ring-[#0B5E3C]/10' : 'border-stone-200 bg-white/80 hover:border-stone-300'}"
+					>
+						<!-- Top Floating Badge -->
+						<div class="absolute -top-3 end-4 z-10 bg-[#073824] text-[#C99738] text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1 border border-[#C99738]/40">
+							<span>🔥 العرض الأوفر والأكثر طلباً</span>
+						</div>
+
+						<!-- Right Group: Radio + Thumbnail with x2 badge + Title/Savings -->
+						<div class="flex items-center gap-2.5 sm:gap-3 flex-1 min-w-0">
+							<!-- Custom Radio Button with Checkmark -->
+							<div class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all {selectedBundleId === 2 ? 'bg-[#0B5E3C] text-white shadow-xs' : 'border-2 border-stone-300 bg-white'}">
+								{#if selectedBundleId === 2}
+									<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" aria-hidden="true">
+										<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+									</svg>
+								{/if}
+							</div>
+
+							<!-- Thumbnail with x2 badge -->
+							<div class="relative w-13 h-13 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-white p-0.5 shadow-2xs">
+								<img
+									src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+									alt="قطعتان"
+									class="w-full h-full object-contain"
+									loading="lazy"
+								/>
+								<span class="absolute bottom-0 end-0 bg-[#073824] text-[#C99738] text-[9px] font-black px-1 rounded-tl-md">
+									×2
+								</span>
+							</div>
+
+							<!-- Text Info -->
+							<div class="min-w-0 flex-1 text-right">
+								<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-snug">
+									قطعتان + رشاشان هدية مجانية 🎁🎁
+								</h4>
+								<p class="text-[10px] sm:text-[11px] font-bold text-emerald-700 mt-0.5">
+									وفّر 250 درهم • فقط 224 درهم للقطعة!
+								</p>
+							</div>
+						</div>
+
+						<!-- Left Group: Price Block -->
+						<div class="text-left shrink-0 pl-1">
+							<span class="font-display text-base sm:text-lg font-black text-[#073824] block leading-tight">
+								449 درهم
+							</span>
+							<span class="text-[11px] text-stone-400 line-through font-bold block leading-tight">
+								699 درهم
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Form Inputs -->
+				<form onsubmit={handleSubmit} novalidate class="space-y-3 pt-1">
+					<div class="border-t border-stone-200/80 pt-3">
+						<h3 class="font-display text-sm font-black text-stone-900 mb-2">
+							معلومات التوصيل
+						</h3>
+					</div>
+
+					<!-- Input 1: Full Name -->
+					<div>
+						<label for="order-fullname" class="block text-xs font-bold text-stone-800 mb-1">
+							الاسم الكامل <span class="text-red-500">*</span>
+						</label>
+						<input
+							id="order-fullname"
+							type="text"
+							bind:value={customerName}
+							onblur={() => (nameBlurred = true)}
+							placeholder="اكتب اسمك الكامل هنا"
+							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							required
+						/>
+						{#if showNameError}
+							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال الاسم الكامل (حرفان على الأقل).</p>
+						{/if}
+					</div>
+
+					<!-- Input 2: Phone Number -->
+					<div>
+						<label for="order-phone" class="block text-xs font-bold text-stone-800 mb-1">
+							رقم الهاتف (واتساب) <span class="text-red-500">*</span>
+						</label>
+						<input
+							id="order-phone"
+							type="tel"
+							dir="ltr"
+							bind:value={customerPhone}
+							onblur={() => (phoneBlurred = true)}
+							placeholder="06XXXXXXXX أو 07XXXXXXXX"
+							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							required
+						/>
+						{#if showPhoneError}
+							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
+						{/if}
+					</div>
+
+					<!-- Input 3: City and Address -->
+					<div>
+						<label for="order-address" class="block text-xs font-bold text-stone-800 mb-1">
+							المدينة والعنوان <span class="text-red-500">*</span>
+						</label>
+						<input
+							id="order-address"
+							type="text"
+							bind:value={customerAddress}
+							onblur={() => (addressBlurred = true)}
+							placeholder="مدينتك والحي أو العنوان للتوصيل"
+							class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showAddressError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							required
+						/>
+						{#if showAddressError}
+							<p class="text-xs text-red-600 font-bold mt-1">المرجو إدخال مدينتك وعنوان التوصيل.</p>
+						{/if}
+					</div>
+
+					{#if formError}
+						<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 font-bold text-center">
+							{formError}
+						</div>
 					{/if}
-				</button>
 
-				<!-- Reassurance Micro-Copy -->
-				<p class="text-center text-[11px] font-semibold text-stone-500 pt-0.5">
-					🔒 ضمان استبدال لمدة 14 يوماً | فحص الطلبية عند الاستلام
-				</p>
-			</form>
+					<!-- Dynamic CTA Submit Button with Energetic Amber/Orange #E06D14 -->
+					<button
+						type="submit"
+						disabled={isSubmitting}
+						class="w-full min-h-12.5 py-3.5 px-5 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] active:scale-[0.98] text-white font-black text-sm sm:text-base shadow-lg shadow-orange-950/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+					>
+						{#if isSubmitting}
+							<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+							<span>جاري تأكيد طلبك...</span>
+						{:else if selectedBundleId === 2}
+							<span>تأكيد الطلب الآن • 449 درهم (توفير 250 درهم) 🚚</span>
+						{:else}
+							<span>تأكيد الطلب الآن • 279 درهم 🚚</span>
+						{/if}
+					</button>
+
+					<!-- Trust Footnote below button -->
+					<p class="text-center text-[11px] font-bold text-stone-500 pt-0.5 leading-normal">
+						🔒 الدفع عند الاستلام بعد المعاينة • توصيل مجاني وسريع لجميع المدن المغربية
+					</p>
+				</form>
+			</div>
 		</div>
 	</section>
 
@@ -777,7 +922,7 @@
 	</footer>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 10. STICKY MOBILE BOTTOM CTA BAR                                  -->
+	<!-- 10. DYNAMIC STICKY MOBILE BOTTOM CTA BAR                          -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	{#if isStickyCtaVisible}
 		<div class="fixed bottom-0 inset-x-0 z-50 p-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-2xl sm:hidden" dir="rtl">
@@ -785,16 +930,20 @@
 				<div class="text-right">
 					<span class="block text-[10px] font-bold text-stone-500">المجموع النهائي:</span>
 					<div class="flex items-baseline gap-1">
-						<span class="font-display text-base font-black text-[#073824]">249 DH</span>
-						<span class="text-[10px] text-stone-400 line-through font-bold">399 DH</span>
+						<span class="font-display text-base font-black text-[#073824]">{selectedBundle.price} DH</span>
+						<span class="text-[10px] text-stone-400 line-through font-bold">{selectedBundle.oldPrice} DH</span>
 					</div>
 				</div>
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="flex-1 min-h-10 py-2 px-3 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1 cursor-pointer"
+					class="flex-1 min-h-10 py-2 px-3 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1 cursor-pointer"
 				>
-					<span>اطلب الآن + الرشاش هدية 🎁</span>
+					{#if selectedBundleId === 2}
+						<span>اطلب قطعتين • 449 درهم 🎁</span>
+					{:else}
+						<span>اطلب الآن • 279 درهم 🎁</span>
+					{/if}
 				</button>
 			</div>
 		</div>

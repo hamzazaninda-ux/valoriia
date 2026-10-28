@@ -35,18 +35,28 @@
     },
     "pricing": {
       "currency": "MAD",
-      "price": 249,
+      "price": 279,
       "originalPrice": 399,
       "offers": [
         {
           "id": 1,
-          "title": "منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً",
+          "title": "قطعة واحدة + رشاش هدية مجانية 🎁",
           "subtitle": "توصيل مجاني لجميع المدن المغربية",
-          "price": 249,
+          "price": 279,
           "originalPrice": 399,
           "quantity": 1,
-          "badge": "توصيل مجاني + هدية 🎁",
+          "badge": "وفّر 120 درهم",
           "isPopular": true
+        },
+        {
+          "id": 2,
+          "title": "قطعتان + رشاشان هدية مجانية 🎁🎁",
+          "subtitle": "وفّر 250 درهم • فقط 224 درهم للقطعة!",
+          "price": 449,
+          "originalPrice": 699,
+          "quantity": 2,
+          "badge": "🔥 العرض الأوفر والأكثر طلباً",
+          "isPopular": false
         }
       ]
     },

@@ -62,7 +62,7 @@
 			title: 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً',
 			subtitle: 'فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية',
 			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
-			price: 249,
+			price: 279,
 			oldPrice: 399,
 			discount: null,
 			rating: 5.0,
@@ -86,7 +86,7 @@
 
 	function toSlot(p: any): Slot {
 		const isOrganizer = p.slug === 'inox-organizer';
-		const price = p.startingPrice || p.price || (isOrganizer ? 249 : 229);
+		const price = p.startingPrice || p.price || (isOrganizer ? 279 : 229);
 		const oldPrice = p.oldPrice || (isOrganizer ? 399 : (price === 229 ? 299 : Math.round(price * 1.3)));
 		return {
 			slug: p.slug,
