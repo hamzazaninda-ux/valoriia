@@ -208,23 +208,23 @@
 	<meta property="og:url" content="https://lhamza.shop/inox-organizer" />
 </svelte:head>
 
-{#snippet placeholderCard(slotNum: number, label: string, desc?: string, minH: string = 'min-h-[280px] sm:min-h-[340px]')}
+{#snippet placeholderCard(slotNum: number, label: string, desc?: string, aspect: string = 'aspect-square sm:aspect-[4/3]')}
 	<div
-		class="relative w-full {minH} flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-dashed border-[#1B4332]/40 bg-gradient-to-br from-emerald-50/70 via-white to-amber-50/40 p-5 sm:p-6 text-center shadow-inner select-none transition-all duration-300 hover:border-[#1B4332] hover:bg-emerald-50/90 my-3"
+		class="relative w-full {aspect} flex flex-col items-center justify-center rounded-2xl sm:rounded-3xl border-2 border-dashed border-[#073824]/30 bg-gradient-to-b from-stone-50 via-white to-emerald-50/30 p-3.5 sm:p-5 text-center shadow-inner select-none transition-all duration-200 hover:border-[#073824]/60 my-2"
 	>
-		<div class="mb-3 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#073824] text-[#C99738] shadow-md">
-			<svg class="h-6 w-6 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+		<div class="mb-2 sm:mb-2.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#073824] text-[#C99738] shadow-sm">
+			<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
 				<path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
 			</svg>
 		</div>
-		<span class="inline-block bg-[#073824] text-[#C99738] text-[11px] sm:text-xs font-black px-3 py-1 rounded-full mb-2">
-			صورة رقم {slotNum}
+		<span class="inline-block bg-[#073824] text-[#C99738] text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-full mb-1">
+			صورة {slotNum}
 		</span>
-		<h4 class="font-display text-xs sm:text-sm md:text-base font-extrabold text-[#1E293B] max-w-md leading-relaxed">
+		<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 max-w-sm leading-snug px-1">
 			{label}
 		</h4>
 		{#if desc}
-			<p class="text-[11px] sm:text-xs text-stone-500 font-medium mt-1.5 max-w-sm leading-normal">
+			<p class="text-[10px] sm:text-xs text-stone-500 font-medium mt-1 max-w-xs leading-normal px-2">
 				{desc}
 			</p>
 		{/if}
@@ -233,7 +233,7 @@
 
 <main class="min-h-screen bg-[#FAF9F6] text-[#1E293B] font-sans antialiased pb-20 sm:pb-12" dir="rtl">
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 1: STICKY TOP ANNOUNCEMENT BAR                           -->
+	<!-- 1. COMPACT STICKY TOP BAR                                         -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<aside
 		class="sticky top-0 z-40 w-full bg-[#073824] text-white py-2 px-3 text-[11px] sm:text-xs font-bold text-center border-b border-white/10 shadow-sm"
@@ -241,125 +241,92 @@
 		dir="rtl"
 	>
 		<div class="max-w-4xl mx-auto flex items-center justify-center gap-1.5 leading-tight">
-			<span>🎁</span>
-			<span>عرض حصري لفترة محدودة: احصل على رشاش الاستحمام التوربو المفلتر مجاناً مع كل طلب! | شحن مجاني والدفع عند الاستلام</span>
+			<span>🎁 عرض محدود: رشاش التوربو المفلتر هدية مجانية + توصيل مجاني!</span>
 		</div>
 	</aside>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 2: HERO SECTION (ABOVE THE FOLD)                         -->
+	<!-- 2. HERO SECTION (MOBILE-FIRST: IMAGE FIRST -> TITLE -> BADGES)    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<header class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-50% to-[#FAF9F6] pt-5 pb-6 px-4">
-		<div class="max-w-2xl mx-auto text-center space-y-4">
-			<!-- Top Badge -->
-			<div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3.5 py-1 text-xs font-extrabold text-emerald-200">
-				<span>🇲🇦</span>
-				<span>العرض الأكثر طلباً لتجديد الحمام في المغرب</span>
-			</div>
+	<header class="pt-2 sm:pt-4 pb-2 px-3 sm:px-4 max-w-xl mx-auto">
+		<!-- HERO IMAGE FIRST (IMAGE SLOT 1) -->
+		<div class="w-full">
+			{@render placeholderCard(
+				1,
+				'صورة رقم 1: منظم الحمام الفاخر + رشاش التوربو هدية',
+				'الصورة الرئيسية للمنظم مثبت على الجدار مع شارة الرشاش الهدية المجانية',
+				'aspect-square sm:aspect-[4/3]'
+			)}
+		</div>
 
-			<!-- Main H1 Headline -->
-			<h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
-				حوّل حمامك إلى مساحة فندقية منظمة وأنيقة في دقائق – بدون فوضى وبدون صدأ!
+		<!-- COMPACT TITLE & PRICE ROW (BELOW HERO IMAGE) -->
+		<div class="text-center pt-2 pb-1 space-y-2">
+			<!-- Title H1 (Max 1 to 2 lines, 20px-22px on mobile) -->
+			<h1 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug tracking-tight">
+				منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً
 			</h1>
 
-			<!-- Subheadline -->
-			<p class="text-xs sm:text-sm md:text-base text-emerald-100/90 font-medium leading-relaxed max-w-xl mx-auto">
-				منظم الحمام الجداري الفاخر (3 طبقات) المصنوع من الإينوكس الأصلي المقاوم للرطوبة + رشاش الدش التوربو المفلتر هدية مجانية مع طلبك.
-			</p>
-
-			<!-- Hero Image Slot 1 -->
-			<div class="pt-2 max-w-lg mx-auto">
-				{@render placeholderCard(
-					1,
-					'[IMAGE SLOT 1: Hero Image - 3-Tier Inox Bathroom Organizer mounted on wall + Free Turbo Shower Head badge]',
-					'صورة الهيرو الأساسية: منظم الحمام الفاخر بـ 3 طبقات مثبت على الجدار مع شارة الرشاش الهدية المجانية'
-				)}
+			<!-- Rating & Price Row -->
+			<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-0.5">
+				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ (114 تقييم)</span>
+				<span class="text-stone-300 select-none">|</span>
+				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_PRICE} درهم</span>
+				<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_OLD_PRICE} درهم</span>
+				<span class="bg-[#C99738] text-white text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-md shadow-2xs">
+					وفر 150 درهم
+				</span>
 			</div>
 
-			<!-- Key Value Bullets -->
-			<div class="bg-white/95 rounded-2xl p-4 sm:p-5 border border-emerald-900/10 shadow-lg text-right max-w-lg mx-auto space-y-2.5">
-				<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-emerald-700 text-sm shrink-0">✔️</span>
-					<span>فولاذ مقاوم للصدأ (إينوكس عالي الجودة) يتحمل الماء والبخار لسنوات.</span>
-				</div>
-				<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-emerald-700 text-sm shrink-0">✔️</span>
-					<span>تصميم ذكي 3 في 1: 3 رفوف واسعة + قضيب سفلي للمناشف + خطافات جانبية.</span>
-				</div>
-				<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-emerald-700 text-sm shrink-0">✔️</span>
-					<span>تركيب مزدوج حسب رغبتك: بدون ثقب (لاصق قوي مرفق) أو بالتثبيت الجداري.</span>
-				</div>
-				<div class="flex items-start gap-2 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-emerald-700 text-sm shrink-0">✔️</span>
-					<span>هدية مجانية: رشاش استحمام توربو مفلتر لرفع ضغط الماء وحماية الشعر.</span>
-				</div>
-			</div>
-
-			<!-- CTA Button -->
-			<div class="pt-2">
-				<button
-					type="button"
-					onclick={scrollToOrderForm}
-					class="w-full max-w-lg mx-auto min-h-13 py-3.5 px-6 rounded-2xl bg-[#15803D] hover:bg-[#166534] text-white font-black text-base sm:text-lg shadow-xl shadow-emerald-950/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-				>
-					<span>اطلب الباك الآن وادفع عند الاستلام</span>
-					<svg class="h-5 w-5 shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-					</svg>
-				</button>
-			</div>
-
-			<!-- Micro Trust Pills -->
-			<div class="grid grid-cols-3 gap-2 max-w-lg mx-auto pt-2 text-center">
-				<div class="flex items-center justify-center gap-1 bg-white/90 rounded-xl py-2 px-1 text-[11px] font-bold text-stone-800 shadow-2xs border border-stone-200/60">
-					<span>🚚</span>
-					<span>توصيل مجاني</span>
-				</div>
-				<div class="flex items-center justify-center gap-1 bg-white/90 rounded-xl py-2 px-1 text-[11px] font-bold text-stone-800 shadow-2xs border border-stone-200/60">
-					<span>📦</span>
-					<span>الدفع بعد المعاينة</span>
-				</div>
-				<div class="flex items-center justify-center gap-1 bg-white/90 rounded-xl py-2 px-1 text-[11px] font-bold text-stone-800 shadow-2xs border border-stone-200/60">
+			<!-- 3 Ultra-Short Icon Badges (Max 4 words each) -->
+			<div class="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 text-center">
+				<div class="bg-emerald-50/90 border border-emerald-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-emerald-900 shadow-2xs flex items-center justify-center gap-1">
 					<span>🛡️</span>
-					<span>ضمان 14 يوماً</span>
+					<span>إينوكس أصلي ضد الصدأ</span>
+				</div>
+				<div class="bg-emerald-50/90 border border-emerald-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-emerald-900 shadow-2xs flex items-center justify-center gap-1">
+					<span>🔧</span>
+					<span>تركيب باللصاق أو البراغي</span>
+				</div>
+				<div class="bg-amber-50/90 border border-amber-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-amber-900 shadow-2xs flex items-center justify-center gap-1">
+					<span>🎁</span>
+					<span>رشاش مفلتر هدية مجاناً</span>
 				</div>
 			</div>
 		</div>
 	</header>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 3: DIRECT COD ORDER FORM (EMBEDDED HIGH UP)              -->
+	<!-- 3. DIRECT COD ORDER FORM IMMEDIATELY BELOW BADGES                -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="max-w-xl mx-auto px-4 py-8 scroll-mt-14" dir="rtl">
-		<div class="rounded-3xl border-2 border-emerald-700/30 bg-white p-5 sm:p-7 shadow-xl">
+	<section id="order-form" class="max-w-xl mx-auto px-3 sm:px-4 py-3 sm:py-4 scroll-mt-12" dir="rtl">
+		<div class="rounded-2xl sm:rounded-3xl border-2 border-[#073824]/30 bg-white p-4 sm:p-6 shadow-lg">
 			<!-- Header -->
-			<div class="text-center pb-4 border-b border-stone-100">
-				<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full mb-2">
+			<div class="text-center pb-3 border-b border-stone-100">
+				<span class="inline-block bg-emerald-100 text-emerald-800 text-[11px] sm:text-xs font-black px-3 py-0.5 rounded-full mb-1">
 					استمارة الطلب السريع ⚡
 				</span>
-				<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug">
+				<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug">
 					املأ الاستمارة لطلب العرض (المنظم + الرشاش مجاناً)
 				</h2>
-				<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
+				<p class="text-xs text-stone-500 font-medium mt-0.5">
 					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني لجميع مدن المغرب
 				</p>
 			</div>
 
 			<!-- Price Box -->
-			<div class="my-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-emerald-100/60 to-emerald-50 border border-emerald-200 p-4 text-center">
-				<div class="flex items-center justify-center gap-3">
-					<span class="font-display text-3xl font-black text-[#073824]">{PRODUCT_PRICE} درهم</span>
-					<span class="text-base text-stone-400 line-through font-bold">{PRODUCT_OLD_PRICE} درهم</span>
-					<span class="bg-[#C99738] text-white text-xs font-black px-2 py-0.5 rounded-md shadow-2xs">وفّر 150 درهم</span>
+			<div class="my-3.5 rounded-xl bg-gradient-to-r from-emerald-50 via-emerald-100/60 to-emerald-50 border border-emerald-200 p-3 text-center">
+				<div class="flex items-center justify-center gap-2.5">
+					<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_PRICE} درهم</span>
+					<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_OLD_PRICE} درهم</span>
+					<span class="bg-[#C99738] text-white text-[11px] font-black px-2 py-0.5 rounded-md">وفّر 150 درهم</span>
 				</div>
-				<p class="text-xs font-extrabold text-emerald-900 mt-1">
+				<p class="text-xs font-extrabold text-emerald-900 mt-0.5">
 					المجموع: 249 درهم فقط (توصيل مجاني لباب الدار)
 				</p>
 			</div>
 
 			<!-- Form Inputs -->
-			<form onsubmit={handleSubmit} novalidate class="space-y-4">
+			<form onsubmit={handleSubmit} novalidate class="space-y-3">
 				<!-- Input 1: Full Name -->
 				<div>
 					<label for="order-fullname" class="block text-xs sm:text-sm font-bold text-stone-800 mb-1">
@@ -371,7 +338,7 @@
 						bind:value={customerName}
 						onblur={() => (nameBlurred = true)}
 						placeholder="اكتب اسمك الكامل"
-						class="w-full h-12 px-4 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-sm font-medium text-stone-900 transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
+						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
 						required
 					/>
 					{#if showNameError}
@@ -391,7 +358,7 @@
 						bind:value={customerPhone}
 						onblur={() => (phoneBlurred = true)}
 						placeholder="0612345678"
-						class="w-full h-12 px-4 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
+						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
 						required
 					/>
 					{#if showPhoneError}
@@ -410,7 +377,7 @@
 						bind:value={customerAddress}
 						onblur={() => (addressBlurred = true)}
 						placeholder="مثال: الدار البيضاء، حي المعاريف، شارع..."
-						class="w-full h-12 px-4 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-sm font-medium text-stone-900 transition-all {showAddressError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
+						class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 transition-all {showAddressError ? 'border-red-500 bg-red-50/20' : 'bg-stone-50/50'}"
 						required
 					/>
 					{#if showAddressError}
@@ -419,7 +386,7 @@
 				</div>
 
 				{#if formError}
-					<div class="rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700 font-bold text-center">
+					<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 font-bold text-center">
 						{formError}
 					</div>
 				{/if}
@@ -428,10 +395,10 @@
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					class="w-full min-h-13 py-3.5 px-6 rounded-2xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-base sm:text-lg shadow-xl shadow-emerald-950/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+					class="w-full min-h-12 py-3 px-5 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-950/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
 				>
 					{#if isSubmitting}
-						<span class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+						<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
 						<span>جاري تأكيد طلبك...</span>
 					{:else}
 						<span>تأكيد الطلب • الدفع عند الاستلام 🚚</span>
@@ -439,7 +406,7 @@
 				</button>
 
 				<!-- Reassurance Micro-Copy -->
-				<p class="text-center text-xs font-semibold text-stone-500 pt-1">
+				<p class="text-center text-[11px] font-semibold text-stone-500 pt-0.5">
 					🔒 ضمان استبدال لمدة 14 يوماً | فحص الطلبية عند الاستلام
 				</p>
 			</form>
@@ -447,172 +414,167 @@
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 4: REAL UNBOXING & AUTHENTIC QUALITY                     -->
+	<!-- 4. SECTION: الجودة الحقيقية (IMAGE SLOT 2 FIRST)                   -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-8" dir="rtl">
-		<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm text-center">
-			<span class="inline-block bg-amber-100 text-amber-900 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-				جودة حقيقية 100% كما في الواقع
-			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-3">
-				نصوّر لك المنتج من مستودعنا مباشرة: معدن إينوكس صلب يدوم للعمر
-			</h2>
-			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-				لا مجال للمفاجآت عند الاستلام! المنظم مصنوع من صفائح وأنابيب فولاذية سميكة مقاومة للصدأ والتآكل، ويأتيك في العلبة بكامل معدات التركيب (البراغي الجدارية + اللاصق الذكي القوي) لتختار طريقة التثبيت التي تناسب حمامك.
-			</p>
-			<!-- Slot 2 -->
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
+		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
+			<!-- Image Slot 2 First -->
 			{@render placeholderCard(
 				2,
-				'[IMAGE/VIDEO SLOT 2: Real Unboxing Photo/GIF showing stainless steel plates, rods, screws, and adhesive kit on the floor]',
-				'صورة/مقطع فتح الصندوق: صفائح وأنابيب الإينوكس الصلبة، والبراغي، ومجموعة اللصاق القوي لتوضيح الجودة الواقعية للمنتج'
+				'صورة / فيديو 2: تصوير حقيقي للمنتج والقطع من المستودع',
+				'فولاذ سميك وأطقم التركيب الكاملة لتوضيح الجودة الواقعية',
+				'aspect-square sm:aspect-[16/10]'
 			)}
+			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug mt-3 mb-1">
+				معدن إينوكس صلب يدوم لسنوات
+			</h2>
+			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto font-medium">
+				تصوير حقيقي من مستودعنا: فولاذ سميك مع أطقم التركيب الكاملة (لصاق قوي + براغي).
+			</p>
 		</div>
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 5: DEEP-DIVE FEATURES (PROBLEM / SOLUTION STACK)         -->
+	<!-- 5. SECTION: المميزات الثلاث (VISUAL CARDS: IMAGE FIRST)          -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-6 space-y-6" dir="rtl">
-		<!-- Card 1 -->
-		<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm text-center">
-			<span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-				💧 مقاومة تامة للماء والرطوبة
-			</span>
-			<h3 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-2">
-				مقاومة تامة للصدأ وتصريف ذكي للمياه
-			</h3>
-			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-				بفضل فتحات التهوية المدمجة في كل رف ومادة الإينوكس المعالجة ضد الرطوبة، لن يتجمع الماء تحت القوارير ولن يظهر الصدأ أبداً حتى مع البخار المستمر.
-			</p>
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-2 space-y-4" dir="rtl">
+		<!-- Card 1: مقاومة الصدأ -->
+		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
+			<!-- Image Slot 3 First -->
 			{@render placeholderCard(
 				3,
-				'[IMAGE SLOT 3: Close-up on water droplets on the stainless steel ventilated shelves showing anti-rust & drainage holes]',
-				'صورة مقربة: قطرات الماء على الرفوف المثقوبة المصنوعة من الإينوكس توضح تصريف الماء الفوري ومقاومة الصدأ'
+				'صورة رقم 3: رفوف الإينوكس المقاومة للماء والصدأ',
+				'رفوف مثقبة لتصريف المياه الفوري ومقاومة الرطوبة',
+				'aspect-square sm:aspect-[4/3]'
 			)}
+			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
+				مقاوم للصدأ والماء 100%
+			</h3>
+			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto font-medium">
+				رفوف مثقبة لتصريف المياه فوراً ومنع تراكم الرطوبة.
+			</p>
 		</div>
 
-		<!-- Card 2 -->
-		<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm text-center">
-			<span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-				📦 سعة تخزين عائلية هائلة
-			</span>
-			<h3 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-2">
-				سعة تخزين عملاقة تجمّع كل أغراض العائلة
-			</h3>
-			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-				مسافة مدروسة بين الرفوف (21 سم لكل طابق) تسمح بوضع العبوات الكبيرة بسهولة، مع حواجز جانبية تمنع سقوط القوارير، بالإضافة إلى حامل فوط سفلي وعلاقات إضافية.
-			</p>
+		<!-- Card 2: سعة التخزين -->
+		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
+			<!-- Image Slot 4 First -->
 			{@render placeholderCard(
 				4,
-				'[IMAGE SLOT 4: Lifestyle shot of the 3 shelves fully loaded with tall shampoo bottles, towels hanging on the bottom bar, and loofahs on hooks]',
-				'صورة توضيحية: الرفوف الثلاثة ممتلئة بعبوات الشامبو الكبيرة مع مناشف معلقة بالأسفل وليف الاستحمام على الخطافات'
+				'صورة رقم 4: المنظم ممتلئ بجميع لوازم الحمام والمناشف',
+				'سعة واسعة لكافة قوارير الشامبو الكبيرة والمناشف والخطافات',
+				'aspect-square sm:aspect-[4/3]'
 			)}
+			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
+				سعة كبيرة (3 طوابق + حامل فوط)
+			</h3>
+			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto font-medium">
+				يرتب جميع قوارير الشامبو الكبيرة والمناشف في مكان واحد.
+			</p>
 		</div>
 
-		<!-- Card 3 -->
-		<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm text-center">
-			<span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-				🛠️ تثبيت مزدوج وسهل
-			</span>
-			<h3 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-2">
-				تركيب سهل وثبات فائق بدون إتلاف السيراميك
-			</h3>
-			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-				سواء كنت تفضل التركيب السريع بدون ثقب عبر اللاصق القوي المرفق، أو التثبيت الكلاسيكي بالبراغي، فإن المنظم يتحمل الأوزان الثقيلة بثبات تام وأمان كامل.
-			</p>
+		<!-- Card 3: سهولة التركيب -->
+		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
+			<!-- Image Slot 5 First -->
 			{@render placeholderCard(
 				5,
-				'[IMAGE SLOT 5: Split visual showing adhesive no-drill installation vs screw installation on ceramic tiles]',
-				'صورة مقارنة: التثبيت السهل باللاصق القوي بدون حفر مقابل التثبيت بالبراغي على جدار السيراميك'
+				'صورة رقم 5: طريقة التثبيت باللصاق الذكي أو البراغي',
+				'تثبيت مزدوج باللاصق القوي بدون ثقب أو بالبراغي المرفقة',
+				'aspect-square sm:aspect-[4/3]'
 			)}
+			<h3 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-1">
+				تركيب مزدوج بدون إتلاف الزليج
+			</h3>
+			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto font-medium">
+				ثبّته باللاصق الذكي بدون ثقب، أو بالبراغي المرفقة حسب رغبتك.
+			</p>
 		</div>
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 6: THE FREE GIFT SPOTLIGHT (VALUE BOOSTER)               -->
+	<!-- 6. SECTION: الهدية المجانية (GOLD/EMERALD COMPACT CARD)         -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-8" dir="rtl">
-		<div class="rounded-3xl bg-gradient-to-br from-amber-50/60 via-white to-emerald-50/60 border-2 border-[#C99738] p-5 sm:p-7 shadow-lg text-center">
-			<span class="inline-block bg-[#C99738] text-white text-xs sm:text-sm font-black px-4 py-1.5 rounded-full mb-3 shadow-2xs">
-				🎁 هدية مجانية مع طلبك اليوم (بقيمة 120 درهم)
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
+		<div class="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-50/60 via-white to-emerald-50/60 border-2 border-[#C99738] p-4 sm:p-6 shadow-md text-center">
+			<span class="inline-block bg-[#C99738] text-white text-[11px] sm:text-xs font-black px-3.5 py-1 rounded-full mb-2 shadow-2xs">
+				🎁 هدية مجانية مع طلبك
 			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-2">
-				احصل على رشاش الاستحمام التوربو المفلتر مجاناً!
-			</h2>
-			<p class="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-				لأن راحة حمامك تكتمل بتجربة استحمام منعشة، نهديك هذا الرشاش الذكي المتطور مجاناً مع المنظم:
-			</p>
 
+			<!-- Image Slot 6 First -->
 			{@render placeholderCard(
 				6,
-				'[IMAGE SLOT 6: Turbocharged Filtered Shower Head with silicone massage bristles + replacement cotton filters]',
-				'صورة الرشاش الهدية: رشاش الاستحمام التوربو المفلتر بشعيرات السيليكون للتدليك وفلتر القطن المنقي للماء'
+				'صورة رقم 6: رشاش الاستحمام التوربو المفلتر مع الفلاتر',
+				'رشاش التوربو المفلتر بشعيرات التدليك وزر الإيقاف الفوري',
+				'aspect-square sm:aspect-[4/3]'
 			)}
 
-			<div class="bg-white rounded-2xl p-4 sm:p-5 border border-amber-200/80 shadow-xs text-right space-y-3 mt-4">
-				<div class="flex items-start gap-2.5 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-base shrink-0">🚀</span>
-					<span><strong>تقنية التوربو لمضاعفة ضغط المياه:</strong> حل مثالي للمنازل التي تعاني من ضعف صبيب الماء مع توفير الاستهلاك.</span>
+			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 leading-snug mt-3 mb-2">
+				رشاش الاستحمام التوربو المفلتر مجاناً!
+			</h2>
+
+			<!-- Compact 2x2 Grid of Short Bullets -->
+			<div class="grid grid-cols-2 gap-2 text-right mt-3 bg-white/90 rounded-xl p-3 border border-amber-200/80 shadow-2xs text-[11px] sm:text-xs font-bold text-stone-800">
+				<div class="flex items-center gap-1.5">
+					<span class="shrink-0 text-amber-600">🚀</span>
+					<span>يضاعف ضغط الماء الضعيف</span>
 				</div>
-				<div class="flex items-start gap-2.5 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-base shrink-0">💧</span>
-					<span><strong>نظام فلترة متكامل:</strong> مزود بفلتر قطني (PP) ينقي الماء من الكلور، الصدأ، والشوائب لحماية البشرة والشعر من التساقط.</span>
+				<div class="flex items-center gap-1.5">
+					<span class="shrink-0 text-emerald-600">💧</span>
+					<span>فلتر ينقي الماء للشعر والبشرة</span>
 				</div>
-				<div class="flex items-start gap-2.5 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-base shrink-0">💆‍♂️</span>
-					<span><strong>شعيرات سيليكون لتدليك فروة الرأس:</strong> تمنحك مساجاً مريحاً أثناء الاستحمام لتخفيف التوتر وتنشيط الدورة الدموية.</span>
+				<div class="flex items-center gap-1.5">
+					<span class="shrink-0 text-amber-600">💆‍♂️</span>
+					<span>شعيرات سيليكون لمساج الرأس</span>
 				</div>
-				<div class="flex items-start gap-2.5 text-xs sm:text-sm font-bold text-stone-800 leading-relaxed">
-					<span class="text-base shrink-0">🔘</span>
-					<span><strong>زر إيقاف فوري (Stop Button):</strong> تحكم في إيقاف وتشغيل الماء بضغطة واحدة من المقبض مع وضعيات رش متعددة.</span>
+				<div class="flex items-center gap-1.5">
+					<span class="shrink-0 text-emerald-600">🔘</span>
+					<span>زر إيقاف الماء بضغطة واحدة</span>
 				</div>
+			</div>
+
+			<!-- Quick Action Button to Order Form -->
+			<div class="mt-3.5">
+				<button
+					type="button"
+					onclick={scrollToOrderForm}
+					class="w-full py-2.5 px-4 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-xs sm:text-sm shadow-md active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+				>
+					<span>احصل على هديتك الآن مع طلبك 🎁</span>
+				</button>
 			</div>
 		</div>
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 7: TECHNICAL DIMENSIONS & BOX CONTENTS TABLE             -->
+	<!-- 7. SECTION: الأبعاد والمقاسات (IMAGE SLOT 7 FIRST)                -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-6" dir="rtl">
-		<div class="rounded-3xl bg-white border border-stone-200 p-5 sm:p-7 shadow-sm text-center">
-			<span class="inline-block bg-stone-100 text-stone-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-				📐 دقة المقاسات والمواصفات
-			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug mb-2">
-				المواصفات والأبعاد الدقيقة للمنظم
-			</h2>
-			<p class="text-xs sm:text-sm text-stone-500 font-medium mb-4">
-				مقاسات قياسية ومدروسة لتناسب جميع مساحات الحمامات بدقة متناهية
-			</p>
-
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
+		<div class="rounded-2xl sm:rounded-3xl bg-white border border-stone-200 p-4 sm:p-5 shadow-xs text-center">
+			<!-- Image Slot 7 First -->
 			{@render placeholderCard(
 				7,
-				'[IMAGE SLOT 7: Clean technical diagram showing dimensions: 60cm width, 58.5cm height, 15.3cm depth, 21cm between shelves]',
-				'مخطط المقاسات التقني: العرض 60 سم، الارتفاع 58.5 سم، العمق 15.3 سم، المسافة بين الرفوف 21 سم'
+				'صورة رقم 7: مخطط الأبعاد والمقاسات التقنية (60 سم)',
+				'العرض 60 سم × الارتفاع 58.5 سم × العمق 15.3 سم',
+				'aspect-square sm:aspect-[4/3]'
 			)}
 
-			<div class="overflow-hidden rounded-2xl border border-stone-200 shadow-2xs mt-4">
-				<table class="w-full text-right text-xs sm:text-sm">
+			<h2 class="font-display text-base sm:text-lg font-black text-stone-900 leading-snug mt-3 mb-2">
+				المقاسات الدقيقة للمنظم
+			</h2>
+
+			<div class="overflow-hidden rounded-xl border border-stone-200 shadow-2xs mt-2">
+				<table class="w-full text-right text-xs">
 					<tbody class="divide-y divide-stone-200">
 						<tr class="bg-stone-50/70">
-							<td class="py-3 px-4 font-bold text-stone-900 w-1/3">المادة الأساسية:</td>
-							<td class="py-3 px-4 text-stone-700 font-medium">فولاذ مقاوم للصدأ (إينوكس / كروم عالي الجودة)</td>
+							<td class="py-2.5 px-3 font-bold text-stone-900 w-2/5">المقاس:</td>
+							<td class="py-2.5 px-3 text-stone-700 font-medium">العرض 60 سم × الارتفاع 58.5 سم × العمق 15.3 سم</td>
 						</tr>
 						<tr>
-							<td class="py-3 px-4 font-bold text-stone-900">الأبعاد الإجمالية:</td>
-							<td class="py-3 px-4 text-stone-700 font-medium">العرض 60 سم × الارتفاع 58.5 سم × العمق 15.3 سم</td>
+							<td class="py-2.5 px-3 font-bold text-stone-900">المسافة بين الرفوف:</td>
+							<td class="py-2.5 px-3 text-stone-700 font-medium">21 سم</td>
 						</tr>
 						<tr class="bg-stone-50/70">
-							<td class="py-3 px-4 font-bold text-stone-900">المسافة بين الطوابق:</td>
-							<td class="py-3 px-4 text-stone-700 font-medium">21 سم (مناسبة للعبوات الطويلة والشامبو)</td>
-						</tr>
-						<tr>
-							<td class="py-3 px-4 font-bold text-stone-900">التصميم العملي:</td>
-							<td class="py-3 px-4 text-stone-700 font-medium">3 أرفف مثقبة + قضيب مناشف سفلي + خطافات تعليق</td>
-						</tr>
-						<tr class="bg-stone-50/70">
-							<td class="py-3 px-4 font-bold text-stone-900">محتويات العلبة:</td>
-							<td class="py-3 px-4 text-stone-700 font-medium">منظم الحمام الكامل + أطقم التثبيت (لصاق + براغي) + رشاش التوربو المفلتر هدية مجانية</td>
+							<td class="py-2.5 px-3 font-bold text-stone-900">المادة:</td>
+							<td class="py-2.5 px-3 text-stone-700 font-medium">إينوكس مقاوم للصدأ</td>
 						</tr>
 					</tbody>
 				</table>
@@ -621,114 +583,111 @@
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 8: CUSTOMER REVIEWS (SOCIAL PROOF - PURE ARABIC)         -->
+	<!-- 8. SECTION: آراء الزبناء (TIGHT PADDING, 4 REVIEWS)               -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-8" dir="rtl">
-		<div class="text-center mb-6">
-			<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold mb-2">
-				⭐ تقييمات العملاء الموثقة
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
+		<div class="text-center mb-3.5">
+			<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold mb-1">
+				⭐ تقييمات العملاء
 			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900">
+			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900">
 				آراء زبنائنا الكرام في المغرب ⭐ 4.9/5
 			</h2>
-			<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-				تجارب حقيقية لعملائنا بعد اقتناء طقم منظم الإينوكس والرشاش الهدية
-			</p>
 		</div>
 
-		<div class="space-y-4">
+		<div class="space-y-2.5">
 			<!-- Review 1 -->
-			<div class="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 shadow-xs">
-				<div class="flex items-center justify-between mb-2.5">
-					<div class="flex items-center gap-3">
-						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
+			<div class="rounded-xl border border-stone-200 bg-white p-3 sm:p-4 shadow-2xs">
+				<div class="flex items-center justify-between mb-1.5">
+					<div class="flex items-center gap-2">
+						<div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
 							م
 						</div>
 						<div>
-							<h4 class="font-extrabold text-sm text-stone-900">مريم</h4>
-							<span class="text-[11px] text-stone-500">الدار البيضاء</span>
+							<h4 class="font-extrabold text-xs text-stone-900">مريم</h4>
+							<span class="text-[10px] text-stone-500">الدار البيضاء</span>
 						</div>
 					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
+					<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
 						✓ مشتري مؤكد
 					</span>
 				</div>
-				<div class="flex items-center gap-0.5 text-amber-400 mb-2">
+				<div class="flex items-center gap-0.5 text-amber-400 mb-1 text-xs">
 					{'★'.repeat(5)}
 				</div>
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
+				<p class="text-xs text-stone-700 leading-relaxed font-medium">
 					"جودة الإينوكس ممتازة جداً وصلبة وليست خفيفة كالموجودة في الأسواق العادية. قمت بتركيبه باللاصق المرفق فقط على السيراميك وثابت بقوة دون أي حركة. أنصح به بشدة".
 				</p>
 			</div>
 
 			<!-- Review 2 -->
-			<div class="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 shadow-xs">
-				<div class="flex items-center justify-between mb-2.5">
-					<div class="flex items-center gap-3">
-						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
+			<div class="rounded-xl border border-stone-200 bg-white p-3 sm:p-4 shadow-2xs">
+				<div class="flex items-center justify-between mb-1.5">
+					<div class="flex items-center gap-2">
+						<div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
 							ع
 						</div>
 						<div>
-							<h4 class="font-extrabold text-sm text-stone-900">عبد الرحمن</h4>
-							<span class="text-[11px] text-stone-500">الرباط</span>
+							<h4 class="font-extrabold text-xs text-stone-900">عبد الرحمن</h4>
+							<span class="text-[10px] text-stone-500">الرباط</span>
 						</div>
 					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
+					<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
 						✓ مشتري مؤكد
 					</span>
 				</div>
-				<div class="flex items-center gap-0.5 text-amber-400 mb-2">
+				<div class="flex items-center gap-0.5 text-amber-400 mb-1 text-xs">
 					{'★'.repeat(5)}
 				</div>
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
+				<p class="text-xs text-stone-700 leading-relaxed font-medium">
 					"غيّر شكل الحمام تماماً! السعة كبيرة جداً واتسعت لجميع قوارير الشامبو والمناشف معاً. التوصيل كان سريعاً في الرباط خلال أقل من 24 ساعة والدفع كان بعد فحص العلبة".
 				</p>
 			</div>
 
 			<!-- Review 3 -->
-			<div class="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 shadow-xs">
-				<div class="flex items-center justify-between mb-2.5">
-					<div class="flex items-center gap-3">
-						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
+			<div class="rounded-xl border border-stone-200 bg-white p-3 sm:p-4 shadow-2xs">
+				<div class="flex items-center justify-between mb-1.5">
+					<div class="flex items-center gap-2">
+						<div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
 							أ
 						</div>
 						<div>
-							<h4 class="font-extrabold text-sm text-stone-900">أمينة</h4>
-							<span class="text-[11px] text-stone-500">مراكش</span>
+							<h4 class="font-extrabold text-xs text-stone-900">أمينة</h4>
+							<span class="text-[10px] text-stone-500">مراكش</span>
 						</div>
 					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
+					<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
 						✓ مشتري مؤكد
 					</span>
 				</div>
-				<div class="flex items-center gap-0.5 text-amber-400 mb-2">
+				<div class="flex items-center gap-0.5 text-amber-400 mb-1 text-xs">
 					{'★'.repeat(5)}
 				</div>
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
+				<p class="text-xs text-stone-700 leading-relaxed font-medium">
 					"بصراحة الرشاش التوربو المفلتر الهدية يستحق ثمن العرض لوحده! ضغط الماء أصبح قوياً ومريحاً، وشعيرات التدليك ممتازة لفروة الرأس. شكراً لكم على المصداقية".
 				</p>
 			</div>
 
 			<!-- Review 4 -->
-			<div class="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 shadow-xs">
-				<div class="flex items-center justify-between mb-2.5">
-					<div class="flex items-center gap-3">
-						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
+			<div class="rounded-xl border border-stone-200 bg-white p-3 sm:p-4 shadow-2xs">
+				<div class="flex items-center justify-between mb-1.5">
+					<div class="flex items-center gap-2">
+						<div class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
 							ي
 						</div>
 						<div>
-							<h4 class="font-extrabold text-sm text-stone-900">ياسين</h4>
-							<span class="text-[11px] text-stone-500">طنجة</span>
+							<h4 class="font-extrabold text-xs text-stone-900">ياسين</h4>
+							<span class="text-[10px] text-stone-500">طنجة</span>
 						</div>
 					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
+					<span class="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
 						✓ مشتري مؤكد
 					</span>
 				</div>
-				<div class="flex items-center gap-0.5 text-amber-400 mb-2">
+				<div class="flex items-center gap-0.5 text-amber-400 mb-1 text-xs">
 					{'★'.repeat(5)}
 				</div>
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium">
+				<p class="text-xs text-stone-700 leading-relaxed font-medium">
 					"التركيب كان سهلاً وواضحاً جداً، ومقاومة الصدأ حقيقية مع بخار الماء الساخن اليومي. منتج ممتاز وعملي جداً لكل بيت".
 				</p>
 			</div>
@@ -736,58 +695,55 @@
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 9: FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION)            -->
+	<!-- 9. SECTION: الأسئلة الشائعة (COMPACT ACCORDION)                  -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="max-w-2xl mx-auto px-4 py-8" dir="rtl">
-		<div class="text-center mb-6">
-			<span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full mb-2">
+	<section class="max-w-xl mx-auto px-3 sm:px-4 py-4" dir="rtl">
+		<div class="text-center mb-3.5">
+			<span class="inline-block bg-emerald-100 text-emerald-800 text-[11px] font-black px-2.5 py-0.5 rounded-full mb-1">
 				إجابات مباشرة ❓
 			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-stone-900">
+			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900">
 				الأسئلة الشائعة حول المنتج
 			</h2>
-			<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-				كل ما تحتاج لمعرفته قبل تأكيد طلبك
-			</p>
 		</div>
 
-		<div class="space-y-3">
-			<details class="group rounded-2xl border border-stone-200 bg-white shadow-xs overflow-hidden transition-all duration-200">
-				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm sm:text-base font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
+		<div class="space-y-2">
+			<details class="group rounded-xl border border-stone-200 bg-white shadow-2xs overflow-hidden transition-all duration-200">
+				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-xs sm:text-sm font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
 					<span>هل المنظم يصدأ أو يتغير لونه مع الماء الساخن والبخار؟</span>
-					<span class="text-stone-400 transition-transform duration-300 group-open:rotate-180">▼</span>
+					<span class="text-stone-400 text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
 				</summary>
-				<div class="px-4 pb-4 pt-2 text-xs sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
-					إطلاقاً، المنظم مصنوع من فولاذ الإينوكس المقاوم للصدأ والرطوبة، ومصمم خصيصاً ليدوم طويلاً في بيئة الحمام الرطبة دون أي تغيير في لونه أو لمعانه.
+				<div class="px-3 pb-3 pt-1 text-xs leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
+					إطلاقاً، المنظم مصنوع من فولاذ الإينوكس المقاوم للصدأ والرطوبة، ومصمم ليدوم طويلاً في بيئة الحمام دون أي تغيير في لونه أو لمعانه.
 				</div>
 			</details>
 
-			<details class="group rounded-2xl border border-stone-200 bg-white shadow-xs overflow-hidden transition-all duration-200">
-				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm sm:text-base font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
+			<details class="group rounded-xl border border-stone-200 bg-white shadow-2xs overflow-hidden transition-all duration-200">
+				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-xs sm:text-sm font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
 					<span>كيف يتم تركيبه؟ وهل يحتاج إلى ثقب الحائط؟</span>
-					<span class="text-stone-400 transition-transform duration-300 group-open:rotate-180">▼</span>
+					<span class="text-stone-400 text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
 				</summary>
-				<div class="px-4 pb-4 pt-2 text-xs sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
-					يأتيك المنظم بخيارين مرفقين في العلبة: يمكنك تركيبه بدون ثقب عبر اللاصق القوي المرفق على السيراميك الأملس، أو تثبيته بالبراغي المرفقة حسب رغبتك.
+				<div class="px-3 pb-3 pt-1 text-xs leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
+					يأتيك المنظم بخيارين مرفقين في العلبة: يمكنك تركيبه بدون ثقب عبر اللاصق القوي المرفق على السيراميك، أو تثبيته بالبراغي المرفقة حسب رغبتك.
 				</div>
 			</details>
 
-			<details class="group rounded-2xl border border-stone-200 bg-white shadow-xs overflow-hidden transition-all duration-200">
-				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm sm:text-base font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
+			<details class="group rounded-xl border border-stone-200 bg-white shadow-2xs overflow-hidden transition-all duration-200">
+				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-xs sm:text-sm font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
 					<span>هل رشاش الدش التوربو يأتي فعلاً مجاناً مع الطلب؟</span>
-					<span class="text-stone-400 transition-transform duration-300 group-open:rotate-180">▼</span>
+					<span class="text-stone-400 text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
 				</summary>
-				<div class="px-4 pb-4 pt-2 text-xs sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
+				<div class="px-3 pb-3 pt-1 text-xs leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
 					نعم بالتأكيد! عند طلبك لمنظم الحمام خلال فترة هذا العرض، ستحصل على رشاش الاستحمام التوربو المفلتر كهدية مجانية داخل نفس الطرد.
 				</div>
 			</details>
 
-			<details class="group rounded-2xl border border-stone-200 bg-white shadow-xs overflow-hidden transition-all duration-200">
-				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm sm:text-base font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
+			<details class="group rounded-xl border border-stone-200 bg-white shadow-2xs overflow-hidden transition-all duration-200">
+				<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-3 text-xs sm:text-sm font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
 					<span>كم تستغرق مدة التوصيل؟ وكيف يتم الدفع؟</span>
-					<span class="text-stone-400 transition-transform duration-300 group-open:rotate-180">▼</span>
+					<span class="text-stone-400 text-xs transition-transform duration-300 group-open:rotate-180">▼</span>
 				</summary>
-				<div class="px-4 pb-4 pt-2 text-xs sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
+				<div class="px-3 pb-3 pt-1 text-xs leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/50">
 					التوصيل مجاني وسريع لجميع المدن المغربية (بين 24 إلى 48 ساعة)، والدفع يكون نقداً عند استلام طلبك والتأكد منه.
 				</div>
 			</details>
@@ -797,16 +753,16 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- GOOGLE ADS COMPLIANT FOOTER                                      -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<footer class="bg-[#0B1F17] pt-8 pb-20 sm:pb-12 text-center text-xs text-emerald-100/75 px-4 mt-12 border-t border-emerald-900/40" dir="rtl">
-		<div class="max-w-4xl mx-auto space-y-4">
+	<footer class="bg-[#0B1F17] pt-6 pb-20 sm:pb-10 text-center text-xs text-emerald-100/75 px-4 mt-8 border-t border-emerald-900/40" dir="rtl">
+		<div class="max-w-xl mx-auto space-y-3">
 			<div class="space-y-1">
-				<p class="font-black text-sm sm:text-base text-white">Lhamza Shop</p>
-				<p class="text-xs text-emerald-100/70 max-w-lg mx-auto">
+				<p class="font-black text-sm text-white">Lhamza Shop</p>
+				<p class="text-[11px] text-emerald-100/70 max-w-md mx-auto">
 					متجر مغربي موثوق متخصص في منتجات التنظيم والراحة المنزلية. توصيل سريع ومجاني لجميع المدن مع الدفع بعد المعاينة عند الاستلام.
 				</p>
 			</div>
 
-			<nav aria-label="روابط السياسات القانونية" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-bold text-emerald-300/90 py-2 border-y border-emerald-900/40">
+			<nav aria-label="روابط السياسات القانونية" class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-[11px] font-bold text-emerald-300/90 py-2 border-y border-emerald-900/40">
 				<a href="/privacy" class="hover:text-white hover:underline transition-colors">سياسة الخصوصية</a>
 				<span class="text-emerald-700 select-none">•</span>
 				<a href="/terms" class="hover:text-white hover:underline transition-colors">الشروط والأحكام</a>
@@ -818,36 +774,35 @@
 				<a href="/contact" class="hover:text-white hover:underline transition-colors">اتصل بنا</a>
 			</nav>
 
-			<div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] sm:text-xs text-emerald-200/80">
+			<div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-emerald-200/80">
 				<span>📍 الدار البيضاء، المغرب</span>
 				<span>📧 <a href="mailto:contact@lhamza.shop" class="underline hover:text-white">contact@lhamza.shop</a></span>
 				<span>📱 <span dir="ltr">+212 626-558375</span></span>
-				<span>⏰ 9:00 - 22:00</span>
 			</div>
 
-			<p class="text-[11px] text-emerald-400/60 pt-1">
+			<p class="text-[10px] text-emerald-400/60 pt-0.5">
 				© {new Date().getFullYear()} Lhamza Shop (lhamza.shop). جميع الحقوق محفوظة.
 			</p>
 		</div>
 	</footer>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- SECTION 10: STICKY MOBILE BOTTOM CTA BAR                         -->
+	<!-- 10. STICKY MOBILE BOTTOM CTA BAR                                  -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	{#if isStickyCtaVisible}
-		<div class="fixed bottom-0 inset-x-0 z-50 p-3 bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-2xl sm:hidden" dir="rtl">
-			<div class="flex items-center justify-between gap-3 max-w-md mx-auto">
+		<div class="fixed bottom-0 inset-x-0 z-50 p-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-2xl sm:hidden" dir="rtl">
+			<div class="flex items-center justify-between gap-2.5 max-w-md mx-auto">
 				<div class="text-right">
-					<span class="block text-[11px] font-bold text-stone-500">المجموع النهائي:</span>
-					<div class="flex items-baseline gap-1.5">
-						<span class="font-display text-lg font-black text-[#073824]">249 DH</span>
-						<span class="text-[11px] text-stone-400 line-through font-bold">399 DH</span>
+					<span class="block text-[10px] font-bold text-stone-500">المجموع النهائي:</span>
+					<div class="flex items-baseline gap-1">
+						<span class="font-display text-base font-black text-[#073824]">249 DH</span>
+						<span class="text-[10px] text-stone-400 line-through font-bold">399 DH</span>
 					</div>
 				</div>
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="flex-1 min-h-11 py-2.5 px-4 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+					class="flex-1 min-h-10 py-2 px-3 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1 cursor-pointer"
 				>
 					<span>اطلب الآن + الرشاش هدية 🎁</span>
 				</button>
