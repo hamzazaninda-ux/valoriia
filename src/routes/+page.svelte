@@ -22,6 +22,7 @@
 		rating: number;
 		reviews: number;
 		real: boolean;
+		badge?: string;
 	};
 
 	const circularCategories = [
@@ -57,21 +58,22 @@
 			real: true
 		},
 		{
-			slug: 'mimsahat-asyr',
-			title: 'ممسحة العصر الذكية',
-			subtitle: 'عصر ذاتي بلا ما تقيس الماء بيديك — للدار كاملة',
-			image: 'https://placehold.co/800x800/fdf6e3/92400e?text=Lhamza+Shop',
-			price: 129,
-			oldPrice: 199,
+			slug: 'inox-organizer',
+			title: 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً',
+			subtitle: 'فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية',
+			image: '',
+			price: 249,
+			oldPrice: 399,
 			discount: null,
-			rating: 4.7,
-			reviews: 89,
-			real: false
+			rating: 5.0,
+			reviews: 114,
+			real: true,
+			badge: 'توصيل مجاني + هدية 🎁'
 		},
 		{
 			slug: 'monazzim-daki',
 			title: 'المنظم الذكي متعدد الاستعمال',
-			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش فابور مع كل طلب',
+			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش مجاني مع كل طلب',
 			image: 'https://placehold.co/800x800/faf9f6/022c22?text=Lhamza+Shop',
 			price: 149,
 			oldPrice: 249,
@@ -83,19 +85,21 @@
 	];
 
 	function toSlot(p: any): Slot {
-		const price = p.startingPrice || 229;
-		const oldPrice = p.oldPrice || (price === 229 ? 299 : Math.round(price * 1.3));
+		const isOrganizer = p.slug === 'inox-organizer';
+		const price = p.startingPrice || p.price || (isOrganizer ? 249 : 229);
+		const oldPrice = p.oldPrice || (isOrganizer ? 399 : (price === 229 ? 299 : Math.round(price * 1.3)));
 		return {
 			slug: p.slug,
 			title: p.title,
 			subtitle: p.subtitle || '',
-			image: p.heroImage || '',
+			image: p.heroImage || p.image || '',
 			price,
 			oldPrice,
 			discount: null,
-			rating: p.rating || 4.9,
-			reviews: p.reviews || p.reviewCount || 203,
-			real: true
+			rating: isOrganizer ? 5.0 : (p.rating || 4.9),
+			reviews: isOrganizer ? 114 : (p.reviews || p.reviewCount || 203),
+			real: true,
+			badge: isOrganizer ? 'توصيل مجاني + هدية 🎁' : (p.badge || 'توصيل مجاني')
 		};
 	}
 
@@ -380,10 +384,10 @@
 								<svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
 									<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
 								</svg>
-								<span>توصيل مجاني</span>
+								<span>{s.badge || 'توصيل مجاني'}</span>
 							</span>
 
-							{#if s.image}
+							{#if s.image && !s.image.includes('placehold.co') && !s.image.includes('PLACEHOLDER')}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
 									<img
 										src={s.image}
@@ -391,6 +395,22 @@
 										loading="lazy"
 										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
 									/>
+								</a>
+							{:else if s.slug === 'inox-organizer' || s.title?.includes('إينوكس')}
+								<a href="/inox-organizer" class="relative block h-full w-full p-2.5 sm:p-3" aria-label={s.title}>
+									<div class="flex h-full w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#1B4332]/40 bg-gradient-to-br from-emerald-50/80 via-white to-amber-50/50 p-3 sm:p-4 text-center transition-all duration-300 group-hover:border-[#1B4332] group-hover:bg-emerald-50/90 shadow-inner select-none">
+										<div class="mb-2 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-[#073824] text-[#C99738] shadow-xs">
+											<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+												<path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+											</svg>
+										</div>
+										<span class="text-[11px] sm:text-xs font-black text-[#1E293B] leading-snug font-display">
+											[IMAGE PLACEHOLDER: Product Card Thumbnail - Inox Shelf + Free Turbo Shower]
+										</span>
+										<span class="mt-1 inline-block text-[10px] font-bold text-[#1B4332] bg-emerald-100/90 px-2 py-0.5 rounded-full">
+											رف إينوكس 3 طبقات + رشاش توربو
+										</span>
+									</div>
 								</a>
 							{:else}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full p-4" aria-label={s.title}>
@@ -437,7 +457,7 @@
 									class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
 									style="background-color: #1B4332;"
 								>
-									<span>اطلب الآن • الدفع عند الاستلام</span>
+									<span>اطلب الآن • الدفع عند الاستلام 🚚</span>
 									<svg class="h-4 w-4 shrink-0 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 										<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
 									</svg>
@@ -530,7 +550,7 @@
 				</div>
 				<p class="text-xs leading-loose text-stone-300">
 					Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة
-					بعناية، توصيل سريع، والخلاص عند الاستلام.
+					بعناية، توصيل سريع، والدفع عند الاستلام.
 				</p>
 			</div>
 			<div class="space-y-3">
@@ -619,7 +639,7 @@
 						<path stroke-linecap="round" d="M46 68c4 5 8 5 12 0s8-5 12 0" opacity="0.7" />
 					</svg>
 					<p class="font-bold text-[#1E293B]">السلة خاوية</p>
-					<p class="text-sm text-stone-400">زيد شي منتج وغادي يبان هنا</p>
+					<p class="text-sm text-stone-400">أضف منتجاً إلى السلة ليظهر هنا</p>
 					<button
 						type="button"
 						onclick={() => {

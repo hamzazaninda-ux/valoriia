@@ -11,6 +11,17 @@
     "updatedAt": "2026-10-03T21:12:00.000Z"
   },
   {
+    "id": "prod_inox_organizer",
+    "slug": "inox-organizer",
+    "title": "منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً",
+    "subtitle": "فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية",
+    "heroImage": "",
+    "startingPrice": 249,
+    "status": "published",
+    "template": "stacked",
+    "updatedAt": "2026-10-28T18:55:00.000Z"
+  },
+  {
     "id": "prod_hamil_jidari_makanis",
     "slug": "hamil-jidari-makanis",
     "title": "حامل جداري للمكانس والممسحات - منظم حمام متعدد الاستخدامات",
