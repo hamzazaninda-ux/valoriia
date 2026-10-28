@@ -979,7 +979,7 @@
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180201.png" 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793122075/Gemini_Generated_Image_aqu0syaqu0syaqu0.jpg" 
       alt="رشاش التوربو المزدوج هدية فابور" 
       loading="lazy"
       decoding="async"
