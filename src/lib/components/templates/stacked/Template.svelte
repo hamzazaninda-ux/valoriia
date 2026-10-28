@@ -1003,7 +1003,7 @@
   </p>
   <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
     <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951400/Screenshot_2026-10-25_180213.png" 
+      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793121027/Gemini_Generated_Image_6o8y9c6o8y9c6o8y.jpg" 
       alt="مقارنة الحمام قبل وبعد استعمال منظم الزاوية" 
       loading="lazy"
       decoding="async"
