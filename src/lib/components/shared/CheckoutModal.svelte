@@ -148,13 +148,13 @@
 				if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 					try {
 						(window as any).gtag('event', 'conversion', {
-							'send_to': 'AW-18531557898',
+							'send_to': 'AW-18405009405',
 							'value': orderTotal || 229,
 							'currency': 'MAD',
 							'transaction_id': orderId
 						});
 						(window as any).gtag('event', 'purchase', {
-							'send_to': 'AW-18531557898',
+							'send_to': 'AW-18405009405',
 							transaction_id: orderId,
 							value: orderTotal || 229,
 							currency: 'MAD',
@@ -164,7 +164,7 @@
 								quantity: orderQuantity
 							}]
 						});
-						console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-18531557898', { orderId, orderTotal });
+						console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-18405009405', { orderId, orderTotal });
 						sessionStorage.setItem(gadsKey, 'true');
 						localStorage.setItem(gadsKey, 'true');
 					} catch (err) {

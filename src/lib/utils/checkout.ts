@@ -289,13 +289,13 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 	try {
 		if (typeof (window as any).gtag === 'function') {
 			(window as any).gtag('event', 'conversion', {
-				'send_to': 'AW-18531557898',
+				'send_to': 'AW-18405009405',
 				'value': numPrice,
 				'currency': 'MAD',
 				'transaction_id': txnId
 			});
 			(window as any).gtag('event', 'purchase', {
-				'send_to': 'AW-18531557898',
+				'send_to': 'AW-18405009405',
 				currency: 'MAD',
 				value: numPrice,
 				transaction_id: txnId,

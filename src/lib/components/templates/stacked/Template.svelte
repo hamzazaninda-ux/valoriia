@@ -261,7 +261,7 @@
 			try {
 				if (typeof (window as any).gtag === 'function') {
 					(window as any).gtag('event', 'conversion', {
-						send_to: 'AW-18531557898',
+						send_to: 'AW-18405009405',
 						value: finalPrice,
 						currency: 'MAD',
 						transaction_id: currentOrder.orderId
@@ -395,7 +395,7 @@
 			try {
 				if (typeof (window as any).gtag === 'function') {
 					(window as any).gtag('event', 'conversion', {
-						send_to: 'AW-18531557898',
+						send_to: 'AW-18405009405',
 						value: finalPrice,
 						currency: 'MAD',
 						transaction_id: currentOrder.orderId

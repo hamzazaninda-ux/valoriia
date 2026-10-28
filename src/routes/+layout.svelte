@@ -88,7 +88,7 @@
 	{/if}
 
 	<!-- Google Ads Tag -->
-	{#if tracking?.googleAdsId && tracking.googleAdsId !== 'AW-18531557898'}
+	{#if tracking?.googleAdsId && tracking.googleAdsId !== 'AW-18405009405'}
 		<script async src="https://www.googletagmanager.com/gtag/js?id={tracking.googleAdsId}"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
