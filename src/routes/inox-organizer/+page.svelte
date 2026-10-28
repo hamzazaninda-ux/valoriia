@@ -250,13 +250,14 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header class="pt-2 sm:pt-4 pb-2 px-3 sm:px-4 max-w-xl mx-auto">
 		<!-- HERO IMAGE FIRST (IMAGE SLOT 1) -->
-		<div class="w-full">
-			{@render placeholderCard(
-				1,
-				'صورة رقم 1: منظم الحمام الفاخر + رشاش التوربو هدية',
-				'الصورة الرئيسية للمنظم مثبت على الجدار مع شارة الرشاش الهدية المجانية',
-				'aspect-square sm:aspect-[4/3]'
-			)}
+		<div class="w-full overflow-hidden rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+			<img
+				src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+				alt="منظم الحمام الفاخر من الإينوكس 3 طبقات مع رشاش الاستحمام التوربو المفلتر هدية مجانية"
+				loading="eager"
+				fetchpriority="high"
+				class="w-full h-auto object-contain rounded-2xl transition-transform duration-300"
+			/>
 		</div>
 
 		<!-- COMPACT TITLE & PRICE ROW (BELOW HERO IMAGE) -->

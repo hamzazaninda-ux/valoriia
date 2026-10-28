@@ -61,7 +61,7 @@
 			slug: 'inox-organizer',
 			title: 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً',
 			subtitle: 'فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية',
-			image: '',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
 			price: 249,
 			oldPrice: 399,
 			discount: null,
@@ -397,20 +397,13 @@
 									/>
 								</a>
 							{:else if s.slug === 'inox-organizer' || s.title?.includes('إينوكس')}
-								<a href="/inox-organizer" class="relative block h-full w-full p-2.5 sm:p-3" aria-label={s.title}>
-									<div class="flex h-full w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#1B4332]/40 bg-gradient-to-br from-emerald-50/80 via-white to-amber-50/50 p-3 sm:p-4 text-center transition-all duration-300 group-hover:border-[#1B4332] group-hover:bg-emerald-50/90 shadow-inner select-none">
-										<div class="mb-2 flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-[#073824] text-[#C99738] shadow-xs">
-											<svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-												<path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-											</svg>
-										</div>
-										<span class="text-[11px] sm:text-xs font-black text-[#1E293B] leading-snug font-display">
-											[IMAGE PLACEHOLDER: Product Card Thumbnail - Inox Shelf + Free Turbo Shower]
-										</span>
-										<span class="mt-1 inline-block text-[10px] font-bold text-[#1B4332] bg-emerald-100/90 px-2 py-0.5 rounded-full">
-											رف إينوكس 3 طبقات + رشاش توربو
-										</span>
-									</div>
+								<a href="/inox-organizer" class="block h-full w-full" aria-label={s.title}>
+									<img
+										src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+										alt={s.title}
+										loading="lazy"
+										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+									/>
 								</a>
 							{:else}
 								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full p-4" aria-label={s.title}>
