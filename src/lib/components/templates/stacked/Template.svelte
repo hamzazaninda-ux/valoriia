@@ -739,7 +739,7 @@
 		showDrainUpsell = true;
 	}
 
-	function scrollToOrderForm(e?: Event) {
+	function scrollToOrderSection(e?: Event) {
 		e?.preventDefault();
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
@@ -763,10 +763,48 @@
 
 		if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-		const targetEl = document.getElementById('order-form');
-		if (targetEl) {
-			targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		const section = document.getElementById('order-form') || document.getElementById('order-section');
+		if (!section) return;
+
+		const confirmBtn = section.querySelector('[data-confirm-btn]') || section.querySelector('button[type="submit"]');
+		const bar = document.getElementById('top-announcement-bar');
+		const gap = 6;
+
+		function calcTarget() {
+			const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+			let fixedTop = 0;
+			if (bar) {
+				const pos = window.getComputedStyle(bar).position;
+				if (pos === 'fixed' || pos === 'sticky') {
+					fixedTop = bar.getBoundingClientRect().height;
+				}
+			}
+			const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+			const sectionHeight = section.offsetHeight;
+			if (sectionHeight <= vh - fixedTop - gap) {
+				return Math.max(0, sectionTop - fixedTop - gap);
+			}
+			if (confirmBtn) {
+				const btnBottom = confirmBtn.getBoundingClientRect().bottom + window.scrollY;
+				return Math.max(0, btnBottom - vh + 12);
+			}
+			return Math.max(0, sectionTop - fixedTop - gap);
 		}
+
+		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		window.scrollTo({ top: calcTarget(), behavior: reduce ? 'auto' : 'smooth' });
+
+		setTimeout(() => {
+			const diff = Math.abs(window.scrollY - calcTarget());
+			if (diff > 4) {
+				window.scrollTo({ top: calcTarget(), behavior: 'auto' });
+			}
+		}, 700);
+	}
+
+	const scrollToOrderForm = scrollToOrderSection;
+	if (typeof window !== 'undefined') {
+		(window as any).scrollToOrderSection = scrollToOrderSection;
 	}
 
 	function handleSubmitOrder(event?: Event) {
@@ -861,24 +899,25 @@
 	<!-- ======================================================== -->
 	<div 
 		id="order-form" 
-		class="scroll-mt-6 w-full max-w-[560px] mx-auto px-2.5 sm:px-4 my-6" 
+		data-order-section
+		class="w-full max-w-[560px] mx-auto px-2 sm:px-4 my-2 sm:my-6" 
 		dir="rtl"
 		style="--cod-green-dark: #1F5C4A; --cod-green-light: #E3EFE8; --cod-orange-btn: #F28C28; --cod-beige-bg: #F5F0E6; --cod-gray-old: #777777;"
 	>
 		<!-- Form Container with Beige Background & Soft Border -->
-		<div class="bg-[var(--cod-beige-bg,#F5F0E6)] rounded-3xl overflow-hidden shadow-2xl border border-[#e8dfcf] transition-all">
+		<div class="bg-[var(--cod-beige-bg,#F5F0E6)] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#e8dfcf] transition-all">
 			
 			<!-- Top Green Header -->
-			<div class="bg-[var(--cod-green-dark,#1F5C4A)] py-4 px-4 text-center text-white">
-				<h2 class="text-2xl sm:text-3xl font-black mb-1 text-white tracking-tight">أكمل طلبك الآن</h2>
-				<p class="text-xs sm:text-sm text-emerald-100/90 font-medium">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
+			<div class="bg-[var(--cod-green-dark,#1F5C4A)] py-2 px-3 sm:py-4 sm:px-4 text-center text-white order-header">
+				<h2 class="text-[19px] sm:text-3xl font-black mb-0.5 text-white tracking-tight leading-tight">أكمل طلبك الآن</h2>
+				<p class="text-[11.5px] sm:text-sm text-emerald-100/90 font-medium leading-none">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
 			</div>
 
-			<div class="p-3 sm:p-5 space-y-3">
+			<div class="p-2 sm:p-5 space-y-1.5">
 				
 				<!-- ==================== OFFER 1 (TIER 1) ==================== -->
 				<label 
-					class="offer-card relative cursor-pointer rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
+					class="offer-card relative cursor-pointer rounded-xl sm:rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
 				>
 					<!-- Hidden native radio for accessibility & keyboard navigation -->
 					<input 
@@ -894,9 +933,9 @@
 					<div class="offer-row-identity">
 						<!-- Selection Circle & Thumbnail -->
 						<div class="offer-media">
-							<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
+							<div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
 								{#if selectedTier?.id === 'tier1'}
-									<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+									<svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 20 20" fill="currentColor">
 										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
 									</svg>
 								{/if}
@@ -904,10 +943,10 @@
 							<img 
 								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
 								alt="قطعة واحدة + رشاش هدية مجانية" 
-								width="56"
-								height="56"
+								width="44"
+								height="44"
 								loading="lazy"
-								class="w-14 h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
+								class="w-10 h-10 sm:w-14 sm:h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
 							/>
 						</div>
 
@@ -946,10 +985,10 @@
 
 				<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
 				<label 
-					class="offer-card offer-card-tier2 relative cursor-pointer rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
+					class="offer-card offer-card-tier2 relative cursor-pointer rounded-xl sm:rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-2 sm:mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
 				>
 					<!-- Top Pill Badge: الأوفر -->
-					<span class="offer-ribbon absolute -top-2.5 end-6 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-xs px-3 py-0.5 rounded-full shadow-md z-10">
+					<span class="offer-ribbon absolute -top-2 end-4 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-md z-10 leading-none">
 						الأوفر
 					</span>
 
@@ -967,9 +1006,9 @@
 					<div class="offer-row-identity">
 						<!-- Selection Circle & Thumbnail -->
 						<div class="offer-media">
-							<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
+							<div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
 								{#if selectedTier?.id === 'tier2'}
-									<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+									<svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 20 20" fill="currentColor">
 										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
 									</svg>
 								{/if}
@@ -977,10 +1016,10 @@
 							<img 
 								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
 								alt="قطعتان + رشاش هدية مجانية" 
-								width="56"
-								height="56"
+								width="44"
+								height="44"
 								loading="lazy"
-								class="w-14 h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
+								class="w-10 h-10 sm:w-14 sm:h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
 							/>
 						</div>
 
@@ -1015,11 +1054,11 @@
 
 						<!-- Mobile Savings Badge -->
 						<div class="offer-savings-mobile">
-							<div class="flex items-center gap-1.5 flex-wrap">
-								<span class="offer-pill">
+							<div class="flex flex-col items-end gap-0">
+								<span class="offer-pill text-[10px] px-1.5 py-0.5 leading-tight">
 									وفّر 109 درهم
 								</span>
-								<span class="offer-per-unit">
+								<span class="offer-per-unit text-[10px] leading-tight">
 									فقط 174 درهم للقطعة
 								</span>
 							</div>
@@ -1028,12 +1067,12 @@
 				</label>
 
 				<!-- ==================== CUSTOMER INPUTS (EXACTLY 2 FIELDS) ==================== -->
-				<form onsubmit={handleDirectCheckout} novalidate class="pt-3 space-y-3.5 text-right">
-					<h3 class="font-black text-gray-900 text-base sm:text-lg mb-2">معلومات التوصيل</h3>
+				<form onsubmit={handleDirectCheckout} novalidate class="pt-1 space-y-1 sm:space-y-3.5 text-right">
+					<h3 class="font-black text-gray-900 text-[13.5px] sm:text-lg mt-0.5 mb-0">معلومات التوصيل</h3>
 
 					<!-- 1. Full Name -->
 					<div>
-						<label for="order-fullName" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">الاسم</label>
+						<label for="order-fullName" class="block text-[12px] sm:text-sm font-bold text-gray-800 mb-0.5">الاسم</label>
 						<input 
 							id="order-fullName"
 							type="text" 
@@ -1047,16 +1086,16 @@
 							}}
 							required 
 							placeholder="اكتب اسمك" 
-							class="w-full min-h-[48px] px-4 py-3 bg-white rounded-xl border text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {nameBlurredInvalid && !isNameValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
+							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {nameBlurredInvalid && !isNameValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
 						{#if nameBlurredInvalid && !isNameValid}
-							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال الاسم (حرفان على الأقل).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">المرجو إدخال الاسم (حرفان على الأقل).</p>
 						{/if}
 					</div>
 
 					<!-- 2. Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">رقم الهاتف (واتساب)</label>
+						<label for="order-phone" class="block text-[12px] sm:text-sm font-bold text-gray-800 mb-0.5">رقم الهاتف (واتساب)</label>
 						<input 
 							id="order-phone"
 							type="tel" 
@@ -1072,15 +1111,15 @@
 							required 
 							dir="ltr"
 							placeholder="06XXXXXXXX" 
-							class="w-full min-h-[48px] px-4 py-3 bg-white rounded-xl border text-base text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {phoneBlurredInvalid && !isPhoneValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
+							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {phoneBlurredInvalid && !isPhoneValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
 						{#if phoneBlurredInvalid && !isPhoneValid}
-							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
 						{/if}
 					</div>
 
 					{#if formError}
-						<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs sm:text-sm text-red-700 font-bold text-center">
+						<div class="rounded-lg bg-red-50 border border-red-200 p-2 text-xs sm:text-sm text-red-700 font-bold text-center">
 							{formError}
 						</div>
 					{/if}
@@ -1088,8 +1127,9 @@
 					<!-- Submit Button -->
 					<button 
 						type="submit" 
+						data-confirm-btn
 						disabled={isSubmitting || isSubmittingFinal}
-						class="w-full min-h-[52px] mt-2 py-3.5 sm:py-4 px-4 bg-[var(--cod-orange-btn,#F28C28)] hover:bg-[#e07d1a] active:scale-[0.99] transition text-white font-black text-lg sm:text-xl rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F28C28]"
+						class="w-full h-12 min-h-[48px] mt-1.5 sm:mt-2 py-2.5 px-4 bg-[var(--cod-orange-btn,#F28C28)] hover:bg-[#e07d1a] active:scale-[0.99] transition text-white font-black text-base sm:text-xl rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F28C28]"
 					>
 						{#if isSubmitting || isSubmittingFinal}
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin me-2"></span>
@@ -1100,7 +1140,7 @@
 					</button>
 
 					<!-- Trust Sub-copy -->
-					<div class="text-xs sm:text-sm text-gray-600 text-center font-medium pt-1">
+					<div class="text-[11px] sm:text-xs text-gray-600 text-center font-medium mt-1">
 						سيتصل بك الموزع لتأكيد طلبك • 🔒 معلوماتك محمية
 					</div>
 				</form>
@@ -1937,25 +1977,25 @@
 
 
 	/* ═══════════════════════════════════════════════════════════
-	   OFFER CARDS: MOBILE-FIRST (<= 480px) & DESKTOP (>= 481px)
+	   OFFER CARDS: COMPACT MOBILE-FIRST (<= 480px) & DESKTOP (>= 481px)
 	   ═══════════════════════════════════════════════════════════ */
 	.offer-card {
 		box-sizing: border-box;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		padding: 12px;
+		gap: 3px;
+		padding: 5px 8px;
 	}
 
 	.offer-card-tier2 {
-		padding-top: 14px;
+		padding-top: 7px;
 	}
 
 	.offer-row-identity {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 		width: 100%;
 		min-width: 0;
 	}
@@ -1963,7 +2003,7 @@
 	.offer-media {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 6px;
 		flex-shrink: 0;
 	}
 
@@ -1974,8 +2014,8 @@
 	}
 
 	.offer-title {
-		font-size: clamp(14px, 4vw, 16px);
-		line-height: 1.45;
+		font-size: 13.5px;
+		line-height: 1.35;
 		font-weight: 700;
 		color: #111827;
 		text-wrap: balance;
@@ -1992,29 +2032,29 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 4px;
 		width: 100%;
-		padding-top: 8px;
-		border-top: 1px solid rgba(0, 0, 0, 0.06);
-		margin-top: 2px;
+		padding-top: 3px;
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
+		margin-top: 1px;
 	}
 
 	.offer-price {
 		display: flex;
 		align-items: baseline;
-		gap: 6px;
+		gap: 4px;
 		text-align: right;
 	}
 
 	.offer-price-current {
-		font-size: clamp(20px, 6vw, 26px);
+		font-size: 20px;
 		font-weight: 900;
 		color: var(--cod-green-dark, #1F5C4A);
 		line-height: 1;
 	}
 
 	.offer-currency {
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 700;
 	}
 
@@ -2027,7 +2067,7 @@
 	.offer-savings-mobile {
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: 4px;
 		flex-shrink: 0;
 	}
 
@@ -2037,10 +2077,11 @@
 		color: var(--cod-green-dark, #1F5C4A);
 		font-size: 11px;
 		font-weight: 900;
-		padding: 2px 8px;
+		padding: 2px 7px;
 		border-radius: 9999px;
 		border: 1px solid #bfe7cf;
 		white-space: nowrap;
+		line-height: 1.2;
 	}
 
 	.offer-per-unit {
@@ -2048,6 +2089,21 @@
 		font-weight: 700;
 		color: #374151;
 		white-space: nowrap;
+	}
+
+	/* Short screen optimization (<= 480px width AND <= 600px height) */
+	@media (max-width: 480px) and (max-height: 600px) {
+		.order-header {
+			padding: 6px 10px !important;
+		}
+		#order-form input {
+			height: 42px !important;
+			min-height: 42px !important;
+		}
+		#order-form button[type="submit"] {
+			height: 44px !important;
+			min-height: 44px !important;
+		}
 	}
 
 	/* Desktop layout: >= 481px */
