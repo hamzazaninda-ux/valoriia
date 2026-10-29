@@ -736,121 +736,45 @@
 	dir="rtl"
 >
 	<!-- 1. Top Announcement Bar -->
-	<div
+	<aside
 		id="top-announcement-bar"
-		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-2 px-2.5 text-[12px] font-bold text-center border-b border-white/10 truncate select-none"
+		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-2 px-3 text-[11px] sm:text-xs font-bold text-center border-b border-white/10 shadow-sm select-none"
+		aria-label="شريط الإعلانات"
 		dir="rtl"
 	>
-		🚚 توصيل مجاني · 📦 الدفع بعد المعاينة
-	</div>
+		<div class="max-w-4xl mx-auto flex items-center justify-center gap-1.5 leading-tight">
+			<span>🎁 عرض محدود: رشاش التوربو المفلتر هدية مجانية + توصيل مجاني!</span>
+		</div>
+	</aside>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 2. HERO SECTION (CRO MOBILE-FIRST, RTL)                         -->
+	<!-- 2. HERO SECTION (CRO MOBILE-FIRST: IMAGE FIRST -> TITLE -> RATINGS) -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header
 		id="hero-section"
-		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-50% to-[#FAF9F6] pt-3 pb-3"
+		class="pt-2 sm:pt-3 pb-6 sm:pb-8 px-3 sm:px-4 max-w-xl mx-auto mb-1"
 	>
-		<!-- 1. Title: Short, 1-2 lines max, product name only -->
-		<h1 class="font-display text-xl sm:text-2xl font-black text-white text-center leading-tight tracking-tight px-3">
-			{cleanTitle}
-		</h1>
-
-		<!-- 2. Rating compact row under title (clickable -> smooth-scroll to #reviews) -->
-		{#if productRating && productReviewCount}
-			<div class="mt-1 flex justify-center">
-				<a
-					href="#reviews"
-					onclick={scrollToReviews}
-					class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-amber-300 text-xs font-bold transition-all cursor-pointer select-none"
-					aria-label="عرض تقييمات الزبناء"
-				>
-					<span>⭐ {productRating}</span>
-					<span class="text-white/80 font-medium">({productReviewCount})</span>
-				</a>
-			</div>
-		{/if}
-
-		<!-- Product Hero Image Container -->
-		<div class="w-full max-w-[380px] mx-auto px-2 pt-2 pb-1">
-			<a
-				href="#order-form"
-				onclick={scrollToOrderForm}
-				class="block relative w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 focus:outline-none"
-				aria-label="انتقل إلى استمارة الطلب"
-			>
-				<img
-					src={cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720')}
-					srcset={cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960])}
-					sizes="(max-width: 400px) calc(100vw - 16px), 364px"
-					alt={cleanTitle}
-					width="940"
-					height="1672"
-					fetchpriority="high"
-					loading="eager"
-					decoding="async"
-					class="w-full h-auto block object-cover"
-				/>
-			</a>
+		<!-- HERO IMAGE FIRST (PORTRAIT ASPECT RATIO 3:4) -->
+		<div class="w-full max-w-[335px] sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-1.5 relative">
+			<img
+				src="https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_pad,b_auto/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png"
+				alt={cleanTitle}
+				loading="eager"
+				fetchpriority="high"
+				class="w-full h-full object-cover object-center rounded-2xl transition-transform duration-300"
+			/>
 		</div>
 
-		<!-- 3 & 6. Price Block & Single Gift Badge -->
-		<div class="mt-2 px-3 flex items-center justify-center gap-2 flex-wrap" dir="rtl">
-			<span class="text-2xl sm:text-3xl font-black text-stone-900 leading-none">
-				{heroCurrentPrice} <span class="text-xs font-bold text-stone-700">درهم</span>
-			</span>
-			{#if heroOldPrice && heroOldPrice > heroCurrentPrice}
-				<span class="text-sm sm:text-base font-bold text-stone-500 line-through">
-					{heroOldPrice} درهم
-				</span>
-				{#if discountPercent}
-					<span class="inline-flex items-center text-[11px] font-black bg-red-100 text-red-800 border border-red-200/80 px-1.5 py-0.5 rounded-md">
-						-{discountPercent}%
-					</span>
-				{/if}
-			{/if}
-			{#if giftBadgeText}
-				<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200/80 text-[11px] font-black px-2 py-0.5 rounded-full shadow-2xs">
-					{giftBadgeText}
-				</span>
-			{/if}
-		</div>
+		<!-- COMPACT TITLE & RATINGS (BELOW HERO IMAGE - ZERO PRICE FRICTION) -->
+		<div class="text-center pt-2 pb-1 space-y-1.5">
+			<!-- Title H1 (Refined 16.5px on mobile, fits in 2 comfortable lines without cut-off) -->
+			<h1 class="font-display text-[16.5px] sm:text-2xl font-black text-stone-900 leading-snug tracking-tight px-1 max-w-sm mx-auto">
+				{cleanTitle}
+			</h1>
 
-		<!-- 4. Trust Line: ONE single line right under the price, fits on 360px -->
-		<div class="mt-1 px-2 text-center" dir="rtl">
-			<p class="text-[11px] font-bold text-stone-700 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
-				{heroTrustLine}
-			</p>
-		</div>
-
-		<!-- 5. Benefits: exactly 3 benefits, same visual style, hides 3rd if maxLoadKg missing -->
-		<div class="mt-2.5 px-3 max-w-md mx-auto" dir="rtl">
-			<div class="grid {hasMaxLoad ? 'grid-cols-3' : 'grid-cols-2'} gap-1.5 sm:gap-2">
-				<!-- Benefit 1: بلا ثقب -->
-				<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
-					<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-					</svg>
-					<span class="text-xs font-black text-stone-800 whitespace-nowrap">بلا ثقب</span>
-				</div>
-
-				<!-- Benefit 2: ضد الصدأ -->
-				<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
-					<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
-					</svg>
-					<span class="text-xs font-black text-stone-800 whitespace-nowrap">ضد الصدأ</span>
-				</div>
-
-				<!-- Benefit 3: يتحمل {X} كلغ (Only if maxLoadKg is present) -->
-				{#if hasMaxLoad}
-					<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
-						<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0l-3.75-3.75M12 20.25l3.75-3.75M3.75 6.75h16.5" />
-						</svg>
-						<span class="text-xs font-black text-stone-800 whitespace-nowrap">يتحمل {maxLoadKg} كلغ</span>
-					</div>
-				{/if}
+			<!-- Customer Ratings Only (Stars & Review Count) -->
+			<div class="flex items-center justify-center gap-1.5 pt-0.5">
+				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ ({productReviewCount || 203} تقييم)</span>
 			</div>
 		</div>
 	</header>
@@ -1368,27 +1292,23 @@
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
 		<div
-			class="sticky-cta-wrap fixed bottom-0 inset-x-0 z-50 px-3 sm:px-4 pt-2 overflow-x-clip pointer-events-none transition-all duration-300"
-			style="padding-bottom: max(0.625rem, env(safe-area-inset-bottom, 0.625rem));"
+			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
+			style="padding-bottom: max(0.85rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));"
 			dir="rtl"
 		>
-			<button
-				type="button"
-				onclick={scrollToOrderForm}
-				class="cta-wiggle sticky-cta-btn w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#D95D0F] hover:bg-[#C24F08] rounded-2xl shadow-2xl active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
-			>
-				<span>اطلب الآن والدفع عند الاستلام</span>
-				<svg
-					aria-hidden="true"
-					class="h-4 w-4 shrink-0 transition-transform duration-300 {isFormAbove ? 'rotate-180' : ''}"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-					stroke-width="2.5"
+			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
+				<button
+					type="button"
+					onclick={scrollToOrderForm}
+					class="w-full h-[46px] min-h-[46px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
 				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-				</svg>
-			</button>
+					<span>استفد من العرض الآن</span>
+				</button>
+				<p class="text-center text-[11.5px] font-bold text-stone-600 flex items-center justify-center gap-1.5 leading-normal pt-0.5 pb-0.5">
+					<span>التوصيل بالمجان والدفع عند الاستلام</span>
+					<span class="text-[12px]">🔒</span>
+				</p>
+			</div>
 		</div>
 	{/if}
 
@@ -1827,4 +1747,34 @@
 			will-change: auto;
 		}
 	}
+
+	@keyframes cta-horizontal-shake {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		4% {
+			transform: translateX(-3px);
+		}
+		8% {
+			transform: translateX(3px);
+		}
+		12% {
+			transform: translateX(-3px);
+		}
+		16% {
+			transform: translateX(3px);
+		}
+		20% {
+			transform: translateX(-1.5px);
+		}
+		24% {
+			transform: translateX(0);
+		}
+	}
+
+	:global(.btn-shake) {
+		will-change: transform;
+		animation: cta-horizontal-shake 2.6s ease-in-out infinite;
+	}
+
 </style>

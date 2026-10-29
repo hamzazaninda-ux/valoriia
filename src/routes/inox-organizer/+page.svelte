@@ -304,21 +304,6 @@
 				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ (114 تقييم)</span>
 			</div>
 
-			<!-- 3 Ultra-Short Icon Badges (Max 4 words each) -->
-			<div class="grid grid-cols-3 gap-1.5 sm:gap-2 pt-2 text-center">
-				<div class="bg-emerald-50/90 border border-emerald-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-emerald-900 shadow-2xs flex items-center justify-center gap-1">
-					<span>🛡️</span>
-					<span>إينوكس أصلي ضد الصدأ</span>
-				</div>
-				<div class="bg-emerald-50/90 border border-emerald-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-emerald-900 shadow-2xs flex items-center justify-center gap-1">
-					<span>🔧</span>
-					<span>تركيب باللصاق أو البراغي</span>
-				</div>
-				<div class="bg-amber-50/90 border border-amber-200/80 rounded-xl py-2 px-1 text-[11px] sm:text-xs font-black text-amber-900 shadow-2xs flex items-center justify-center gap-1">
-					<span>🎁</span>
-					<span>رشاش مفلتر هدية مجاناً</span>
-				</div>
-			</div>
 		</div>
 	</header>
 
