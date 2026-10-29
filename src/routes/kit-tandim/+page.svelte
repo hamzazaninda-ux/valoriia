@@ -38,7 +38,7 @@
 		}
 	});
 
-	const HERO_IMAGE_URL = 'https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_pad,b_auto/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png';
+	const HERO_IMAGE_URL = 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';
 
 	const heroPreloadUrl = cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720');
 	const heroPreloadSrcset = cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960]);

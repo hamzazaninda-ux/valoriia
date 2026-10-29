@@ -20,7 +20,7 @@
 	let order = $derived(version.order);
 
 	const HERO_IMAGE_URL =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png';
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';
 
 	const defaultOffers: ProductOffer[] = [
 		{
@@ -806,8 +806,8 @@
 		<!-- HERO IMAGE FIRST (PORTRAIT ASPECT RATIO 3:4) -->
 		<div class="w-full max-w-[335px] sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-1.5 relative">
 			<img
-				src="https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_pad,b_auto/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png"
-				alt={cleanTitle}
+				src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg"
+				alt="منظم الحمام الزاوي 4 رفوف + رشاش توربو مجاني"
 				loading="eager"
 				fetchpriority="high"
 				class="w-full h-full object-cover object-center rounded-2xl transition-transform duration-300"
