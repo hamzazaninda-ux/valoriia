@@ -61,7 +61,7 @@
 			slug: 'inox-organizer',
 			title: 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً',
 			subtitle: 'فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
+			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg',
 			price: 279,
 			oldPrice: 399,
 			discount: null,
@@ -399,7 +399,7 @@
 							{:else if s.slug === 'inox-organizer' || s.title?.includes('إينوكس')}
 								<a href="/inox-organizer" class="block h-full w-full" aria-label={s.title}>
 									<img
-										src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png"
+										src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg"
 										alt={s.title}
 										loading="lazy"
 										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"

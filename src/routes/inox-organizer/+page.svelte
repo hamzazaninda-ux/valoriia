@@ -21,7 +21,7 @@
 		title: 'منظم الحمام الفاخر (إينوكس 3 طبقات)',
 		sku: 'inox-organizer',
 		image:
-			'https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_fill,g_auto/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
+			'https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg',
 		giftText: '🎁 رشاش هدية',
 		bundles: [
 			{
@@ -260,6 +260,7 @@
 	/>
 	<meta property="og:type" content="product" />
 	<meta property="og:url" content="https://lhamza.shop/inox-organizer" />
+	<link rel="preload" as="image" href="https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg" fetchpriority="high" />
 </svelte:head>
 
 <main class="min-h-screen bg-[#FAF9F6] text-[#1E293B] font-sans antialiased pb-20 sm:pb-12" dir="rtl">
@@ -284,7 +285,7 @@
 		<div class="w-full max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-2.5 relative">
 			<img
 				src={PRODUCT_CONFIG.image}
-				alt="منظم الحمام الفاخر من الإينوكس 3 طبقات مع رشاش الاستحمام التوربو المفلتر هدية مجانية"
+				alt="منظم الحمام الفاخر 3 طبقات إينوكس + رشاش توربو مجاني"
 				loading="eager"
 				fetchpriority="high"
 				class="w-full h-full object-cover object-center rounded-2xl transition-transform duration-300"
