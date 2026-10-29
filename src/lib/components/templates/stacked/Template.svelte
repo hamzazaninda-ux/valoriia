@@ -340,6 +340,28 @@
 				console.warn('Snap Purchase tracking error:', snapErr);
 			}
 
+			// TikTok CompletePayment Firing
+			try {
+				if (typeof window !== 'undefined' && (window as any).ttq) {
+					(window as any).ttq.track('CompletePayment', {
+						content_id: finalSku,
+						content_name: fullProductLabel,
+						content_type: 'product',
+						quantity: currentOrder.quantity,
+						currency: 'MAD',
+						value: finalPrice
+					}, {
+						event_id: currentOrder.orderId
+					});
+					console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on order submit:', {
+						orderId: currentOrder.orderId,
+						finalPrice
+					});
+				}
+			} catch (ttErr) {
+				console.warn('TikTok CompletePayment error:', ttErr);
+			}
+
 			// 5. Redirect to Thank You page
 			showDrainUpsell = false;
 			const finalUrl = preserveTrackingParams(
@@ -472,6 +494,28 @@
 				});
 			} catch (snapErr) {
 				console.warn('Snap Purchase tracking error:', snapErr);
+			}
+
+			// TikTok CompletePayment Firing
+			try {
+				if (typeof window !== 'undefined' && (window as any).ttq) {
+					(window as any).ttq.track('CompletePayment', {
+						content_id: finalSku,
+						content_name: fullProductLabel,
+						content_type: 'product',
+						quantity: currentOrder.quantity,
+						currency: 'MAD',
+						value: finalPrice
+					}, {
+						event_id: currentOrder.orderId
+					});
+					console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on order submit:', {
+						orderId: currentOrder.orderId,
+						finalPrice
+					});
+				}
+			} catch (ttErr) {
+				console.warn('TikTok CompletePayment error:', ttErr);
 			}
 
 			// 5. Redirect to Thank You page

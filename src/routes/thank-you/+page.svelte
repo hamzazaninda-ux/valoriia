@@ -166,9 +166,14 @@
 		if (typeof window !== 'undefined' && (window as any).ttq) {
 			try {
 				(window as any).ttq.track('CompletePayment', {
+					content_id: order?.sku || 'SKU-GENERAL',
+					content_name: orderProductName,
 					content_type: 'product',
+					quantity: orderQuantity,
 					value: orderTotal || 229,
 					currency: 'MAD'
+				}, {
+					event_id: orderId
 				});
 				console.log('✅ [TIKTOK SUCCESS] CompletePayment Fired');
 			} catch (err) {

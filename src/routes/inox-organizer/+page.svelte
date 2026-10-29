@@ -143,9 +143,36 @@
 
 		// 2. Snapchat Purchase Pixel Tracking
 		try {
-			trackSnapPurchase(activePrice, 'MAD', orderId);
+			trackSnapPurchase({
+				orderId,
+				price: activePrice,
+				currency: 'MAD',
+				phone: normalizedPhone,
+				title: activeTitle,
+				sku: PRODUCT_CONFIG.sku,
+				quantity: activeQty
+			});
 		} catch (err) {
 			console.warn('Snapchat tracking error:', err);
+		}
+
+		// 2b. TikTok CompletePayment Pixel Tracking
+		try {
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				(window as any).ttq.track('CompletePayment', {
+					content_id: PRODUCT_CONFIG.sku,
+					content_name: activeTitle,
+					content_type: 'product',
+					quantity: activeQty,
+					currency: 'MAD',
+					value: activePrice
+				}, {
+					event_id: orderId
+				});
+				console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on inox-organizer checkout:', { orderId, activePrice });
+			}
+		} catch (err) {
+			console.warn('TikTok tracking error:', err);
 		}
 
 		// 3. API Dispatch to /api/checkout
