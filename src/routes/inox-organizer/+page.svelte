@@ -263,7 +263,7 @@
 	<link rel="preload" as="image" href="https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg" fetchpriority="high" />
 </svelte:head>
 
-<main class="min-h-screen bg-[#FAF9F6] text-[#1E293B] font-sans antialiased pb-20 sm:pb-12" dir="rtl">
+<main class="min-h-screen bg-[#FAF9F6] text-[#1E293B] font-sans antialiased pb-28 sm:pb-16" dir="rtl">
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 1. COMPACT STICKY TOP BAR                                         -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
@@ -280,9 +280,9 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 2. HERO SECTION (MOBILE-FIRST: IMAGE FIRST -> TITLE -> BADGES)    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<header class="pt-2 sm:pt-4 pb-2 px-3 sm:px-4 max-w-xl mx-auto">
+	<header class="pt-2 sm:pt-3 pb-6 sm:pb-8 px-3 sm:px-4 max-w-xl mx-auto mb-1">
 		<!-- HERO IMAGE FIRST (PORTRAIT ASPECT RATIO 3:4) -->
-		<div class="w-full max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-2.5 relative">
+		<div class="w-full max-w-[335px] sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-1.5 relative">
 			<img
 				src={PRODUCT_CONFIG.image}
 				alt="منظم الحمام الفاخر 3 طبقات إينوكس + رشاش توربو مجاني"
@@ -293,9 +293,9 @@
 		</div>
 
 		<!-- COMPACT TITLE & RATINGS (BELOW HERO IMAGE - ZERO PRICE FRICTION) -->
-		<div class="text-center pt-2 pb-1 space-y-2">
-			<!-- Title H1 (Max 1 to 2 lines, 20px-22px on mobile) -->
-			<h1 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug tracking-tight">
+		<div class="text-center pt-2 pb-1 space-y-1.5">
+			<!-- Title H1 (Refined 16px-17px on mobile, fits in 2 comfortable lines without cut-off) -->
+			<h1 class="font-display text-[16.5px] sm:text-2xl font-black text-stone-900 leading-snug tracking-tight px-1 max-w-sm mx-auto">
 				منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً
 			</h1>
 
@@ -893,21 +893,21 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	{#if isStickyCtaVisible}
 		<div
-			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2.5 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
-			style="padding-bottom: max(0.625rem, env(safe-area-inset-bottom, 0.625rem));"
+			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-1.5 pb-2 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
+			style="padding-bottom: max(0.45rem, env(safe-area-inset-bottom, 0.45rem));"
 			dir="rtl"
 		>
-			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
+			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1">
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="w-full h-[48px] min-h-[48px] py-2 px-4 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-sm sm:text-base shadow-lg shadow-orange-950/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+					class="w-full h-[44px] min-h-[44px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer text-center animate-cta-shake"
 				>
-					<span>اطلب الآن 🚚</span>
+					<span>استفد من العرض الآن</span>
 				</button>
-				<p class="text-center text-[11px] font-extrabold text-stone-600 flex items-center justify-center gap-1 leading-tight">
-					<span>🔒</span>
+				<p class="text-center text-[11px] font-bold text-stone-600 flex items-center justify-center gap-1 leading-tight pt-0.5">
 					<span>التوصيل بالمجان والدفع عند الاستلام</span>
+					<span class="text-[12px]">🔒</span>
 				</p>
 			</div>
 		</div>
