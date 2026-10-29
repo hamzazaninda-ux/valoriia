@@ -149,6 +149,54 @@
 	let isSubmittingFinal = $state(false);
 	let submittedOrderId = $state<string | null>(null);
 
+	// Hero CRO computed values
+	const cleanTitle = $derived.by(() => {
+		const raw =
+			content?.heroTitle ||
+			content?.title ||
+			(product as any)?.title ||
+			'منظم الحمام الزاوي 4 رفوف';
+		return raw
+			.replace(/\(.*?\)/g, '')
+			.replace(/مجانا[ً]?/g, '')
+			.replace(/\+?\s*رشاش.*?(?:هدية|فابور)/g, '')
+			.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+			.replace(/\s+/g, ' ')
+			.trim();
+	});
+
+	const productRating = $derived(content?.rating || (product as any)?.rating);
+	const productReviewCount = $derived(content?.reviewCount || (product as any)?.reviewCount);
+
+	const heroCurrentPrice = $derived(
+		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 279
+	);
+	const heroOldPrice = $derived(
+		activeOffer?.originalPrice || pricing?.originalPrice || defaultOffers[0].originalPrice || 399
+	);
+	const discountPercent = $derived(
+		heroOldPrice && heroCurrentPrice && heroOldPrice > heroCurrentPrice
+			? Math.round(((heroOldPrice - heroCurrentPrice) / heroOldPrice) * 100)
+			: null
+	);
+
+	const heroTrustLine = $derived(
+		content?.trustLine || '🚚 توصيل مجاني · الدفع عند الاستلام · ضمان الاسترجاع'
+	);
+	const giftBadgeText = $derived(
+		content?.giftBadge || '🎁 + رشاش توربو هدية'
+	);
+	const maxLoadKg = $derived(content?.maxLoadKg || (product as any)?.maxLoadKg);
+	const hasMaxLoad = $derived(Boolean(maxLoadKg));
+
+	function scrollToReviews(e?: Event) {
+		e?.preventDefault();
+		const el = document.getElementById('reviews');
+		if (el) {
+			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}
+
 	let showDrainUpsell = $state(false);
 	let pendingOrder = $state<{
 		orderId: string;
@@ -653,14 +701,34 @@
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 2. HERO IMAGE ATTACHED DIRECTLY BELOW (ZERO TEXT IN BETWEEN)    -->
+	<!-- 2. HERO SECTION (CRO MOBILE-FIRST, RTL)                         -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header
 		id="hero-section"
-		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-45% to-[#FAF9F6] pb-2"
+		class="bg-gradient-to-b from-[#073824] via-[#0B2E1E] via-50% to-[#FAF9F6] pt-3 pb-3"
 	>
-		<!-- Hero Image Container (Directly attached under the top announcement bar) -->
-		<div class="w-full max-w-[380px] mx-auto px-2 pt-1 pb-2">
+		<!-- 1. Title: Short, 1-2 lines max, product name only -->
+		<h1 class="font-display text-xl sm:text-2xl font-black text-white text-center leading-tight tracking-tight px-3">
+			{cleanTitle}
+		</h1>
+
+		<!-- 2. Rating compact row under title (clickable -> smooth-scroll to #reviews) -->
+		{#if productRating && productReviewCount}
+			<div class="mt-1 flex justify-center">
+				<a
+					href="#reviews"
+					onclick={scrollToReviews}
+					class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-amber-300 text-xs font-bold transition-all cursor-pointer select-none"
+					aria-label="عرض تقييمات الزبناء"
+				>
+					<span>⭐ {productRating}</span>
+					<span class="text-white/80 font-medium">({productReviewCount})</span>
+				</a>
+			</div>
+		{/if}
+
+		<!-- Product Hero Image Container -->
+		<div class="w-full max-w-[380px] mx-auto px-2 pt-2 pb-1">
 			<a
 				href="#order-form"
 				onclick={scrollToOrderForm}
@@ -671,7 +739,7 @@
 					src={cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720')}
 					srcset={cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960])}
 					sizes="(max-width: 400px) calc(100vw - 16px), 364px"
-					alt="طقم تنظيم الحمام الذكي مع رشاش تعزيز ضغط الماء هدية مجانية"
+					alt={cleanTitle}
 					width="940"
 					height="1672"
 					fetchpriority="high"
@@ -682,27 +750,63 @@
 			</a>
 		</div>
 
-		<!-- Micro Trust Badges -->
-		<div class="px-2.5 sm:px-5 mt-2.5 grid grid-cols-3 gap-1.5 sm:gap-2">
-			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
-				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-				</svg>
-				<span class="text-[11px] sm:text-xs font-extrabold text-stone-800 leading-tight">توصيل مجاني لجميع المدن</span>
-			</div>
+		<!-- 3 & 6. Price Block & Single Gift Badge -->
+		<div class="mt-2 px-3 flex items-center justify-center gap-2 flex-wrap" dir="rtl">
+			<span class="text-2xl sm:text-3xl font-black text-stone-900 leading-none">
+				{heroCurrentPrice} <span class="text-xs font-bold text-stone-700">درهم</span>
+			</span>
+			{#if heroOldPrice && heroOldPrice > heroCurrentPrice}
+				<span class="text-sm sm:text-base font-bold text-stone-500 line-through">
+					{heroOldPrice} درهم
+				</span>
+				{#if discountPercent}
+					<span class="inline-flex items-center text-[11px] font-black bg-red-100 text-red-800 border border-red-200/80 px-1.5 py-0.5 rounded-md">
+						-{discountPercent}%
+					</span>
+				{/if}
+			{/if}
+			{#if giftBadgeText}
+				<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200/80 text-[11px] font-black px-2 py-0.5 rounded-full shadow-2xs">
+					{giftBadgeText}
+				</span>
+			{/if}
+		</div>
 
-			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
-				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-				</svg>
-				<span class="text-[11px] sm:text-xs font-extrabold text-stone-800 leading-tight">الدفع بعد المعاينة</span>
-			</div>
+		<!-- 4. Trust Line: ONE single line right under the price, fits on 360px -->
+		<div class="mt-1 px-2 text-center" dir="rtl">
+			<p class="text-[11px] font-bold text-stone-700 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+				{heroTrustLine}
+			</p>
+		</div>
 
-			<div class="flex flex-col sm:flex-row min-h-[52px] items-center justify-center gap-1 rounded-2xl bg-white border border-emerald-900/10 px-2 py-2 text-center shadow-xs">
-				<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
-				</svg>
-				<span class="text-[11px] sm:text-xs font-extrabold text-stone-800 leading-tight">ضمان 14 يوماً</span>
+		<!-- 5. Benefits: exactly 3 benefits, same visual style, hides 3rd if maxLoadKg missing -->
+		<div class="mt-2.5 px-3 max-w-md mx-auto" dir="rtl">
+			<div class="grid {hasMaxLoad ? 'grid-cols-3' : 'grid-cols-2'} gap-1.5 sm:gap-2">
+				<!-- Benefit 1: بلا ثقب -->
+				<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
+					<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+					<span class="text-xs font-black text-stone-800 whitespace-nowrap">بلا ثقب</span>
+				</div>
+
+				<!-- Benefit 2: ضد الصدأ -->
+				<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
+					<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A48.374 48.374 0 0112 3c2.392 0 4.736.278 6.984.785a48.35 48.35 0 01-1.118 18.897c-.127.35-.423.566-.787.566H6.92c-.364 0-.66-.216-.787-.566A48.35 48.35 0 014.5 4.285C6.748 3.778 9.092 3.5 11.484 3.5c.17 0 .34 0 .51.006L12 3l-.006.214z" />
+					</svg>
+					<span class="text-xs font-black text-stone-800 whitespace-nowrap">ضد الصدأ</span>
+				</div>
+
+				<!-- Benefit 3: يتحمل {X} كلغ (Only if maxLoadKg is present) -->
+				{#if hasMaxLoad}
+					<div class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-white border border-stone-200/80 shadow-2xs text-center">
+						<svg aria-hidden="true" class="w-4 h-4 shrink-0 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0l-3.75-3.75M12 20.25l3.75-3.75M3.75 6.75h16.5" />
+						</svg>
+						<span class="text-xs font-black text-stone-800 whitespace-nowrap">يتحمل {maxLoadKg} كلغ</span>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</header>
@@ -1017,7 +1121,7 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 8. CUSTOMER REVIEWS & FAQ BELOW VISUAL CARDS                    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section class="px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
+	<section id="reviews" class="scroll-mt-14 px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
 		<div class="text-center mb-5">
 			<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
 				<svg aria-hidden="true" class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1219,13 +1323,17 @@
 
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
 	{#if showStickyBtn && t.sections.advanced.showStickyButton}
-		<div class="sticky-cta-wrap fixed bottom-2.5 inset-x-0 z-50 px-3 sm:px-4 overflow-x-clip pointer-events-none" dir="rtl">
+		<div
+			class="sticky-cta-wrap fixed bottom-0 inset-x-0 z-50 px-3 sm:px-4 pt-2 overflow-x-clip pointer-events-none transition-all duration-300"
+			style="padding-bottom: max(0.625rem, env(safe-area-inset-bottom, 0.625rem));"
+			dir="rtl"
+		>
 			<button
 				type="button"
 				onclick={scrollToOrderForm}
 				class="cta-wiggle sticky-cta-btn w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#D95D0F] hover:bg-[#C24F08] rounded-2xl shadow-2xl active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
 			>
-				<span>🚚 اطلب الآن • {selectedTier?.price || 279} درهم</span>
+				<span>اطلب الآن والدفع عند الاستلام</span>
 				<svg
 					aria-hidden="true"
 					class="h-4 w-4 shrink-0 transition-transform duration-300 {isFormAbove ? 'rotate-180' : ''}"
