@@ -10,7 +10,7 @@
 	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
 	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
-	let { product, settings, theme, others = [], onOrderRegistered }: TemplateProps = $props();
+	let { product, settings, theme, others = [], onOrderRegistered, onOrderPending }: TemplateProps = $props();
 
 	let t = $derived(theme || getDefaultTheme('stacked'));
 
@@ -262,20 +262,29 @@
 			sheetsUrl: currentOrder.sheetsUrl
 		};
 
-		// 1. Dispatch upsell sync call to /api/order/upsell
+		// 1. Dispatch consolidated order to /api/order (Single Row in Google Sheets & Git DB)
 		try {
-			await fetch('/api/order/upsell', {
+			await fetch('/api/order', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					orderId: currentOrder.orderId,
-					upsellItem: 'سدادة وفلتر مصرف الأرضية الذكية',
-					upsellPrice: 29,
-					totalAmount: finalPrice
+					fullName: currentOrder.customerName,
+					phone: currentOrder.phone,
+					product: fullProductLabel,
+					bundle: finalSku,
+					productTitle: fullProductLabel,
+					selectedOfferTitle: finalSku,
+					price: finalPrice,
+					totalPrice: finalPrice,
+					quantity: currentOrder.quantity,
+					note: orderNote,
+					hasUpsell: true,
+					source: 'kit-tandim'
 				})
 			});
 		} catch (err) {
-			console.warn('Upsell API sync non-fatal error:', err);
+			console.warn('Consolidated order send non-fatal error:', err);
 		}
 
 		// 2. Mark order sent to prevent duplicate session submissions
@@ -424,7 +433,29 @@
 			sheetsUrl: currentOrder.sheetsUrl
 		};
 
-		// Base order already registered in /api/order
+		// 1. Dispatch base order to /api/order (Single Row in Google Sheets & Git DB)
+		try {
+			await fetch('/api/order', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					orderId: currentOrder.orderId,
+					fullName: currentOrder.customerName,
+					phone: currentOrder.phone,
+					product: fullProductLabel,
+					bundle: finalSku,
+					productTitle: fullProductLabel,
+					selectedOfferTitle: finalSku,
+					price: finalPrice,
+					totalPrice: finalPrice,
+					quantity: currentOrder.quantity,
+					hasUpsell: false,
+					source: 'kit-tandim'
+				})
+			});
+		} catch (err) {
+			console.warn('Base order send non-fatal error:', err);
+		}
 
 		// 2. Mark order sent to prevent duplicate session submissions
 		if (typeof window !== 'undefined') {
@@ -662,115 +693,33 @@
 			console.warn("InitiateCheckout tracking non-fatal error:", err);
 		}
 
-		isSubmitting = true;
-		formError = "";
-
-		try {
-			// 3. Dispatch Order Payload directly to /api/order
-			const response = await fetch("/api/order", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					fullName: trimmedName,
-					phone: internationalPhone,
-					product: "باك الحمام الذكي",
-					bundle: bundleTitle,
-					price: orderPrice,
-					quantity,
-					source: "kit-tandim"
-				})
-			});
-
-			const data = await response.json().catch(() => null);
-
-			if (!response.ok || !data || !data.success) {
-				throw new Error(data?.message || "حدث خطأ أثناء تسجيل الطلب، يرجى المحاولة ثانية");
-			}
-
-			const orderId = data.orderId || ("ORD-" + Math.floor(100000 + Math.random() * 900000));
-			submittedOrderId = orderId;
-
-			// Save to storage for thank-you page
-			if (typeof window !== "undefined") {
-				sessionStorage.setItem("order_sent_" + orderId, "true");
-				const savedOrder = {
-					orderId,
-					fullName: trimmedName,
-					phoneNumber: internationalPhone,
-					city: "تأكيد هاتفي",
-					address: "تأكيد هاتفي",
-					date: new Date().toLocaleDateString("ar-MA"),
-					price: orderPrice,
-					total: orderPrice,
-					productTitle: "باك الحمام الذكي",
-					offer: bundleTitle,
-					quantity
-				};
-				try {
-					localStorage.setItem("latestOrder", JSON.stringify(savedOrder));
-					sessionStorage.setItem("latestOrder", JSON.stringify(savedOrder));
-				} catch (e) {}
-			}
-
-			// 4. Safe CompletePayment & Conversion Pixels
-			try {
-				// TikTok Pixel
-				if (typeof window !== "undefined" && (window as any).ttq) {
-					(window as any).ttq.track("CompletePayment", {
-						content_id: "kit-tandim",
-						content_type: "product",
-						content_name: bundleTitle,
-						quantity,
-						value: orderPrice,
-						currency: "MAD"
-					});
-				}
-				// Google Ads Conversion Tag
-				if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
-					(window as any).gtag("set", "user_data", { phone_number: internationalPhone });
-					(window as any).gtag("event", "conversion", {
-						send_to: "AW-18405009405",
-						value: orderPrice,
-						currency: "MAD",
-						transaction_id: orderId
-					});
-				}
-			} catch (pixelErr) {
-				console.warn("Post-purchase pixel tracking non-fatal error:", pixelErr);
-			}
-
-			// 5. Intercept checkout submission & trigger Upsell Modal
-			if (onOrderRegistered) {
-				onOrderRegistered({
-					orderId,
-					baseOrderPrice: orderPrice,
-					phone: internationalPhone,
-					name: trimmedName
-				});
-				return;
-			}
-
-			pendingOrder = {
-				orderId,
-				date_order: new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }),
-				customerName: trimmedName,
+		// 3. Delegate to onOrderPending immediately WITHOUT sending to /api/order yet!
+		if (onOrderPending) {
+			onOrderPending({
+				fullName: trimmedName,
 				phone: internationalPhone,
-				city_address: "تأكيد هاتفي",
-				offerSku: bundleTitle,
-				productTitleStr: "باك الحمام الذكي",
-				quantity,
-				basePrice: orderPrice,
-				sheetsUrl
-			};
-			showDrainUpsell = true;
-
-		} catch (error: any) {
-			console.error("Order Submission Error:", error);
-			formError = error?.message || "تعذر إرسال الطلب، تأكد من الاتصال بالإنترنت وحاول ثانية";
-			alert(error?.message || "تعذر إرسال الطلب، تأكد من الاتصال بالإنترنت وحاول ثانية");
-		} finally {
-			isSubmitting = false;
+				selectedTier: currentTier,
+				quantity
+			});
+			return;
 		}
+
+		// Standalone fallback: hold order in memory, open internal DrainUpsellModal without calling /api/order yet!
+		const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
+		submittedOrderId = orderId;
+		pendingOrder = {
+			orderId,
+			date_order: new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }),
+			customerName: trimmedName,
+			phone: internationalPhone,
+			city_address: "تأكيد هاتفي",
+			offerSku: bundleTitle,
+			productTitleStr: "باك الحمام الذكي",
+			quantity,
+			basePrice: orderPrice,
+			sheetsUrl
+		};
+		showDrainUpsell = true;
 	}
 
 	const handleDirectCheckout = handleSubmitOrder;

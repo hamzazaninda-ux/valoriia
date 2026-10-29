@@ -94,4 +94,10 @@ export interface TemplateProps {
     phone: string;
     name: string;
   }) => void;
+  onOrderPending?: (orderData: {
+    fullName: string;
+    phone: string;
+    selectedTier: { id: string | number; price: number; title: string };
+    quantity: number;
+  }) => void;
 }

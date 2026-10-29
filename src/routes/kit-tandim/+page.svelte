@@ -7,10 +7,15 @@
 	let { data } = $props();
 
 	let showUpsellModal = $state(false);
-	let currentOrderId = $state('');
-	let customerPhoneFormatted = $state('');
-	let customerNameFormatted = $state('');
-	let baseOrderPrice = $state(229);
+	let isSubmitting = $state(false);
+
+	let pendingOrderData = $state<{
+		orderId: string;
+		fullName: string;
+		phone: string;
+		selectedTier: { id: string | number; price: number; title: string };
+		quantity: number;
+	} | null>(null);
 
 	onMount(() => {
 		if (typeof window !== 'undefined') {
@@ -45,72 +50,146 @@
 		}
 	});
 
-	// Triggered upon successful base order registration
-	function handleOrderRegistered(orderInfo: {
-		orderId: string;
-		baseOrderPrice: number;
+	// Triggered upon clicking "تأكيد الطلب": Save in memory & open Upsell Modal immediately WITHOUT dispatching to Google Sheets yet!
+	function handleOrderPending(orderInfo: {
+		fullName: string;
 		phone: string;
-		name: string;
+		selectedTier: { id: string | number; price: number; title: string };
+		quantity: number;
 	}) {
-		currentOrderId = orderInfo.orderId || String(Date.now());
-		baseOrderPrice = Number(orderInfo.baseOrderPrice || 229);
-		customerPhoneFormatted = orderInfo.phone || '';
-		customerNameFormatted = orderInfo.name || '';
+		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+		pendingOrderData = {
+			...orderInfo,
+			orderId
+		};
 		showUpsellModal = true;
 	}
 
-	// Upsell Accepted (+29 MAD)
+	// Upsell Accepted (+29 MAD) -> ONE Single Consolidated Order sent to Google Sheets
 	async function handleAcceptUpsell() {
+		if (!pendingOrderData || isSubmitting) return;
+
+		const basePrice = Number(pendingOrderData.selectedTier.price || 229);
+		const finalPrice = basePrice + 29;
+		const baseTitle =
+			pendingOrderData.selectedTier.title ||
+			(pendingOrderData.quantity === 2
+				? 'قطعتان + رشاشان هدية مجانية 🎁'
+				: 'قطعة واحدة + رشاش هدية مجانية 🎁');
+		const finalProductTitle = `${baseTitle} + سدادة وفلتر مصرف الأرضية (29 درهم)`;
+
+		await finalizeAndSendOrder(finalProductTitle, finalPrice, true);
+	}
+
+	// Upsell Declined (Base Order Only) -> ONE Single Consolidated Order sent to Google Sheets
+	async function handleDeclineUpsell() {
+		if (!pendingOrderData || isSubmitting) return;
+		showUpsellModal = false;
+
+		const basePrice = Number(pendingOrderData.selectedTier.price || 229);
+		const baseTitle =
+			pendingOrderData.selectedTier.title ||
+			(pendingOrderData.quantity === 2
+				? 'قطعتان + رشاشان هدية مجانية 🎁'
+				: 'قطعة واحدة + رشاش هدية مجانية 🎁');
+
+		await finalizeAndSendOrder(baseTitle, basePrice, false);
+	}
+
+	// ONE single consolidated dispatch to /api/order (Google Sheets & Git DB)
+	async function finalizeAndSendOrder(productTitle: string, totalPrice: number, hasUpsell: boolean) {
+		if (!pendingOrderData || isSubmitting) return;
+		isSubmitting = true;
+
+		const { orderId, fullName, phone, quantity } = pendingOrderData;
+		const note = hasUpsell ? 'مع عرض السدادة (+29 درهم)' : '';
+
 		try {
-			await fetch('/api/order/upsell', {
+			// 1. Fire conversion pixels for the full total
+			firePurchasePixels(totalPrice, orderId, productTitle, quantity);
+
+			// 2. Dispatch ONE single consolidated payload to /api/order
+			const res = await fetch('/api/order', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					orderId: currentOrderId,
-					upsellItem: 'سدادة وفلتر مصرف الأرضية الذكية',
-					upsellPrice: 29,
-					totalAmount: baseOrderPrice + 29
+					orderId,
+					fullName,
+					phone,
+					product: productTitle,
+					bundle: productTitle,
+					productTitle,
+					selectedOfferTitle: productTitle,
+					price: totalPrice,
+					totalPrice,
+					total: totalPrice,
+					quantity,
+					note,
+					hasUpsell,
+					upsellPrice: hasUpsell ? 29 : 0,
+					source: 'kit-tandim'
 				})
 			});
-		} catch (e) {
-			console.warn('Upsell API sync failed, continuing flow:', e);
-		}
 
-		if (typeof window !== 'undefined') {
-			try {
-				const stored = JSON.parse(localStorage.getItem('latestOrder') || '{}');
-				stored.hasUpsell = true;
-				stored.upsellPrice = 29;
-				stored.price = baseOrderPrice + 29;
-				stored.total = baseOrderPrice + 29;
-				stored.upsellItem = 'سدادة وفلتر مصرف الأرضية الذكية';
-				localStorage.setItem('latestOrder', JSON.stringify(stored));
-				sessionStorage.setItem('latestOrder', JSON.stringify(stored));
-			} catch (e) {}
-		}
+			const data = await res.json().catch(() => null);
+			const returnedOrderId = data?.orderId || orderId;
 
-		// Fire purchase pixel with total amount
-		firePurchasePixels(baseOrderPrice + 29, currentOrderId);
-		await new Promise((resolve) => setTimeout(resolve, 350));
-		window.location.href = `/thank-you?orderId=${encodeURIComponent(currentOrderId)}&upsell=1&total=${baseOrderPrice + 29}&name=${encodeURIComponent(customerNameFormatted)}&phone=${encodeURIComponent(customerPhoneFormatted)}`;
+			// 3. Save latestOrder to localStorage & sessionStorage
+			if (typeof window !== 'undefined') {
+				sessionStorage.setItem(`order_sent_${returnedOrderId}`, 'true');
+				const savedOrder = {
+					orderId: returnedOrderId,
+					fullName,
+					phoneNumber: phone,
+					city: 'تأكيد هاتفي',
+					address: 'تأكيد هاتفي',
+					date: new Date().toLocaleDateString('ar-MA'),
+					price: totalPrice,
+					total: totalPrice,
+					productTitle,
+					offer: productTitle,
+					quantity,
+					hasUpsell,
+					upsellPrice: hasUpsell ? 29 : 0
+				};
+				try {
+					localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+					sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+				} catch (e) {}
+			}
+
+			showUpsellModal = false;
+
+			// 4. Wait 350ms buffer then redirect to thank-you page
+			await new Promise((resolve) => setTimeout(resolve, 350));
+			const thankYouUrl = `/thank-you?orderId=${encodeURIComponent(returnedOrderId)}${hasUpsell ? '&upsell=1' : ''}&total=${totalPrice}&name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(phone)}`;
+			window.location.href = thankYouUrl;
+		} catch (err) {
+			console.error('Finalize order error:', err);
+			showUpsellModal = false;
+			const thankYouUrl = `/thank-you?orderId=${encodeURIComponent(orderId)}${hasUpsell ? '&upsell=1' : ''}&total=${totalPrice}&name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(phone)}`;
+			window.location.href = thankYouUrl;
+		} finally {
+			isSubmitting = false;
+		}
 	}
 
-	// Upsell Declined (Base Order Only)
-	async function handleDeclineUpsell() {
-		showUpsellModal = false;
-		firePurchasePixels(baseOrderPrice, currentOrderId);
-		await new Promise((resolve) => setTimeout(resolve, 350));
-		window.location.href = `/thank-you?orderId=${encodeURIComponent(currentOrderId)}&total=${baseOrderPrice}&name=${encodeURIComponent(customerNameFormatted)}&phone=${encodeURIComponent(customerPhoneFormatted)}`;
-	}
-
-	function firePurchasePixels(finalAmount: number, orderId: string) {
+	function firePurchasePixels(finalAmount: number, orderId: string, title?: string, quantity: number = 1) {
 		try {
 			if (typeof window !== 'undefined' && (window as any).ttq) {
-				(window as any).ttq.track('CompletePayment', {
-					content_id: 'kit-tandim',
-					value: finalAmount,
-					currency: 'MAD'
-				});
+				(window as any).ttq.track(
+					'CompletePayment',
+					{
+						content_id: 'kit-tandim',
+						content_name: title || 'باك الحمام الذكي',
+						quantity,
+						value: finalAmount,
+						currency: 'MAD'
+					},
+					{
+						event_id: orderId
+					}
+				);
 			}
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				(window as any).gtag('event', 'conversion', {
@@ -125,7 +204,8 @@
 		}
 	}
 
-	const HERO_IMAGE_URL = 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';
+	const HERO_IMAGE_URL =
+		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';
 
 	const heroPreloadUrl = cloudinaryUrl(HERO_IMAGE_URL, 'f_auto,q_auto,w_720');
 	const heroPreloadSrcset = cloudinarySrcset(HERO_IMAGE_URL, [480, 720, 960]);
@@ -166,16 +246,16 @@
 	settings={data.settings}
 	theme={data.theme}
 	others={data.others}
-	onOrderRegistered={handleOrderRegistered}
+	onOrderPending={handleOrderPending}
 />
 
 <DrainUpsellModal
 	bind:isOpen={showUpsellModal}
 	orderDetails={{
-		orderId: currentOrderId,
-		total: baseOrderPrice,
-		phone: customerPhoneFormatted,
-		name: customerNameFormatted
+		orderId: pendingOrderData?.orderId || '',
+		total: pendingOrderData?.selectedTier?.price || 229,
+		phone: pendingOrderData?.phone || '',
+		name: pendingOrderData?.fullName || ''
 	}}
 	onAcceptUpsell={handleAcceptUpsell}
 	onDeclineUpsell={handleDeclineUpsell}

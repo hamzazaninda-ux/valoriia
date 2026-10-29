@@ -20,7 +20,7 @@
 		isOpen?: boolean;
 		orderDetails?: OrderDetails;
 		onAcceptUpsell?: (updatedOrder: any) => void | Promise<void>;
-		onDeclineUpsell?: () => void;
+		onDeclineUpsell?: () => void | Promise<void>;
 	} = $props();
 
 	// Easily configurable pricing & timer

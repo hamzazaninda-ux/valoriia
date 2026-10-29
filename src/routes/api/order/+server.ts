@@ -36,12 +36,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		).trim();
 
 		const quantity = Number(body.quantity !== undefined ? body.quantity : (body.qte !== undefined ? body.qte : 1)) || 1;
-		const rawPrice = body.price !== undefined ? body.price : (body.totalPrice !== undefined ? body.totalPrice : (body.total !== undefined ? body.total : 229));
+		const rawPrice = body.totalPrice !== undefined ? body.totalPrice : (body.price !== undefined ? body.price : (body.total !== undefined ? body.total : 229));
 		const price = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 229;
 
-		const product = String(body.product || body.productTitle || 'باك الحمام الذكي').trim();
+		const product = String(body.product || body.productTitle || body.bundle || 'باك الحمام الذكي').trim();
 		const bundle = String(
 			body.bundle ||
+			body.productTitle ||
+			body.product ||
 			body.selectedOfferTitle ||
 			body.offer ||
 			(quantity === 2 ? 'قطعتان + 2 رشاشات هدية 🎁🎁' : 'قطعة واحدة + رشاش هدية 🎁')
@@ -88,7 +90,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			bundle,
 			quantity,
 			price,
-			String(body.note || ''),
+			String(body.note || (body.hasUpsell ? 'مع عرض السدادة (+29 درهم)' : '')),
 			String(body.delivery_note || '')
 		];
 
