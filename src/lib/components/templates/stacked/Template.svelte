@@ -815,11 +815,11 @@
 	<!-- 1. Top Announcement Bar -->
 	<aside
 		id="top-announcement-bar"
-		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-2 px-3 text-[11px] sm:text-xs font-bold text-center border-b border-white/10 shadow-sm select-none"
+		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-1.5 px-2 text-[12px] sm:text-[13px] font-bold text-center border-b border-white/10 shadow-sm select-none leading-snug"
 		aria-label="شريط الإعلانات"
 		dir="rtl"
 	>
-		<div class="max-w-4xl mx-auto flex items-center justify-center gap-1.5 leading-tight">
+		<div class="max-w-4xl mx-auto flex items-center justify-center gap-1.5">
 			<span>🎁 عرض محدود: رشاش التوربو المفلتر هدية مجانية + توصيل مجاني!</span>
 		</div>
 	</aside>
@@ -874,11 +874,11 @@
 				<p class="text-xs sm:text-sm text-emerald-100/90 font-medium">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
 			</div>
 
-			<div class="p-3.5 sm:p-6 space-y-4">
+			<div class="p-3 sm:p-5 space-y-3">
 				
 				<!-- ==================== OFFER 1 (TIER 1) ==================== -->
 				<label 
-					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-2.5 sm:gap-3 bg-white select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300'}"
+					class="offer-card relative cursor-pointer rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
 				>
 					<!-- Hidden native radio for accessibility & keyboard navigation -->
 					<input 
@@ -890,54 +890,66 @@
 						onchange={() => selectTier('tier1')} 
 					/>
 
-					<!-- RIGHT (RTL start): Radio Selection Button & Thumbnail -->
-					<div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-						<!-- Radio Circle -->
-						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
-							{#if selectedTier?.id === 'tier1'}
-								<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-									<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-								</svg>
-							{/if}
+					<!-- Row 1 (Mobile) / Start & Center (Desktop) -->
+					<div class="offer-row-identity">
+						<!-- Selection Circle & Thumbnail -->
+						<div class="offer-media">
+							<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
+								{#if selectedTier?.id === 'tier1'}
+									<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+									</svg>
+								{/if}
+							</div>
+							<img 
+								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
+								alt="قطعة واحدة + رشاش هدية مجانية" 
+								width="56"
+								height="56"
+								loading="lazy"
+								class="w-14 h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
+							/>
 						</div>
-						<!-- Thumbnail Image (1 Piece Verified Image: 09_25_08_PM.png) -->
-						<img 
-							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
-							alt="قطعة واحدة + رشاش هدية مجانية" 
-							width="56"
-							height="64"
-							loading="lazy"
-							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
-						/>
+
+						<!-- Title (Full remaining width on mobile) -->
+						<div class="offer-title-wrap">
+							<div class="offer-title">
+								قطعة واحدة + رشاش هدية مجانية 🎁
+							</div>
+							<!-- Desktop savings under title -->
+							<div class="offer-savings-desktop">
+								<span class="offer-pill">
+									وفّر 70 درهم
+								</span>
+							</div>
+						</div>
 					</div>
 
-					<!-- CENTER: Offer Description & Savings Pill -->
-					<div class="flex-1 text-right min-w-0 pr-0.5">
-						<div class="font-black text-gray-900 text-sm sm:text-base leading-snug">
-							قطعة واحدة + رشاش هدية مجانية 🎁
+					<!-- Row 2 (Mobile) / End block (Desktop) -->
+					<div class="offer-row-bottom">
+						<!-- Price Block -->
+						<div class="offer-price">
+							<div class="offer-price-current">
+								229 <span class="offer-currency">درهم</span>
+							</div>
+							<div class="offer-price-old">299 درهم</div>
 						</div>
-						<div class="mt-1.5">
-							<span class="inline-block bg-[#ddf2e5] text-[var(--cod-green-dark,#1F5C4A)] text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
+
+						<!-- Mobile Savings Badge -->
+						<div class="offer-savings-mobile">
+							<span class="offer-pill">
 								وفّر 70 درهم
 							</span>
 						</div>
-					</div>
-
-					<!-- LEFT (RTL end): Price Block -->
-					<div class="text-left shrink-0">
-						<div class="font-black text-xl sm:text-2xl text-[var(--cod-green-dark,#1F5C4A)] leading-none">
-							229 <span class="text-sm font-bold">درهم</span>
-						</div>
-						<div class="text-xs text-[var(--cod-gray-old,#777777)] line-through mt-1">299 درهم</div>
 					</div>
 				</label>
 
 				<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
 				<label 
-					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-2.5 sm:gap-3 bg-white select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300'}"
+					class="offer-card offer-card-tier2 relative cursor-pointer rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
 				>
 					<!-- Top Pill Badge: الأوفر -->
-					<span class="absolute -top-3 right-6 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-xs px-3 py-0.5 rounded-full shadow-md z-10">
+					<span class="offer-ribbon absolute -top-2.5 end-6 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-xs px-3 py-0.5 rounded-full shadow-md z-10">
 						الأوفر
 					</span>
 
@@ -951,48 +963,67 @@
 						onchange={() => selectTier('tier2')} 
 					/>
 
-					<!-- RIGHT (RTL start): Radio Selection Button & Thumbnail -->
-					<div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
-						<!-- Radio Circle -->
-						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
-							{#if selectedTier?.id === 'tier2'}
-								<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-									<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-								</svg>
-							{/if}
+					<!-- Row 1 (Mobile) / Start & Center (Desktop) -->
+					<div class="offer-row-identity">
+						<!-- Selection Circle & Thumbnail -->
+						<div class="offer-media">
+							<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
+								{#if selectedTier?.id === 'tier2'}
+									<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+									</svg>
+								{/if}
+							</div>
+							<img 
+								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
+								alt="قطعتان + رشاش هدية مجانية" 
+								width="56"
+								height="56"
+								loading="lazy"
+								class="w-14 h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
+							/>
 						</div>
-						<!-- Thumbnail Image (2 Pieces Verified Image: 09_28_10_PM.png) -->
-						<img 
-							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
-							alt="قطعتان + رشاش هدية مجانية" 
-							width="56"
-							height="64"
-							loading="lazy"
-							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
-						/>
+
+						<!-- Title (Full remaining width on mobile) -->
+						<div class="offer-title-wrap">
+							<div class="offer-title">
+								قطعتان + رشاش هدية مجانية 🎁
+							</div>
+							<!-- Desktop savings under title -->
+							<div class="offer-savings-desktop">
+								<div class="flex items-center gap-1.5">
+									<span class="offer-pill">
+										وفّر 109 درهم
+									</span>
+									<span class="text-xs font-bold text-gray-700">
+										فقط 174 درهم للقطعة
+									</span>
+								</div>
+							</div>
+						</div>
 					</div>
 
-					<!-- CENTER: Offer Description & Savings Pill -->
-					<div class="flex-1 text-right min-w-0 pr-0.5">
-						<div class="font-black text-gray-900 text-sm sm:text-base leading-snug">
-							قطعتان + رشاش هدية مجانية 🎁
+					<!-- Row 2 (Mobile) / End block (Desktop) -->
+					<div class="offer-row-bottom">
+						<!-- Price Block -->
+						<div class="offer-price">
+							<div class="offer-price-current">
+								349 <span class="offer-currency">درهم</span>
+							</div>
+							<div class="offer-price-old">458 درهم</div>
 						</div>
-						<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
-							<span class="inline-block bg-[#ddf2e5] text-[var(--cod-green-dark,#1F5C4A)] text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
-								وفّر 109 درهم
-							</span>
-							<span class="text-[11px] sm:text-xs font-bold text-gray-700">
-								فقط 174 درهم للقطعة
-							</span>
-						</div>
-					</div>
 
-					<!-- LEFT (RTL end): Price Block -->
-					<div class="text-left shrink-0">
-						<div class="font-black text-xl sm:text-2xl text-[var(--cod-green-dark,#1F5C4A)] leading-none">
-							349 <span class="text-sm font-bold">درهم</span>
+						<!-- Mobile Savings Badge -->
+						<div class="offer-savings-mobile">
+							<div class="flex items-center gap-1.5 flex-wrap">
+								<span class="offer-pill">
+									وفّر 109 درهم
+								</span>
+								<span class="offer-per-unit">
+									فقط 174 درهم للقطعة
+								</span>
+							</div>
 						</div>
-						<div class="text-xs text-[var(--cod-gray-old,#777777)] line-through mt-1">458 درهم</div>
 					</div>
 				</label>
 
@@ -1904,4 +1935,180 @@
 		animation: cta-horizontal-shake 2.6s ease-in-out infinite;
 	}
 
+
+	/* ═══════════════════════════════════════════════════════════
+	   OFFER CARDS: MOBILE-FIRST (<= 480px) & DESKTOP (>= 481px)
+	   ═══════════════════════════════════════════════════════════ */
+	.offer-card {
+		box-sizing: border-box;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 12px;
+	}
+
+	.offer-card-tier2 {
+		padding-top: 14px;
+	}
+
+	.offer-row-identity {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.offer-media {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	.offer-title-wrap {
+		flex: 1 1 0%;
+		min-width: 0;
+		text-align: right;
+	}
+
+	.offer-title {
+		font-size: clamp(14px, 4vw, 16px);
+		line-height: 1.45;
+		font-weight: 700;
+		color: #111827;
+		text-wrap: balance;
+		word-break: normal;
+		overflow-wrap: normal;
+	}
+
+	.offer-savings-desktop {
+		display: none;
+	}
+
+	.offer-row-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 6px;
+		width: 100%;
+		padding-top: 8px;
+		border-top: 1px solid rgba(0, 0, 0, 0.06);
+		margin-top: 2px;
+	}
+
+	.offer-price {
+		display: flex;
+		align-items: baseline;
+		gap: 6px;
+		text-align: right;
+	}
+
+	.offer-price-current {
+		font-size: clamp(20px, 6vw, 26px);
+		font-weight: 900;
+		color: var(--cod-green-dark, #1F5C4A);
+		line-height: 1;
+	}
+
+	.offer-currency {
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	.offer-price-old {
+		font-size: 12px;
+		color: var(--cod-gray-old, #777777);
+		text-decoration: line-through;
+	}
+
+	.offer-savings-mobile {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-shrink: 0;
+	}
+
+	.offer-pill {
+		display: inline-block;
+		background-color: #ddf2e5;
+		color: var(--cod-green-dark, #1F5C4A);
+		font-size: 11px;
+		font-weight: 900;
+		padding: 2px 8px;
+		border-radius: 9999px;
+		border: 1px solid #bfe7cf;
+		white-space: nowrap;
+	}
+
+	.offer-per-unit {
+		font-size: 11px;
+		font-weight: 700;
+		color: #374151;
+		white-space: nowrap;
+	}
+
+	/* Desktop layout: >= 481px */
+	@media (min-width: 481px) {
+		.offer-card {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 16px;
+		}
+
+		.offer-card-tier2 {
+			padding-top: 16px;
+		}
+
+		.offer-row-identity {
+			flex: 1 1 0%;
+			min-width: 0;
+			gap: 12px;
+		}
+
+		.offer-media {
+			gap: 10px;
+		}
+
+		.offer-title {
+			font-size: 16px;
+			font-weight: 800;
+		}
+
+		.offer-savings-desktop {
+			display: block;
+			margin-top: 6px;
+		}
+
+		.offer-row-bottom {
+			display: block;
+			width: auto;
+			border-top: none;
+			padding-top: 0;
+			margin-top: 0;
+			flex-shrink: 0;
+			text-align: left;
+		}
+
+		.offer-price {
+			display: block;
+			text-align: left;
+		}
+
+		.offer-price-current {
+			font-size: 24px;
+		}
+
+		.offer-price-old {
+			margin-top: 4px;
+		}
+
+		.offer-savings-mobile {
+			display: none;
+		}
+	}
 </style>
