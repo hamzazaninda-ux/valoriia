@@ -547,20 +547,48 @@
 		}
 	}
 
+		function normalizeDigits(str: string): string {
+		const eastern = '٠١٢٣٤٥٦٧٨٩';
+		return String(str || '').replace(/[٠-٩]/g, (d) => eastern.indexOf(d).toString());
+	}
+
 	function validateFullName(val: string): boolean {
-		return val.replace(/\s+/g, '').length >= 2;
+		return String(val || '').trim().replace(/\s+/g, '').length >= 2;
+	}
+
+	function cleanPhoneString(val: string): string {
+		const converted = normalizeDigits(val);
+		return converted.trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069()+.]+/g, '');
 	}
 
 	function validateMoroccanPhone(val: string): boolean {
-		const stripped = val.trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069]+/g, '');
-		return /^(?:(?:\+|00)212|0)[67]\d{8}$/.test(stripped);
+		const stripped = cleanPhoneString(val);
+		return /^(?:(?:00212|212)|0)[567]\d{8}$/.test(stripped);
 	}
 
-	// Normalize Moroccan phone to 10-digit local format starting with '0' (e.g. 0612345678)
+	// Normalize Moroccan phone to standard 10-digit format starting with '0' (e.g. 0612345678)
 	function normalizeMoroccanPhone(rawPhone: string): string {
-		const stripped = String(rawPhone || '').trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069]+/g, '');
-		const match = stripped.match(/^(?:(?:\+|00)212|0)([67]\d{8})$/);
+		const stripped = cleanPhoneString(rawPhone);
+		const match = stripped.match(/^(?:(?:00212|212)|0)([567]\d{8})$/);
 		return match ? `0${match[1]}` : stripped;
+	}
+
+	function selectTier(tierId: 'tier1' | 'tier2') {
+		if (tierId === 'tier1') {
+			selectedTier = {
+				id: 'tier1',
+				price: 229,
+				title: 'قطعة واحدة + رشاش هدية مجانية'
+			};
+			selectedPack = 1;
+		} else {
+			selectedTier = {
+				id: 'tier2',
+				price: 349,
+				title: 'قطعتان + رشاشان هدية مجانية'
+			};
+			selectedPack = 2;
+		}
 	}
 
 	const isNameValid = $derived(validateFullName(fullName || customerName));
@@ -831,114 +859,155 @@
 	<!-- ======================================================== -->
 	<!-- COD ORDER FORM & EXACT VISUAL OFFER CARDS -->
 	<!-- ======================================================== -->
-	<div id="order-form" class="scroll-mt-6 w-full max-w-lg mx-auto px-2 sm:px-4 my-6" dir="rtl">
-		<!-- Form Container -->
-		<div class="bg-[#F8F9F5] rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
+	<div 
+		id="order-form" 
+		class="scroll-mt-6 w-full max-w-[560px] mx-auto px-2.5 sm:px-4 my-6" 
+		dir="rtl"
+		style="--cod-green-dark: #1F5C4A; --cod-green-light: #E3EFE8; --cod-orange-btn: #F28C28; --cod-beige-bg: #F5F0E6; --cod-gray-old: #777777;"
+	>
+		<!-- Form Container with Beige Background & Soft Border -->
+		<div class="bg-[var(--cod-beige-bg,#F5F0E6)] rounded-3xl overflow-hidden shadow-2xl border border-[#e8dfcf] transition-all">
+			
 			<!-- Top Green Header -->
-			<div class="bg-[#134e35] py-4 px-4 text-center text-white">
-				<h2 class="text-2xl sm:text-3xl font-black mb-1">أكمل طلبك الآن</h2>
-				<p class="text-xs sm:text-sm text-gray-200 font-medium">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
+			<div class="bg-[var(--cod-green-dark,#1F5C4A)] py-4 px-4 text-center text-white">
+				<h2 class="text-2xl sm:text-3xl font-black mb-1 text-white tracking-tight">أكمل طلبك الآن</h2>
+				<p class="text-xs sm:text-sm text-emerald-100/90 font-medium">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
 			</div>
 
-			<div class="p-4 sm:p-6 space-y-4">
+			<div class="p-3.5 sm:p-6 space-y-4">
+				
 				<!-- ==================== OFFER 1 (TIER 1) ==================== -->
-				<div 
-					onclick={() => { selectedTier = { id: 'tier1', price: 229, title: 'قطعة واحدة + رشاش هدية مجانية' }; selectedPack = 1; }}
-					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-3 bg-white {selectedTier?.id === 'tier1' ? 'border-[#134e35] bg-[#eef7f2]' : 'border-gray-200 hover:border-gray-300'}"
+				<label 
+					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-2.5 sm:gap-3 bg-white select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300'}"
 				>
-					<!-- RIGHT: Radio Selection Button & Thumbnail -->
-					<div class="flex items-center gap-2.5 shrink-0">
-						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors {selectedTier?.id === 'tier1' ? 'border-[#134e35] bg-[#134e35] text-white' : 'border-gray-300 bg-white'}">
+					<!-- Hidden native radio for accessibility & keyboard navigation -->
+					<input 
+						type="radio" 
+						name="product-offer-tier" 
+						value="tier1" 
+						class="sr-only" 
+						checked={selectedTier?.id === 'tier1'} 
+						onchange={() => selectTier('tier1')} 
+					/>
+
+					<!-- RIGHT (RTL start): Radio Selection Button & Thumbnail -->
+					<div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+						<!-- Radio Circle -->
+						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
 							{#if selectedTier?.id === 'tier1'}
 								<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
 									<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
 								</svg>
 							{/if}
 						</div>
+						<!-- Thumbnail Image (1 Piece Verified Image: 09_25_08_PM.png) -->
 						<img 
-							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
-							alt="قطعة واحدة" 
-							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-sm"
+							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
+							alt="قطعة واحدة + رشاش هدية مجانية" 
+							width="56"
+							height="64"
+							loading="lazy"
+							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
 						/>
 					</div>
 
 					<!-- CENTER: Offer Description & Savings Pill -->
-					<div class="flex-1 text-right min-w-0 pr-1">
-						<div class="font-black text-gray-900 text-sm sm:text-base leading-tight">
+					<div class="flex-1 text-right min-w-0 pr-0.5">
+						<div class="font-black text-gray-900 text-sm sm:text-base leading-snug">
 							قطعة واحدة + رشاش هدية مجانية 🎁
 						</div>
 						<div class="mt-1.5">
-							<span class="inline-block bg-[#ddf2e5] text-[#134e35] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
+							<span class="inline-block bg-[#ddf2e5] text-[var(--cod-green-dark,#1F5C4A)] text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
 								وفّر 70 درهم
 							</span>
 						</div>
 					</div>
 
-					<!-- LEFT: Price Block -->
+					<!-- LEFT (RTL end): Price Block -->
 					<div class="text-left shrink-0">
-						<div class="font-black text-xl sm:text-2xl text-[#134e35] leading-none">229 <span class="text-sm font-bold">درهم</span></div>
-						<div class="text-xs text-gray-400 line-through mt-1">299 درهم</div>
+						<div class="font-black text-xl sm:text-2xl text-[var(--cod-green-dark,#1F5C4A)] leading-none">
+							229 <span class="text-sm font-bold">درهم</span>
+						</div>
+						<div class="text-xs text-[var(--cod-gray-old,#777777)] line-through mt-1">299 درهم</div>
 					</div>
-				</div>
+				</label>
 
 				<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
-				<div 
-					onclick={() => { selectedTier = { id: 'tier2', price: 349, title: 'قطعتان + رشاشان هدية مجانية' }; selectedPack = 2; }}
-					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-3 bg-white mt-3 {selectedTier?.id === 'tier2' ? 'border-[#134e35] bg-[#eef7f2]' : 'border-gray-200 hover:border-gray-300'}"
+				<label 
+					class="relative cursor-pointer rounded-2xl p-3 sm:p-4 border-2 transition-all flex items-center justify-between gap-2.5 sm:gap-3 bg-white select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300'}"
 				>
 					<!-- Top Pill Badge: الأوفر -->
-					<span class="absolute -top-3 right-6 bg-[#134e35] text-white font-black text-xs px-3 py-0.5 rounded-full shadow-md">
+					<span class="absolute -top-3 right-6 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-xs px-3 py-0.5 rounded-full shadow-md z-10">
 						الأوفر
 					</span>
 
-					<!-- RIGHT: Radio Selection Button & Thumbnail -->
-					<div class="flex items-center gap-2.5 shrink-0">
-						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors {selectedTier?.id === 'tier2' ? 'border-[#134e35] bg-[#134e35] text-white' : 'border-gray-300 bg-white'}">
+					<!-- Hidden native radio -->
+					<input 
+						type="radio" 
+						name="product-offer-tier" 
+						value="tier2" 
+						class="sr-only" 
+						checked={selectedTier?.id === 'tier2'} 
+						onchange={() => selectTier('tier2')} 
+					/>
+
+					<!-- RIGHT (RTL start): Radio Selection Button & Thumbnail -->
+					<div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+						<!-- Radio Circle -->
+						<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
 							{#if selectedTier?.id === 'tier2'}
 								<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
 									<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
 								</svg>
 							{/if}
 						</div>
+						<!-- Thumbnail Image (2 Pieces Verified Image: 09_28_10_PM.png) -->
 						<img 
-							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
-							alt="قطعتان" 
-							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-sm"
+							src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
+							alt="قطعتان + رشاش هدية مجانية" 
+							width="56"
+							height="64"
+							loading="lazy"
+							class="w-12 h-14 sm:w-14 sm:h-16 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
 						/>
 					</div>
 
 					<!-- CENTER: Offer Description & Savings Pill -->
-					<div class="flex-1 text-right min-w-0 pr-1">
-						<div class="font-black text-gray-900 text-sm sm:text-base leading-tight">
-							قطعتان + رشاشان هدية مجانية 🎁
+					<div class="flex-1 text-right min-w-0 pr-0.5">
+						<div class="font-black text-gray-900 text-sm sm:text-base leading-snug">
+							قطعتان + رشاش هدية مجانية 🎁
 						</div>
 						<div class="flex flex-wrap items-center gap-1.5 mt-1.5">
-							<span class="inline-block bg-[#ddf2e5] text-[#134e35] text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
+							<span class="inline-block bg-[#ddf2e5] text-[var(--cod-green-dark,#1F5C4A)] text-[11px] sm:text-xs font-black px-2.5 py-0.5 rounded-full border border-[#bfe7cf]">
 								وفّر 109 درهم
 							</span>
-							<span class="text-[11px] font-bold text-gray-600">
+							<span class="text-[11px] sm:text-xs font-bold text-gray-700">
 								فقط 174 درهم للقطعة
 							</span>
 						</div>
 					</div>
 
-					<!-- LEFT: Price Block -->
+					<!-- LEFT (RTL end): Price Block -->
 					<div class="text-left shrink-0">
-						<div class="font-black text-xl sm:text-2xl text-[#134e35] leading-none">349 <span class="text-sm font-bold">درهم</span></div>
-						<div class="text-xs text-gray-400 line-through mt-1">458 درهم</div>
+						<div class="font-black text-xl sm:text-2xl text-[var(--cod-green-dark,#1F5C4A)] leading-none">
+							349 <span class="text-sm font-bold">درهم</span>
+						</div>
+						<div class="text-xs text-[var(--cod-gray-old,#777777)] line-through mt-1">458 درهم</div>
 					</div>
-				</div>
+				</label>
 
 				<!-- ==================== CUSTOMER INPUTS (EXACTLY 2 FIELDS) ==================== -->
-				<form onsubmit={handleDirectCheckout} novalidate class="pt-4 space-y-3.5 text-right">
-					<h3 class="font-black text-gray-900 text-base">معلومات التوصيل</h3>
+				<form onsubmit={handleDirectCheckout} novalidate class="pt-3 space-y-3.5 text-right">
+					<h3 class="font-black text-gray-900 text-base sm:text-lg mb-2">معلومات التوصيل</h3>
 
 					<!-- 1. Full Name -->
 					<div>
-						<label for="order-fullName" class="block text-xs font-bold text-gray-700 mb-1">الاسم</label>
+						<label for="order-fullName" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">الاسم</label>
 						<input 
 							id="order-fullName"
 							type="text" 
+							name="fullName"
+							autocomplete="name"
 							bind:value={fullName} 
 							onblur={() => {
 								if (fullName.trim().length > 0 && !validateFullName(fullName)) {
@@ -947,19 +1016,22 @@
 							}}
 							required 
 							placeholder="اكتب اسمك" 
-							class="w-full px-4 py-3 bg-white rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#134e35] focus:ring-1 focus:ring-[#134e35] {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							class="w-full min-h-[48px] px-4 py-3 bg-white rounded-xl border text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {nameBlurredInvalid && !isNameValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
-						{#if showNameError}
+						{#if nameBlurredInvalid && !isNameValid}
 							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال الاسم (حرفان على الأقل).</p>
 						{/if}
 					</div>
 
 					<!-- 2. Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-xs font-bold text-gray-700 mb-1">رقم الهاتف (واتساب)</label>
+						<label for="order-phone" class="block text-xs sm:text-sm font-bold text-gray-800 mb-1">رقم الهاتف (واتساب)</label>
 						<input 
 							id="order-phone"
 							type="tel" 
+							name="phone"
+							inputmode="tel"
+							autocomplete="tel"
 							bind:value={phone} 
 							onblur={() => {
 								if (phone.trim().length > 0 && !validateMoroccanPhone(phone)) {
@@ -969,15 +1041,15 @@
 							required 
 							dir="ltr"
 							placeholder="06XXXXXXXX" 
-							class="w-full px-4 py-3 bg-white rounded-xl border border-gray-300 text-sm text-right focus:outline-none focus:border-[#134e35] focus:ring-1 focus:ring-[#134e35] {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							class="w-full min-h-[48px] px-4 py-3 bg-white rounded-xl border text-base text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {phoneBlurredInvalid && !isPhoneValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
-						{#if showPhoneError}
+						{#if phoneBlurredInvalid && !isPhoneValid}
 							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
 						{/if}
 					</div>
 
 					{#if formError}
-						<div class="rounded-xl bg-red-50 border border-red-200 p-2 text-xs text-red-700 font-bold text-center">
+						<div class="rounded-xl bg-red-50 border border-red-200 p-2.5 text-xs sm:text-sm text-red-700 font-bold text-center">
 							{formError}
 						</div>
 					{/if}
@@ -986,10 +1058,10 @@
 					<button 
 						type="submit" 
 						disabled={isSubmitting || isSubmittingFinal}
-						class="w-full mt-3 py-4 px-4 bg-[#ea580c] hover:bg-[#d94e08] active:scale-[0.99] transition text-white font-black text-lg rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75"
+						class="w-full min-h-[52px] mt-2 py-3.5 sm:py-4 px-4 bg-[var(--cod-orange-btn,#F28C28)] hover:bg-[#e07d1a] active:scale-[0.99] transition text-white font-black text-lg sm:text-xl rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F28C28]"
 					>
 						{#if isSubmitting || isSubmittingFinal}
-							<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin me-2"></span>
 							<span>جاري الإرسال...</span>
 						{:else}
 							تأكيد الطلب • {selectedTier?.price || 229} درهم
@@ -997,10 +1069,11 @@
 					</button>
 
 					<!-- Trust Sub-copy -->
-					<div class="text-xs text-gray-600 text-center font-medium pt-1">
+					<div class="text-xs sm:text-sm text-gray-600 text-center font-medium pt-1">
 						سيتصل بك الموزع لتأكيد طلبك • 🔒 معلوماتك محمية
 					</div>
 				</form>
+
 			</div>
 		</div>
 	</div>
