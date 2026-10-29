@@ -222,12 +222,6 @@
 	}
 
 
-	const whatsappUrl = $derived.by(() => {
-		const orderId = order?.orderId || 'ORD-000000';
-		const waNum = (data?.whatsappNumber || '212626558375').replace(/\D/g, '') || '212626558375';
-		const msg = `السلام عليكم، قمت بطلب ${order?.productTitle || 'المنتج'} من Lhamza Shop ورقم طلبي هو ${orderId}، وأود تأكيد طلبي للشحن السريع.`;
-		return `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-	});
 
 	
 	function handleBackHome() {
@@ -366,22 +360,6 @@
 					{/if}
 				</div>
 			</div>
-		</div>
-
-		<!-- 3. WhatsApp 1-Click Action Button (Pulsing Green) -->
-		<div class="w-full mb-5">
-			<a
-				href={whatsappUrl}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="relative w-full py-4 px-4 font-black text-white bg-[#15803D] hover:bg-[#166534] active:scale-[0.98] rounded-2xl shadow-xl shadow-green-600/30 flex items-center justify-center gap-2.5 text-sm sm:text-base transition-all duration-300 no-underline text-center select-none cursor-pointer group overflow-hidden"
-			>
-				<span class="absolute inset-0 rounded-2xl bg-white/20 animate-ping opacity-75 duration-1000 pointer-events-none"></span>
-				<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="shrink-0 text-white animate-bounce">
-					<path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.003 5.324 5.328 0 11.859 0c3.161.001 6.132 1.233 8.368 3.472 2.235 2.24 3.461 5.218 3.46 8.382-.003 6.526-5.328 11.851-11.859 11.851-2.008-.002-3.98-.513-5.735-1.488L0 24zm6.822-4.108l.385.228c1.398.831 2.978 1.27 4.606 1.271 5.234 0 9.493-4.258 9.495-9.492.001-2.536-.985-4.92-2.777-6.715-1.793-1.796-4.175-2.784-6.711-2.785-5.239 0-9.499 4.26-9.502 9.496-.002 1.705.447 3.37 1.299 4.808l.252.427-.999 3.65 3.753-.984zm11.23-5.385c-.328-.164-1.942-.959-2.242-1.069-.301-.11-.52-.164-.739.164-.219.328-.848 1.069-1.039 1.288-.192.219-.383.246-.711.082-.328-.164-1.386-.51-2.64-1.627-.975-.87-1.633-1.946-1.824-2.274-.192-.328-.02-.505.143-.668.148-.146.328-.383.493-.575.164-.192.219-.328.328-.548.11-.219.055-.411-.027-.575-.082-.164-.739-1.777-1.012-2.435-.267-.641-.539-.553-.739-.563-.19-.01-.41-.01-.628-.01-.219 0-.575.082-.876.411-.301.328-1.15 1.123-1.15 2.738 0 1.615 1.177 3.176 1.34 3.395.164.219 2.316 3.537 5.611 4.96.783.338 1.396.54 1.872.691.787.25 1.5.215 2.066.13.631-.095 1.942-.794 2.216-1.56.273-.767.273-1.423.192-1.56-.082-.137-.3-.219-.628-.383z"/>
-				</svg>
-				<span>💬 أكد طلبك الآن مباشرة عبر الواتساب (بدون مكالمة)</span>
-			</a>
 		</div>
 
 		<!-- 4. Demystifying the Call (3 Points) -->
