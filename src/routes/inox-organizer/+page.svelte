@@ -21,7 +21,7 @@
 		title: 'منظم الحمام الفاخر (إينوكس 3 طبقات)',
 		sku: 'inox-organizer',
 		image:
-			'https://res.cloudinary.com/xqjngk8y/image/upload/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
+			'https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_fill,g_auto/v1793217747/%D9%85%D9%86%D8%B8%D9%91%D9%85_%D8%AD%D9%85%D9%91%D8%A7%D9%85_%D9%81%D8%A7%D8%AE%D8%B1_%D9%85%D8%B9_%D9%87%D8%AF%D9%8A%D8%A9_%D8%AA%D9%88%D8%B1%D8%A8%D9%88.png',
 		giftText: '🎁 رشاش هدية',
 		bundles: [
 			{
@@ -253,33 +253,27 @@
 	<!-- 2. HERO SECTION (MOBILE-FIRST: IMAGE FIRST -> TITLE -> BADGES)    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<header class="pt-2 sm:pt-4 pb-2 px-3 sm:px-4 max-w-xl mx-auto">
-		<!-- HERO IMAGE FIRST -->
-		<div class="w-full overflow-hidden rounded-2xl shadow-sm border border-stone-200/80 bg-white my-2">
+		<!-- HERO IMAGE FIRST (PORTRAIT ASPECT RATIO 3:4) -->
+		<div class="w-full max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-2.5 relative">
 			<img
 				src={PRODUCT_CONFIG.image}
 				alt="منظم الحمام الفاخر من الإينوكس 3 طبقات مع رشاش الاستحمام التوربو المفلتر هدية مجانية"
 				loading="eager"
 				fetchpriority="high"
-				class="w-full h-auto object-contain rounded-2xl transition-transform duration-300"
+				class="w-full h-full object-cover object-center rounded-2xl transition-transform duration-300"
 			/>
 		</div>
 
-		<!-- COMPACT TITLE & PRICE ROW (BELOW HERO IMAGE) -->
+		<!-- COMPACT TITLE & RATINGS (BELOW HERO IMAGE - ZERO PRICE FRICTION) -->
 		<div class="text-center pt-2 pb-1 space-y-2">
 			<!-- Title H1 (Max 1 to 2 lines, 20px-22px on mobile) -->
 			<h1 class="font-display text-xl sm:text-2xl font-black text-stone-900 leading-snug tracking-tight">
 				منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً
 			</h1>
 
-			<!-- Rating & Price Row (Default 279 DH) -->
-			<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-0.5">
+			<!-- Customer Ratings Only (Stars & Review Count) -->
+			<div class="flex items-center justify-center gap-1.5 pt-0.5">
 				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ (114 تقييم)</span>
-				<span class="text-stone-300 select-none">|</span>
-				<span class="font-display text-2xl sm:text-3xl font-black text-[#073824]">{PRODUCT_CONFIG.bundles[0].price} درهم</span>
-				<span class="text-sm text-stone-400 line-through font-bold">{PRODUCT_CONFIG.bundles[0].oldPrice} درهم</span>
-				<span class="bg-[#C99738] text-white text-[11px] sm:text-xs font-black px-2 py-0.5 rounded-md shadow-2xs">
-					{PRODUCT_CONFIG.bundles[0].saving}
-				</span>
 			</div>
 
 			<!-- 3 Ultra-Short Icon Badges (Max 4 words each) -->
@@ -870,23 +864,23 @@
 	<!-- 10. DYNAMIC STICKY MOBILE BOTTOM CTA BAR                          -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	{#if isStickyCtaVisible}
-		<div class="fixed bottom-0 inset-x-0 z-50 p-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-2xl sm:hidden" dir="rtl">
-			<div class="flex items-center justify-between gap-2.5 max-w-md mx-auto">
-				<div class="text-right">
-					<span class="block text-[10px] font-bold text-stone-500">المجموع النهائي:</span>
-					<div class="flex items-baseline gap-1">
-						<span class="font-display text-base font-black text-[#073824]">{selectedBundle.price} DH</span>
-						<span class="text-[10px] text-stone-400 line-through font-bold">{selectedBundle.oldPrice} DH</span>
-					</div>
-				</div>
+		<div
+			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2.5 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
+			style="padding-bottom: max(0.625rem, env(safe-area-inset-bottom, 0.625rem));"
+			dir="rtl"
+		>
+			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="flex-1 h-[44px] min-h-[44px] py-2 px-3 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-xs shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+					class="w-full h-[48px] min-h-[48px] py-2 px-4 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] text-white font-black text-sm sm:text-base shadow-lg shadow-orange-950/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
 				>
-					<span>🚚</span>
-					<span>اطلب الآن • {selectedBundle.price} درهم</span>
+					<span>اطلب الآن 🚚</span>
 				</button>
+				<p class="text-center text-[11px] font-extrabold text-stone-600 flex items-center justify-center gap-1 leading-tight">
+					<span>🔒</span>
+					<span>التوصيل بالمجان والدفع عند الاستلام</span>
+				</p>
 			</div>
 		</div>
 	{/if}
