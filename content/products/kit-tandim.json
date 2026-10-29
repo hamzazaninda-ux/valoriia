@@ -104,22 +104,22 @@
           "id": 1,
           "title": "قطعة واحدة + رشاش هدية مجانية 🎁",
           "subtitle": "توصيل مجاني لجميع المدن",
-          "price": 229,
-          "originalPrice": 299,
+          "price": 279,
+          "originalPrice": 399,
           "quantity": 1,
           "badge": null,
-          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png",
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg",
           "isPopular": false
         },
         {
           "id": 2,
           "title": "قطعتان + رشاشان هدية مجانية 🎁",
           "subtitle": "توصيل مجاني لجميع المدن",
-          "price": 349,
-          "originalPrice": 458,
+          "price": 449,
+          "originalPrice": 699,
           "quantity": 2,
-          "badge": "الأكثر طلباً ⭐",
-          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png",
+          "badge": "🔥 العرض الأوفر والأكثر طلباً",
+          "image": "https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg",
           "isPopular": true
         }
       ]

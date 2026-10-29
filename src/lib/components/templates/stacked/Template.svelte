@@ -27,22 +27,24 @@
 			id: 1,
 			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 229,
-			originalPrice: 299,
+			price: 279,
+			originalPrice: 399,
 			quantity: 1,
 			badge: null,
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png',
+			image:
+				'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
 			isPopular: false
 		},
 		{
 			id: 2,
 			title: 'قطعتان + رشاشان هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 349,
-			originalPrice: 458,
+			price: 449,
+			originalPrice: 699,
 			quantity: 2,
-			badge: 'الأكثر طلباً 🔥',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png',
+			badge: '🔥 العرض الأوفر والأكثر طلباً',
+			image:
+				'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
 			isPopular: true
 		}
 	];
@@ -132,6 +134,13 @@
 
 	let customerName = $state('');
 	let customerPhone = $state('');
+	let fullName = $state('');
+	let phone = $state('');
+	let selectedTier = $state({
+		id: 'tier1',
+		price: 279,
+		title: 'قطعة واحدة + رشاش هدية'
+	});
 	let nameBlurredInvalid = $state(false);
 	let phoneBlurredInvalid = $state(false);
 	let submitAttempted = $state(false);
@@ -442,8 +451,8 @@
 		return match ? `0${match[1]}` : stripped;
 	}
 
-	const isNameValid = $derived(validateFullName(customerName));
-	const isPhoneValid = $derived(validateMoroccanPhone(customerPhone));
+	const isNameValid = $derived(validateFullName(fullName || customerName));
+	const isPhoneValid = $derived(validateMoroccanPhone(phone || customerPhone));
 
 	$effect(() => {
 		if (isNameValid) {
@@ -523,24 +532,26 @@
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
 		submittedOrderId = orderId;
 
-		const rawPrice = activeOffer?.price || 229;
-		const cleanPrice = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 229;
-		const quantity = Number(activeOffer?.quantity || (currentPackId === 2 ? 2 : 1));
+		const activeFullName = (fullName || customerName).trim();
+		const normalizedPhone = normalizeMoroccanPhone(phone || customerPhone);
+		fullName = activeFullName;
+		phone = normalizedPhone;
+		customerName = activeFullName;
+		customerPhone = normalizedPhone;
 
+		const cleanPrice = selectedTier?.price || (currentPackId === 2 ? 449 : 279);
+		const quantity = Number(selectedTier?.id === 'tier2' || currentPackId === 2 ? 2 : 1);
 		const offerSku =
-			activeOffer?.title ||
-			(currentPackId === 2 ? 'قطعتان + رشاشان هدية مجانية 🎁' : 'قطعة واحدة + رشاش هدية مجانية 🎁') ||
-			'العرض المختار';
+			selectedTier?.title ||
+			(quantity === 2 ? 'قطعتان + 2 رشاشات هدية 🎁🎁' : 'قطعة واحدة + رشاش هدية 🎁');
 		const productTitleStr = (
 			content?.title ||
 			(product as any)?.title ||
 			offerSku ||
-			'طقم التنظيم المنزلي'
+			'طقم تنظيم الحمام الذكي'
 		).trim();
 		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const normalizedPhone = normalizeMoroccanPhone(customerPhone);
-		customerPhone = normalizedPhone;
-		const city_address = '';
+		const city_address = 'المغرب (سيتم التأكيد هاتفياً)';
 
 		pendingOrder = {
 			orderId,
@@ -563,7 +574,7 @@
 		e?.preventDefault();
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(activeOffer?.price || 229);
+				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 449 : 279));
 				const itemName = (product as any)?.title || content?.title || 'طقم تنظيم الحمام الذكي';
 
 				(window as any).gtag('event', 'add_to_cart', {
@@ -574,7 +585,7 @@
 							item_id: (product as any)?.id || 'kit-tandim',
 							item_name: itemName,
 							price: itemPrice,
-							quantity: 1
+							quantity: selectedTier?.id === 'tier2' || currentPackId === 2 ? 2 : 1
 						}
 					]
 				});
@@ -583,77 +594,14 @@
 
 		if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-		const targetEl = document.getElementById('offers') || document.getElementById('order-form');
-		if (!targetEl) return;
-
-		// Re-measure live at tap time (handles rotation, address bar collapse/expand, dynamic font scale)
-		const stickyBar = document.getElementById('top-announcement-bar');
-		const stickyHeight = stickyBar ? Math.ceil(stickyBar.getBoundingClientRect().height) : 0;
-
-		const vv = window.visualViewport;
-		const viewportHeight =
-			vv && vv.height > 0
-				? vv.height
-				: window.innerHeight || document.documentElement.clientHeight || 640;
-		const viewportOffsetTop = vv && typeof vv.offsetTop === 'number' ? vv.offsetTop : 0;
-
-		const currentScrollY =
-			window.scrollY !== undefined
-				? window.scrollY
-				: window.pageYOffset || document.documentElement.scrollTop || 0;
-
-		const blockRect = targetEl.getBoundingClientRect();
-		const submitBtn = targetEl.querySelector('button[type="submit"]') as HTMLElement | null;
-
-		const topSpace = stickyHeight + 8;
-		let desiredScrollY = currentScrollY + blockRect.top - viewportOffsetTop - topSpace;
-
-		const distanceHeadingToSubmitBottom = submitBtn
-			? submitBtn.getBoundingClientRect().bottom - blockRect.top
-			: blockRect.height;
-		const availableHeight = viewportHeight - topSpace;
-
-		// If taller than visible area, try to show submit button with 12px bottom margin without ever hiding heading
-		if (
-			blockRect.height > availableHeight ||
-			distanceHeadingToSubmitBottom + 12 > availableHeight
-		) {
-			const alignSubmitBottomY =
-				currentScrollY +
-				blockRect.top -
-				viewportOffsetTop +
-				distanceHeadingToSubmitBottom -
-				(viewportHeight - 12);
-			const maxScrollWithoutHidingHeading =
-				currentScrollY + blockRect.top - viewportOffsetTop - stickyHeight;
-
-			if (alignSubmitBottomY > desiredScrollY) {
-				desiredScrollY = Math.min(alignSubmitBottomY, maxScrollWithoutHidingHeading);
-			}
+		const targetEl = document.getElementById('order-form');
+		if (targetEl) {
+			targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
+	}
 
-		const docEl = document.documentElement;
-		const maxScrollY = Math.max(0, (docEl.scrollHeight || document.body.scrollHeight) - viewportHeight);
-		const finalScrollY = Math.max(0, Math.min(Math.round(desiredScrollY), Math.ceil(maxScrollY)));
-
-		let prefersReducedMotion = false;
-		try {
-			prefersReducedMotion =
-				typeof window.matchMedia === 'function' &&
-				window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		} catch {}
-
-		const supportsSmooth = 'scrollBehavior' in docEl.style;
-
-		try {
-			if (!prefersReducedMotion && supportsSmooth) {
-				window.scrollTo({ top: finalScrollY, left: 0, behavior: 'smooth' });
-			} else {
-				window.scrollTo(0, finalScrollY);
-			}
-		} catch {
-			window.scrollTo(0, finalScrollY);
-		}
+	function handleSubmitOrder(event?: Event) {
+		handleDirectCheckout(event);
 	}
 
 	onMount(() => {
@@ -759,146 +707,175 @@
 		</div>
 	</header>
 
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 2. COD ORDER FORM (مباشرة تحت الهيرو - مكانها الثابت)           -->
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="order-section-outer" dir="rtl">
-		<div
-			id="offers"
-			data-section="offers"
-			class="order-block-card"
-		>
-			<div class="order-block-header">
-				<h2 class="font-display order-block-title">
-					أكمل طلبك الآن
-				</h2>
-				<p class="order-block-subtitle">
-					الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني
-				</p>
-			</div>
+	<!-- =================================================== -->
+	<!-- COD CHECKOUT & STREAMLINED OFFERS SECTION -->
+	<!-- =================================================== -->
+	<section id="order-form" class="scroll-mt-12 sm:scroll-mt-14 w-full max-w-md mx-auto px-3 my-6" dir="rtl">
+		<div class="bg-[#0B3B24] rounded-t-3xl pt-5 pb-3 px-4 text-center text-white">
+			<h2 class="text-xl sm:text-2xl font-black mb-1">أكمل طلبك الآن</h2>
+			<p class="text-xs text-emerald-200 font-medium">الدفع عند الاستلام بعد المعاينة، والتوصيل فابور 🚚</p>
+		</div>
 
-			<div class="order-block-body">
-				<!-- Bundle Selectors (1 Piece: 229 MAD pre-selected vs 2 Pieces: 349 MAD) -->
-				<div class="order-tiers-divider">
-					<OfferTiers
-						offers={offersList}
-						selectedId={currentPackId}
-						onSelect={(offer) => {
-							selectedPack = offer.id;
-							try {
-								if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-									(window as any).gtag('event', 'select_item', {
-										item_list_name: 'Offer Tiers',
-										items: [
-											{
-												item_id: String(offer.id),
-												item_name: offer.title || 'عرض خاص',
-												price: offer.price || 229
-											}
-										]
-									});
-								}
-							} catch {}
-						}}
-					/>
+		<div class="bg-white rounded-b-3xl p-4 sm:p-5 shadow-xl border border-emerald-900/10 space-y-3">
+			<!-- ==================== OFFER 1 (TIER 1) ==================== -->
+			<div
+				onclick={() => {
+					selectedTier = { id: 'tier1', price: 279, title: 'قطعة واحدة + رشاش هدية' };
+					selectedPack = 1;
+				}}
+				class="relative cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex items-center justify-between gap-2.5 {selectedTier?.id === 'tier1' ? 'border-[#0B5E3C] bg-emerald-50/40 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}"
+			>
+				<!-- RIGHT: Radio Selection Circle -->
+				<div class="flex items-center justify-center shrink-0">
+					<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center {selectedTier?.id === 'tier1' ? 'border-[#0B5E3C] bg-[#0B5E3C] text-white' : 'border-gray-300 bg-white'}">
+						{#if selectedTier?.id === 'tier1'}
+							<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+								<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+							</svg>
+						{/if}
+					</div>
 				</div>
 
-				<!-- Direct COD Form: Name & Phone Number Only -->
-				<form onsubmit={handleDirectCheckout} novalidate class="cod-form-stack" dir="rtl">
-					<h3 class="cod-form-heading">
-						معلومات التوصيل
-					</h3>
-
-					<!-- Field 1: Name -->
-					<div class="cod-field-group">
-						<label for="order-fullName" class="cod-field-label">
-							الاسم
-						</label>
-						<input
-							id="order-fullName"
-							type="text"
-							bind:value={customerName}
-							onblur={(e) => {
-								const raw = (e.currentTarget as HTMLInputElement).value;
-								if (raw.trim().length > 0 && !validateFullName(raw)) {
-									nameBlurredInvalid = true;
-								}
-							}}
-							placeholder="اكتب اسمك"
-							autocomplete="name"
-							autocapitalize="words"
-							aria-invalid={showNameError}
-							required
-							class="cod-input cod-name-input {showNameError ? 'is-invalid' : ''}"
-						/>
-						<div class="cod-error-slot cod-error-slot--between" aria-live="polite">
-							{#if showNameError}
-								<p class="cod-inline-error" role="alert">
-									المرجو إدخال الاسم (حرفان على الأقل)
-								</p>
-							{/if}
-						</div>
+				<!-- CENTER: Concise Offer Text + Product Thumbnail -->
+				<div class="flex items-center gap-2.5 flex-1 min-w-0">
+					<img
+						src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg"
+						alt="1 قطعة"
+						class="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
+					/>
+					<div class="text-right truncate">
+						<div class="font-black text-gray-900 text-sm leading-tight">1 قطعة + رشاش هدية 🎁</div>
+						<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1">
+							وفر 120 درهم
+						</span>
 					</div>
+				</div>
 
-					<!-- Field 2: Phone Number (WhatsApp) — LTR digits aligned RIGHT for RTL page -->
-					<div class="cod-field-group">
-						<label for="order-phone" class="cod-field-label">
-							رقم الهاتف (واتساب)
-						</label>
-						<input
-							id="order-phone"
-							type="tel"
-							inputmode="numeric"
-							dir="ltr"
-							bind:value={customerPhone}
-							onblur={(e) => {
-								const raw = (e.currentTarget as HTMLInputElement).value;
-								if (raw.trim().length > 0 && !validateMoroccanPhone(raw)) {
-									phoneBlurredInvalid = true;
-								}
-							}}
-							placeholder="06XXXXXXXX"
-							autocomplete="tel"
-							aria-invalid={showPhoneError}
-							required
-							class="cod-input cod-phone-input {showPhoneError ? 'is-invalid' : ''}"
-						/>
-						<div class="cod-error-slot cod-error-slot--before-btn" aria-live="polite">
-							{#if showPhoneError}
-								<p class="cod-inline-error" role="alert">
-									المرجو إدخال رقم هاتف مغربي صحيح (مثال: <bdi>0612345678</bdi>)
-								</p>
-							{/if}
-						</div>
-					</div>
-
-					{#if formError}
-						<div class="cod-submit-alert" role="alert">
-							<span>{formError}</span>
-						</div>
-					{/if}
-
-					<!-- Main Submit Button (CTA Orange #F28C28) + Merged Reassurance Line -->
-					<div class="cod-submit-wrap">
-						<button
-							type="submit"
-							disabled={isSubmitting || isSubmittingFinal}
-							class="cta-wiggle cod-submit-btn"
-						>
-							{#if isSubmitting || isSubmittingFinal}
-								<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-								<span>جاري الإرسال...</span>
-							{:else}
-								<span>تأكيد الطلب • {activeOffer.price} درهم</span>
-							{/if}
-						</button>
-
-						<p class="cod-merged-footer">
-							سيتصل بك الموزع لتأكيد طلبك • 🔒 معلوماتك محمية
-						</p>
-					</div>
-				</form>
+				<!-- LEFT: Clean Price -->
+				<div class="text-left shrink-0">
+					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">279 درهم</div>
+					<div class="text-[11px] text-gray-400 line-through mt-0.5">399 درهم</div>
+				</div>
 			</div>
+
+			<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
+			<div
+				onclick={() => {
+					selectedTier = { id: 'tier2', price: 449, title: 'قطعتان + 2 رشاشات هدية' };
+					selectedPack = 2;
+				}}
+				class="relative cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex items-center justify-between gap-2.5 mt-2 {selectedTier?.id === 'tier2' ? 'border-[#0B5E3C] bg-emerald-50/40 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}"
+			>
+				<!-- Top Saving Badge -->
+				<span class="absolute -top-2.5 right-4 bg-amber-500 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full shadow-sm">
+					🔥 العرض الأوفر والأكثر طلباً
+				</span>
+
+				<!-- RIGHT: Radio Selection Circle -->
+				<div class="flex items-center justify-center shrink-0">
+					<div class="w-6 h-6 rounded-full border-2 flex items-center justify-center {selectedTier?.id === 'tier2' ? 'border-[#0B5E3C] bg-[#0B5E3C] text-white' : 'border-gray-300 bg-white'}">
+						{#if selectedTier?.id === 'tier2'}
+							<svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+								<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+							</svg>
+						{/if}
+					</div>
+				</div>
+
+				<!-- CENTER: Concise Offer Text + Product Thumbnail -->
+				<div class="flex items-center gap-2.5 flex-1 min-w-0">
+					<img
+						src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg"
+						alt="2 قطع"
+						class="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
+					/>
+					<div class="text-right truncate">
+						<div class="font-black text-gray-900 text-sm leading-tight">2 قطع + 2 رشاشات 🎁🎁</div>
+						<span class="inline-block bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1">
+							وفر 250 درهم (224 د/قطعة)
+						</span>
+					</div>
+				</div>
+
+				<!-- LEFT: Clean Price -->
+				<div class="text-left shrink-0">
+					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">449 درهم</div>
+					<div class="text-[11px] text-gray-400 line-through mt-0.5">699 درهم</div>
+				</div>
+			</div>
+
+			<!-- ==================== FORM INPUTS (ONLY NAME & PHONE) ==================== -->
+			<form onsubmit={handleDirectCheckout} novalidate class="pt-3 border-t border-gray-100 space-y-3 text-right">
+				<h3 class="font-bold text-gray-800 text-sm">معلومات الاستلام</h3>
+
+				<!-- 1. Full Name -->
+				<div>
+					<label for="order-fullName" class="block text-xs font-bold text-gray-700 mb-1">الاسم الكامل *</label>
+					<input
+						id="order-fullName"
+						type="text"
+						bind:value={fullName}
+						onblur={() => {
+							if (fullName.trim().length > 0 && !validateFullName(fullName)) {
+								nameBlurredInvalid = true;
+							}
+						}}
+						required
+						placeholder="اكتب اسمك هنا"
+						class="w-full px-3.5 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:border-[#0B5E3C] focus:ring-1 focus:ring-[#0B5E3C] {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+					/>
+					{#if showNameError}
+						<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال الاسم (حرفان على الأقل).</p>
+					{/if}
+				</div>
+
+				<!-- 2. Phone Number -->
+				<div>
+					<label for="order-phone" class="block text-xs font-bold text-gray-700 mb-1">رقم الهاتف (واتساب) *</label>
+					<input
+						id="order-phone"
+						type="tel"
+						bind:value={phone}
+						onblur={() => {
+							if (phone.trim().length > 0 && !validateMoroccanPhone(phone)) {
+								phoneBlurredInvalid = true;
+							}
+						}}
+						required
+						dir="ltr"
+						placeholder="06XXXXXXXX أو 07XXXXXXXX"
+						class="w-full px-3.5 py-3 rounded-xl border border-gray-300 text-sm text-right focus:outline-none focus:border-[#0B5E3C] focus:ring-1 focus:ring-[#0B5E3C] {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+					/>
+					{#if showPhoneError}
+						<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
+					{/if}
+				</div>
+
+				{#if formError}
+					<div class="rounded-xl bg-red-50 border border-red-200 p-2 text-xs text-red-700 font-bold text-center">
+						{formError}
+					</div>
+				{/if}
+
+				<!-- Submit CTA Button -->
+				<button
+					type="submit"
+					disabled={isSubmitting || isSubmittingFinal}
+					class="w-full mt-2 py-3.5 px-4 bg-[#D95D0F] hover:bg-[#C24F08] active:scale-[0.99] transition text-white font-black text-base rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+				>
+					{#if isSubmitting || isSubmittingFinal}
+						<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+						<span>جاري الإرسال...</span>
+					{:else}
+						<span>🚚 تأكيد الطلب الآن • {selectedTier?.price || 279} درهم</span>
+					{/if}
+				</button>
+
+				<!-- Trust Assurance Note -->
+				<p class="text-[11px] text-gray-500 text-center font-medium pt-1">
+					🔒 الدفع عند الاستلام بعد المعاينة • توصيل مجاني وسريع لجميع المدن المغربية
+				</p>
+			</form>
 		</div>
 	</section>
 
@@ -1246,9 +1223,9 @@
 			<button
 				type="button"
 				onclick={scrollToOrderForm}
-				class="cta-wiggle sticky-cta-btn w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#15803D] hover:bg-[#166534] rounded-2xl shadow-2xl shadow-emerald-950/30 active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
+				class="cta-wiggle sticky-cta-btn w-full max-w-xl mx-auto flex min-h-[52px] items-center justify-center gap-2 py-3 px-4 text-sm sm:text-base font-black text-white bg-[#D95D0F] hover:bg-[#C24F08] rounded-2xl shadow-2xl active:scale-[0.98] transition-all duration-200 pointer-events-auto cursor-pointer text-center"
 			>
-				<span>أطلب الآن • الدفع عند الاستلام</span>
+				<span>🚚 اطلب الآن • {selectedTier?.price || 279} درهم</span>
 				<svg
 					aria-hidden="true"
 					class="h-4 w-4 shrink-0 transition-transform duration-300 {isFormAbove ? 'rotate-180' : ''}"
