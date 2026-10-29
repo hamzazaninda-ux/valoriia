@@ -27,8 +27,8 @@
 			id: 1,
 			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 279,
-			originalPrice: 399,
+			price: 229,
+			originalPrice: 299,
 			quantity: 1,
 			badge: null,
 			image:
@@ -39,8 +39,8 @@
 			id: 2,
 			title: 'قطعتان + رشاشان هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 449,
-			originalPrice: 699,
+			price: 349,
+			originalPrice: 458,
 			quantity: 2,
 			badge: '🔥 العرض الأوفر والأكثر طلباً',
 			image:
@@ -138,8 +138,8 @@
 	let phone = $state('');
 	let selectedTier = $state({
 		id: 'tier1',
-		price: 279,
-		title: 'قطعة واحدة + رشاش هدية'
+		price: 229,
+		title: '1 قطعة + رشاشة هدية'
 	});
 	let nameBlurredInvalid = $state(false);
 	let phoneBlurredInvalid = $state(false);
@@ -169,10 +169,10 @@
 	const productReviewCount = $derived(content?.reviewCount || (product as any)?.reviewCount);
 
 	const heroCurrentPrice = $derived(
-		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 279
+		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 229
 	);
 	const heroOldPrice = $derived(
-		activeOffer?.originalPrice || pricing?.originalPrice || defaultOffers[0].originalPrice || 399
+		activeOffer?.originalPrice || pricing?.originalPrice || defaultOffers[0].originalPrice || 299
 	);
 	const discountPercent = $derived(
 		heroOldPrice && heroCurrentPrice && heroOldPrice > heroCurrentPrice
@@ -651,7 +651,7 @@
 		customerName = activeFullName;
 		customerPhone = normalizedPhone;
 
-		const cleanPrice = selectedTier?.price || (currentPackId === 2 ? 449 : 279);
+		const cleanPrice = selectedTier?.price || (currentPackId === 2 ? 349 : 229);
 		const quantity = Number(selectedTier?.id === 'tier2' || currentPackId === 2 ? 2 : 1);
 		const offerSku =
 			selectedTier?.title ||
@@ -715,7 +715,7 @@
 		e?.preventDefault();
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 449 : 279));
+				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 349 : 229));
 				const itemName = (product as any)?.title || content?.title || 'طقم تنظيم الحمام الذكي';
 
 				(window as any).gtag('event', 'add_to_cart', {
@@ -841,7 +841,7 @@
 			<!-- ==================== OFFER 1 (TIER 1) ==================== -->
 			<div
 				onclick={() => {
-					selectedTier = { id: 'tier1', price: 279, title: 'قطعة واحدة + رشاش هدية' };
+					selectedTier = { id: 'tier1', price: 229, title: '1 قطعة + رشاشة هدية' };
 					selectedPack = 1;
 				}}
 				class="relative cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex items-center justify-between gap-2.5 {selectedTier?.id === 'tier1' ? 'border-[#0B5E3C] bg-emerald-50/40 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}"
@@ -865,24 +865,24 @@
 						class="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
 					/>
 					<div class="text-right truncate">
-						<div class="font-black text-gray-900 text-sm leading-tight">1 قطعة + رشاش هدية 🎁</div>
+						<div class="font-black text-gray-900 text-sm leading-tight">1 قطعة + رشاشة هدية 🎁</div>
 						<span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1">
-							وفر 120 درهم
+							وفر 70 درهم
 						</span>
 					</div>
 				</div>
 
 				<!-- LEFT: Clean Price -->
 				<div class="text-left shrink-0">
-					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">279 درهم</div>
-					<div class="text-[11px] text-gray-400 line-through mt-0.5">399 درهم</div>
+					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">229 درهم</div>
+					<div class="text-[11px] text-gray-400 line-through mt-0.5">299 درهم</div>
 				</div>
 			</div>
 
 			<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
 			<div
 				onclick={() => {
-					selectedTier = { id: 'tier2', price: 449, title: 'قطعتان + 2 رشاشات هدية' };
+					selectedTier = { id: 'tier2', price: 349, title: '2 قطع + 2 رشاشات هدية' };
 					selectedPack = 2;
 				}}
 				class="relative cursor-pointer rounded-2xl p-3.5 border-2 transition-all flex items-center justify-between gap-2.5 mt-2 {selectedTier?.id === 'tier2' ? 'border-[#0B5E3C] bg-emerald-50/40 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}"
@@ -911,17 +911,17 @@
 						class="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
 					/>
 					<div class="text-right truncate">
-						<div class="font-black text-gray-900 text-sm leading-tight">2 قطع + 2 رشاشات 🎁🎁</div>
+						<div class="font-black text-gray-900 text-sm leading-tight">2 قطع + 2 رشاشات هدية 🎁🎁</div>
 						<span class="inline-block bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1">
-							وفر 250 درهم (224 د/قطعة)
+							وفر 109 درهم (فقط 174 درهم للقطعة)
 						</span>
 					</div>
 				</div>
 
 				<!-- LEFT: Clean Price -->
 				<div class="text-left shrink-0">
-					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">449 درهم</div>
-					<div class="text-[11px] text-gray-400 line-through mt-0.5">699 درهم</div>
+					<div class="font-black text-base sm:text-lg text-[#0B5E3C] leading-none">349 درهم</div>
+					<div class="text-[11px] text-gray-400 line-through mt-0.5">458 درهم</div>
 				</div>
 			</div>
 
@@ -988,7 +988,7 @@
 						<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
 						<span>جاري الإرسال...</span>
 					{:else}
-						<span>🚚 تأكيد الطلب الآن • {selectedTier?.price || 279} درهم</span>
+						<span>🚚 تأكيد الطلب الآن • {selectedTier?.price || 229} درهم</span>
 					{/if}
 				</button>
 

@@ -14,14 +14,14 @@
 						content_type: 'product',
 						content_name: 'منظم الحمام الزاوي 4 رفوف',
 						quantity: 1,
-						price: 279,
-						value: 279,
+						price: 229,
+						value: 229,
 						currency: 'MAD'
 					});
 					console.log('TikTok Event Fired: ViewContent', {
 						content_id: 'kit-tandim',
 						content_name: 'منظم الحمام الزاوي 4 رفوف',
-						value: 279,
+						value: 229,
 						currency: 'MAD'
 					});
 					return true;
