@@ -15,6 +15,7 @@
 		price: number;
 		oldPrice: number;
 		saving: string;
+		perPiece?: string;
 		image: string;
 		badge: string | null;
 	}
@@ -380,14 +381,14 @@
 
 			<!-- 2. Body -->
 			<div class="p-2 sm:p-2.5 space-y-2">
-				<!-- 2 Offer Cards in a 2-column grid on ALL screen sizes -->
-				<div class="grid grid-cols-2 gap-2 items-stretch" role="radiogroup" aria-label="اختر العرض">
+				<!-- Offer Cards: Full-Width Horizontal Rows (all screen sizes) -->
+				<div class="flex flex-col gap-2 sm:gap-2.5" role="radiogroup" aria-label="اختر العرض">
 					{#each PRODUCT_CONFIG.bundles as b}
 						{@const isSelected = selectedBundleId === b.id}
 						<label
-							class="relative flex flex-col items-center justify-between p-2 rounded-xl transition-all duration-150 cursor-pointer select-none text-center h-full {isSelected
-								? 'border-2 border-[#0B3D24] bg-[#E6F4EC] shadow-xs'
-								: 'border border-stone-200 bg-white hover:border-stone-300'}"
+							class="relative flex items-center justify-between p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-150 cursor-pointer select-none {isSelected
+								? 'border-2 border-[#1F5C4A] bg-[#EAF5EF] shadow-xs'
+								: 'border border-[#D9D4C7] bg-white hover:border-[#1F5C4A]/40'}"
 						>
 							<input
 								type="radio"
@@ -399,79 +400,88 @@
 							/>
 
 							{#if b.badge}
-								<!-- Ribbon on top of card 2: "الأكثر طلبًا" -->
+								<!-- Top Ribbon / Pill (e.g. "الأوفر") -->
 								<span
-									class="absolute -top-2.5 inset-x-0 mx-auto w-fit z-10 bg-[#0B3D24] text-[#C99738] border border-[#C99738]/50 text-[10px] sm:text-[10.5px] font-black px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap leading-tight"
+									class="absolute -top-2 start-4 bg-[#1F5C4A] text-white font-bold text-[10.5px] sm:text-[11px] px-2.5 py-0.5 rounded-full shadow-sm z-10 leading-none whitespace-nowrap"
 								>
 									{b.badge}
 								</span>
 							{/if}
 
-							<!-- Top Corner Radio Button (top-start in RTL = top-right) -->
-							<div class="w-full flex justify-start mb-0.5">
+							<!-- Right Side (RTL): Radio + Thumbnail + Content -->
+							<div class="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+								<!-- 1. Custom Accessible Radio Check Circle -->
 								<div
-									class="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all {isSelected
-										? 'bg-[#0B3D24] text-white shadow-2xs'
-										: 'border border-stone-300 bg-white'}"
+									class="w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {isSelected
+										? 'border-[#1F5C4A] bg-[#1F5C4A] text-white'
+										: 'border-[#B8B2A6] bg-white'}"
 								>
 									{#if isSelected}
 										<svg
-											class="w-2.5 h-2.5 sm:w-3 sm:h-3"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="3.5"
+											class="w-3 h-3 sm:w-3.5 sm:h-3.5"
+											viewBox="0 0 20 20"
+											fill="currentColor"
 											aria-hidden="true"
 										>
-											<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+											<path
+												fill-rule="evenodd"
+												d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+												clip-rule="evenodd"
+											/>
 										</svg>
 									{/if}
 								</div>
+
+								<!-- 2. Product Thumbnail -->
+								<div class="relative w-11 h-11 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 flex items-center justify-center">
+									<img
+										src={b.image}
+										alt={b.title}
+										width="48"
+										height="48"
+										loading="lazy"
+										decoding="async"
+										class="w-full h-full object-cover rounded-lg"
+									/>
+									{#if b.qty > 1}
+										<span class="absolute bottom-0 end-0 bg-[#1F5C4A] text-white text-[9px] font-black px-1 rounded-tl leading-none">
+											2×
+										</span>
+									{/if}
+								</div>
+
+								<!-- 3. Title & Savings Column -->
+								<div class="min-w-0 text-right flex-1">
+									<div class="text-[13px] sm:text-[14.5px] font-bold text-stone-900 leading-snug">
+										<span>{b.title} + {b.giftText}</span>
+									</div>
+
+									<div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+										<span
+											class="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] sm:text-[11.5px] font-bold leading-tight {isSelected
+												? 'bg-white text-[#1F5C4A] border border-[#1F5C4A]/25'
+												: 'bg-[#E3F0EA] text-[#1F5C4A]'}"
+										>
+											{b.saving}
+										</span>
+										{#if b.perPiece}
+											<span class="text-[11px] sm:text-[12px] font-medium text-[#1F5C4A] leading-tight">
+												{b.perPiece}
+											</span>
+										{/if}
+									</div>
+								</div>
 							</div>
 
-							<!-- Thumbnail 52x52px, radius 10px -->
-							<div class="relative w-[52px] h-[52px] rounded-[10px] overflow-hidden bg-white border border-stone-200 p-0.5 shadow-2xs mb-1 shrink-0 flex items-center justify-center">
-								<img
-									src={b.image}
-									alt={b.title}
-									width="52"
-									height="52"
-									loading="lazy"
-									decoding="async"
-									class="w-full h-full object-cover rounded-[8px]"
-								/>
-								{#if b.qty > 1}
-									<!-- Small "2×" badge on bottom corner of image 2 -->
-									<span class="absolute bottom-0 end-0 bg-[#0B3D24] text-[#C99738] text-[9.5px] font-black px-1 rounded-tl-md leading-tight">
-										2×
-									</span>
-								{/if}
-							</div>
-
-							<!-- Title -->
-							<h3 class="text-[14px] sm:text-[15px] font-black text-stone-900 leading-tight m-0">
-								{b.title}
-							</h3>
-
-							<!-- Gift line with small gift icon -->
-							<p class="text-[10.5px] sm:text-[11px] font-bold text-amber-700 leading-tight mt-0.5 m-0 whitespace-nowrap">
-								🎁 {b.giftText}
-							</p>
-
-							<!-- Price row -->
-							<div class="my-0.5 leading-tight text-center">
-								<span class="text-[18px] sm:text-[21px] font-black text-[#0B3D24] block leading-tight">
-									{b.price} <span class="text-[12px] font-bold">درهم</span>
-								</span>
-								<span class="text-[10.5px] sm:text-[11px] text-stone-400 line-through font-bold block leading-tight">
+							<!-- Left Side (RTL): Price Block -->
+							<div class="shrink-0 text-left flex flex-col items-end justify-center ps-2">
+								<div class="text-[18px] sm:text-[22px] font-black text-[#1F5C4A] leading-none whitespace-nowrap">
+									{b.price} <span class="text-[12px] sm:text-[13px] font-bold">درهم</span>
+								</div>
+								<div class="text-[11px] sm:text-[12px] text-stone-400 line-through font-bold mt-1 leading-none whitespace-nowrap">
 									{b.oldPrice} درهم
-								</span>
+								</div>
 							</div>
-
-							<!-- Savings badge -->
-							<span class="inline-block bg-[#D4EDDA] text-[#0B3D24] text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full mt-0.5 whitespace-nowrap leading-tight">
-								{b.saving}
-							</span>
 						</label>
 					{/each}
 				</div>
