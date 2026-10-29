@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const sheetsSynced = sheetsResult.status === 'fulfilled' && sheetsResult.value.ok;
 
-    return json({ success: true, order, sheetsSynced }, { status: 201 });
+    return json({ success: true, orderId, order, sheetsSynced }, { status: 200 });
   } catch (err) {
     console.error('[API /api/orders POST] Error creating order:', err);
     return json({ error: 'حدث خطأ أثناء حفظ الطلب' }, { status: 500 });

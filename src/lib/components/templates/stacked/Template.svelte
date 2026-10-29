@@ -638,106 +638,148 @@
 		}
 	}
 
-	function handleDirectCheckout(event?: Event) {
+	async function handleSubmitOrder(event?: Event) {
 		event?.preventDefault();
+		if (isSubmitting || isSubmittingFinal) return;
 
-		if (isSubmitting || isSubmittingFinal || showDrainUpsell) return;
+		// 1. Validation
+		const trimmedName = (fullName || customerName || "").trim();
+		const rawPhone = (phone || customerPhone || "").replace(/\D/g, "");
 
-		if (
-			submittedOrderId &&
-			typeof window !== 'undefined' &&
-			sessionStorage.getItem(`order_sent_${submittedOrderId}`)
-		) {
-			window.location.href = `/thank-you?orderId=${submittedOrderId}`;
-			return;
-		}
-
-		formError = '';
-		submitAttempted = true;
-
-		if (!validateFullName(customerName)) {
+		if (!trimmedName) {
+			alert("يرجى إدخال الاسم الكامل");
 			nameBlurredInvalid = true;
-			scrollAndFocusInvalid('order-fullName');
+			scrollAndFocusInvalid("order-fullName");
 			return;
 		}
 
-		if (!validateMoroccanPhone(customerPhone)) {
+		if (rawPhone.length < 9) {
+			alert("يرجى إدخال رقم هاتف صحيح");
 			phoneBlurredInvalid = true;
-			scrollAndFocusInvalid('order-phone');
+			scrollAndFocusInvalid("order-phone");
 			return;
+		}
+
+		// Moroccan International Phone Formatting (+212)
+		let cleanPhone = rawPhone;
+		if (cleanPhone.startsWith("0")) cleanPhone = "212" + cleanPhone.substring(1);
+		if (!cleanPhone.startsWith("212")) cleanPhone = "212" + cleanPhone;
+		const internationalPhone = "+" + cleanPhone;
+
+		const currentTier = selectedTier || { id: "tier1", price: 229, title: "قطعة واحدة + رشاش هدية" };
+		const orderPrice = Number(currentTier.price || 229);
+		const quantity = Number(currentTier.id === "tier2" || currentPackId === 2 ? 2 : 1);
+		const bundleTitle = currentTier.title || (quantity === 2 ? "قطعتان + 2 رشاشات هدية 🎁🎁" : "قطعة واحدة + رشاش هدية 🎁");
+
+		// 2. Safe InitiateCheckout Pixel Call (Non-blocking)
+		try {
+			if (typeof window !== "undefined" && (window as any).ttq) {
+				(window as any).ttq.identify({ phone_number: internationalPhone });
+				(window as any).ttq.track("InitiateCheckout", {
+					content_id: "kit-tandim",
+					content_type: "product",
+					content_name: "باك الحمام الذكي",
+					quantity,
+					value: orderPrice,
+					currency: "MAD"
+				});
+			}
+		} catch (err) {
+			console.warn("InitiateCheckout tracking non-fatal error:", err);
 		}
 
 		isSubmitting = true;
+		formError = "";
 
-		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-		submittedOrderId = orderId;
+		try {
+			// 3. Dispatch Order Payload directly to /api/order
+			const response = await fetch("/api/order", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					fullName: trimmedName,
+					phone: internationalPhone,
+					product: "باك الحمام الذكي",
+					bundle: bundleTitle,
+					price: orderPrice,
+					quantity,
+					source: "kit-tandim"
+				})
+			});
 
-		const activeFullName = (fullName || customerName).trim();
-		const normalizedPhone = normalizeMoroccanPhone(phone || customerPhone);
-		fullName = activeFullName;
-		phone = normalizedPhone;
-		customerName = activeFullName;
-		customerPhone = normalizedPhone;
+			const data = await response.json().catch(() => null);
 
-		const cleanPrice = selectedTier?.price || (currentPackId === 2 ? 349 : 229);
-		const quantity = Number(selectedTier?.id === 'tier2' || currentPackId === 2 ? 2 : 1);
-		const offerSku =
-			selectedTier?.title ||
-			(quantity === 2 ? 'قطعتان + 2 رشاشات هدية 🎁🎁' : 'قطعة واحدة + رشاش هدية 🎁');
-		const productTitleStr = (
-			content?.title ||
-			(product as any)?.title ||
-			offerSku ||
-			'طقم تنظيم الحمام الذكي'
-		).trim();
-		const date_order = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
-		const city_address = 'المغرب (سيتم التأكيد هاتفياً)';
+			if (!response.ok || !data || !data.success) {
+				throw new Error(data?.message || "حدث خطأ أثناء تسجيل الطلب، يرجى المحاولة ثانية");
+			}
 
-		pendingOrder = {
-			orderId,
-			date_order,
-			customerName: customerName.trim(),
-			phone: normalizedPhone,
-			city_address,
-			offerSku,
-			productTitleStr,
-			quantity,
-			basePrice: cleanPrice,
-			sheetsUrl
-		};
-		// Fire TikTok InitiateCheckout with Advanced Matching
-		if (typeof window !== 'undefined' && (window as any).ttq) {
+			const orderId = data.orderId || ("ORD-" + Math.floor(100000 + Math.random() * 900000));
+			submittedOrderId = orderId;
+
+			// Save to storage for thank-you page
+			if (typeof window !== "undefined") {
+				sessionStorage.setItem("order_sent_" + orderId, "true");
+				const savedOrder = {
+					orderId,
+					fullName: trimmedName,
+					phoneNumber: internationalPhone,
+					city: "تأكيد هاتفي",
+					address: "تأكيد هاتفي",
+					date: new Date().toLocaleDateString("ar-MA"),
+					price: orderPrice,
+					total: orderPrice,
+					productTitle: "باك الحمام الذكي",
+					offer: bundleTitle,
+					quantity
+				};
+				try {
+					localStorage.setItem("latestOrder", JSON.stringify(savedOrder));
+					sessionStorage.setItem("latestOrder", JSON.stringify(savedOrder));
+				} catch (e) {}
+			}
+
+			// 4. Safe CompletePayment & Conversion Pixels
 			try {
-				const phoneObj = normalizePhone(normalizedPhone);
-				if (phoneObj.digits) {
-					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
-					(window as any).ttq.identify({
-						phone_number: hashedPhone
+				// TikTok Pixel
+				if (typeof window !== "undefined" && (window as any).ttq) {
+					(window as any).ttq.track("CompletePayment", {
+						content_id: "kit-tandim",
+						content_type: "product",
+						content_name: bundleTitle,
+						quantity,
+						value: orderPrice,
+						currency: "MAD"
 					});
 				}
-				(window as any).ttq.track('InitiateCheckout', {
-					content_id: offerSku || 'kit-tandim',
-					content_type: 'product',
-					content_name: productTitleStr,
-					quantity,
-					value: cleanPrice,
-					currency: 'MAD'
-				});
-				console.log('TikTok Event Fired: InitiateCheckout', {
-					content_id: offerSku || 'kit-tandim',
-					content_name: productTitleStr,
-					value: cleanPrice,
-					currency: 'MAD'
-				});
-			} catch (e) {
-				console.warn('TikTok InitiateCheckout error:', e);
+				// Google Ads Conversion Tag
+				if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+					(window as any).gtag("set", "user_data", { phone_number: internationalPhone });
+					(window as any).gtag("event", "conversion", {
+						send_to: "AW-18405009405",
+						value: orderPrice,
+						currency: "MAD",
+						transaction_id: orderId
+					});
+				}
+			} catch (pixelErr) {
+				console.warn("Post-purchase pixel tracking non-fatal error:", pixelErr);
 			}
+
+			// 5. Safe Redirection to Thank-You Page (with 350ms beacon buffer)
+			await new Promise((resolve) => setTimeout(resolve, 350));
+			const thankYouUrl = "/thank-you?orderId=" + encodeURIComponent(orderId) + "&name=" + encodeURIComponent(trimmedName) + "&phone=" + encodeURIComponent(internationalPhone) + "&total=" + encodeURIComponent(String(orderPrice));
+			window.location.href = thankYouUrl;
+
+		} catch (error: any) {
+			console.error("Order Submission Error:", error);
+			formError = error?.message || "تعذر إرسال الطلب، تأكد من الاتصال بالإنترنت وحاول ثانية";
+			alert(error?.message || "تعذر إرسال الطلب، تأكد من الاتصال بالإنترنت وحاول ثانية");
+		} finally {
+			isSubmitting = false;
 		}
-
-
-		// Hold in memory & open post-purchase upsell modal before firing single Google Sheet row
-		showDrainUpsell = true;
 	}
+
+	const handleDirectCheckout = handleSubmitOrder;
 
 	function scrollToOrderSection(e?: Event) {
 		e?.preventDefault();
@@ -807,9 +849,6 @@
 		(window as any).scrollToOrderSection = scrollToOrderSection;
 	}
 
-	function handleSubmitOrder(event?: Event) {
-		handleDirectCheckout(event);
-	}
 
 	onMount(() => {
 		const formElement = document.getElementById('order-form');
@@ -1072,7 +1111,7 @@
 				</label>
 
 				<!-- ==================== CUSTOMER INPUTS (EXACTLY 2 FIELDS) ==================== -->
-				<form onsubmit={handleDirectCheckout} novalidate class="pt-1 space-y-1 sm:space-y-3.5 text-right">
+				<form onsubmit={handleSubmitOrder} novalidate class="pt-1 space-y-1 sm:space-y-3.5 text-right">
 					<h3 class="font-black text-gray-900 text-[13.5px] sm:text-lg mt-0.5 mb-0">معلومات التوصيل</h3>
 
 					<!-- 1. Full Name -->
@@ -1138,7 +1177,7 @@
 					>
 						{#if isSubmitting || isSubmittingFinal}
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin me-2"></span>
-							<span>جاري الإرسال...</span>
+							<span>جاري تأكيد طلبك...</span>
 						{:else}
 							تأكيد الطلب • {selectedTier?.price || 229} درهم
 						{/if}

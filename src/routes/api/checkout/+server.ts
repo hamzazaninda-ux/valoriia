@@ -26,8 +26,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		const phone = formatMoroccanPhone(rawPhone);
 
 		// Ensure default values for city & address if not provided initially
-		const city = String(body.city || '').trim() || 'يُحدد بعد التأكيد';
-		const address = String(body.address || '').trim() || 'يُحدد بعد التأكيد';
+		const city = String(body.city || '').trim() || 'تأكيد هاتفي';
+		const address = String(body.address || '').trim() || 'تأكيد هاتفي';
 		body.city = city;
 		body.address = address;
 
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			if (city && address && city !== address) {
 				city_address = `${city} - ${address}`.trim();
 			} else {
-				city_address = (address || city || 'يُحدد بعد التأكيد').trim();
+				city_address = (address || city || 'تأكيد هاتفي').trim();
 			}
 		}
 		body.city_address = city_address;
@@ -135,7 +135,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const sheetsSynced = sheetSyncResult.status === 'fulfilled' && sheetSyncResult.value.ok;
 
-		return json({ success: true, order, sheetsSynced }, { status: 201 });
+		return json({ success: true, orderId, order, sheetsSynced }, { status: 200 });
 	} catch (err) {
 		console.error('❌ Checkout processing failed:', err);
 		return json({ error: 'حدث خطأ أثناء معالجة الطلب' }, { status: 500 });
