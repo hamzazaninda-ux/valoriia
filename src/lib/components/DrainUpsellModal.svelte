@@ -134,20 +134,20 @@
 			</div>
 
 			<!-- 2. Headline -->
-			<h3 class="text-base sm:text-lg font-black text-gray-900 text-center leading-snug mb-1.5 shrink-0">
+			<h3 class="text-sm sm:text-base font-black text-gray-900 text-center leading-snug mb-1 shrink-0">
 				⚡ حماية نهائية من انسداد المجاري، الحشرات والروائح الكريهة!
 			</h3>
 
 			<!-- 3. Product Image Showcase (Full Sharpness & No Cropping) -->
 			<div
-				class="relative w-full max-w-[320px] mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-inner mb-2 flex items-center justify-center shrink-0"
+				class="relative w-full max-w-[320px] mx-auto rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-inner mb-1.5 flex items-center justify-center shrink-0"
 			>
 				<img
 					src="https://res.cloudinary.com/xqjngk8y/image/upload/q_auto:best,f_auto,w_800/v1791060860/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9_%D9%82%D8%A8%D9%84_%D9%88%D8%A8%D8%B9%D8%AF_%D9%84%D8%B3%D8%AF%D8%A7%D8%AF%D8%A9_%D9%85%D8%B5%D8%B1%D9%81_%D8%A7%D9%84%D8%A3%D8%B1%D8%B6%D9%8A%D8%A9.png"
 					alt="سدادة وفلتر مصرف الأرضية الذكية"
 					loading="eager"
 					decoding="sync"
-					class="w-full h-44 sm:h-48 object-contain select-none"
+					class="w-full h-36 sm:h-44 max-h-[25vh] object-contain select-none"
 					style="image-rendering: -webkit-optimize-contrast;"
 				/>
 
@@ -168,7 +168,7 @@
 			</div>
 
 			<!-- 4. Compact Direct Benefit (No Truncation / No Ellipsis) -->
-			<p class="text-xs text-gray-700 text-center font-bold leading-relaxed mb-2 px-1 shrink-0">
+			<p class="text-xs text-gray-700 text-center font-bold leading-relaxed mb-1.5 px-1 shrink-0">
 				تمنع صعود الروائح الكريهة والصراصير نهائياً، مع تصريف فوري للمياه بدون انسداد.
 			</p>
 

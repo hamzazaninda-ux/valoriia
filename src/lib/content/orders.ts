@@ -172,6 +172,48 @@ export async function updateOrderStatus(
   return updatedOrder;
 }
 
+export async function updateOrderUpsell(
+  orderId: string,
+  upsellItem: string,
+  upsellPrice: number,
+  totalAmount?: number
+): Promise<StoredOrder | null> {
+  const currentOrders = await readOrders(true);
+  const index = currentOrders.findIndex((o) => o.id === orderId);
+  if (index === -1) {
+    return null;
+  }
+
+  const existing = currentOrders[index];
+  const newTotal = totalAmount !== undefined ? Number(totalAmount) : (Number(existing.totalPrice || 229) + Number(upsellPrice || 29));
+  const newItems = existing.items ? existing.items + " + " + upsellItem : existing.product + " + " + upsellItem;
+
+  const updatedOrder: StoredOrder = {
+    ...existing,
+    totalPrice: newTotal,
+    items: newItems,
+    notes: existing.notes ? existing.notes + " | إضافة أبسيل: " + upsellItem + " (+" + upsellPrice + " DH)" : "إضافة أبسيل: " + upsellItem + " (+" + upsellPrice + " DH)",
+    updatedAt: new Date().toISOString()
+  };
+
+  currentOrders[index] = updatedOrder;
+  cachedOrders = currentOrders;
+  cacheTime = Date.now();
+
+  try {
+    await gitWriteFile(
+      "main",
+      ORDERS_FILE_PATH,
+      JSON.stringify(currentOrders, null, 2),
+      "fix(orders): add upsell to order " + orderId
+    );
+  } catch (err) {
+    console.error("[Orders] Failed to persist upsell for order " + orderId + ":", err);
+  }
+
+  return updatedOrder;
+}
+
 export async function deleteOrder(orderId: string): Promise<boolean> {
   const currentOrders = await readOrders(true);
   const filtered = currentOrders.filter((o) => o.id !== orderId);

@@ -88,4 +88,10 @@ export interface TemplateProps {
     heroImage?: string;
     startingPrice?: number;
   }>;
+  onOrderRegistered?: (orderData: {
+    orderId: string;
+    baseOrderPrice: number;
+    phone: string;
+    name: string;
+  }) => void;
 }

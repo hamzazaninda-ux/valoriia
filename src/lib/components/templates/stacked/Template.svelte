@@ -10,7 +10,7 @@
 	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
 	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
-	let { product, settings, theme, others = [] }: TemplateProps = $props();
+	let { product, settings, theme, others = [], onOrderRegistered }: TemplateProps = $props();
 
 	let t = $derived(theme || getDefaultTheme('stacked'));
 
@@ -262,26 +262,20 @@
 			sheetsUrl: currentOrder.sheetsUrl
 		};
 
-		// 1. Dispatch the SINGLE consolidated webhook call
-		let checkoutOk = false;
+		// 1. Dispatch upsell sync call to /api/order/upsell
 		try {
-			const res = await fetch('/api/checkout', {
+			await fetch('/api/order/upsell', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
+				body: JSON.stringify({
+					orderId: currentOrder.orderId,
+					upsellItem: 'سدادة وفلتر مصرف الأرضية الذكية',
+					upsellPrice: 29,
+					totalAmount: finalPrice
+				})
 			});
-			checkoutOk = res.ok;
-			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
 		} catch (err) {
-			console.error('Checkout error:', err);
-		}
-
-		if (!checkoutOk) {
-			isSubmitting = false;
-			isSubmittingFinal = false;
-			showDrainUpsell = false;
-			formError = 'تعذر إرسال الطلب، المرجو المحاولة مرة أخرى';
-			return;
+			console.warn('Upsell API sync non-fatal error:', err);
 		}
 
 		// 2. Mark order sent to prevent duplicate session submissions
@@ -430,27 +424,7 @@
 			sheetsUrl: currentOrder.sheetsUrl
 		};
 
-		// 1. Dispatch the SINGLE original order webhook call
-		let checkoutOk = false;
-		try {
-			const res = await fetch('/api/checkout', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
-			});
-			checkoutOk = res.ok;
-			if (!res.ok) console.warn('API checkout non-ok status:', res.status);
-		} catch (err) {
-			console.error('Checkout error:', err);
-		}
-
-		if (!checkoutOk) {
-			isSubmitting = false;
-			isSubmittingFinal = false;
-			showDrainUpsell = false;
-			formError = 'تعذر إرسال الطلب، المرجو المحاولة مرة أخرى';
-			return;
-		}
+		// Base order already registered in /api/order
 
 		// 2. Mark order sent to prevent duplicate session submissions
 		if (typeof window !== 'undefined') {
@@ -765,10 +739,30 @@
 				console.warn("Post-purchase pixel tracking non-fatal error:", pixelErr);
 			}
 
-			// 5. Safe Redirection to Thank-You Page (with 350ms beacon buffer)
-			await new Promise((resolve) => setTimeout(resolve, 350));
-			const thankYouUrl = "/thank-you?orderId=" + encodeURIComponent(orderId) + "&name=" + encodeURIComponent(trimmedName) + "&phone=" + encodeURIComponent(internationalPhone) + "&total=" + encodeURIComponent(String(orderPrice));
-			window.location.href = thankYouUrl;
+			// 5. Intercept checkout submission & trigger Upsell Modal
+			if (onOrderRegistered) {
+				onOrderRegistered({
+					orderId,
+					baseOrderPrice: orderPrice,
+					phone: internationalPhone,
+					name: trimmedName
+				});
+				return;
+			}
+
+			pendingOrder = {
+				orderId,
+				date_order: new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }),
+				customerName: trimmedName,
+				phone: internationalPhone,
+				city_address: "تأكيد هاتفي",
+				offerSku: bundleTitle,
+				productTitleStr: "باك الحمام الذكي",
+				quantity,
+				basePrice: orderPrice,
+				sheetsUrl
+			};
+			showDrainUpsell = true;
 
 		} catch (error: any) {
 			console.error("Order Submission Error:", error);
