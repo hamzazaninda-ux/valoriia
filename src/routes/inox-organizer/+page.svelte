@@ -11,10 +11,12 @@
 		id: number;
 		qty: number;
 		title: string;
+		giftText: string;
 		price: number;
 		oldPrice: number;
 		saving: string;
-		badge?: string;
+		image: string;
+		badge: string | null;
 	}
 
 	const PRODUCT_CONFIG = {
@@ -22,24 +24,30 @@
 		sku: 'inox-organizer',
 		image:
 			'https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg',
-		giftText: '🎁 رشاش هدية',
 		bundles: [
 			{
 				id: 1,
 				qty: 1,
 				title: 'قطعة واحدة',
+				giftText: 'رشاش هدية',
 				price: 279,
 				oldPrice: 399,
-				saving: 'وفر 120 درهم'
+				saving: 'وفّر 120 درهم',
+				image:
+					'https://res.cloudinary.com/xqjngk8y/image/upload/v1793304908/%D8%A5%D8%B9%D9%84%D8%A7%D9%86_%D9%85%D9%86%D8%B8%D9%85_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D9%88%D8%B1%D8%A3%D8%B3_%D8%A7%D9%84%D8%AF%D8%B4_%D8%A7%D9%84%D9%85%D8%AC%D8%A7%D9%86%D9%8A.png',
+				badge: null
 			},
 			{
 				id: 2,
 				qty: 2,
 				title: 'قطعتان',
+				giftText: 'رشاشان هدية',
 				price: 449,
 				oldPrice: 699,
-				saving: 'وفر 250 درهم',
-				badge: 'الأكثر طلباً'
+				saving: 'وفّر 250 درهم',
+				image:
+					'https://res.cloudinary.com/xqjngk8y/image/upload/v1793304933/%D8%B9%D8%B1%D8%B6_%D9%85%D9%86%D8%B8%D9%85%D8%A7%D8%AA_%D8%A7%D9%84%D8%AD%D9%85%D8%A7%D9%85_%D9%88%D8%B1%D8%A4%D9%88%D8%B3_%D8%A7%D9%84%D8%AF%D8%B4_%D8%A7%D9%84%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%A9.png',
+				badge: 'الأكثر طلبًا'
 			}
 		] as BundleItem[]
 	};
@@ -58,21 +66,25 @@
 	let isSubmitting = $state(false);
 	let formError = $state('');
 
-	// Phone Validation: 10 digits starting with 06 or 07
+	function normalizeDigits(str: string): string {
+		const eastern = '٠١٢٣٤٥٦٧٨٩';
+		return String(str || '').replace(/[٠-٩]/g, (d) => eastern.indexOf(d).toString());
+	}
+
+	function cleanPhoneString(val: string): string {
+		const converted = normalizeDigits(val);
+		return converted.trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069()+.]+/g, '');
+	}
+
 	function validatePhone(phone: string): boolean {
-		const digits = phone.replace(/\D/g, '');
-		return /^(06|07)\d{8}$/.test(digits);
+		const stripped = cleanPhoneString(phone);
+		return /^(?:(?:00212|212)|0)[567]\d{8}$/.test(stripped);
 	}
 
 	function normalizeMoroccanPhone(raw: string): string {
-		let digits = raw.replace(/\D/g, '');
-		if (digits.startsWith('00212')) digits = digits.slice(5);
-		else if (digits.startsWith('212')) digits = digits.slice(3);
-		if (digits.startsWith('0')) digits = digits.slice(1);
-		if (!digits.startsWith('212') && digits.length === 9) {
-			digits = '212' + digits;
-		}
-		return digits;
+		const stripped = cleanPhoneString(raw);
+		const match = stripped.match(/^(?:(?:00212|212)|0)([567]\d{8})$/);
+		return match ? `212${match[1]}` : stripped;
 	}
 
 	const isNameValid = $derived(customerName.trim().length >= 2);
@@ -81,12 +93,64 @@
 	const showNameError = $derived(nameBlurred && !isNameValid);
 	const showPhoneError = $derived(phoneBlurred && !isPhoneValid);
 
-	function scrollToOrderForm() {
-		const el = document.getElementById('order-form');
-		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	function scrollToOrderSection(e?: Event) {
+		e?.preventDefault();
+		if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+		const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+		const topBar = document.querySelector('aside');
+		const topBarStyle = topBar ? window.getComputedStyle(topBar) : null;
+		const isFixed = topBarStyle && (topBarStyle.position === 'fixed' || topBarStyle.position === 'sticky');
+		const fixedTop = isFixed && topBar ? Math.round(topBar.getBoundingClientRect().height) : 0;
+		const gap = 6;
+
+		const section = document.getElementById('order-section') || document.getElementById('order-form');
+		if (!section) return;
+
+		const sectionRect = section.getBoundingClientRect();
+		const sectionHeight = sectionRect.height;
+
+		let targetScrollY = 0;
+		if (sectionHeight <= vh - fixedTop - gap) {
+			targetScrollY = window.scrollY + sectionRect.top - (fixedTop + gap);
+		} else {
+			const confirmBtn = document.querySelector('[data-confirm-btn]') || section.querySelector('button[type="submit"]');
+			if (confirmBtn) {
+				const btnRect = confirmBtn.getBoundingClientRect();
+				targetScrollY = window.scrollY + btnRect.bottom - (vh - 12);
+			} else {
+				targetScrollY = window.scrollY + sectionRect.top - (fixedTop + gap);
+			}
 		}
+
+		let prefersReduced = false;
+		try {
+			prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		} catch {}
+
+		const behavior: ScrollBehavior = prefersReduced ? 'auto' : 'smooth';
+		window.scrollTo({ top: Math.max(0, targetScrollY), behavior });
+
+		const verifyAdjustment = () => {
+			const updatedRect = section.getBoundingClientRect();
+			let diff = 0;
+			if (sectionHeight <= vh - fixedTop - gap) {
+				diff = updatedRect.top - (fixedTop + gap);
+			} else {
+				const confirmBtn = document.querySelector('[data-confirm-btn]') || section.querySelector('button[type="submit"]');
+				if (confirmBtn) {
+					diff = confirmBtn.getBoundingClientRect().bottom - (vh - 12);
+				}
+			}
+			if (Math.abs(diff) > 4) {
+				window.scrollBy({ top: diff, behavior: 'auto' });
+			}
+		};
+
+		setTimeout(verifyAdjustment, 700);
 	}
+
+	const scrollToOrderForm = scrollToOrderSection;
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
@@ -95,15 +159,16 @@
 		formError = '';
 
 		if (!isNameValid) {
-			formError = 'يرجى إدخال اسمك الكامل (حرفان على الأقل).';
+			formError = 'يرجى كتابة الاسم الكامل (حرفان على الأقل)';
 			return;
 		}
 
 		if (!isPhoneValid) {
-			formError = 'يرجى إدخال رقم هاتف مغربي صحيح (10 أرقام تبدأ بـ 06 أو 07).';
+			formError = 'يرجى كتابة رقم هاتف مغربي صحيح (مثال: 0612345678)';
 			return;
 		}
 
+		if (isSubmitting) return;
 		isSubmitting = true;
 
 		const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
@@ -111,38 +176,31 @@
 		const activePrice = selectedBundle.price;
 		const activeQty = selectedBundle.qty;
 		const activeTitle = `${PRODUCT_CONFIG.title} (${selectedBundle.title})`;
+		const bundleTitle = `${selectedBundle.title} + ${selectedBundle.giftText}`;
 
-		// 1. Google Ads GTAG Conversion Tracking (AW-18405009405)
-		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-			try {
+		// 1. Single Purchase Pixel firing (CompletePayment & Conversion)
+		try {
+			if (typeof window !== 'undefined' && (window as any).ttq) {
+				(window as any).ttq.track('CompletePayment', {
+					content_id: 'inox-organizer',
+					content_type: 'product',
+					content_name: activeTitle,
+					value: activePrice,
+					currency: 'MAD'
+				}, {
+					event_id: orderId
+				});
+			}
+
+			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
 				(window as any).gtag('event', 'conversion', {
 					send_to: 'AW-18405009405',
 					value: activePrice,
 					currency: 'MAD',
 					transaction_id: orderId
 				});
-				(window as any).gtag('event', 'purchase', {
-					send_to: 'AW-18405009405',
-					value: activePrice,
-					currency: 'MAD',
-					transaction_id: orderId,
-					items: [
-						{
-							item_id: PRODUCT_CONFIG.sku,
-							item_name: activeTitle,
-							price: activePrice,
-							quantity: activeQty
-						}
-					]
-				});
-				console.log('✅ [GTAG SUCCESS] Purchase conversion fired for AW-18405009405 with value', activePrice);
-			} catch (err) {
-				console.warn('Gtag conversion error:', err);
 			}
-		}
 
-		// 2. Snapchat Purchase Pixel Tracking
-		try {
 			trackSnapPurchase({
 				orderId,
 				price: activePrice,
@@ -152,114 +210,75 @@
 				sku: PRODUCT_CONFIG.sku,
 				quantity: activeQty
 			});
-		} catch (err) {
-			console.warn('Snapchat tracking error:', err);
+		} catch (pixelErr) {
+			console.warn('Pixel tracking error:', pixelErr);
 		}
 
-		// 2b. TikTok InitiateCheckout & CompletePayment Pixel Tracking
+		// 2. Dispatch order to /api/order (Dual storage + Google Sheets)
 		try {
-			if (typeof window !== 'undefined' && (window as any).ttq) {
-				const phoneObj = normalizePhone(normalizedPhone);
-				if (phoneObj.digits) {
-					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
-					(window as any).ttq.identify({
-						phone_number: hashedPhone
-					});
-				}
-				(window as any).ttq.track('InitiateCheckout', {
-					content_id: PRODUCT_CONFIG.sku,
-					content_name: activeTitle,
-					content_type: 'product',
-					quantity: activeQty,
-					currency: 'MAD',
-					value: activePrice
-				});
-				console.log('TikTok Event Fired: InitiateCheckout', {
-					content_id: PRODUCT_CONFIG.sku,
-					content_name: activeTitle,
-					value: activePrice,
-					currency: 'MAD'
-				});
-				(window as any).ttq.track('CompletePayment', {
-					content_id: PRODUCT_CONFIG.sku,
-					content_name: activeTitle,
-					content_type: 'product',
-					quantity: activeQty,
-					currency: 'MAD',
-					value: activePrice
-				}, {
-					event_id: orderId
-				});
-				console.log('TikTok Event Fired: CompletePayment', {
-					orderId,
-					content_name: activeTitle,
-					value: activePrice,
-					currency: 'MAD'
-				});
-			}
-		} catch (err) {
-			console.warn('TikTok tracking error:', err);
-		}
-
-		// 3. API Dispatch to /api/checkout
-		const payload = {
-			orderId,
-			id: orderId,
-			order_id: orderId,
-			fullName: customerName.trim(),
-			full_name: customerName.trim(),
-			name: customerName.trim(),
-			phone: normalizedPhone,
-			phoneNumber: normalizedPhone,
-			city: 'المغرب',
-			address: 'سيتم التأكيد هاتفياً',
-			city_address: 'سيتم التأكيد هاتفياً',
-			price: activePrice,
-			total: activePrice,
-			totalPrice: activePrice,
-			quantity: activeQty,
-			qte: activeQty,
-			productTitle: activeTitle,
-			productTitleStr: activeTitle,
-			selectedOfferTitle: selectedBundle.title,
-			sku: PRODUCT_CONFIG.sku,
-			offerSku: selectedBundle.title,
-			date_order: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' }),
-			status: 'pending'
-		};
-
-		try {
-			const res = await fetch('/api/checkout', {
+			const res = await fetch('/api/order', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
+				body: JSON.stringify({
+					orderId,
+					fullName: customerName.trim(),
+					phone: normalizedPhone,
+					product: activeTitle,
+					bundle: bundleTitle,
+					productTitle: activeTitle,
+					selectedOfferTitle: bundleTitle,
+					price: activePrice,
+					totalPrice: activePrice,
+					total: activePrice,
+					quantity: activeQty,
+					source: 'inox-organizer'
+				})
 			});
 
-			if (!res.ok) {
-				console.warn('Server checkout response status:', res.status);
+			const data = await res.json().catch(() => null);
+			const returnedOrderId = data?.orderId || orderId;
+
+			if (typeof window !== 'undefined') {
+				sessionStorage.setItem(`order_sent_${returnedOrderId}`, 'true');
+				const savedOrder = {
+					orderId: returnedOrderId,
+					fullName: customerName.trim(),
+					phoneNumber: normalizedPhone,
+					city: 'تأكيد هاتفي',
+					address: 'تأكيد هاتفي',
+					date: new Date().toLocaleDateString('ar-MA'),
+					price: activePrice,
+					total: activePrice,
+					productTitle: activeTitle,
+					offer: bundleTitle,
+					quantity: activeQty
+				};
+				try {
+					localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+					sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+				} catch (e) {}
 			}
 
-			// Store in sessionStorage for thank-you screen
-			try {
-				sessionStorage.setItem('last_order', JSON.stringify(payload));
-				sessionStorage.setItem('order_tracked_' + orderId, 'true');
-			} catch {}
-
-			// Redirect to thank you page
-			const thankYouUrl = preserveTrackingParams(
-				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&total=${activePrice}`
-			);
 			await new Promise((resolve) => setTimeout(resolve, 350));
+			const thankYouUrl = preserveTrackingParams(
+				`/thank-you?orderId=${encodeURIComponent(returnedOrderId)}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&total=${activePrice}`
+			);
 			window.location.href = thankYouUrl;
 		} catch (err) {
-			console.error('Checkout error:', err);
-			window.location.href = preserveTrackingParams(`/thank-you?orderId=${orderId}&total=${activePrice}`);
+			console.error('Order submit error:', err);
+			const thankYouUrl = preserveTrackingParams(
+				`/thank-you?orderId=${encodeURIComponent(orderId)}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&total=${activePrice}`
+			);
+			window.location.href = thankYouUrl;
+		} finally {
+			isSubmitting = false;
 		}
 	}
 
 	let isStickyCtaVisible = $state(true);
 	onMount(() => {
-		const form = document.getElementById('order-form');
+		(window as any).scrollToOrderSection = scrollToOrderSection;
+		const form = document.getElementById('order-section') || document.getElementById('order-form');
 		if (!form) return;
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -270,7 +289,10 @@
 			{ threshold: 0.1 }
 		);
 		observer.observe(form);
-		return () => observer.disconnect();
+		return () => {
+			delete (window as any).scrollToOrderSection;
+			observer.disconnect();
+		};
 	});
 </script>
 
@@ -337,57 +359,64 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	<!-- 3. DIRECT COD ORDER FORM WITH 2-TIER PORTRAIT BUNDLE SELECTOR    -->
 	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="order-form" class="max-w-xl mx-auto px-3 sm:px-4 py-2 sm:py-3 scroll-mt-12 sm:scroll-mt-14" dir="rtl">
-		<div class="rounded-2xl sm:rounded-3xl overflow-hidden border-2 border-[#073824] bg-white shadow-xl">
-			<!-- Header -->
-			<div class="bg-[#073824] py-2.5 px-4 text-center text-white">
-				<h2 class="font-display text-lg sm:text-xl font-black tracking-tight leading-tight">
+	<section
+		id="order-section"
+		class="max-w-[520px] mx-auto px-2 sm:px-3 py-1 sm:py-2 scroll-mt-10"
+		dir="rtl"
+	>
+		<div
+			class="order-card-shell rounded-2xl sm:rounded-3xl overflow-hidden border border-[#0B3D24]/80 shadow-xl"
+			style="background-color: #FAF7F2;"
+		>
+			<!-- 1. Header -->
+			<div class="bg-[#0B3D24] px-3 py-2 text-center text-white select-none">
+				<h2 class="text-[17px] sm:text-[19px] font-black leading-tight tracking-tight text-white m-0">
 					أكمل طلبك الآن
 				</h2>
-				<p class="text-xs text-emerald-100/90 font-medium mt-0.5">
+				<p class="text-[11px] sm:text-[12px] text-emerald-100/90 font-medium mt-0.5 m-0 leading-tight">
 					الدفع عند الاستلام • التوصيل مجاني
 				</p>
 			</div>
 
-			<!-- Body -->
-			<div class="p-3 sm:p-4 bg-[#FAF7F2]/60 space-y-3">
-				<!-- 2-Tier Portrait Bundle Cards (Grid 2 cols, gap 10px, items-stretch) -->
-				<div class="grid grid-cols-2 gap-2.5 items-stretch pt-1.5" role="radiogroup" aria-label="اختر باقة العرض">
+			<!-- 2. Body -->
+			<div class="p-2 sm:p-2.5 space-y-2">
+				<!-- 2 Offer Cards in a 2-column grid on ALL screen sizes -->
+				<div class="grid grid-cols-2 gap-2 items-stretch" role="radiogroup" aria-label="اختر العرض">
 					{#each PRODUCT_CONFIG.bundles as b}
 						{@const isSelected = selectedBundleId === b.id}
-						<div
-							role="radio"
-							aria-checked={isSelected}
-							tabindex="0"
-							onclick={() => (selectedBundleId = b.id)}
-							onkeydown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									e.preventDefault();
-									selectedBundleId = b.id;
-								}
-							}}
-							class="relative flex flex-col items-center justify-between p-2.5 rounded-2xl border-2 transition-all duration-200 cursor-pointer select-none text-center h-full {isSelected
-								? 'border-[#0B5E3C] bg-emerald-50/50 shadow-xs ring-1 ring-[#0B5E3C]/20'
-								: 'border-stone-200 bg-white hover:border-stone-300'}"
+						<label
+							class="relative flex flex-col items-center justify-between p-2 rounded-xl transition-all duration-150 cursor-pointer select-none text-center h-full {isSelected
+								? 'border-2 border-[#0B3D24] bg-[#E6F4EC] shadow-xs'
+								: 'border border-stone-200 bg-white hover:border-stone-300'}"
 						>
+							<input
+								type="radio"
+								name="offer"
+								value={b.id}
+								checked={isSelected}
+								onchange={() => (selectedBundleId = b.id)}
+								class="sr-only"
+							/>
+
 							{#if b.badge}
+								<!-- Ribbon on top of card 2: "الأكثر طلبًا" -->
 								<span
-									class="absolute -top-2.5 inset-x-0 mx-auto w-fit z-10 bg-[#073824] text-[#C99738] text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs border border-[#C99738]/40 whitespace-nowrap"
+									class="absolute -top-2.5 inset-x-0 mx-auto w-fit z-10 bg-[#0B3D24] text-[#C99738] border border-[#C99738]/50 text-[10px] sm:text-[10.5px] font-black px-2.5 py-0.5 rounded-full shadow-2xs whitespace-nowrap leading-tight"
 								>
 									{b.badge}
 								</span>
 							{/if}
 
-							<!-- Top Row: Radio Button in the top right corner -->
-							<div class="w-full flex justify-start mb-1">
+							<!-- Top Corner Radio Button (top-start in RTL = top-right) -->
+							<div class="w-full flex justify-start mb-0.5">
 								<div
-									class="w-5 h-5 rounded-full flex items-center justify-center transition-all {isSelected
-										? 'bg-[#0B5E3C] text-white shadow-2xs'
-										: 'border-2 border-stone-300 bg-white'}"
+									class="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all {isSelected
+										? 'bg-[#0B3D24] text-white shadow-2xs'
+										: 'border border-stone-300 bg-white'}"
 								>
 									{#if isSelected}
 										<svg
-											class="w-3 h-3"
+											class="w-2.5 h-2.5 sm:w-3 sm:h-3"
 											viewBox="0 0 24 24"
 											fill="none"
 											stroke="currentColor"
@@ -400,54 +429,58 @@
 								</div>
 							</div>
 
-							<!-- Fixed Size Product Image (64x64px) -->
-							<div class="relative w-16 h-16 rounded-xl overflow-hidden bg-white border border-stone-100 p-0.5 shadow-2xs mb-1">
+							<!-- Thumbnail 52x52px, radius 10px -->
+							<div class="relative w-[52px] h-[52px] rounded-[10px] overflow-hidden bg-white border border-stone-200 p-0.5 shadow-2xs mb-1 shrink-0 flex items-center justify-center">
 								<img
-									src={PRODUCT_CONFIG.image}
+									src={b.image}
 									alt={b.title}
-									class="w-full h-full object-cover rounded-lg"
+									width="52"
+									height="52"
 									loading="lazy"
+									decoding="async"
+									class="w-full h-full object-cover rounded-[8px]"
 								/>
 								{#if b.qty > 1}
-									<span class="absolute bottom-0 end-0 bg-[#073824] text-[#C99738] text-[9px] font-black px-1 rounded-tl-md">
-										×{b.qty}
+									<!-- Small "2×" badge on bottom corner of image 2 -->
+									<span class="absolute bottom-0 end-0 bg-[#0B3D24] text-[#C99738] text-[9.5px] font-black px-1 rounded-tl-md leading-tight">
+										2×
 									</span>
 								{/if}
 							</div>
 
-							<!-- Title (Max 2 words) -->
-							<h4 class="font-display text-xs sm:text-sm font-black text-stone-900 leading-tight">
+							<!-- Title -->
+							<h3 class="text-[14px] sm:text-[15px] font-black text-stone-900 leading-tight m-0">
 								{b.title}
-							</h4>
+							</h3>
 
-							<!-- Gift text (Identical on both cards) -->
-							<p class="text-[11px] font-bold text-amber-700 leading-tight mt-0.5">
-								{PRODUCT_CONFIG.giftText}
+							<!-- Gift line with small gift icon -->
+							<p class="text-[10.5px] sm:text-[11px] font-bold text-amber-700 leading-tight mt-0.5 m-0 whitespace-nowrap">
+								🎁 {b.giftText}
 							</p>
 
 							<!-- Price row -->
-							<div class="my-1 leading-tight">
-								<span class="font-display text-lg sm:text-[22px] font-black text-[#073824] block">
-									{b.price} درهم
+							<div class="my-0.5 leading-tight text-center">
+								<span class="text-[18px] sm:text-[21px] font-black text-[#0B3D24] block leading-tight">
+									{b.price} <span class="text-[12px] font-bold">درهم</span>
 								</span>
-								<span class="text-[11px] text-stone-400 line-through font-bold block">
+								<span class="text-[10.5px] sm:text-[11px] text-stone-400 line-through font-bold block leading-tight">
 									{b.oldPrice} درهم
 								</span>
 							</div>
 
-							<!-- Pill -->
-							<span class="inline-block bg-emerald-100/90 text-[#073824] text-[10px] font-black px-2 py-0.5 rounded-full mt-0.5">
+							<!-- Savings badge -->
+							<span class="inline-block bg-[#D4EDDA] text-[#0B3D24] text-[10px] sm:text-[11px] font-black px-2 py-0.5 rounded-full mt-0.5 whitespace-nowrap leading-tight">
 								{b.saving}
 							</span>
-						</div>
+						</label>
 					{/each}
 				</div>
 
 				<!-- Form Inputs -->
-				<form onsubmit={handleSubmit} novalidate class="space-y-2.5 pt-1">
+				<form id="order-form" onsubmit={handleSubmit} novalidate class="space-y-2 pt-0.5">
 					<!-- Input 1: Full Name -->
 					<div>
-						<label for="order-fullname" class="block text-xs font-bold text-stone-800 mb-1 text-right">
+						<label for="order-fullname" class="block text-[12px] sm:text-[13px] font-bold text-stone-800 mb-0.5 text-right">
 							الاسم الكامل <span class="text-red-500">*</span>
 						</label>
 						<input
@@ -456,17 +489,17 @@
 							bind:value={customerName}
 							onblur={() => (nameBlurred = true)}
 							placeholder="اكتب اسمك الكامل هنا"
-							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-medium text-stone-900 text-right transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-[#0B3D24] focus:ring-2 focus:ring-[#0B3D24]/20 text-[16px] font-medium text-stone-900 text-right transition-all {showNameError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
 							required
 						/>
 						{#if showNameError}
-							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال الاسم الكامل (حرفان على الأقل).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right leading-tight">يرجى كتابة الاسم الكامل (حرفان على الأقل)</p>
 						{/if}
 					</div>
 
 					<!-- Input 2: Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-xs font-bold text-stone-800 mb-1 text-right">
+						<label for="order-phone" class="block text-[12px] sm:text-[13px] font-bold text-stone-800 mb-0.5 text-right">
 							رقم الهاتف <span class="text-red-500">*</span>
 						</label>
 						<input
@@ -477,25 +510,26 @@
 							bind:value={customerPhone}
 							onblur={() => (phoneBlurred = true)}
 							placeholder="06XXXXXXXX"
-							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 text-xs sm:text-sm font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
+							class="w-full h-11 px-3 rounded-xl border border-stone-300 focus:border-[#0B3D24] focus:ring-2 focus:ring-[#0B3D24]/20 text-[16px] font-bold text-stone-900 text-right transition-all {showPhoneError ? 'border-red-500 bg-red-50/20' : 'bg-white'}"
 							required
 						/>
 						{#if showPhoneError}
-							<p class="text-xs text-red-600 font-bold mt-1 text-right">المرجو إدخال رقم هاتف مغربي صحيح (10 أرقام تبدأ بـ 06 أو 07).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right leading-tight">يرجى كتابة رقم هاتف مغربي صحيح (مثال: 0612345678)</p>
 						{/if}
 					</div>
 
 					{#if formError}
-						<div class="rounded-xl bg-red-50 border border-red-200 p-2 text-xs text-red-700 font-bold text-center">
+						<div class="rounded-xl bg-red-50 border border-red-200 p-1.5 text-xs text-red-700 font-bold text-center">
 							{formError}
 						</div>
 					{/if}
 
-					<!-- Confirmation Button -->
+					<!-- Orange Confirm Button -->
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						class="w-full h-[52px] min-h-[52px] px-4 rounded-xl bg-[#E06D14] hover:bg-[#C85D0D] active:scale-[0.98] text-white font-black text-base shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+						data-confirm-btn
+						class="w-full h-12 min-h-12 px-4 rounded-xl bg-[#E0661A] hover:bg-[#C85610] active:scale-[0.98] text-white font-black text-[15.5px] sm:text-[16px] shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
 					>
 						{#if isSubmitting}
 							<span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
@@ -506,9 +540,9 @@
 						{/if}
 					</button>
 
-					<!-- Reassurance Footnote -->
-					<p class="text-center text-[11px] font-bold text-stone-500 pt-0.5 leading-tight">
-						🔒 الدفع عند الاستلام
+					<!-- Small gray centered text under the button -->
+					<p class="text-center text-[11.5px] sm:text-[12px] font-bold text-stone-500 mt-1.5 mb-0 leading-tight">
+						الدفع عند الاستلام 🔒
 					</p>
 				</form>
 			</div>
@@ -647,7 +681,7 @@
 			<div class="mt-3.5">
 				<button
 					type="button"
-					onclick={scrollToOrderForm}
+					onclick={scrollToOrderSection}
 					class="w-full py-2.5 px-4 rounded-xl bg-[#0B5E3C] hover:bg-[#07482E] text-white font-black text-xs sm:text-sm shadow-md active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
 				>
 					<span>احصل على هديتك الآن مع طلبك 🎁</span>
@@ -912,7 +946,7 @@
 			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
 				<button
 					type="button"
-					onclick={scrollToOrderForm}
+					onclick={scrollToOrderSection}
 					class="w-full h-[46px] min-h-[46px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
 				>
 					<span>استفد من العرض الآن</span>
