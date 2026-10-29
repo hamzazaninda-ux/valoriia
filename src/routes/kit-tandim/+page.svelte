@@ -105,8 +105,31 @@
 		const note = hasUpsell ? 'مع عرض السدادة (+29 درهم)' : '';
 
 		try {
-			// 1. Fire conversion pixels for the full total
-			firePurchasePixels(totalPrice, orderId, productTitle, quantity);
+			// Fire Purchase Pixels EXACTLY ONCE with the final consolidated total
+			try {
+				if (typeof window !== 'undefined' && (window as any).ttq) {
+					(window as any).ttq.track('CompletePayment', {
+						content_id: 'kit-tandim',
+						content_type: 'product',
+						content_name: productTitle,
+						value: totalPrice,
+						currency: 'MAD'
+					}, {
+						event_id: orderId // Guarantees deduplication
+					});
+				}
+
+				if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+					(window as any).gtag('event', 'conversion', {
+						send_to: 'AW-18405009405',
+						value: totalPrice,
+						currency: 'MAD',
+						transaction_id: orderId
+					});
+				}
+			} catch (pixelErr) {
+				console.warn('Pixel tracking non-fatal error:', pixelErr);
+			}
 
 			// 2. Dispatch ONE single consolidated payload to /api/order
 			const res = await fetch('/api/order', {
@@ -174,35 +197,7 @@
 		}
 	}
 
-	function firePurchasePixels(finalAmount: number, orderId: string, title?: string, quantity: number = 1) {
-		try {
-			if (typeof window !== 'undefined' && (window as any).ttq) {
-				(window as any).ttq.track(
-					'CompletePayment',
-					{
-						content_id: 'kit-tandim',
-						content_name: title || 'باك الحمام الذكي',
-						quantity,
-						value: finalAmount,
-						currency: 'MAD'
-					},
-					{
-						event_id: orderId
-					}
-				);
-			}
-			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				(window as any).gtag('event', 'conversion', {
-					send_to: 'AW-18405009405',
-					value: finalAmount,
-					currency: 'MAD',
-					transaction_id: orderId
-				});
-			}
-		} catch (err) {
-			console.warn('Pixel tracking error:', err);
-		}
-	}
+
 
 	const HERO_IMAGE_URL =
 		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';

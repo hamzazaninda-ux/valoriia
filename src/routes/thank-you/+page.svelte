@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { trackSnapPurchase, ensureCurrentUrlHasSnapClickId, normalizePhone, sha256 } from '$lib/utils/tracking';
+	import { ensureCurrentUrlHasSnapClickId } from '$lib/utils/tracking';
 
 	let { data }: { data?: { whatsappNumber?: string } } = $props();
 
@@ -117,76 +117,7 @@
 			} catch {}
 		}
 
-		const orderProductName = (order?.productTitle || (order as any)?.title || rawOrder?.productTitle || 'منتج').trim();
-		const orderTotal = totalPrice || order?.price || 229;
-		const orderQuantity = order?.qte || (order as any)?.quantity || 1;
 
-		// 1. Google Ads Conversion Firing:
-		if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-			try {
-				(window as any).gtag('event', 'conversion', {
-					'send_to': 'AW-18405009405',
-					'value': orderTotal || 229,
-					'currency': 'MAD',
-					'transaction_id': orderId || ('ORD-' + Date.now())
-				});
-				(window as any).gtag('event', 'purchase', {
-					'send_to': 'AW-18405009405',
-					transaction_id: orderId || ('ORD-' + Date.now()),
-					value: orderTotal || 229,
-					currency: 'MAD',
-					items: [{
-						item_name: orderProductName,
-						price: orderTotal || 229,
-						quantity: orderQuantity
-					}]
-				});
-				console.log('✅ [GTAG SUCCESS] Purchase Conversion Fired to AW-18405009405', { orderId, orderTotal });
-			} catch (err) {
-				console.warn('[Pixel] GAds purchase error:', err);
-			}
-		}
-
-		// 2. Snapchat Purchase Firing:
-		try {
-			trackSnapPurchase({
-				orderId,
-				price: orderTotal,
-				currency: 'MAD',
-				phone: phoneNumber,
-				title: orderProductName,
-				sku: order?.sku,
-				quantity: orderQuantity
-			});
-		} catch (snapErr) {
-			console.warn('[Pixel] Snap trackSnapPurchase error:', snapErr);
-		}
-
-		// 3. TikTok CompletePayment Firing with Advanced Matching:
-		if (typeof window !== 'undefined' && (window as any).ttq) {
-			try {
-				const phoneObj = normalizePhone(phoneNumber);
-				if (phoneObj.digits) {
-					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
-					(window as any).ttq.identify({
-						phone_number: hashedPhone
-					});
-				}
-				(window as any).ttq.track('CompletePayment', {
-					content_id: order?.sku || 'SKU-GENERAL',
-					content_name: orderProductName,
-					content_type: 'product',
-					quantity: orderQuantity,
-					value: orderTotal || 229,
-					currency: 'MAD'
-				}, {
-					event_id: orderId
-				});
-				console.log('TikTok Event Fired: CompletePayment', { orderId, orderTotal, currency: 'MAD' });
-			} catch (err) {
-				console.warn('[Pixel] TikTok CompletePayment error:', err);
-			}
-		}
 	});
 
 
