@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
+	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
 
 	let { data } = $props();
 
@@ -156,9 +156,30 @@
 			console.warn('Snapchat tracking error:', err);
 		}
 
-		// 2b. TikTok CompletePayment Pixel Tracking
+		// 2b. TikTok InitiateCheckout & CompletePayment Pixel Tracking
 		try {
 			if (typeof window !== 'undefined' && (window as any).ttq) {
+				const phoneObj = normalizePhone(normalizedPhone);
+				if (phoneObj.digits) {
+					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
+					(window as any).ttq.identify({
+						phone_number: hashedPhone
+					});
+				}
+				(window as any).ttq.track('InitiateCheckout', {
+					content_id: PRODUCT_CONFIG.sku,
+					content_name: activeTitle,
+					content_type: 'product',
+					quantity: activeQty,
+					currency: 'MAD',
+					value: activePrice
+				});
+				console.log('TikTok Event Fired: InitiateCheckout', {
+					content_id: PRODUCT_CONFIG.sku,
+					content_name: activeTitle,
+					value: activePrice,
+					currency: 'MAD'
+				});
 				(window as any).ttq.track('CompletePayment', {
 					content_id: PRODUCT_CONFIG.sku,
 					content_name: activeTitle,
@@ -169,7 +190,12 @@
 				}, {
 					event_id: orderId
 				});
-				console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on inox-organizer checkout:', { orderId, activePrice });
+				console.log('TikTok Event Fired: CompletePayment', {
+					orderId,
+					content_name: activeTitle,
+					value: activePrice,
+					currency: 'MAD'
+				});
 			}
 		} catch (err) {
 			console.warn('TikTok tracking error:', err);
@@ -223,6 +249,7 @@
 			const thankYouUrl = preserveTrackingParams(
 				`/thank-you?orderId=${orderId}&name=${encodeURIComponent(customerName.trim())}&phone=${encodeURIComponent(normalizedPhone)}&total=${activePrice}`
 			);
+			await new Promise((resolve) => setTimeout(resolve, 350));
 			window.location.href = thankYouUrl;
 		} catch (err) {
 			console.error('Checkout error:', err);

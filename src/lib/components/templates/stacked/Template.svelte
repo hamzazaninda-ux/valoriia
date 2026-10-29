@@ -7,7 +7,7 @@
 	import DrainUpsellModal from '$lib/components/DrainUpsellModal.svelte';
 	import { cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
-	import { trackSnapPurchase, preserveTrackingParams } from '$lib/utils/tracking';
+	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
 	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	let { product, settings, theme, others = [] }: TemplateProps = $props();
@@ -340,9 +340,16 @@
 				console.warn('Snap Purchase tracking error:', snapErr);
 			}
 
-			// TikTok CompletePayment Firing
+			// TikTok CompletePayment Firing with Advanced Matching
 			try {
 				if (typeof window !== 'undefined' && (window as any).ttq) {
+					const phoneObj = normalizePhone(currentOrder.phone);
+					if (phoneObj.digits) {
+						const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
+						(window as any).ttq.identify({
+							phone_number: hashedPhone
+						});
+					}
 					(window as any).ttq.track('CompletePayment', {
 						content_id: finalSku,
 						content_name: fullProductLabel,
@@ -353,9 +360,11 @@
 					}, {
 						event_id: currentOrder.orderId
 					});
-					console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on order submit:', {
+					console.log('TikTok Event Fired: CompletePayment', {
 						orderId: currentOrder.orderId,
-						finalPrice
+						content_name: fullProductLabel,
+						value: finalPrice,
+						currency: 'MAD'
 					});
 				}
 			} catch (ttErr) {
@@ -367,6 +376,7 @@
 			const finalUrl = preserveTrackingParams(
 				`/thank-you?orderId=${currentOrder.orderId}&name=${encodeURIComponent(currentOrder.customerName)}&phone=${encodeURIComponent(currentOrder.phone)}&city=${encodeURIComponent(currentOrder.city_address)}&total=${finalPrice}&upsell=1`
 			);
+			await new Promise((resolve) => setTimeout(resolve, 350));
 			window.location.href = finalUrl;
 		}
 	}
@@ -496,9 +506,16 @@
 				console.warn('Snap Purchase tracking error:', snapErr);
 			}
 
-			// TikTok CompletePayment Firing
+			// TikTok CompletePayment Firing with Advanced Matching
 			try {
 				if (typeof window !== 'undefined' && (window as any).ttq) {
+					const phoneObj = normalizePhone(currentOrder.phone);
+					if (phoneObj.digits) {
+						const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
+						(window as any).ttq.identify({
+							phone_number: hashedPhone
+						});
+					}
 					(window as any).ttq.track('CompletePayment', {
 						content_id: finalSku,
 						content_name: fullProductLabel,
@@ -509,9 +526,11 @@
 					}, {
 						event_id: currentOrder.orderId
 					});
-					console.log('✅ [TIKTOK SUCCESS] CompletePayment fired on order submit:', {
+					console.log('TikTok Event Fired: CompletePayment', {
 						orderId: currentOrder.orderId,
-						finalPrice
+						content_name: fullProductLabel,
+						value: finalPrice,
+						currency: 'MAD'
 					});
 				}
 			} catch (ttErr) {
@@ -523,6 +542,7 @@
 			const finalUrl = preserveTrackingParams(
 				`/thank-you?orderId=${currentOrder.orderId}&name=${encodeURIComponent(currentOrder.customerName)}&phone=${encodeURIComponent(currentOrder.phone)}&city=${encodeURIComponent(currentOrder.city_address)}&total=${finalPrice}`
 			);
+			await new Promise((resolve) => setTimeout(resolve, 350));
 			window.location.href = finalUrl;
 		}
 	}
@@ -657,6 +677,35 @@
 			basePrice: cleanPrice,
 			sheetsUrl
 		};
+		// Fire TikTok InitiateCheckout with Advanced Matching
+		if (typeof window !== 'undefined' && (window as any).ttq) {
+			try {
+				const phoneObj = normalizePhone(normalizedPhone);
+				if (phoneObj.digits) {
+					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
+					(window as any).ttq.identify({
+						phone_number: hashedPhone
+					});
+				}
+				(window as any).ttq.track('InitiateCheckout', {
+					content_id: offerSku || 'kit-tandim',
+					content_type: 'product',
+					content_name: productTitleStr,
+					quantity,
+					value: cleanPrice,
+					currency: 'MAD'
+				});
+				console.log('TikTok Event Fired: InitiateCheckout', {
+					content_id: offerSku || 'kit-tandim',
+					content_name: productTitleStr,
+					value: cleanPrice,
+					currency: 'MAD'
+				});
+			} catch (e) {
+				console.warn('TikTok InitiateCheckout error:', e);
+			}
+		}
+
 
 		// Hold in memory & open post-purchase upsell modal before firing single Google Sheet row
 		showDrainUpsell = true;

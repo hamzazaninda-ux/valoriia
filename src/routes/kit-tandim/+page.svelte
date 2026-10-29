@@ -1,8 +1,42 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import StackedTemplate from '$lib/components/templates/stacked/Template.svelte';
 	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	let { data } = $props();
+
+	onMount(() => {
+		if (typeof window !== 'undefined') {
+			const fireViewContent = () => {
+				if ((window as any).ttq && typeof (window as any).ttq.track === 'function') {
+					(window as any).ttq.track('ViewContent', {
+						content_id: 'kit-tandim',
+						content_type: 'product',
+						content_name: 'منظم الحمام الزاوي 4 رفوف',
+						quantity: 1,
+						price: 279,
+						value: 279,
+						currency: 'MAD'
+					});
+					console.log('TikTok Event Fired: ViewContent', {
+						content_id: 'kit-tandim',
+						content_name: 'منظم الحمام الزاوي 4 رفوف',
+						value: 279,
+						currency: 'MAD'
+					});
+					return true;
+				}
+				return false;
+			};
+
+			if (!fireViewContent()) {
+				const interval = setInterval(() => {
+					if (fireViewContent()) clearInterval(interval);
+				}, 100);
+				setTimeout(() => clearInterval(interval), 3000);
+			}
+		}
+	});
 
 	const HERO_IMAGE_URL = 'https://res.cloudinary.com/xqjngk8y/image/upload/ar_3:4,c_pad,b_auto/v1793014131/Smart_Bathroom_Organizer_Gift_Set.png';
 

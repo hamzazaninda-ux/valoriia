@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { trackSnapPurchase, ensureCurrentUrlHasSnapClickId } from '$lib/utils/tracking';
+	import { trackSnapPurchase, ensureCurrentUrlHasSnapClickId, normalizePhone, sha256 } from '$lib/utils/tracking';
 
 	let { data }: { data?: { whatsappNumber?: string } } = $props();
 
@@ -162,9 +162,16 @@
 			console.warn('[Pixel] Snap trackSnapPurchase error:', snapErr);
 		}
 
-		// 3. TikTok CompletePayment Firing:
+		// 3. TikTok CompletePayment Firing with Advanced Matching:
 		if (typeof window !== 'undefined' && (window as any).ttq) {
 			try {
+				const phoneObj = normalizePhone(phoneNumber);
+				if (phoneObj.digits) {
+					const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
+					(window as any).ttq.identify({
+						phone_number: hashedPhone
+					});
+				}
 				(window as any).ttq.track('CompletePayment', {
 					content_id: order?.sku || 'SKU-GENERAL',
 					content_name: orderProductName,
@@ -175,12 +182,13 @@
 				}, {
 					event_id: orderId
 				});
-				console.log('✅ [TIKTOK SUCCESS] CompletePayment Fired');
+				console.log('TikTok Event Fired: CompletePayment', { orderId, orderTotal, currency: 'MAD' });
 			} catch (err) {
 				console.warn('[Pixel] TikTok CompletePayment error:', err);
 			}
 		}
 	});
+
 
 	function copyOrderId() {
 		if (!order?.orderId) return;
