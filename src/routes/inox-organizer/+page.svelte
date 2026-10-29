@@ -893,19 +893,19 @@
 	<!-- ═══════════════════════════════════════════════════════════════ -->
 	{#if isStickyCtaVisible}
 		<div
-			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-1.5 pb-2 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
-			style="padding-bottom: max(0.45rem, env(safe-area-inset-bottom, 0.45rem));"
+			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
+			style="padding-bottom: max(0.85rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));"
 			dir="rtl"
 		>
-			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1">
+			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="w-full h-[44px] min-h-[44px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer text-center animate-cta-shake"
+					class="w-full h-[46px] min-h-[46px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
 				>
 					<span>استفد من العرض الآن</span>
 				</button>
-				<p class="text-center text-[11px] font-bold text-stone-600 flex items-center justify-center gap-1 leading-tight pt-0.5">
+				<p class="text-center text-[11.5px] font-bold text-stone-600 flex items-center justify-center gap-1.5 leading-normal pt-0.5 pb-0.5">
 					<span>التوصيل بالمجان والدفع عند الاستلام</span>
 					<span class="text-[12px]">🔒</span>
 				</p>
@@ -913,3 +913,33 @@
 		</div>
 	{/if}
 </main>
+<style>
+	@keyframes cta-horizontal-shake {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		4% {
+			transform: translateX(-3px);
+		}
+		8% {
+			transform: translateX(3px);
+		}
+		12% {
+			transform: translateX(-3px);
+		}
+		16% {
+			transform: translateX(3px);
+		}
+		20% {
+			transform: translateX(-1.5px);
+		}
+		24% {
+			transform: translateX(0);
+		}
+	}
+
+	:global(.btn-shake) {
+		will-change: transform;
+		animation: cta-horizontal-shake 2.6s ease-in-out infinite;
+	}
+</style>
