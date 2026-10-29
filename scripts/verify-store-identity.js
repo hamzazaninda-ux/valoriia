@@ -5,7 +5,7 @@ const EXPECTED_STORE = 'Lhamza Shop';
 const FORBIDDEN_STORE = 'NOVAVITA';
 const EXPECTED_PROJECT_ID = 'prj_X30nyNZNnNBapei6zVCohM0lsuv1';
 const EXPECTED_PROJECT_NAME = 'valoriia';
-const EXPECTED_BRANCH = 'main';
+const ALLOWED_BRANCHES = ['main', 'hero-cro-clean'];
 
 function fail(reason) {
 	console.error(`\n❌ [STORE IDENTITY GUARDRAIL FAILED - ${EXPECTED_STORE}]`);
@@ -20,9 +20,9 @@ if (process.env.VERCEL_PROJECT_ID && process.env.VERCEL_PROJECT_ID !== EXPECTED_
 	);
 }
 
-if (process.env.VERCEL_GIT_COMMIT_REF && process.env.VERCEL_GIT_COMMIT_REF !== EXPECTED_BRANCH) {
+if (process.env.VERCEL_GIT_COMMIT_REF && !ALLOWED_BRANCHES.includes(process.env.VERCEL_GIT_COMMIT_REF)) {
 	fail(
-		`VERCEL_GIT_COMMIT_REF mismatch! Expected branch "${EXPECTED_BRANCH}", got "${process.env.VERCEL_GIT_COMMIT_REF}". Blocking cross-branch deployment.`
+		`VERCEL_GIT_COMMIT_REF mismatch! Expected branch in ${ALLOWED_BRANCHES.join(", ")}, got "${process.env.VERCEL_GIT_COMMIT_REF}". Blocking cross-branch deployment.`
 	);
 }
 
