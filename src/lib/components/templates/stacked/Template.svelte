@@ -2092,7 +2092,7 @@
 	}
 
 	/* Short screen optimization (<= 480px width AND <= 600px height) */
-	@media (max-width: 480px) and (max-height: 600px) {
+	@media (max-width: 480px) {
 		.order-header {
 			padding: 6px 10px !important;
 		}
