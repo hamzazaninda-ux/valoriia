@@ -816,6 +816,11 @@
 		let formVisible = false;
 
 		function updateStickyState() {
+			if (typeof window !== 'undefined' && window.scrollY < 100) {
+				showStickyBtn = true;
+				isFormAbove = false;
+				return;
+			}
 			showStickyBtn = !formVisible;
 			if (formElement) {
 				isFormAbove = formElement.getBoundingClientRect().top < 0;
@@ -831,7 +836,7 @@
 				}
 				updateStickyState();
 			},
-			{ threshold: 0.08, rootMargin: '0px 0px 20px 0px' }
+			{ threshold: 0.15 }
 		);
 
 		if (formElement) observer.observe(formElement);
@@ -1488,7 +1493,7 @@
 	</footer>
 
 	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
-	{#if showStickyBtn && t.sections.advanced.showStickyButton}
+	{#if showStickyBtn && (t?.sections?.advanced?.showStickyButton ?? true)}
 		<div
 			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
 			style="padding-bottom: max(0.85rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));"
@@ -1498,7 +1503,7 @@
 				<button
 					type="button"
 					onclick={scrollToOrderForm}
-					class="w-full h-[46px] min-h-[46px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-sm sm:text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
+					class="w-full h-[48px] min-h-[48px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
 				>
 					<span>استفد من العرض الآن</span>
 				</button>
@@ -1970,9 +1975,10 @@
 		}
 	}
 
+	.btn-shake,
 	:global(.btn-shake) {
 		will-change: transform;
-		animation: cta-horizontal-shake 2.6s ease-in-out infinite;
+		animation: cta-horizontal-shake 2.6s ease-in-out infinite !important;
 	}
 
 
