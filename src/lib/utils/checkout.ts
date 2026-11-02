@@ -49,8 +49,8 @@ export function buildOrderPayload(
 
 	const titles = lines.map((l) => `${l.qty}x ${l.title}${l.offerTitle ? ` (${l.offerTitle})` : ''}`);
 	const subtotal = lines.reduce((a, l) => a + l.qty * l.price, 0);
-	const mainTier = mainLine?.tier || (subtotal === 199 || subtotal === 298 ? 'tier_1' : subtotal === 349 || subtotal === 448 ? 'tier_3' : 'tier_2');
-	const baseTierBottles = mainTier === 'tier_1' ? 1 : mainTier === 'tier_3' ? 3 : 2;
+	const mainTier = mainLine?.tier || (subtotal === 419 || subtotal === 518 ? 'tier_3' : subtotal === 349 || subtotal === 448 ? 'tier_2' : 'tier_1');
+	const baseTierBottles = mainTier === 'tier_3' ? 4 : mainTier === 'tier_2' ? 3 : 2;
 	const physicalBottleCount = baseTierBottles + upsells.length;
 	const now = new Date();
 
@@ -106,8 +106,197 @@ export function buildOrderPayload(
 	};
 }
 
+let lastViewContentTime = 0;
+let lastViewContentKey = '';
 let lastAddToCartTime = 0;
 let lastAddToCartKey = '';
+let lastInitiateCheckoutTime = 0;
+let lastInitiateCheckoutKey = '';
+
+export function trackViewContent(
+	price: number = 279,
+	productTitle: string = 'NOVAVITA Gummies',
+	itemId: string = 'gummies_collagen',
+	quantity: number = 2
+) {
+	if (typeof window === 'undefined') return;
+
+	try {
+		const numPrice = Number(price) || 279;
+		const title = (productTitle || 'NOVAVITA Gummies').trim();
+		const id = String(itemId || 'gummies_collagen');
+		const qty = Number(quantity) || 2;
+		const unitPrice = Math.round((numPrice / Math.max(1, qty)) * 100) / 100;
+
+		const now = Date.now();
+		const key = `${id}:${window.location ? window.location.pathname : ''}`;
+		if (now - lastViewContentTime < 2000 && lastViewContentKey === key) {
+			return;
+		}
+		lastViewContentTime = now;
+		lastViewContentKey = key;
+
+		// 1. TikTok Pixel ViewContent
+		try {
+			if ((window as any).ttq && typeof (window as any).ttq.track === 'function') {
+				(window as any).ttq.track('ViewContent', {
+					content_id: id,
+					content_type: 'product',
+					content_name: title,
+					quantity: qty,
+					price: numPrice,
+					value: numPrice,
+					currency: 'MAD',
+					contents: [
+						{
+							content_id: id,
+							content_name: title,
+							quantity: qty,
+							price: unitPrice
+						}
+					]
+				});
+				console.log('👁️ [TIKTOK SUCCESS] ViewContent fired:', { content_id: id, value: numPrice, quantity: qty });
+			}
+		} catch (err) {
+			console.warn('[Pixel] TikTok ViewContent error:', err);
+		}
+
+		// 2. Meta Pixel ViewContent
+		try {
+			if (typeof (window as any).fbq === 'function') {
+				(window as any).fbq('track', 'ViewContent', {
+					content_id: id,
+					content_ids: [id],
+					content_name: title,
+					content_type: 'product',
+					value: numPrice,
+					currency: 'MAD'
+				});
+			}
+		} catch (err) {}
+
+		// 3. Snapchat Pixel VIEW_CONTENT
+		try {
+			if (typeof (window as any).snaptr === 'function') {
+				(window as any).snaptr('track', 'VIEW_CONTENT', {
+					price: numPrice,
+					currency: 'MAD',
+					item_ids: [id],
+					item_category: 'Supplements'
+				});
+			}
+		} catch (err) {}
+
+		// 4. Google Tag Manager / GA4
+		try {
+			(window as any).dataLayer = (window as any).dataLayer || [];
+			(window as any).dataLayer.push({
+				event: 'view_item',
+				ecommerce: {
+					currency: 'MAD',
+					value: numPrice,
+					items: [{ item_id: id, item_name: title, price: numPrice, quantity: qty }]
+				}
+			});
+		} catch (err) {}
+	} catch (globalErr) {
+		console.warn('trackViewContent non-blocking error:', globalErr);
+	}
+}
+
+export function trackInitiateCheckout(
+	price: number = 279,
+	productTitle: string = 'NOVAVITA Gummies',
+	itemId: string = 'gummies_collagen',
+	quantity: number = 2
+) {
+	if (typeof window === 'undefined') return;
+
+	try {
+		const numPrice = Number(price) || 279;
+		const title = (productTitle || 'NOVAVITA Gummies').trim();
+		const id = String(itemId || 'gummies_collagen');
+		const qty = Number(quantity) || 2;
+		const unitPrice = Math.round((numPrice / Math.max(1, qty)) * 100) / 100;
+
+		const now = Date.now();
+		const key = `${id}:${numPrice}:${qty}`;
+		if (now - lastInitiateCheckoutTime < 2500 && lastInitiateCheckoutKey === key) {
+			return;
+		}
+		lastInitiateCheckoutTime = now;
+		lastInitiateCheckoutKey = key;
+
+		// 1. TikTok Pixel InitiateCheckout
+		try {
+			if ((window as any).ttq && typeof (window as any).ttq.track === 'function') {
+				(window as any).ttq.track('InitiateCheckout', {
+					content_id: id,
+					content_type: 'product',
+					content_name: title,
+					quantity: qty,
+					price: numPrice,
+					value: numPrice,
+					currency: 'MAD',
+					contents: [
+						{
+							content_id: id,
+							content_name: title,
+							quantity: qty,
+							price: unitPrice
+						}
+					]
+				});
+				console.log('⚡ [TIKTOK SUCCESS] InitiateCheckout fired:', { content_id: id, value: numPrice, quantity: qty });
+			}
+		} catch (err) {
+			console.warn('[Pixel] TikTok InitiateCheckout error:', err);
+		}
+
+		// 2. Meta Pixel InitiateCheckout
+		try {
+			if (typeof (window as any).fbq === 'function') {
+				(window as any).fbq('track', 'InitiateCheckout', {
+					content_id: id,
+					content_ids: [id],
+					content_name: title,
+					content_type: 'product',
+					value: numPrice,
+					num_items: qty,
+					currency: 'MAD'
+				});
+			}
+		} catch (err) {}
+
+		// 3. Snapchat Pixel START_CHECKOUT
+		try {
+			if (typeof (window as any).snaptr === 'function') {
+				(window as any).snaptr('track', 'START_CHECKOUT', {
+					price: numPrice,
+					currency: 'MAD',
+					item_ids: [id],
+					number_items: qty
+				});
+			}
+		} catch (err) {}
+
+		// 4. Google Tag Manager / GA4
+		try {
+			(window as any).dataLayer = (window as any).dataLayer || [];
+			(window as any).dataLayer.push({
+				event: 'begin_checkout',
+				ecommerce: {
+					currency: 'MAD',
+					value: numPrice,
+					items: [{ item_id: id, item_name: title, price: numPrice, quantity: qty }]
+				}
+			});
+		} catch (err) {}
+	} catch (globalErr) {
+		console.warn('trackInitiateCheckout non-blocking error:', globalErr);
+	}
+}
 
 export function trackAddToCart(
 	price: number,
@@ -119,14 +308,14 @@ export function trackAddToCart(
 	if (typeof window === 'undefined') return;
 
 	try {
-		const cur = 'MAD';
-		const numPrice = Number(price) || 0;
-		const title = (productTitle || '').trim();
+		const numPrice = Number(price) || 279;
+		const title = (productTitle || 'NOVAVITA Gummies').trim();
 		const id = String(itemId || 'gummies_collagen');
+		const qty = Number(numberItems || 1);
 
 		// Deduplication guard: prevent duplicate events within 1500ms for identical item
 		const now = Date.now();
-		const key = `${id}:${numPrice}`;
+		const key = `${id}:${numPrice}:${qty}`;
 		if (now - lastAddToCartTime < 1500 && lastAddToCartKey === key) {
 			console.log('[Tracking] AddToCart debounced (duplicate suppressed):', key);
 			return;
@@ -147,7 +336,7 @@ export function trackAddToCart(
 							item_id: id,
 							item_name: title,
 							price: numPrice,
-							quantity: numberItems || 1
+							quantity: qty
 						}
 					]
 				}
@@ -160,11 +349,11 @@ export function trackAddToCart(
 		try {
 			if (typeof (window as any).snaptr === 'function') {
 				(window as any).snaptr('track', 'ADD_CART', {
-					price: numPrice || 249,
+					price: numPrice,
 					currency: 'MAD',
-					item_ids: [String(id || 'novavita-bundle')],
+					item_ids: [id],
 					item_category: 'Supplements',
-					number_items: Number(numberItems || 1)
+					number_items: qty
 				});
 			}
 		} catch (err) {
@@ -175,6 +364,8 @@ export function trackAddToCart(
 		try {
 			if (typeof (window as any).fbq === 'function') {
 				(window as any).fbq('track', 'AddToCart', {
+					content_id: id,
+					content_ids: [id],
 					content_name: title,
 					content_type: 'product',
 					value: numPrice,
@@ -196,7 +387,7 @@ export function trackAddToCart(
 							item_id: id,
 							item_name: title,
 							price: numPrice,
-							quantity: numberItems || 1
+							quantity: qty
 						}
 					]
 				});
@@ -209,16 +400,25 @@ export function trackAddToCart(
 		// 5. TikTok Pixel
 		try {
 			if (typeof window !== 'undefined' && (window as any).ttq) {
+				const unitPrice = Math.round((numPrice / Math.max(1, qty)) * 100) / 100;
 				(window as any).ttq.track('AddToCart', {
-					content_id: String(id || 'novavita-bundle'),
+					content_id: id,
 					content_type: 'product',
-					content_name: String(title || 'NOVAVITA Gummies'),
-					quantity: numberItems || 1,
-					price: numPrice || 249,
-					value: numPrice || 249,
-					currency: 'MAD'
+					content_name: title,
+					quantity: qty,
+					price: numPrice,
+					value: numPrice,
+					currency: 'MAD',
+					contents: [
+						{
+							content_id: id,
+							content_name: title,
+							quantity: qty,
+							price: unitPrice
+						}
+					]
 				});
-				console.log('🛒 [TIKTOK SUCCESS] AddToCart fired');
+				console.log('🛒 [TIKTOK SUCCESS] AddToCart fired:', { content_id: id, value: numPrice, quantity: qty });
 			}
 		} catch (err) {
 			console.warn('[Pixel] TikTok AddToCart error:', err);
@@ -228,11 +428,21 @@ export function trackAddToCart(
 	}
 }
 
-export function trackPurchase(price: number, productTitle: string, transactionId?: string, phoneNumber?: string) {
+export function trackPurchase(
+	price: number,
+	productTitle: string,
+	transactionId?: string,
+	phoneNumber?: string,
+	contentId?: string,
+	quantity?: number
+) {
 	if (typeof window === 'undefined') return;
-	const numPrice = Number(price) || 0;
-	const title = (productTitle || '').trim();
+	const numPrice = Number(price) || 279;
+	const title = (productTitle || 'NOVAVITA Order').trim();
 	const txnId = (transactionId || `ORD-${Date.now()}`).trim();
+	const id = String(contentId || 'gummies_collagen').trim();
+	const qty = Number(quantity) || 2;
+	const unitPrice = Math.round((numPrice / Math.max(1, qty)) * 100) / 100;
 
 	// Deduplication Guard: prevent duplicate Purchase events (especially on page reload or double firing)
 	const storageKey = `tracked_order_${txnId}`;
@@ -240,6 +450,8 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		if (
 			sessionStorage.getItem(storageKey) ||
 			localStorage.getItem(storageKey) ||
+			sessionStorage.getItem(`tt_purchased_${txnId}`) ||
+			localStorage.getItem(`tt_purchased_${txnId}`) ||
 			sessionStorage.getItem(`snap_tracked_${txnId}`) ||
 			sessionStorage.getItem(`snap_order_${txnId}`) ||
 			sessionStorage.getItem(`snap_purchased_${txnId}`) ||
@@ -251,8 +463,12 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 		}
 		sessionStorage.setItem(storageKey, 'true');
 		localStorage.setItem(storageKey, 'true');
+		sessionStorage.setItem(`tt_purchased_${txnId}`, 'true');
+		localStorage.setItem(`tt_purchased_${txnId}`, 'true');
+		sessionStorage.setItem(`fb_purchased_${txnId}`, 'true');
 		sessionStorage.setItem(`snap_tracked_${txnId}`, 'true');
 		sessionStorage.setItem(`snap_order_${txnId}`, 'true');
+		sessionStorage.setItem(`snap_purchased_${txnId}`, 'true');
 		sessionStorage.setItem(`gads_tracked_${txnId}`, 'true');
 		localStorage.setItem(`gads_tracked_${txnId}`, 'true');
 	} catch {
@@ -270,9 +486,10 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				currency: 'MAD',
 				items: [
 					{
+						item_id: id,
 						item_name: title,
 						price: numPrice,
-						quantity: 1
+						quantity: qty
 					}
 				]
 			}
@@ -297,8 +514,8 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				price: numPrice,
 				currency: 'MAD',
 				transaction_id: String(txnId),
-				item_ids: [String(title || 'novavita-bundle')],
-				number_items: 1
+				item_ids: [id],
+				number_items: qty
 			});
 		}
 	} catch (err) {
@@ -311,11 +528,14 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 			(window as any).fbq('track', 'Purchase', {
 				value: numPrice,
 				currency: 'MAD',
+				content_id: id,
+				content_ids: [id],
 				content_name: title,
 				content_type: 'product',
+				num_items: qty,
 				order_id: txnId
 			}, { eventID: txnId });
-			console.log('[Pixel Tracked]: Purchase', { order_id: txnId, value: numPrice, content_name: title });
+			console.log('[Pixel Tracked]: Purchase', { order_id: txnId, value: numPrice, content_id: id, content_name: title });
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta Purchase error:', err);
@@ -335,28 +555,43 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 				currency: 'MAD',
 				value: numPrice,
 				transaction_id: txnId,
-				items: [{ item_name: title || 'منتج', price: numPrice, quantity: 1 }]
+				items: [{ item_id: id, item_name: title || 'منتج', price: numPrice, quantity: qty }]
 			});
 		}
 	} catch (err) {
 		console.warn('[Pixel] gtag conversion/purchase error:', err);
 	}
 
-	// 5. TikTok Pixel
+	// 5. TikTok Pixel (CompletePayment & PlaceAnOrder with Advanced Matching)
 	try {
 		if (typeof window !== 'undefined' && (window as any).ttq) {
+			if (phoneNumber && typeof (window as any).ttq.identify === 'function') {
+				const phoneClean = phoneNumber.trim().replace(/[\s\-\(\)]/g, '');
+				const formattedPhone = phoneClean.startsWith('+') ? phoneClean : ('+212' + phoneClean.replace(/^0/, ''));
+				if (formattedPhone && formattedPhone !== '+212') {
+					(window as any).ttq.identify({ phone_number: formattedPhone });
+				}
+			}
 			const ttqPayload = {
-				content_id: String(title || 'novavita-bundle'),
+				content_id: id,
 				content_type: 'product',
-				content_name: String(title || 'NOVAVITA Order'),
-				quantity: 1,
+				content_name: title,
+				quantity: qty,
 				price: numPrice,
 				value: numPrice,
-				currency: 'MAD'
+				currency: 'MAD',
+				contents: [
+					{
+						content_id: id,
+						content_name: title,
+						quantity: qty,
+						price: unitPrice
+					}
+				]
 			};
 			(window as any).ttq.track('CompletePayment', ttqPayload, { event_id: String(txnId) });
 			(window as any).ttq.track('PlaceAnOrder', ttqPayload, { event_id: String(txnId) });
-			console.log('💰 [TIKTOK SUCCESS] CompletePayment & PlaceAnOrder fired');
+			console.log('💰 [TIKTOK SUCCESS] CompletePayment & PlaceAnOrder fired:', { event_id: txnId, content_id: id, value: numPrice, quantity: qty });
 		}
 	} catch (err) {
 		console.warn('[Pixel] TikTok CompletePayment error:', err);

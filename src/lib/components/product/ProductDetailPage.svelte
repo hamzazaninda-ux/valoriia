@@ -6,8 +6,8 @@
 	import { PRICING_TIERS } from '$lib/constants/pricing';
 	import { buildOrderFulfillmentLabel } from '$lib/data/products';
 	import { slide } from 'svelte/transition';
-	import { trackAddToCart } from '$lib/tracking/pixel.js';
-	import { trackPurchase } from '$lib/utils/checkout';
+	import { trackPurchase, trackAddToCart, trackViewContent, trackInitiateCheckout } from '$lib/utils/checkout';
+
 
 	let { data } = $props();
 
@@ -125,8 +125,19 @@
 
 	// Image Gallery State
 	let activeImage = $state('');
+	let lastViewedSku = '';
 	$effect(() => {
 		activeImage = data.product.image;
+		const sku = data.product?.sku || data.product?.slug || 'gummies_collagen';
+		if (typeof window !== 'undefined' && sku && sku !== lastViewedSku) {
+			lastViewedSku = sku;
+			trackViewContent(
+				currentTier?.price || 279,
+				data.product?.name || 'NOVAVITA Gummies',
+				sku,
+				currentTier?.units || 2
+			);
+		}
 	});
 
 	// Header States
@@ -140,11 +151,27 @@
 
 	function selectTier(tierId: 'tier_1' | 'tier_2' | 'tier_3') {
 		selectedTier = tierId;
+		const tierObj = PRICING_TIERS[tierId];
+		if (typeof window !== 'undefined' && tierObj) {
+			trackAddToCart(
+				tierObj.price,
+				`${product?.name || 'NOVAVITA Gummies'} (${tierObj.title})`,
+				'MAD',
+				product?.sku || product?.slug || 'gummies_collagen',
+				tierObj.units
+			);
+		}
 	}
 
 	function scrollToOffers() {
 		if (typeof window !== 'undefined') {
-			trackAddToCart(product?.name || 'NOVAVITA Gummies Bundle', currentTier?.price || 279);
+			trackAddToCart(
+				currentTier?.price || 279,
+				`${product?.name || 'NOVAVITA Gummies'} (${currentTier?.title || 'علبتان'})`,
+				'MAD',
+				product?.sku || product?.slug || 'gummies_collagen',
+				currentTier?.units || 2
+			);
 		}
 
 		const el =
@@ -276,6 +303,13 @@
 
 		if (hasError) return;
 
+		trackInitiateCheckout(
+			currentTier?.price || 279,
+			`${product?.name || 'NOVAVITA Gummies'} (${currentTier?.title || 'علبتان'})`,
+			product?.sku || product?.slug || 'gummies_collagen',
+			currentTier?.units || 2
+		);
+
 		// Open Pre-Thank-You Interstitial Upsell Modal instantaneously (0ms) with 10s countdown
 		pendingOrderId = 'NV-' + Math.floor(100000 + Math.random() * 900000);
 		orderDispatched = false;
@@ -328,7 +362,9 @@
 			orderPayload.total,
 			orderPayload.productTitle,
 			orderPayload.orderId,
-			orderPayload.phone
+			orderPayload.phone,
+			orderPayload.sku || 'gummies_collagen',
+			orderPayload.qte || 2
 		);
 
 		goto(

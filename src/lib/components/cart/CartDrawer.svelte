@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { cart, cartUi } from '$lib/stores/cart.svelte';
 	import { PRODUCTS, type CatalogProduct, buildOrderFulfillmentLabel } from '$lib/data/products';
-	import { trackPurchase } from '$lib/utils/checkout';
+	import { trackPurchase, trackInitiateCheckout, trackAddToCart } from '$lib/utils/checkout';
 
 	interface Props {
 		open?: boolean;
@@ -295,7 +295,7 @@
 			}
 
 			// Fire Purchase tracking
-			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone);
+			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone, 'MAD', mainItem?.sku || 'gummies_collagen', totalBottles);
 
 			// Clear cart and close drawer
 			handleClose();
@@ -590,7 +590,10 @@
 							<!-- Row 2: Main CTA Button (Ergonomic & Visible) -->
 							<button
 								type="button"
-								onclick={() => (currentStep = 'checkout')}
+								onclick={() => {
+									trackInitiateCheckout(subtotal, mainItem?.title || 'NOVAVITA Gummies Bundle', 'MAD', mainItem?.sku || 'gummies_collagen', cart.count);
+									currentStep = 'checkout';
+								}}
 								class="bg-[#1B4332] text-white py-3 sm:py-3.5 px-4 rounded-xl text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-md hover:bg-[#153427] active:scale-[0.98] transition-all w-full cursor-pointer"
 							>
 								<span>أكملي الطلب ({cart.count})</span>

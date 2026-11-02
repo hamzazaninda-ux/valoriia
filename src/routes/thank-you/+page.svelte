@@ -187,7 +187,9 @@
 				sessionStorage.getItem(trackingKey) ||
 				sessionStorage.getItem(`tracked_order_${orderId}`) ||
 				localStorage.getItem(`tracked_order_${orderId}`) ||
-				sessionStorage.getItem(`fb_purchased_${orderId}`);
+				sessionStorage.getItem(`fb_purchased_${orderId}`) ||
+				sessionStorage.getItem(`tt_purchased_${orderId}`) ||
+				localStorage.getItem(`tt_purchased_${orderId}`);
 
 			if (!alreadyFired) {
 				// 1. Google Ads Conversion Firing
@@ -223,10 +225,22 @@
 						(window as any).ttq.track(
 							'CompletePayment',
 							{
-								content_id: items[0]?.sku || 'novavita_bundle',
+								content_id: items[0]?.sku || order.sku || 'novavita_bundle',
+								content_name: order.productTitle || items[0]?.title || 'NOVAVITA Gummies Bundle',
 								content_type: 'product',
 								value: totalPrice,
-								currency: 'MAD'
+								price: totalPrice,
+								currency: 'MAD',
+								quantity: Number(order.quantity || order.qte || items.reduce((s, it) => s + (Number(it.quantity) || 1), 0) || 1),
+								contents: [
+									{
+										content_id: items[0]?.sku || order.sku || 'novavita_bundle',
+										content_name: order.productTitle || items[0]?.title || 'NOVAVITA Gummies Bundle',
+										content_type: 'product',
+										price: totalPrice,
+										quantity: Number(order.quantity || order.qte || items.reduce((s, it) => s + (Number(it.quantity) || 1), 0) || 1)
+									}
+								]
 							},
 							{ event_id: orderId }
 						);
@@ -279,6 +293,8 @@
 				sessionStorage.setItem(`tracked_order_${orderId}`, 'true');
 				localStorage.setItem(`tracked_order_${orderId}`, 'true');
 				sessionStorage.setItem(`fb_purchased_${orderId}`, 'true');
+				sessionStorage.setItem(`tt_purchased_${orderId}`, 'true');
+				localStorage.setItem(`tt_purchased_${orderId}`, 'true');
 			} else {
 				console.log(`🛡️ [Pixel] Conversion already fired for order ${orderId}. Skipping duplicate.`);
 			}
