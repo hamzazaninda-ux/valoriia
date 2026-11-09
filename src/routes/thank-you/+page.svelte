@@ -244,7 +244,20 @@
 							},
 							{ event_id: orderId }
 						);
-						console.log('✅ [Pixel] TikTok CompletePayment fired:', { orderId });
+						(window as any).ttq.track(
+							'PlaceAnOrder',
+							{
+								content_id: items[0]?.sku || order.sku || 'novavita_bundle',
+								content_name: order.productTitle || items[0]?.title || 'NOVAVITA Gummies Bundle',
+								content_type: 'product',
+								value: totalPrice,
+								price: totalPrice,
+								currency: 'MAD',
+								quantity: Number(order.quantity || order.qte || items.reduce((s, it) => s + (Number(it.quantity) || 1), 0) || 1)
+							},
+							{ event_id: `${orderId}_order` }
+						);
+						console.log('✅ [Pixel] TikTok CompletePayment & PlaceAnOrder fired:', { orderId });
 					} catch (err) {
 						console.warn('⚠️ [Pixel] TikTok firing error:', err);
 					}

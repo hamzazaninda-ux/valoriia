@@ -75,7 +75,7 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
   const tracking = {
     gtmContainerId: 'GTM-TNFHPGTV',
     facebookPixelId: '2180716089518389',
-    tiktokPixelId: 'DBKC1AJC77U0QLCJS7Q0',
+    tiktokPixelId: 'DBOQTJ3C77U5934IJEM0',
     snapchatPixelId: '451b9c4c-9641-4b83-9f0a-319889a52302',
     googleAnalyticsId: '',
     googleAdsId: 'AW-18531557898',
@@ -87,7 +87,7 @@ export async function readTrackingSettings(): Promise<TrackingSettings> {
   };
 
   tracking.facebookPixelId = '2180716089518389';
-  tracking.tiktokPixelId = 'DBKC1AJC77U0QLCJS7Q0';
+  tracking.tiktokPixelId = 'DBOQTJ3C77U5934IJEM0';
   if (!tracking.siteUrl || tracking.siteUrl.includes('lhamza.shop') || tracking.siteUrl.includes('valoriia')) {
     tracking.siteUrl = 'https://novavita.store';
   }
@@ -149,7 +149,7 @@ export async function readSettingsForAdmin(): Promise<GlobalSettings> {
     const trackingData = {
       gtmContainerId: 'GTM-TNFHPGTV',
       facebookPixelId: '2180716089518389',
-      tiktokPixelId: 'DBKC1AJC77U0QLCJS7Q0',
+      tiktokPixelId: 'DBOQTJ3C77U5934IJEM0',
       snapchatPixelId: '451b9c4c-9641-4b83-9f0a-319889a52302',
       googleAnalyticsId: '',
       googleAdsId: 'AW-18531557898',

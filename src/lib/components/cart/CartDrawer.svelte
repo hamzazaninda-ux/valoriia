@@ -295,7 +295,7 @@
 			}
 
 			// Fire Purchase tracking
-			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone, 'MAD', mainItem?.sku || 'gummies_collagen', totalBottles);
+			trackPurchase(subtotal, fullProductLabel, orderId, cleanedPhone, mainItem?.sku || 'gummies_collagen', totalBottles);
 
 			// Clear cart and close drawer
 			handleClose();

@@ -1,7 +1,7 @@
 /**
  * Multi-Pixel Unified Tracker:
  * - Meta Pixel (2180716089518389)
- * - TikTok Pixel (DBKC1AJC77U0QLCJS7Q0)
+ * - TikTok Pixel (DBOQTJ3C77U5934IJEM0)
  * - Snapchat Pixel (451b9c4c-9641-4b83-9f0a-319889a52302)
  *
  * Strict Production-Grade Setup | Zero Duplication | Zero Dropped Signals
@@ -9,7 +9,7 @@
 
 export const SNAPCHAT_PIXEL_ID = '451b9c4c-9641-4b83-9f0a-319889a52302';
 export const META_PIXEL_ID = '2180716089518389';
-export const TIKTOK_PIXEL_ID = 'DBKC1AJC77U0QLCJS7Q0';
+export const TIKTOK_PIXEL_ID = 'DBOQTJ3C77U5934IJEM0';
 
 let lastViewContentTime = 0;
 let lastViewContentKey = '';
