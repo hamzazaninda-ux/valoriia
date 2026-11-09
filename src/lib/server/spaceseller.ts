@@ -131,7 +131,7 @@ export function calculateOrderTotals(options: {
 	let baseOfferPrice = 279; // Default tier_1 (2 bottles @ 279 MAD)
 	const r = typeof options.rawTotal === 'number' && options.rawTotal > 0 ? options.rawTotal : 0;
 
-	if (r === 199) {
+	if (r === 199 || r === 298 || r === 297) {
 		baseOfferPrice = 199;
 	} else if (r === 279 || r === 378 || r === 377) {
 		baseOfferPrice = 279;
@@ -141,14 +141,12 @@ export function calculateOrderTotals(options: {
 		baseOfferPrice = 349;
 	} else if (r === 399 || r === 498 || r === 497) {
 		baseOfferPrice = 399;
-	} else if (r === 419 || r === 518 || r === 517) {
-		baseOfferPrice = 419;
-	} else if (options.tier === 'tier_3' || options.tier === 'tier-4-tubs') {
-		baseOfferPrice = 419;
-	} else if (options.tier === 'tier_2' || options.tier === 'tier-3-tubs') {
+	} else if (options.tier === 'tier_3' || options.tier === 'tier-3-tubs' || options.tier === '3') {
 		baseOfferPrice = 349;
-	} else if (options.tier === 'tier_1' || options.tier === 'tier-2-tubs') {
+	} else if (options.tier === 'tier_2' || options.tier === 'tier-2-tubs' || options.tier === '2') {
 		baseOfferPrice = 279;
+	} else if (options.tier === 'tier_1' || options.tier === 'tier-1-tub' || options.tier === '1') {
+		baseOfferPrice = 199;
 	} else if (r > 0) {
 		baseOfferPrice = hasUpsell && r > 99 ? r - 99 : r;
 	} else if (Array.isArray(options.items) && options.items.length > 0) {
@@ -424,19 +422,18 @@ export function calculatePhysicalBottleCount(options: {
 	const hasUpsell = hasUpsellOrder(options);
 	const total = Number(options.rawTotal ?? options.price ?? 0);
 
-	if (total === 199 || rawTier.includes('التجربة') || rawTier.includes('واحدة')) {
-		baseBottles = 1;
-	} else if (
-		total === 419 ||
-		total === 518 ||
-		total === 517 ||
-		rawTier === 'tier_3' ||
-		rawTier === 'tier-4-tubs' ||
-		rawTier.includes('4') ||
-		rawTier.includes('مكثف') ||
-		rawTier.includes('عائلية')
+	if (
+		total === 199 ||
+		total === 298 ||
+		total === 297 ||
+		rawTier === 'tier_1' ||
+		rawTier === 'tier-1-tub' ||
+		rawTier === '1' ||
+		rawTier.includes('التجربة') ||
+		rawTier.includes('واحدة') ||
+		rawTier.includes('تجريبي')
 	) {
-		baseBottles = 4;
+		baseBottles = 1;
 	} else if (
 		total === 399 ||
 		total === 498 ||
@@ -444,8 +441,9 @@ export function calculatePhysicalBottleCount(options: {
 		total === 349 ||
 		total === 448 ||
 		total === 447 ||
-		rawTier === 'tier_2' ||
+		rawTier === 'tier_3' ||
 		rawTier === 'tier-3-tubs' ||
+		rawTier === '3' ||
 		rawTier.includes('3') ||
 		rawTier.includes('التحول') ||
 		rawTier.includes('علاجي')
@@ -458,8 +456,9 @@ export function calculatePhysicalBottleCount(options: {
 		total === 279 ||
 		total === 378 ||
 		total === 377 ||
-		rawTier === 'tier_1' ||
+		rawTier === 'tier_2' ||
 		rawTier === 'tier-2-tubs' ||
+		rawTier === '2' ||
 		rawTier.includes('2') ||
 		rawTier.includes('الثنائي') ||
 		rawTier.includes('علبتان')
@@ -524,21 +523,14 @@ export function buildConfirmationBreakdown(options: {
 		options.totalPrice === 199 ||
 		options.totalPrice === 298 ||
 		options.totalPrice === 297 ||
+		rawTier === 'tier_1' ||
+		rawTier === 'tier-1-tub' ||
+		rawTier === '1' ||
 		rawTier.includes('التجربة') ||
-		rawTier.includes('واحدة')
+		rawTier.includes('واحدة') ||
+		rawTier.includes('تجريبي')
 	) {
 		tierUnitText = 'علبة واحدة';
-	} else if (
-		options.totalPrice === 419 ||
-		options.totalPrice === 518 ||
-		options.totalPrice === 517 ||
-		rawTier === 'tier_3' ||
-		rawTier === 'tier-4-tubs' ||
-		rawTier.includes('4') ||
-		rawTier.includes('مكثف') ||
-		rawTier.includes('عائلية')
-	) {
-		tierUnitText = '4 علب';
 	} else if (
 		options.totalPrice === 399 ||
 		options.totalPrice === 498 ||
@@ -546,8 +538,9 @@ export function buildConfirmationBreakdown(options: {
 		options.totalPrice === 349 ||
 		options.totalPrice === 448 ||
 		options.totalPrice === 447 ||
-		rawTier === 'tier_2' ||
+		rawTier === 'tier_3' ||
 		rawTier === 'tier-3-tubs' ||
+		rawTier === '3' ||
 		rawTier.includes('3') ||
 		rawTier.includes('التحول') ||
 		rawTier.includes('علاجي')

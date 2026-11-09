@@ -276,11 +276,11 @@ export function buildOrderFulfillmentLabel(params: {
     }
   }
 
-  const rawTier = String(params.tier || 'tier_1');
+  const rawTier = String(params.tier || 'tier_2');
   const tierText =
-    rawTier === 'tier_3' || rawTier === 'tier-4-tubs' || rawTier.includes('4') || rawTier.includes('مكثف') || rawTier.includes('عائلية')
-      ? 'باقة الكورس المكثف VIP (4 علب)'
-      : rawTier === 'tier_2' || rawTier === 'tier-3-tubs' || rawTier.includes('3') || rawTier.includes('التحول') || rawTier.includes('علاجي')
+    rawTier === 'tier_1' || rawTier === 'tier-1-tub' || rawTier === '1' || rawTier.includes('واحدة') || rawTier.includes('تجريبي') || rawTier.includes('التجربة')
+      ? 'باقة التجربة (1 علبة)'
+      : rawTier === 'tier_3' || rawTier === 'tier-3-tubs' || rawTier === '3' || rawTier.includes('3') || rawTier.includes('التحول') || rawTier.includes('علاجي')
       ? 'باقة الكورس العلاجي الكامل (3 علب)'
       : 'باقة الثنائي الأكثر طلباً (2 علب)';
 

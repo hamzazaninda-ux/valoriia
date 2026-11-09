@@ -49,8 +49,8 @@ export function buildOrderPayload(
 
 	const titles = lines.map((l) => `${l.qty}x ${l.title}${l.offerTitle ? ` (${l.offerTitle})` : ''}`);
 	const subtotal = lines.reduce((a, l) => a + l.qty * l.price, 0);
-	const mainTier = mainLine?.tier || (subtotal === 419 || subtotal === 518 ? 'tier_3' : subtotal === 349 || subtotal === 448 ? 'tier_2' : 'tier_1');
-	const baseTierBottles = mainTier === 'tier_3' ? 4 : mainTier === 'tier_2' ? 3 : 2;
+	const mainTier = mainLine?.tier || (subtotal === 349 || subtotal === 448 ? 'tier_3' : subtotal === 199 || subtotal === 298 ? 'tier_1' : 'tier_2');
+	const baseTierBottles = mainTier === 'tier_3' ? 3 : mainTier === 'tier_1' ? 1 : 2;
 	const physicalBottleCount = baseTierBottles + upsells.length;
 	const now = new Date();
 

@@ -112,22 +112,22 @@
 		}
 
 		if (items.length === 0) {
-			const tier = rawOrder?.tier || urlParams?.get('tier') || 'tier_1';
+			const tier = rawOrder?.tier || urlParams?.get('tier') || 'tier_2';
 			const mainSku = rawOrder?.sku || rawOrder?.mainSku || urlParams?.get('sku') || 'gummies_collagen';
 			const baseTitle = mainSku.includes('biotine')
 				? 'علكات البيوتين 3000mcg والزنك'
 				: mainSku.includes('vitamine')
 					? 'علكات الملتي فيتامين المتكاملة'
 					: 'علكات الكولاجين البحري';
-			if (tier === 'tier_3' || tier === 'tier-4-tubs' || totalPrice === 419 || totalPrice === 518) {
+			if (tier === 'tier_1' || tier === 'tier-1-tub' || totalPrice === 199 || totalPrice === 298) {
 				items.push({
 					sku: mainSku,
-					title: `${baseTitle} (4 علب - كورس مكثف VIP)`,
-					quantity: 4,
-					unitPrice: 104.75,
-					price: 419
+					title: `${baseTitle} (علبة واحدة - شهر تجريبي)`,
+					quantity: 1,
+					unitPrice: 199,
+					price: 199
 				});
-			} else if (tier === 'tier_2' || tier === 'tier-3-tubs' || totalPrice === 399 || totalPrice === 498 || totalPrice === 349 || totalPrice === 448) {
+			} else if (tier === 'tier_3' || tier === 'tier-3-tubs' || totalPrice === 349 || totalPrice === 448) {
 				items.push({
 					sku: mainSku,
 					title: `${baseTitle} (3 علب - كورس علاجي كامل)`,
