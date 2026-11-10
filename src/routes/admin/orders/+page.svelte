@@ -10,6 +10,7 @@
 	let selectedStatus = $state<string>('all');
 	let updatingOrderId = $state<string | null>(null);
 	let isSyncingAll = $state(false);
+	let isClearingAll = $state(false);
 	let syncingOrderId = $state<string | null>(null);
 	let toastMessage = $state<string | null>(null);
 	let toastType = $state<'success' | 'error'>('success');
@@ -239,6 +240,30 @@
 		}
 	}
 
+	// Clear all test orders
+	async function clearAllTestOrders() {
+		if (isClearingAll) return;
+		if (!confirm('هل أنت متأكد من مسح جميع طلبات الاختبار القديمة؟ هذا الإجراء لا يمكن التراجع عنه.')) return;
+		isClearingAll = true;
+		try {
+			const res = await fetch('/api/admin/clear-orders', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			});
+			const resJson = await res.json();
+			if (!res.ok || !resJson.success) {
+				showToast(resJson.error || 'تعذر مسح الطلبات', 'error');
+			} else {
+				orders = [];
+				showToast(resJson.message || 'تم مسح جميع طلبات الاختبار وإعادة التصفير بنجاح ✅', 'success');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم', 'error');
+		} finally {
+			isClearingAll = false;
+		}
+	}
+
 	// Sync single order to Google Sheets
 	async function syncSingleOrderToSheets(orderId: string) {
 		if (syncingOrderId === orderId) return;
@@ -313,6 +338,18 @@
 					<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
 				</svg>
 				{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة جميع الطلبات مع Google Sheets 🔄'}
+			</button>
+			<button
+				type="button"
+				onclick={clearAllTestOrders}
+				disabled={isClearingAll || orders.length === 0}
+				class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs sm:text-sm font-bold text-rose-700 shadow-2xs transition-all hover:bg-rose-100 hover:border-rose-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+				title="مسح جميع طلبات الاختبار وإعادة تصفير لوحة القيادة"
+			>
+				<svg class="h-4 w-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+				</svg>
+				{isClearingAll ? 'جاري المسح...' : 'مسح طلبات الاختبار (إعادة التصفير)'}
 			</button>
 			{#if data.globalSheets}
 				<a

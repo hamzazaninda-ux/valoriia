@@ -150,6 +150,24 @@ export async function deleteOrder(orderId: string): Promise<boolean> {
   }
 }
 
+export async function clearAllOrders(): Promise<boolean> {
+  cachedOrders = [];
+  cacheTime = Date.now();
+
+  try {
+    await gitWriteFile(
+      'novavita',
+      ORDERS_FILE_PATH,
+      '[]\n',
+      'chore(orders): clear all test orders and reset dashboard to zero'
+    );
+    return true;
+  } catch (err) {
+    console.error('[Orders] Failed to clear all orders:', err);
+    return false;
+  }
+}
+
 export async function getOrderStats(): Promise<OrderStats> {
   const orders = await readOrders();
 

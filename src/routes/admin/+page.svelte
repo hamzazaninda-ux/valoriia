@@ -13,6 +13,7 @@
 
 	let isRefreshing = $state(false);
 	let isSyncingAll = $state(false);
+	let isClearingAll = $state(false);
 	let searchQuery = $state('');
 
 	// Financial parameters synced with Calculator localStorage (Defaults: 65 MAD SpaceSeller, 45 MAD COGS)
@@ -68,6 +69,31 @@
 			showToast('تعذر الاتصال بالخادم، يرجى المحاولة لاحقاً', 'error');
 		} finally {
 			isRefreshing = false;
+		}
+	}
+
+	// Clear all test orders
+	async function clearAllTestOrders() {
+		if (isClearingAll) return;
+		if (!confirm('هل أنت متأكد من مسح جميع طلبات الاختبار القديمة؟ هذا الإجراء لا يمكن التراجع عنه.')) return;
+		isClearingAll = true;
+		try {
+			const res = await fetch('/api/admin/clear-orders', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' }
+			});
+			const resJson = await res.json();
+			if (!res.ok || !resJson.success) {
+				showToast(resJson.error || 'تعذر مسح الطلبات', 'error');
+			} else {
+				statsOverride = resJson.stats;
+				ordersOverride = [];
+				showToast(resJson.message || 'تم مسح جميع طلبات الاختبار وإعادة التصفير بنجاح ✅', 'success');
+			}
+		} catch {
+			showToast('تعذر الاتصال بالخادم', 'error');
+		} finally {
+			isClearingAll = false;
 		}
 	}
 
@@ -230,6 +256,15 @@
 				class="inline-flex items-center gap-2 rounded-2xl bg-emerald-950/70 hover:bg-emerald-950 border border-emerald-700/60 text-emerald-100 px-4 py-2.5 text-xs font-extrabold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
 			>
 				<span>{isSyncingAll ? 'جاري المزامنة...' : 'مزامنة Sheets 📊'}</span>
+			</button>
+
+			<button
+				type="button"
+				onclick={clearAllTestOrders}
+				disabled={isClearingAll || orders.length === 0}
+				class="inline-flex items-center gap-2 rounded-2xl bg-rose-950/70 hover:bg-rose-900 border border-rose-500/50 text-rose-100 px-4 py-2.5 text-xs font-extrabold transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+			>
+				<span>{isClearingAll ? 'جاري المسح...' : 'مسح طلبات الاختبار (إعادة التصفير) 🗑️'}</span>
 			</button>
 
 			<a

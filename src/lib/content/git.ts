@@ -92,10 +92,13 @@ async function listLocalFiles(path: string): Promise<string[]> {
 }
 
 export async function gitReadFile(branch: string, path: string): Promise<string> {
-  try {
-    return await readLocalFile(path);
-  } catch {
-    // continue to github
+  const isDynamicOrdersFile = path.includes('orders.json');
+  if (!isDynamicOrdersFile || !env.GITHUB_TOKEN) {
+    try {
+      return await readLocalFile(path);
+    } catch {
+      // continue to github
+    }
   }
 
   const targetBranch = branch === 'main' ? (env.GITHUB_BRANCH || 'novavita') : branch;
