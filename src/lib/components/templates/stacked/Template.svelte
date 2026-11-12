@@ -27,7 +27,7 @@
 			id: 1,
 			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
 			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 229,
+			price: 199,
 			originalPrice: 299,
 			quantity: 1,
 			badge: null,
@@ -94,7 +94,7 @@
 
 	const activeOffer = $derived(
 		offersList.find((o: ProductOffer) => o.id === currentPackId) ||
-			offersList[0] || { title: 'قطعة واحدة + رشاش هدية مجانية 🎁', price: 229, quantity: 1 }
+			offersList[0] || { title: 'قطعة واحدة + رشاش هدية مجانية 🎁', price: 199, quantity: 1 }
 	);
 
 	let showStickyBtn = $state(true);
@@ -138,7 +138,7 @@
 	let phone = $state('');
 	let selectedTier = $state({
 		id: 'tier1',
-		price: 229,
+		price: 199,
 		title: 'قطعة واحدة + رشاش هدية مجانية'
 	});
 	let nameBlurredInvalid = $state(false);
@@ -169,7 +169,7 @@
 	const productReviewCount = $derived(content?.reviewCount || (product as any)?.reviewCount);
 
 	const heroCurrentPrice = $derived(
-		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 229
+		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 199
 	);
 	const heroOldPrice = $derived(
 		activeOffer?.originalPrice || pricing?.originalPrice || defaultOffers[0].originalPrice || 299
@@ -582,7 +582,7 @@
 		if (tierId === 'tier1') {
 			selectedTier = {
 				id: 'tier1',
-				price: 229,
+				price: 199,
 				title: 'قطعة واحدة + رشاش هدية مجانية'
 			};
 			selectedPack = 1;
@@ -671,8 +671,8 @@
 		if (!cleanPhone.startsWith("212")) cleanPhone = "212" + cleanPhone;
 		const internationalPhone = "+" + cleanPhone;
 
-		const currentTier = selectedTier || { id: "tier1", price: 229, title: "قطعة واحدة + رشاش هدية" };
-		const orderPrice = Number(currentTier.price || 229);
+		const currentTier = selectedTier || { id: "tier1", price: 199, title: "قطعة واحدة + رشاش هدية" };
+		const orderPrice = Number(currentTier.price || 199);
 		const quantity = Number(currentTier.id === "tier2" || currentPackId === 2 ? 2 : 1);
 		const bundleTitle = currentTier.title || (quantity === 2 ? "قطعتان + 2 رشاشات هدية 🎁🎁" : "قطعة واحدة + رشاش هدية 🎁");
 
@@ -728,7 +728,7 @@
 		e?.preventDefault();
 		try {
 			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 349 : 229));
+				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 349 : 199));
 				const itemName = (product as any)?.title || content?.title || 'طقم تنظيم الحمام الذكي';
 
 				(window as any).gtag('event', 'add_to_cart', {
@@ -945,7 +945,7 @@
 							<!-- Desktop savings under title -->
 							<div class="offer-savings-desktop">
 								<span class="offer-pill">
-									وفّر 70 درهم
+									وفّر 100 درهم
 								</span>
 							</div>
 						</div>
@@ -956,7 +956,7 @@
 						<!-- Price Block -->
 						<div class="offer-price">
 							<div class="offer-price-current">
-								229 <span class="offer-currency">درهم</span>
+								199 <span class="offer-currency">درهم</span>
 							</div>
 							<div class="offer-price-old">299 درهم</div>
 						</div>
@@ -964,7 +964,7 @@
 						<!-- Mobile Savings Badge -->
 						<div class="offer-savings-mobile">
 							<span class="offer-pill">
-								وفّر 70 درهم
+								وفّر 100 درهم
 							</span>
 						</div>
 					</div>
@@ -1122,7 +1122,7 @@
 							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin me-2"></span>
 							<span>جاري تأكيد طلبك...</span>
 						{:else}
-							تأكيد الطلب • {selectedTier?.price || 229} درهم
+							تأكيد الطلب • {selectedTier?.price || 199} درهم
 						{/if}
 					</button>
 
@@ -1522,7 +1522,7 @@
 		bind:isOpen={showDrainUpsell}
 		orderDetails={{
 			orderId: pendingOrder?.orderId || '',
-			total: pendingOrder?.basePrice || activeOffer?.price || 229,
+			total: pendingOrder?.basePrice || activeOffer?.price || 199,
 			phone: pendingOrder?.phone || '',
 			name: pendingOrder?.customerName || ''
 		}}

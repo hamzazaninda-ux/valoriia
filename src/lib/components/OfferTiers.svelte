@@ -31,7 +31,7 @@
 		if (offer.originalPrice && offer.originalPrice > offer.price) {
 			return Math.round(offer.originalPrice - offer.price);
 		}
-		return offer.id === 2 ? 109 : 70;
+		return offer.id === 2 ? 109 : 100;
 	}
 </script>
 

@@ -26,14 +26,14 @@
 						content_type: 'product',
 						content_name: 'منظم الحمام الزاوي 4 رفوف',
 						quantity: 1,
-						price: 229,
-						value: 229,
+						price: 199,
+						value: 199,
 						currency: 'MAD'
 					});
 					console.log('TikTok Event Fired: ViewContent', {
 						content_id: 'kit-tandim',
 						content_name: 'منظم الحمام الزاوي 4 رفوف',
-						value: 229,
+						value: 199,
 						currency: 'MAD'
 					});
 					return true;
@@ -69,7 +69,7 @@
 	async function handleAcceptUpsell() {
 		if (!pendingOrderData || isSubmitting) return;
 
-		const basePrice = Number(pendingOrderData.selectedTier.price || 229);
+		const basePrice = Number(pendingOrderData.selectedTier.price || 199);
 		const finalPrice = basePrice + 29;
 		const baseTitle =
 			pendingOrderData.selectedTier.title ||
@@ -86,7 +86,7 @@
 		if (!pendingOrderData || isSubmitting) return;
 		showUpsellModal = false;
 
-		const basePrice = Number(pendingOrderData.selectedTier.price || 229);
+		const basePrice = Number(pendingOrderData.selectedTier.price || 199);
 		const baseTitle =
 			pendingOrderData.selectedTier.title ||
 			(pendingOrderData.quantity === 2
@@ -248,7 +248,7 @@
 	bind:isOpen={showUpsellModal}
 	orderDetails={{
 		orderId: pendingOrderData?.orderId || '',
-		total: pendingOrderData?.selectedTier?.price || 229,
+		total: pendingOrderData?.selectedTier?.price || 199,
 		phone: pendingOrderData?.phone || '',
 		name: pendingOrderData?.fullName || ''
 	}}
