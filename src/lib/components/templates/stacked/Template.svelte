@@ -110,7 +110,7 @@
 		title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
 		subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 		heroImage:
-			'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
+			'/images/child-safety-lock.webp',
 		startingPrice: 49
 	};
 
@@ -127,7 +127,7 @@
 				subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 				startingPrice: 49,
 				heroImage:
-					'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp'
+					'/images/child-safety-lock.webp'
 			}
 		];
 	});

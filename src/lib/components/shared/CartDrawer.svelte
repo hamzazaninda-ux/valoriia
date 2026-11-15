@@ -38,7 +38,7 @@
 		currentImage?: string;
 	} = $props();
 	export const CHILD_LOCK_IMAGE =
-		'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp';
+		'/images/child-safety-lock.webp';
 
 	const crossSells = $derived.by(() => {
 		const childLock: CrossSell = {

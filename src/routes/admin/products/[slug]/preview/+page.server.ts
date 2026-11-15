@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params }) => {
       slug: p.slug,
       title: p.slug === 'qofl-al-aman' ? 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒' : p.title,
       subtitle: p.slug === 'qofl-al-aman' ? 'قفل بسيط وفعّال للخزانات والأدراج' : p.subtitle,
-      heroImage: p.slug === 'qofl-al-aman' ? 'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp' : (p.heroImage || ''),
+      heroImage: p.slug === 'qofl-al-aman' ? '/images/child-safety-lock.webp' : (p.heroImage || ''),
       startingPrice: p.slug === 'qofl-al-aman' ? 49 : p.startingPrice
     }));
   } catch {

@@ -52,7 +52,7 @@ export const load: PageServerLoad = async () => {
 			title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن والأدراج 🔒',
 			subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
 			heroImage:
-				'https://raw.githubusercontent.com/hamzazaninda-ux/valoriia/main/static/images/child-safety-lock.webp',
+				'/images/child-safety-lock.webp',
 			startingPrice: 49
 		}
 	];
