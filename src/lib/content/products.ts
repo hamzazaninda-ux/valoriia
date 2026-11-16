@@ -487,6 +487,12 @@ async function updateIndex(branch: string): Promise<void> {
           subtitle: version.content.subtitle,
           heroImage: version.content.heroImage,
           startingPrice: version.pricing.offers.length ? Math.min(...version.pricing.offers.map(o => o.price)) : 0,
+          originalPrice: (() => {
+            const offers = version.pricing.offers;
+            if (!offers.length) return 0;
+            const cheapest = offers.reduce((m, o) => (o.price < m.price ? o : m), offers[0]);
+            return cheapest.originalPrice || 0;
+          })(),
           status: product.status,
           template: product.template,
           updatedAt: product.updatedAt

@@ -58,10 +58,10 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     input.product ||
     input.offer ||
     input.productTitle ||
-    'طقم التنظيم المنزلي + هدية'
+    'طلب من المتجر'
   ).trim();
 
-  const price = Number(input.totalPrice ?? input.price ?? 229);
+  const price = Number(input.totalPrice ?? input.price ?? 0);
   const qty = Number(input.quantity ?? input.qte ?? 1);
 
   const newOrder: StoredOrder = {
@@ -73,9 +73,9 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     address: (input.address || input.city || 'يُحدد بعد التأكيد').trim(),
     product: productTitle,
     quantity: isNaN(qty) || qty <= 0 ? 1 : qty,
-    totalPrice: isNaN(price) || price <= 0 ? 229 : price,
+    totalPrice: isNaN(price) || price <= 0 ? 0 : price,
     status: 'جديد',
-    sku: input.sku || 'kit-tandim',
+    sku: input.sku || 'unknown',
     pageUrl: input.pageUrl || '',
     orderType: input.orderType || 'direct',
     items: input.items || '',
@@ -185,7 +185,7 @@ export async function updateOrderUpsell(
   }
 
   const existing = currentOrders[index];
-  const newTotal = totalAmount !== undefined ? Number(totalAmount) : (Number(existing.totalPrice || 229) + Number(upsellPrice || 29));
+  const newTotal = totalAmount !== undefined ? Number(totalAmount) : (Number(existing.totalPrice || 0) + Number(upsellPrice || 0));
   const newItems = existing.items ? existing.items + " + " + upsellItem : existing.product + " + " + upsellItem;
 
   const updatedOrder: StoredOrder = {

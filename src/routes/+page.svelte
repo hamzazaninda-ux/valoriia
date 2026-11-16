@@ -8,7 +8,31 @@
 
 	const brand = $derived(data.settings.brand);
 	const commerce = $derived(data.settings.commerce);
-	const products = $derived(data.products);
+	// Main products first (highest starting price), small add-ons after.
+	const products = $derived(
+		[...data.products].sort((a, b) => (b.startingPrice || 0) - (a.startingPrice || 0))
+	);
+
+	let track = $state<HTMLUListElement | null>(null);
+	let atStart = $state(true);
+	let atEnd = $state(false);
+
+	function updateEdges() {
+		if (!track) return;
+		const max = track.scrollWidth - track.clientWidth;
+		const pos = Math.abs(track.scrollLeft);
+		atStart = pos < 4;
+		atEnd = pos > max - 4;
+	}
+
+	/** dir = 1 → next card (visually leftwards in RTL), -1 → previous. */
+	function slide(dir: 1 | -1) {
+		if (!track) return;
+		const card = track.querySelector('li');
+		const step = card ? card.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
+		const rtl = getComputedStyle(track).direction === 'rtl';
+		track.scrollBy({ left: (rtl ? -1 : 1) * dir * step, behavior: 'smooth' });
+	}
 	const cur = $derived(commerce.currencySymbol || 'درهم');
 
 	const waNumber = $derived((brand.whatsappNumber || '212626558375').replace(/\D/g, ''));
@@ -167,13 +191,25 @@
 		<!-- Products -->
 		<section class="products" id="products" aria-labelledby="products-title">
 			<div class="wrap">
-				<div class="sec-head">
-					<h2 id="products-title">المنتجات</h2>
-					<p>كل منتج جربناه وكنعرفو مزيان شنو كيدير. ثمن واحد واضح، بلا مفاجآت.</p>
+				<div class="sec-head sec-head-row">
+					<div>
+						<h2 id="products-title">المنتجات</h2>
+						<p>كل منتج كنعرفو مزيان شنو كيدير. ثمن واحد واضح، بلا مفاجآت.</p>
+					</div>
+					{#if products.length > 3}
+						<div class="slider-nav">
+							<button type="button" aria-label="المنتج السابق" disabled={atStart} onclick={() => slide(-1)}>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+							</button>
+							<button type="button" aria-label="المنتج الجاي" disabled={atEnd} onclick={() => slide(1)}>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+							</button>
+						</div>
+					{/if}
 				</div>
 
 				{#if products.length}
-					<ul class="grid">
+					<ul class="track" bind:this={track} onscroll={updateEdges}>
 						{#each products as p (p.slug)}
 							<li>
 								<a class="card" href="/{p.slug}">
@@ -181,15 +217,23 @@
 										{#if p.heroImage}
 											<img src={p.heroImage} alt={p.title} loading="lazy" decoding="async" />
 										{:else}
-											<Logo size={44} showWord={false} />
+											<span class="card-img-empty"><Logo size={52} showWord={false} /></span>
 										{/if}
 									</span>
 									<span class="card-body">
 										<span class="card-title">{p.title}</span>
 										{#if p.subtitle}<span class="card-sub">{p.subtitle}</span>{/if}
-										{#if p.startingPrice}
-											<span class="card-price"><b>{p.startingPrice}</b> {cur}</span>
-										{/if}
+										<span class="card-foot">
+											{#if p.startingPrice}
+												<span class="card-price">
+													<b>{p.startingPrice}</b> {cur}
+													{#if p.originalPrice && p.originalPrice > p.startingPrice}
+														<s>{p.originalPrice} {cur}</s>
+													{/if}
+												</span>
+											{/if}
+											<span class="card-cta">شوف المنتج</span>
+										</span>
 									</span>
 								</a>
 							</li>
@@ -578,13 +622,65 @@
 		padding-block: 56px;
 	}
 
-	.grid {
+	.sec-head-row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px;
+		max-width: none;
+	}
+
+	.sec-head-row > div:first-child {
+		max-width: 60ch;
+	}
+
+	.slider-nav {
+		display: none;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	.slider-nav button {
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		border: 1px solid var(--lz-line);
+		background: #fff;
+		color: var(--lz-ink);
+		cursor: pointer;
+		transition: background-color 0.15s ease, border-color 0.15s ease;
+	}
+
+	.slider-nav button:hover:not(:disabled) {
+		border-color: var(--lz-storm);
+		background: var(--lz-storm);
+		color: #fff;
+	}
+
+	.slider-nav button:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	.slider-nav svg {
+		width: 20px;
+		height: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	/* Mobile: one product under another */
+	.track {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px;
+		gap: 16px;
 	}
 
 	.card {
@@ -592,7 +688,7 @@
 		flex-direction: column;
 		height: 100%;
 		background: #fff;
-		border-radius: 14px;
+		border-radius: 16px;
 		overflow: hidden;
 		border: 1px solid var(--lz-line);
 		transition: border-color 0.15s ease;
@@ -603,9 +699,8 @@
 	}
 
 	.card-img {
-		display: grid;
-		place-items: center;
-		aspect-ratio: 1;
+		display: block;
+		aspect-ratio: 4 / 3;
 		background: #f6f8f9;
 	}
 
@@ -615,23 +710,31 @@
 		object-fit: cover;
 	}
 
+	.card-img-empty {
+		display: grid;
+		place-items: center;
+		width: 100%;
+		height: 100%;
+		background: repeating-linear-gradient(-45deg, #f3f6f7 0 14px, #ebf0f2 14px 28px);
+	}
+
 	.card-body {
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
-		padding: 12px;
+		padding: 16px;
 		flex: 1;
 	}
 
 	.card-title {
-		font-size: 14px;
-		font-weight: 600;
-		line-height: 1.5;
+		font-size: 18px;
+		font-weight: 700;
+		line-height: 1.45;
 	}
 
 	.card-sub {
-		font-size: 12.5px;
-		line-height: 1.6;
+		font-size: 14px;
+		line-height: 1.65;
 		color: var(--lz-mute);
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -640,15 +743,48 @@
 		overflow: hidden;
 	}
 
-	.card-price {
+	.card-foot {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
 		margin-top: auto;
+		padding-top: 12px;
+	}
+
+	.card-price {
+		display: flex;
+		align-items: baseline;
+		gap: 6px;
 		font-size: 13px;
 		color: var(--lz-mute);
 	}
 
 	.card-price b {
-		font-size: 19px;
+		font-size: 22px;
 		color: var(--lz-ink);
+	}
+
+	.card-price s {
+		font-size: 13px;
+		color: #8a9aa6;
+	}
+
+	.card-cta {
+		display: inline-flex;
+		align-items: center;
+		min-height: 42px;
+		padding-inline: 16px;
+		border-radius: 10px;
+		background: var(--lz-amber);
+		color: var(--lz-ink);
+		font-size: 14px;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.card:hover .card-cta {
+		background: var(--lz-amber-deep);
 	}
 
 	.empty {
@@ -875,9 +1011,8 @@
 			display: inline;
 		}
 
-		.grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 16px;
+		.track {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
 		.threat {
@@ -935,8 +1070,28 @@
 			padding-bottom: 64px;
 		}
 
-		.grid {
-			grid-template-columns: repeat(4, minmax(0, 1fr));
+		/* Desktop: horizontal carousel, 3 cards visible */
+		.slider-nav {
+			display: flex;
+		}
+
+		.track {
+			display: flex;
+			gap: 16px;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			scroll-behavior: smooth;
+			scrollbar-width: none;
+			padding-bottom: 4px;
+		}
+
+		.track::-webkit-scrollbar {
+			display: none;
+		}
+
+		.track > li {
+			flex: 0 0 calc((100% - 32px) / 3);
+			scroll-snap-align: start;
 		}
 
 		.advisor-box {

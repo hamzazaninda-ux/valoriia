@@ -48,6 +48,8 @@ export interface ProductVersion {
       } | null;
     }>;
     killers?: import('./product').KillersContent;
+    announcement?: string;
+    upsell?: import('./product').ProductUpsell;
   };
   pricing: {
     currency: string;

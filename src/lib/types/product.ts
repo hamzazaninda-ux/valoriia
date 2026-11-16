@@ -35,6 +35,20 @@ export interface ProductContent {
   }>;
   footerText?: string;
   killers?: KillersContent;
+  /** Short line shown in the sticky bar at the top of the product page. */
+  announcement?: string;
+  /** One-click add-on offered after the order form is submitted (stacked template). */
+  upsell?: ProductUpsell;
+}
+
+export interface ProductUpsell {
+  sku: string;
+  title: string;
+  headline: string;
+  text: string;
+  image: string;
+  price: number;
+  originalPrice: number;
 }
 
 export interface ProductPricing {
@@ -115,6 +129,8 @@ export interface ProductIndexItem {
   subtitle: string;
   heroImage: string;
   startingPrice: number;
+  /** Crossed-out price of the cheapest offer, shown on store cards. */
+  originalPrice?: number;
   status: 'draft' | 'published' | 'archived';
   template: string;
   updatedAt: string;

@@ -151,7 +151,7 @@ export async function sendOrderToGoogleSheets(
 			if (candidate && candidate !== 'kit-tandim' && candidate !== 'SKU-GENERAL') {
 				offerSku = candidate;
 			} else {
-				offerSku = qte === 2 ? '2 قطع + رشاشين هدية 🎁' : '1 قطعة + رشاشة هدية 🎁';
+				offerSku = `${qte} قطعة`;
 			}
 		}
 

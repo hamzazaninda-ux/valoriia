@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "id": "prod_door_seal_strip",
+    "slug": "door-seal-strip",
+    "title": "شريط العزل المطاطي للبيبان",
+    "subtitle": "كيسد الطريق على الماء، الغبرة وصوت الريح. كيتركب بيدك بلا مسامر.",
+    "heroImage": "",
+    "startingPrice": 199,
+    "originalPrice": 279,
+    "status": "published",
+    "template": "stacked",
+    "updatedAt": "2026-11-16T16:48:34.458Z"
+  },
+  {
+    "id": "prod_rain_shield_spray",
+    "slug": "rain-shield-spray",
+    "title": "سبراي ضد الشتا للزاج",
+    "subtitle": "الماء كيتزلق على الزاج بوحدو، والرؤية كتبقى واضحة فالشتا.",
+    "heroImage": "",
+    "startingPrice": 89,
+    "originalPrice": 129,
+    "status": "published",
+    "template": "stacked",
+    "updatedAt": "2026-11-16T16:48:34.458Z"
+  },
+  {
+    "id": "prod_nano_scratch_cloth",
+    "slug": "nano-scratch-cloth",
+    "title": "ممسحة النانو للخدوش الخفيفة",
+    "subtitle": "كتحيد الخدوش السطحية والآثار الخفيفة من الصباغة بالمسح باليد.",
+    "heroImage": "",
+    "startingPrice": 69,
+    "originalPrice": 99,
+    "status": "published",
+    "template": "stacked",
+    "updatedAt": "2026-11-16T16:48:34.458Z"
+  },
+  {
+    "id": "prod_door_edge_guard",
+    "slug": "door-edge-guard",
+    "title": "حامي حواشي البيبان",
+    "subtitle": "كيحمي الحاشية ديال الباب من الضربات والخدوش ملي كتحل فالباركينغ.",
+    "heroImage": "",
+    "startingPrice": 79,
+    "originalPrice": 119,
+    "status": "published",
+    "template": "stacked",
+    "updatedAt": "2026-11-16T16:48:34.458Z"
+  }
+]

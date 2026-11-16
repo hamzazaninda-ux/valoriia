@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { TemplateProps, ProductOffer } from '$lib/types/templates';
+	import type { ProductUpsell } from '$lib/types/product';
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
-	import OfferTiers from '$lib/components/OfferTiers.svelte';
-	import DrainUpsellModal from '$lib/components/DrainUpsellModal.svelte';
+	import PostOrderUpsellModal from '$lib/components/PostOrderUpsellModal.svelte';
 	import { cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
-	import { cloudinaryUrl, cloudinarySrcset } from '$lib/utils/images';
 
 	let { product, settings, theme, others = [], onOrderRegistered, onOrderPending }: TemplateProps = $props();
 
@@ -19,540 +18,253 @@
 	let pricing = $derived(version.pricing);
 	let order = $derived(version.order);
 
-	const HERO_IMAGE_URL =
-		'https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg';
+	const currency = $derived(settings?.commerce?.currencySymbol || 'درهم');
+	const productSlug = $derived((product as any)?.slug || '');
+	const productName = $derived((content?.title || (product as any)?.title || '').trim());
+	const productSku = $derived(((order as any)?.sku || productSlug || 'product').trim());
 
-	const defaultOffers: ProductOffer[] = [
-		{
-			id: 1,
-			title: 'قطعة واحدة + رشاش هدية مجانية 🎁',
-			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 199,
-			originalPrice: 299,
-			quantity: 1,
-			badge: null,
-			image:
-				'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
-			isPopular: false
-		},
-		{
-			id: 2,
-			title: 'قطعتان + رشاشان هدية مجانية 🎁',
-			subtitle: 'توصيل مجاني لجميع المدن',
-			price: 349,
-			originalPrice: 458,
-			quantity: 2,
-			badge: '🔥 العرض الأوفر والأكثر طلباً',
-			image:
-				'https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg',
-			isPopular: true
-		}
-	];
+	// ---------------------------------------------------------------------------
+	// Content (everything comes from the product data; empty fields hide sections)
+	// ---------------------------------------------------------------------------
+	const heroImage = $derived(content?.heroImage || content?.gallery?.[0]?.src || '');
 
-	const defaultFaq = [
-		{
-			question: 'هل يمكن تركيبه على جميع الارتفاعات ومختلف أنواع الأسقف؟',
-			answer: 'نعم بكل تأكيد! تم تصميم العمود بتقنية تلسكوبية مبتكرة قابلة للتعديل بسلاسة من 1.10 متر حتى 3.10 أمتار، مما يجعله ملائماً ومناسباً لأي حمام مهما كان ارتفاع السقف.'
-		},
-		{
-			question: 'هل الثبات قوي ويتحمل الأوزان الثقيلة دون أن يسقط؟',
-			answer: 'تم تصميمه بأعلى معايير الأمان؛ الحامل مزود بنوابض داخلية قوية وقواعد تثبيت مانعة للانزلاق في الأعلى والأسفل، ويتحمل وزناً يصل إلى 15-20 كيلوغراماً بثبات تام دون أن يتحرك.'
-		},
-		{
-			question: 'ما هي المواد المصنوع منها المنظم؟ وهل هو مقاوم للصدأ؟',
-			answer: 'المنظم مصنوع من الفولاذ المقاوم للصدأ عالي الجودة مع رفوف بلاستيكية مقواة من نوع ABS، مصممة خصيصاً لمقاومة الماء والرطوبة الشديدة لسنوات طويلة دون أي صدأ أو تلف.'
-		},
-		{
-			question: 'هل يحق لي فحص ومعاينة المنتج قبل الدفع؟',
-			answer: 'بالتأكيد! حق المعاينة مضمون بالكامل. عند وصول مندوب التوصيل، يمكنك فتح الشحنة والتأكد من سلامة وجودة المنتج قبل سداد المبلغ.'
-		},
-		{
-			question: 'كم تستغرق مدة التوصيل؟ وما هي طريقة الدفع؟',
-			answer: 'التوصيل سريع ومجاني لجميع المدن. يتم التواصل معك هاتفياً لتأكيد العنوان، ويصلك الطلب خلال 24 إلى 48 ساعة حتى باب منزلك مع الدفع نقداً عند الاستلام.'
-		}
-	];
-
-	const activeFaq = $derived(
-		content.faq && content.faq.length >= 5 ? content.faq : defaultFaq
+	const cleanTitle = $derived(
+		productName
+			.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+			.replace(/\s+/g, ' ')
+			.trim()
 	);
 
-	const offersList = $derived.by(() => {
-		const rawOffers = pricing?.offers && pricing.offers.length > 0 ? pricing.offers : defaultOffers;
-		if (rawOffers.length < 2) {
-			return defaultOffers;
-		}
-		return rawOffers;
+	const productRating = $derived(Number(content?.rating) || 0);
+	const productReviewCount = $derived(Number(content?.reviewCount) || 0);
+
+	const announcement = $derived(
+		(content as any)?.announcement || 'الدفع عند الاستلام والتوصيل لجميع المدن المغربية'
+	);
+
+	/** Feature cards below the form: killers.benefits text, paired with gallery images 2..n. */
+	const features = $derived(
+		(content?.killers?.benefits ?? [])
+			.filter((b) => b && (b.title || b.text))
+			.map((b, i) => ({
+				title: b.title,
+				text: b.text,
+				image: content?.gallery?.[i + 1]?.src || '',
+				alt: content?.gallery?.[i + 1]?.alt || b.title
+			}))
+	);
+
+	/** Only real reviews entered in the admin are shown. */
+	const reviews = $derived(
+		(content?.killers?.gridReviews ?? []).filter((r) => r && r.text && r.name)
+	);
+
+	const activeFaq = $derived((content?.faq ?? []).filter((f) => f && f.question && f.answer));
+
+	const upsell = $derived.by((): ProductUpsell | null => {
+		const u = (content as any)?.upsell as ProductUpsell | undefined;
+		return u && u.title && Number(u.price) > 0 ? u : null;
 	});
 
-	let selectedPack = $state<number | null>(1);
+	// ---------------------------------------------------------------------------
+	// Offers
+	// ---------------------------------------------------------------------------
+	const offersList = $derived.by((): ProductOffer[] => {
+		const raw = (pricing?.offers ?? []).filter((o) => o && Number(o.price) > 0);
+		return raw.length
+			? raw
+			: [
+					{
+						id: 1,
+						title: productName || 'قطعة واحدة',
+						subtitle: '',
+						price: 0,
+						originalPrice: 0,
+						quantity: 1,
+						badge: null,
+						isPopular: false
+					}
+				];
+	});
 
-	const currentPackId = $derived(
-		selectedPack ??
-			offersList[0]?.id ??
-			1
-	);
+	let selectedOfferId = $state<number | null>(null);
 
 	const activeOffer = $derived(
-		offersList.find((o: ProductOffer) => o.id === currentPackId) ||
-			offersList[0] || { title: 'قطعة واحدة + رشاش هدية مجانية 🎁', price: 199, quantity: 1 }
+		offersList.find((o) => o.id === selectedOfferId) ?? offersList[0]
 	);
 
-	let showStickyBtn = $state(true);
-	let isFormAbove = $state(false);
+	function offerSaving(o: ProductOffer): number {
+		return o.originalPrice > o.price ? o.originalPrice - o.price : 0;
+	}
+
+	function offerPerUnit(o: ProductOffer): number | null {
+		return o.quantity > 1 ? Math.round(o.price / o.quantity) : null;
+	}
 
 	const sheetsUrl = $derived(
 		(order?.googleSheetsUrl || settings?.commerce?.googleSheetsUrl || '').trim()
 	);
 
-	// Canonical definition of Child Safety Lock product (for CartDrawer cross-sell compatibility)
-	const childLockProduct = {
-		slug: 'qofl-al-aman',
-		title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
-		subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
-		heroImage:
-			'/images/child-safety-lock.webp',
-		startingPrice: 49
-	};
+	const cartUpsells = $derived(others);
 
-	const cartUpsells = $derived.by(() => {
-		const foundLock = others.find(
-			(p) => p.slug === 'qofl-al-aman' || p.title.includes('قفل')
-		);
-
-		return [
-			{
-				...childLockProduct,
-				...(foundLock || {}),
-				title: 'قفل أمان ذكي: حماية الأطفال من فتح الثلاجة والخزائن 🔒',
-				subtitle: 'قفل عملي وفعال لحماية الأطفال في المنزل',
-				startingPrice: 49,
-				heroImage:
-					'/images/child-safety-lock.webp'
-			}
-		];
-	});
-
-	let customerName = $state('');
-	let customerPhone = $state('');
+	// ---------------------------------------------------------------------------
+	// Form state
+	// ---------------------------------------------------------------------------
 	let fullName = $state('');
 	let phone = $state('');
-	let selectedTier = $state({
-		id: 'tier1',
-		price: 199,
-		title: 'قطعة واحدة + رشاش هدية مجانية'
-	});
 	let nameBlurredInvalid = $state(false);
 	let phoneBlurredInvalid = $state(false);
 	let submitAttempted = $state(false);
 	let formError = $state('');
 	let isSubmitting = $state(false);
 	let isSubmittingFinal = $state(false);
-	let submittedOrderId = $state<string | null>(null);
+	let showStickyBtn = $state(true);
+	let showUpsell = $state(false);
 
-	// Hero CRO computed values
-	const cleanTitle = $derived.by(() => {
-		const raw =
-			content?.heroTitle ||
-			content?.title ||
-			(product as any)?.title ||
-			'منظم الحمام الزاوي 4 رفوف';
-		return raw
-			.replace(/\(.*?\)/g, '')
-			.replace(/مجانا[ً]?/g, '')
-			.replace(/\+?\s*رشاش.*?(?:هدية|فابور)/g, '')
-			.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-			.replace(/\s+/g, ' ')
-			.trim();
-	});
-
-	const productRating = $derived(content?.rating || (product as any)?.rating);
-	const productReviewCount = $derived(content?.reviewCount || (product as any)?.reviewCount);
-
-	const heroCurrentPrice = $derived(
-		selectedTier?.price || activeOffer?.price || pricing?.price || defaultOffers[0].price || 199
-	);
-	const heroOldPrice = $derived(
-		activeOffer?.originalPrice || pricing?.originalPrice || defaultOffers[0].originalPrice || 299
-	);
-	const discountPercent = $derived(
-		heroOldPrice && heroCurrentPrice && heroOldPrice > heroCurrentPrice
-			? Math.round(((heroOldPrice - heroCurrentPrice) / heroOldPrice) * 100)
-			: null
-	);
-
-	const heroTrustLine = $derived(
-		content?.trustLine || '🚚 توصيل مجاني · الدفع عند الاستلام · ضمان الاسترجاع'
-	);
-	const giftBadgeText = $derived(
-		content?.giftBadge || '🎁 + رشاش توربو هدية'
-	);
-	const maxLoadKg = $derived(content?.maxLoadKg || (product as any)?.maxLoadKg);
-	const hasMaxLoad = $derived(Boolean(maxLoadKg));
-
-	function scrollToReviews(e?: Event) {
-		e?.preventDefault();
-		const el = document.getElementById('reviews');
-		if (el) {
-			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		}
-	}
-
-	let showDrainUpsell = $state(false);
 	let pendingOrder = $state<{
 		orderId: string;
 		date_order: string;
 		customerName: string;
 		phone: string;
 		city_address: string;
-		offerSku: string;
-		productTitleStr: string;
+		offerTitle: string;
 		quantity: number;
 		basePrice: number;
 		sheetsUrl: string;
 	} | null>(null);
 
-	async function handleAcceptDrainUpsell() {
+	function scrollToReviews(e?: Event) {
+		e?.preventDefault();
+		document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
+
+	/**
+	 * Sends the order (with or without the post-order add-on) to /api/order,
+	 * stores it for the thank-you page, fires conversion pixels and redirects.
+	 */
+	async function finalizeOrder(withUpsell: boolean) {
 		if (!pendingOrder || isSubmittingFinal) return;
 		isSubmittingFinal = true;
 
-		const currentOrder = pendingOrder;
-		const upsellPrice = 29;
-		const finalPrice = currentOrder.basePrice + upsellPrice;
-		const finalSku = `${currentOrder.offerSku} + سدادة وفلتر مصرف الأرضية`;
-		const fullProductLabel = `${currentOrder.productTitleStr} + سدادة وفلتر مصرف الأرضية`;
-		const orderNote = 'مع عرض السدادة (+29 درهم)';
+		const current = pendingOrder;
+		const addOn = withUpsell && upsell ? upsell : null;
+		const finalPrice = current.basePrice + (addOn ? Number(addOn.price) : 0);
+		const bundleLabel = addOn ? `${current.offerTitle} + ${addOn.title}` : current.offerTitle;
+		const productLabel = addOn ? `${productName} + ${addOn.title}` : productName;
+		const note = addOn ? `مع العرض الإضافي: ${addOn.title} (+${addOn.price} درهم)` : '';
 
-		const payload = {
-			date_order: currentOrder.date_order,
-			order_id: currentOrder.orderId,
-			full_name: currentOrder.customerName,
-			phone: currentOrder.phone,
-			city_address: currentOrder.city_address,
-			sku: finalSku,
-			qte: currentOrder.quantity,
-			price: finalPrice,
-			note: orderNote,
-			delivery_note: '',
-			rowData: [
-				currentOrder.date_order,
-				currentOrder.orderId,
-				currentOrder.customerName,
-				currentOrder.phone,
-				currentOrder.city_address,
-				finalSku,
-				currentOrder.quantity,
-				finalPrice,
-				orderNote,
-				''
-			],
-			orderId: currentOrder.orderId,
-			id: currentOrder.orderId,
-			fullName: currentOrder.customerName,
-			name: currentOrder.customerName,
-			phoneNumber: currentOrder.phone,
-			city: currentOrder.city_address,
-			address: currentOrder.city_address,
-			productTitle: fullProductLabel,
-			selectedOfferTitle: finalSku,
-			offer: finalSku,
-			offerSku: finalSku,
-			quantity: currentOrder.quantity,
-			totalPrice: finalPrice,
-			total: finalPrice,
-			sheetsUrl: currentOrder.sheetsUrl
-		};
-
-		// 1. Dispatch consolidated order to /api/order (Single Row in Google Sheets & Git DB)
 		try {
 			await fetch('/api/order', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					orderId: currentOrder.orderId,
-					fullName: currentOrder.customerName,
-					phone: currentOrder.phone,
-					product: fullProductLabel,
-					bundle: finalSku,
-					productTitle: fullProductLabel,
-					selectedOfferTitle: finalSku,
+					orderId: current.orderId,
+					fullName: current.customerName,
+					phone: current.phone,
+					product: productLabel,
+					bundle: bundleLabel,
+					productTitle: productLabel,
+					selectedOfferTitle: bundleLabel,
 					price: finalPrice,
 					totalPrice: finalPrice,
-					quantity: currentOrder.quantity,
-					note: orderNote,
-					hasUpsell: true,
-					source: 'kit-tandim'
+					quantity: current.quantity,
+					note,
+					hasUpsell: Boolean(addOn),
+					sku: productSku,
+					source: productSlug
 				})
 			});
 		} catch (err) {
-			console.warn('Consolidated order send non-fatal error:', err);
+			console.warn('Order send non-fatal error:', err);
 		}
 
-		// 2. Mark order sent to prevent duplicate session submissions
-		if (typeof window !== 'undefined') {
-			sessionStorage.setItem(`order_sent_${currentOrder.orderId}`, 'true');
+		if (typeof window === 'undefined') return;
 
-			// 3. Save latestOrder in localStorage & sessionStorage
-			const savedOrder = {
-				orderId: currentOrder.orderId,
-				fullName: currentOrder.customerName,
-				phoneNumber: currentOrder.phone,
-				city: currentOrder.city_address,
-				address: currentOrder.city_address,
-				date: new Date().toLocaleDateString('ar-MA'),
-				price: finalPrice,
-				total: finalPrice,
-				productTitle: fullProductLabel,
-				offer: finalSku,
-				quantity: currentOrder.quantity,
-				qte: currentOrder.quantity,
-				sku: finalSku,
-				hasUpsell: true,
-				upsellPrice: 29
-			};
+		sessionStorage.setItem(`order_sent_${current.orderId}`, 'true');
 
-			try {
-				localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-				sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-			} catch (e) {
-				console.warn('Storage save error:', e);
-			}
-
-			// 4. Fire Single Conversion Tracking
-			try {
-				if (typeof (window as any).gtag === 'function') {
-					(window as any).gtag('event', 'conversion', {
-						send_to: 'AW-18405009405',
-						value: finalPrice,
-						currency: 'MAD',
-						transaction_id: currentOrder.orderId
-					});
-				}
-			} catch {}
-
-			try {
-				trackSnapPurchase({
-					orderId: currentOrder.orderId,
-					price: finalPrice,
-					currency: 'MAD',
-					phone: currentOrder.phone,
-					title: fullProductLabel,
-					sku: finalSku,
-					quantity: currentOrder.quantity
-				});
-			} catch (snapErr) {
-				console.warn('Snap Purchase tracking error:', snapErr);
-			}
-
-			// TikTok CompletePayment Firing with Advanced Matching
-			try {
-				if (typeof window !== 'undefined' && (window as any).ttq) {
-					const phoneObj = normalizePhone(currentOrder.phone);
-					if (phoneObj.digits) {
-						const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
-						(window as any).ttq.identify({
-							phone_number: hashedPhone
-						});
-					}
-					(window as any).ttq.track('CompletePayment', {
-						content_id: finalSku,
-						content_name: fullProductLabel,
-						content_type: 'product',
-						quantity: currentOrder.quantity,
-						currency: 'MAD',
-						value: finalPrice
-					}, {
-						event_id: currentOrder.orderId
-					});
-					console.log('TikTok Event Fired: CompletePayment', {
-						orderId: currentOrder.orderId,
-						content_name: fullProductLabel,
-						value: finalPrice,
-						currency: 'MAD'
-					});
-				}
-			} catch (ttErr) {
-				console.warn('TikTok CompletePayment error:', ttErr);
-			}
-
-			// 5. Redirect to Thank You page
-			showDrainUpsell = false;
-			const finalUrl = preserveTrackingParams(
-				`/thank-you?orderId=${currentOrder.orderId}&name=${encodeURIComponent(currentOrder.customerName)}&phone=${encodeURIComponent(currentOrder.phone)}&city=${encodeURIComponent(currentOrder.city_address)}&total=${finalPrice}&upsell=1`
-			);
-			await new Promise((resolve) => setTimeout(resolve, 350));
-			window.location.href = finalUrl;
-		}
-	}
-
-	async function handleDeclineDrainUpsell() {
-		if (!pendingOrder || isSubmittingFinal) return;
-		isSubmittingFinal = true;
-
-		const currentOrder = pendingOrder;
-		const finalPrice = currentOrder.basePrice;
-		const finalSku = currentOrder.offerSku;
-		const fullProductLabel = currentOrder.productTitleStr;
-
-		const payload = {
-			date_order: currentOrder.date_order,
-			order_id: currentOrder.orderId,
-			full_name: currentOrder.customerName,
-			phone: currentOrder.phone,
-			city_address: currentOrder.city_address,
-			sku: finalSku,
-			qte: currentOrder.quantity,
+		const savedOrder = {
+			orderId: current.orderId,
+			fullName: current.customerName,
+			phoneNumber: current.phone,
+			city: current.city_address,
+			address: current.city_address,
+			date: new Date().toLocaleDateString('ar-MA'),
 			price: finalPrice,
-			note: '',
-			delivery_note: '',
-			rowData: [
-				currentOrder.date_order,
-				currentOrder.orderId,
-				currentOrder.customerName,
-				currentOrder.phone,
-				currentOrder.city_address,
-				finalSku,
-				currentOrder.quantity,
-				finalPrice,
-				'',
-				''
-			],
-			orderId: currentOrder.orderId,
-			id: currentOrder.orderId,
-			fullName: currentOrder.customerName,
-			name: currentOrder.customerName,
-			phoneNumber: currentOrder.phone,
-			city: currentOrder.city_address,
-			address: currentOrder.city_address,
-			productTitle: fullProductLabel,
-			selectedOfferTitle: finalSku,
-			offer: finalSku,
-			offerSku: finalSku,
-			quantity: currentOrder.quantity,
-			totalPrice: finalPrice,
 			total: finalPrice,
-			sheetsUrl: currentOrder.sheetsUrl
+			productTitle: productLabel,
+			offer: bundleLabel,
+			quantity: current.quantity,
+			qte: current.quantity,
+			sku: bundleLabel,
+			hasUpsell: Boolean(addOn),
+			upsellPrice: addOn ? Number(addOn.price) : 0
 		};
-
-		// 1. Dispatch base order to /api/order (Single Row in Google Sheets & Git DB)
 		try {
-			await fetch('/api/order', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					orderId: currentOrder.orderId,
-					fullName: currentOrder.customerName,
-					phone: currentOrder.phone,
-					product: fullProductLabel,
-					bundle: finalSku,
-					productTitle: fullProductLabel,
-					selectedOfferTitle: finalSku,
-					price: finalPrice,
-					totalPrice: finalPrice,
-					quantity: currentOrder.quantity,
-					hasUpsell: false,
-					source: 'kit-tandim'
-				})
-			});
-		} catch (err) {
-			console.warn('Base order send non-fatal error:', err);
+			localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+			sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
+		} catch (e) {
+			console.warn('Storage save error:', e);
 		}
 
-		// 2. Mark order sent to prevent duplicate session submissions
-		if (typeof window !== 'undefined') {
-			sessionStorage.setItem(`order_sent_${currentOrder.orderId}`, 'true');
-
-			// 3. Save latestOrder in localStorage & sessionStorage
-			const savedOrder = {
-				orderId: currentOrder.orderId,
-				fullName: currentOrder.customerName,
-				phoneNumber: currentOrder.phone,
-				city: currentOrder.city_address,
-				address: currentOrder.city_address,
-				date: new Date().toLocaleDateString('ar-MA'),
-				price: finalPrice,
-				total: finalPrice,
-				productTitle: fullProductLabel,
-				offer: finalSku,
-				quantity: currentOrder.quantity,
-				qte: currentOrder.quantity,
-				sku: finalSku
-			};
-
-			try {
-				localStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-				sessionStorage.setItem('latestOrder', JSON.stringify(savedOrder));
-			} catch (e) {
-				console.warn('Storage save error:', e);
+		try {
+			if (typeof (window as any).gtag === 'function') {
+				(window as any).gtag('event', 'conversion', {
+					send_to: 'AW-18405009405',
+					value: finalPrice,
+					currency: 'MAD',
+					transaction_id: current.orderId
+				});
 			}
+		} catch {}
 
-			// 4. Fire Single Conversion Tracking
-			try {
-				if (typeof (window as any).gtag === 'function') {
-					(window as any).gtag('event', 'conversion', {
-						send_to: 'AW-18405009405',
-						value: finalPrice,
-						currency: 'MAD',
-						transaction_id: currentOrder.orderId
+		try {
+			trackSnapPurchase({
+				orderId: current.orderId,
+				price: finalPrice,
+				currency: 'MAD',
+				phone: current.phone,
+				title: productLabel,
+				sku: bundleLabel,
+				quantity: current.quantity
+			});
+		} catch (snapErr) {
+			console.warn('Snap Purchase tracking error:', snapErr);
+		}
+
+		try {
+			if ((window as any).ttq) {
+				const phoneObj = normalizePhone(current.phone);
+				if (phoneObj.digits) {
+					(window as any).ttq.identify({
+						phone_number: sha256(phoneObj.e164WithPlus || phoneObj.digits)
 					});
 				}
-			} catch {}
-
-			try {
-				trackSnapPurchase({
-					orderId: currentOrder.orderId,
-					price: finalPrice,
-					currency: 'MAD',
-					phone: currentOrder.phone,
-					title: fullProductLabel,
-					sku: finalSku,
-					quantity: currentOrder.quantity
-				});
-			} catch (snapErr) {
-				console.warn('Snap Purchase tracking error:', snapErr);
-			}
-
-			// TikTok CompletePayment Firing with Advanced Matching
-			try {
-				if (typeof window !== 'undefined' && (window as any).ttq) {
-					const phoneObj = normalizePhone(currentOrder.phone);
-					if (phoneObj.digits) {
-						const hashedPhone = sha256(phoneObj.e164WithPlus || phoneObj.digits);
-						(window as any).ttq.identify({
-							phone_number: hashedPhone
-						});
-					}
-					(window as any).ttq.track('CompletePayment', {
-						content_id: finalSku,
-						content_name: fullProductLabel,
+				(window as any).ttq.track(
+					'CompletePayment',
+					{
+						content_id: productSku,
+						content_name: productLabel,
 						content_type: 'product',
-						quantity: currentOrder.quantity,
+						quantity: current.quantity,
 						currency: 'MAD',
 						value: finalPrice
-					}, {
-						event_id: currentOrder.orderId
-					});
-					console.log('TikTok Event Fired: CompletePayment', {
-						orderId: currentOrder.orderId,
-						content_name: fullProductLabel,
-						value: finalPrice,
-						currency: 'MAD'
-					});
-				}
-			} catch (ttErr) {
-				console.warn('TikTok CompletePayment error:', ttErr);
+					},
+					{ event_id: current.orderId }
+				);
 			}
-
-			// 5. Redirect to Thank You page
-			showDrainUpsell = false;
-			const finalUrl = preserveTrackingParams(
-				`/thank-you?orderId=${currentOrder.orderId}&name=${encodeURIComponent(currentOrder.customerName)}&phone=${encodeURIComponent(currentOrder.phone)}&city=${encodeURIComponent(currentOrder.city_address)}&total=${finalPrice}`
-			);
-			await new Promise((resolve) => setTimeout(resolve, 350));
-			window.location.href = finalUrl;
+		} catch (ttErr) {
+			console.warn('TikTok CompletePayment error:', ttErr);
 		}
+
+		showUpsell = false;
+		const finalUrl = preserveTrackingParams(
+			`/thank-you?orderId=${current.orderId}&name=${encodeURIComponent(current.customerName)}&phone=${encodeURIComponent(current.phone)}&city=${encodeURIComponent(current.city_address)}&total=${finalPrice}${addOn ? '&upsell=1' : ''}`
+		);
+		await new Promise((resolve) => setTimeout(resolve, 350));
+		window.location.href = finalUrl;
 	}
 
-		function normalizeDigits(str: string): string {
+	function normalizeDigits(str: string): string {
 		const eastern = '٠١٢٣٤٥٦٧٨٩';
 		return String(str || '').replace(/[٠-٩]/g, (d) => eastern.indexOf(d).toString());
 	}
@@ -562,211 +274,138 @@
 	}
 
 	function cleanPhoneString(val: string): string {
-		const converted = normalizeDigits(val);
-		return converted.trim().replace(/[\s\-\u200E\u200F\u202A-\u202E\u2066-\u2069()+.]+/g, '');
+		return normalizeDigits(val)
+			.trim()
+			.replace(/[\s\-‎‏‪-‮⁦-⁩()+.]+/g, '');
 	}
 
 	function validateMoroccanPhone(val: string): boolean {
-		const stripped = cleanPhoneString(val);
-		return /^(?:(?:00212|212)|0)[567]\d{8}$/.test(stripped);
+		return /^(?:(?:00212|212)|0)[567]\d{8}$/.test(cleanPhoneString(val));
 	}
 
-	// Normalize Moroccan phone to standard 10-digit format starting with '0' (e.g. 0612345678)
-	function normalizeMoroccanPhone(rawPhone: string): string {
-		const stripped = cleanPhoneString(rawPhone);
-		const match = stripped.match(/^(?:(?:00212|212)|0)([567]\d{8})$/);
-		return match ? `0${match[1]}` : stripped;
-	}
-
-	function selectTier(tierId: 'tier1' | 'tier2') {
-		if (tierId === 'tier1') {
-			selectedTier = {
-				id: 'tier1',
-				price: 199,
-				title: 'قطعة واحدة + رشاش هدية مجانية'
-			};
-			selectedPack = 1;
-		} else {
-			selectedTier = {
-				id: 'tier2',
-				price: 349,
-				title: 'قطعتان + رشاشان هدية مجانية'
-			};
-			selectedPack = 2;
-		}
-	}
-
-	const isNameValid = $derived(validateFullName(fullName || customerName));
-	const isPhoneValid = $derived(validateMoroccanPhone(phone || customerPhone));
+	const isNameValid = $derived(validateFullName(fullName));
+	const isPhoneValid = $derived(validateMoroccanPhone(phone));
 
 	$effect(() => {
-		if (isNameValid) {
-			nameBlurredInvalid = false;
-		}
-		if (isPhoneValid) {
-			phoneBlurredInvalid = false;
-		}
-		if (isNameValid && isPhoneValid && submitAttempted) {
-			submitAttempted = false;
-		}
+		if (isNameValid) nameBlurredInvalid = false;
+		if (isPhoneValid) phoneBlurredInvalid = false;
+		if (isNameValid && isPhoneValid && submitAttempted) submitAttempted = false;
 	});
 
-	const showNameError = $derived(!isNameValid && (submitAttempted || nameBlurredInvalid));
-	const showPhoneError = $derived(!isPhoneValid && (submitAttempted || phoneBlurredInvalid));
-
 	function scrollAndFocusInvalid(fieldId: string) {
-		if (typeof document === 'undefined') return;
 		const input = document.getElementById(fieldId) as HTMLElement | null;
 		if (!input) return;
-
-		let prefersReduced = false;
-		try {
-			prefersReduced =
-				typeof window !== 'undefined' &&
-				typeof window.matchMedia === 'function' &&
-				window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		} catch {}
-
-		try {
-			input.scrollIntoView({
-				behavior: prefersReduced ? 'auto' : 'smooth',
-				block: 'center'
-			});
-		} catch {
-			input.scrollIntoView();
-		}
-
-		try {
-			input.focus({ preventScroll: true });
-		} catch {
-			input.focus();
-		}
+		const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+		input.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+		input.focus({ preventScroll: true });
 	}
 
 	async function handleSubmitOrder(event?: Event) {
 		event?.preventDefault();
 		if (isSubmitting || isSubmittingFinal) return;
+		formError = '';
 
-		// 1. Validation
-		const trimmedName = (fullName || customerName || "").trim();
-		const rawPhone = (phone || customerPhone || "").replace(/\D/g, "");
-
-		if (!trimmedName) {
-			alert("يرجى إدخال الاسم الكامل");
+		const trimmedName = fullName.trim();
+		if (!validateFullName(trimmedName)) {
 			nameBlurredInvalid = true;
-			scrollAndFocusInvalid("order-fullName");
+			submitAttempted = true;
+			scrollAndFocusInvalid('order-fullName');
 			return;
 		}
-
-		if (rawPhone.length < 9) {
-			alert("يرجى إدخال رقم هاتف صحيح");
+		if (!validateMoroccanPhone(phone)) {
 			phoneBlurredInvalid = true;
-			scrollAndFocusInvalid("order-phone");
+			submitAttempted = true;
+			scrollAndFocusInvalid('order-phone');
 			return;
 		}
 
-		// Moroccan International Phone Formatting (+212)
-		let cleanPhone = rawPhone;
-		if (cleanPhone.startsWith("0")) cleanPhone = "212" + cleanPhone.substring(1);
-		if (!cleanPhone.startsWith("212")) cleanPhone = "212" + cleanPhone;
-		const internationalPhone = "+" + cleanPhone;
+		let cleanPhone = cleanPhoneString(phone).replace(/^00/, '');
+		if (cleanPhone.startsWith('0')) cleanPhone = '212' + cleanPhone.substring(1);
+		if (!cleanPhone.startsWith('212')) cleanPhone = '212' + cleanPhone;
+		const internationalPhone = '+' + cleanPhone;
 
-		const currentTier = selectedTier || { id: "tier1", price: 199, title: "قطعة واحدة + رشاش هدية" };
-		const orderPrice = Number(currentTier.price || 199);
-		const quantity = Number(currentTier.id === "tier2" || currentPackId === 2 ? 2 : 1);
-		const bundleTitle = currentTier.title || (quantity === 2 ? "قطعتان + 2 رشاشات هدية 🎁🎁" : "قطعة واحدة + رشاش هدية 🎁");
+		const offer = activeOffer;
+		const orderPrice = Number(offer.price) || 0;
+		const quantity = Number(offer.quantity) || 1;
 
-		// 2. Safe InitiateCheckout Pixel Call (Non-blocking)
 		try {
-			if (typeof window !== "undefined" && (window as any).ttq) {
+			if ((window as any).ttq) {
 				(window as any).ttq.identify({ phone_number: internationalPhone });
-				(window as any).ttq.track("InitiateCheckout", {
-					content_id: "kit-tandim",
-					content_type: "product",
-					content_name: "باك الحمام الذكي",
+				(window as any).ttq.track('InitiateCheckout', {
+					content_id: productSku,
+					content_type: 'product',
+					content_name: productName,
 					quantity,
 					value: orderPrice,
-					currency: "MAD"
+					currency: 'MAD'
 				});
 			}
 		} catch (err) {
-			console.warn("InitiateCheckout tracking non-fatal error:", err);
+			console.warn('InitiateCheckout tracking non-fatal error:', err);
 		}
 
-		// 3. Delegate to onOrderPending immediately WITHOUT sending to /api/order yet!
 		if (onOrderPending) {
 			onOrderPending({
 				fullName: trimmedName,
 				phone: internationalPhone,
-				selectedTier: currentTier,
+				selectedTier: { id: String(offer.id), price: orderPrice, title: offer.title },
 				quantity
 			});
 			return;
 		}
 
-		// Standalone fallback: hold order in memory, open internal DrainUpsellModal without calling /api/order yet!
-		const orderId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
-		submittedOrderId = orderId;
 		pendingOrder = {
-			orderId,
-			date_order: new Date().toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" }),
+			orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+			date_order: new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' }),
 			customerName: trimmedName,
 			phone: internationalPhone,
-			city_address: "تأكيد هاتفي",
-			offerSku: bundleTitle,
-			productTitleStr: "باك الحمام الذكي",
+			city_address: 'تأكيد هاتفي',
+			offerTitle: offer.title,
 			quantity,
 			basePrice: orderPrice,
 			sheetsUrl
 		};
-		showDrainUpsell = true;
-	}
 
-	const handleDirectCheckout = handleSubmitOrder;
+		if (upsell) {
+			showUpsell = true;
+		} else {
+			isSubmitting = true;
+			await finalizeOrder(false);
+		}
+	}
 
 	function scrollToOrderSection(e?: Event) {
 		e?.preventDefault();
 		try {
-			if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-				const itemPrice = Number(selectedTier?.price || (currentPackId === 2 ? 349 : 199));
-				const itemName = (product as any)?.title || content?.title || 'طقم تنظيم الحمام الذكي';
-
+			if (typeof (window as any).gtag === 'function') {
 				(window as any).gtag('event', 'add_to_cart', {
 					currency: 'MAD',
-					value: itemPrice,
+					value: Number(activeOffer.price) || 0,
 					items: [
 						{
-							item_id: (product as any)?.id || 'kit-tandim',
-							item_name: itemName,
-							price: itemPrice,
-							quantity: selectedTier?.id === 'tier2' || currentPackId === 2 ? 2 : 1
+							item_id: productSku,
+							item_name: productName,
+							price: Number(activeOffer.price) || 0,
+							quantity: Number(activeOffer.quantity) || 1
 						}
 					]
 				});
 			}
 		} catch {}
 
-		if (typeof window === 'undefined' || typeof document === 'undefined') return;
-
-		const section = document.getElementById('order-form') || document.getElementById('order-section');
+		const section = document.getElementById('order-form');
 		if (!section) return;
-
-		const confirmBtn = section.querySelector('[data-confirm-btn]') || section.querySelector('button[type="submit"]');
+		const confirmBtn = section.querySelector('[data-confirm-btn]');
 		const bar = document.getElementById('top-announcement-bar');
 		const gap = 6;
 
 		function calcTarget() {
 			const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-			let fixedTop = 0;
-			if (bar) {
-				const pos = window.getComputedStyle(bar).position;
-				if (pos === 'fixed' || pos === 'sticky') {
-					fixedTop = bar.getBoundingClientRect().height;
-				}
-			}
-			const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-			const sectionHeight = section.offsetHeight;
-			if (sectionHeight <= vh - fixedTop - gap) {
+			const fixedTop = bar && ['fixed', 'sticky'].includes(getComputedStyle(bar).position)
+				? bar.getBoundingClientRect().height
+				: 0;
+			const sectionTop = section!.getBoundingClientRect().top + window.scrollY;
+			if (section!.offsetHeight <= vh - fixedTop - gap) {
 				return Math.max(0, sectionTop - fixedTop - gap);
 			}
 			if (confirmBtn) {
@@ -778,43 +417,25 @@
 
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		window.scrollTo({ top: calcTarget(), behavior: reduce ? 'auto' : 'smooth' });
-
 		setTimeout(() => {
-			const diff = Math.abs(window.scrollY - calcTarget());
-			if (diff > 4) {
+			if (Math.abs(window.scrollY - calcTarget()) > 4) {
 				window.scrollTo({ top: calcTarget(), behavior: 'auto' });
 			}
 		}, 700);
 	}
-
-	const scrollToOrderForm = scrollToOrderSection;
-	if (typeof window !== 'undefined') {
-		(window as any).scrollToOrderSection = scrollToOrderSection;
-	}
-
 
 	onMount(() => {
 		const formElement = document.getElementById('order-form');
 		let formVisible = false;
 
 		function updateStickyState() {
-			if (typeof window !== 'undefined' && window.scrollY < 100) {
-				showStickyBtn = true;
-				isFormAbove = false;
-				return;
-			}
-			showStickyBtn = !formVisible;
-			if (formElement) {
-				isFormAbove = formElement.getBoundingClientRect().top < 0;
-			}
+			showStickyBtn = window.scrollY < 100 ? true : !formVisible;
 		}
 
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					if (entry.target.id === 'order-form') {
-						formVisible = entry.isIntersecting;
-					}
+					if (entry.target.id === 'order-form') formVisible = entry.isIntersecting;
 				}
 				updateStickyState();
 			},
@@ -834,599 +455,306 @@
 
 <div
 	class="kit-page-shell cta-wiggle-scope max-w-xl mx-auto shadow-2xl flex flex-col relative border-x border-stone-200/70 overflow-x-clip"
-	style="{buildThemeCssVars(t)}; background-color: #FAF9F6; color: #14231B;"
+	style="{buildThemeCssVars(t)}; background-color: #EEF2F3; color: #17232B;"
 	dir="rtl"
 >
 	<!-- 1. Top Announcement Bar -->
 	<aside
 		id="top-announcement-bar"
-		class="sticky top-0 z-40 w-full max-w-full bg-[#073824] text-white py-1.5 px-2 text-[12px] sm:text-[13px] font-bold text-center border-b border-white/10 shadow-sm select-none leading-snug"
+		class="sticky top-0 z-40 w-full max-w-full bg-[#17232B] text-white py-1.5 px-2 text-[12px] sm:text-[13px] font-bold text-center border-b border-white/10 shadow-sm select-none leading-snug"
 		aria-label="شريط الإعلانات"
 		dir="rtl"
 	>
-		<div class="max-w-4xl mx-auto flex items-center justify-center gap-1.5">
-			<span>🎁 عرض محدود: رشاش التوربو المفلتر هدية مجانية + توصيل مجاني!</span>
+		<div class="max-w-4xl mx-auto flex items-center justify-center gap-2">
+			<a href="/" class="lz-mini-logo" aria-label="Lhamza Shop">ء</a>
+			<span>{announcement}</span>
 		</div>
 	</aside>
 
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 2. HERO SECTION (CRO MOBILE-FIRST: IMAGE FIRST -> TITLE -> RATINGS) -->
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<header
-		id="hero-section"
-		class="pt-2 sm:pt-3 pb-6 sm:pb-8 px-3 sm:px-4 max-w-xl mx-auto mb-1"
-	>
-		<!-- HERO IMAGE FIRST (PORTRAIT ASPECT RATIO 3:4) -->
+	<!-- 2. HERO SECTION (IMAGE FIRST -> TITLE -> RATINGS) -->
+	<header id="hero-section" class="pt-2 sm:pt-3 pb-6 sm:pb-8 px-3 sm:px-4 max-w-xl mx-auto mb-1 w-full">
 		<div class="w-full max-w-[335px] sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-1.5 relative">
-			<img
-				src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793292638/Gemini_Generated_Image_ro2ak2ro2ak2ro2a.jpg"
-				alt="منظم الحمام الزاوي 4 رفوف + رشاش توربو مجاني"
-				loading="eager"
-				fetchpriority="high"
-				class="w-full h-full object-cover object-center rounded-2xl transition-transform duration-300"
-			/>
+			{#if heroImage}
+				<img
+					src={heroImage}
+					alt={productName}
+					loading="eager"
+					fetchpriority="high"
+					class="w-full h-full object-cover object-center rounded-2xl"
+				/>
+			{:else}
+				<div class="lz-img-empty" aria-hidden="true">
+					<span class="lz-img-empty-mark">ء</span>
+					<span>صورة المنتج</span>
+				</div>
+			{/if}
 		</div>
 
-		<!-- COMPACT TITLE & RATINGS (BELOW HERO IMAGE - ZERO PRICE FRICTION) -->
 		<div class="text-center pt-2 pb-1 space-y-1.5">
-			<!-- Title H1 (Refined 16.5px on mobile, fits in 2 comfortable lines without cut-off) -->
-			<h1 class="font-display text-[16.5px] sm:text-2xl font-black text-stone-900 leading-snug tracking-tight px-1 max-w-sm mx-auto">
+			<h1 class="font-display text-[18px] sm:text-2xl font-black text-[#17232B] leading-snug tracking-tight px-1 max-w-sm mx-auto">
 				{cleanTitle}
 			</h1>
-
-			<!-- Customer Ratings Only (Stars & Review Count) -->
-			<div class="flex items-center justify-center gap-1.5 pt-0.5">
-				<span class="text-amber-500 font-extrabold text-xs sm:text-sm">★★★★★ ({productReviewCount || 203} تقييم)</span>
-			</div>
+			{#if content?.subtitle}
+				<p class="text-[13.5px] sm:text-base text-[#56687A] leading-relaxed max-w-sm mx-auto">{content.subtitle}</p>
+			{/if}
+			{#if productReviewCount > 0 && reviews.length > 0}
+				<a href="#reviews" onclick={scrollToReviews} class="flex items-center justify-center gap-1.5 pt-0.5">
+					<span class="text-amber-500 font-extrabold text-xs sm:text-sm">
+						★★★★★ {productRating ? productRating.toFixed(1) : ''} ({productReviewCount} تقييم)
+					</span>
+				</a>
+			{/if}
 		</div>
 	</header>
 
-	<!-- ======================================================== -->
-	<!-- COD ORDER FORM & EXACT VISUAL OFFER CARDS -->
-	<!-- ======================================================== -->
-	<div 
-		id="order-form" 
+	<!-- COD ORDER FORM & OFFER CARDS -->
+	<div
+		id="order-form"
 		data-order-section
-		class="w-full max-w-[560px] mx-auto px-2 sm:px-4 my-2 sm:my-6" 
+		class="w-full max-w-[560px] mx-auto px-2 sm:px-4 my-2 sm:my-6"
 		dir="rtl"
-		style="--cod-green-dark: #1F5C4A; --cod-green-light: #E3EFE8; --cod-orange-btn: #F28C28; --cod-beige-bg: #F5F0E6; --cod-gray-old: #777777;"
+		style="--cod-green-dark: #2F4858; --cod-green-light: #E3ECF0; --cod-orange-btn: #F5A300; --cod-beige-bg: #F7F9FA; --cod-gray-old: #7A8A96;"
 	>
-		<!-- Form Container with Beige Background & Soft Border -->
-		<div class="bg-[var(--cod-beige-bg,#F5F0E6)] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#e8dfcf] transition-all">
-			
-			<!-- Top Green Header -->
-			<div class="bg-[var(--cod-green-dark,#1F5C4A)] py-2 px-3 sm:py-4 sm:px-4 text-center text-white order-header">
-				<h2 class="text-[19px] sm:text-3xl font-black mb-0.5 text-white tracking-tight leading-tight">أكمل طلبك الآن</h2>
-				<p class="text-[11.5px] sm:text-sm text-emerald-100/90 font-medium leading-none">الدفع عند الاستلام بعد المعاينة، والتوصيل مجاني</p>
+		<div class="bg-[var(--cod-beige-bg)] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#D5DEE2] transition-all">
+			<div class="bg-[var(--cod-green-dark)] py-2 px-3 sm:py-4 sm:px-4 text-center text-white order-header">
+				<h2 class="text-[19px] sm:text-3xl font-black mb-0.5 text-white tracking-tight leading-tight">كمل الطلب ديالك</h2>
+				<p class="text-[11.5px] sm:text-sm text-[#CFDBE2] font-medium leading-none">كتخلص ملي يوصلك الطلب وتشوفو</p>
 			</div>
 
 			<div class="p-2 sm:p-5 space-y-1.5">
-				
-				<!-- ==================== OFFER 1 (TIER 1) ==================== -->
-				<label 
-					class="offer-card relative cursor-pointer rounded-xl sm:rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
-				>
-					<!-- Hidden native radio for accessibility & keyboard navigation -->
-					<input 
-						type="radio" 
-						name="product-offer-tier" 
-						value="tier1" 
-						class="sr-only" 
-						checked={selectedTier?.id === 'tier1'} 
-						onchange={() => selectTier('tier1')} 
-					/>
-
-					<!-- Row 1 (Mobile) / Start & Center (Desktop) -->
-					<div class="offer-row-identity">
-						<!-- Selection Circle & Thumbnail -->
-						<div class="offer-media">
-							<div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier1' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
-								{#if selectedTier?.id === 'tier1'}
-									<svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-									</svg>
-								{/if}
-							</div>
-							<img 
-								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1790955108/ChatGPT_Image_Sep_3_2026_09_25_08_PM.png" 
-								alt="قطعة واحدة + رشاش هدية مجانية" 
-								width="44"
-								height="44"
-								loading="lazy"
-								class="w-10 h-10 sm:w-14 sm:h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
-							/>
-						</div>
-
-						<!-- Title (Full remaining width on mobile) -->
-						<div class="offer-title-wrap">
-							<div class="offer-title">
-								قطعة واحدة + رشاش هدية مجانية 🎁
-							</div>
-							<!-- Desktop savings under title -->
-							<div class="offer-savings-desktop">
-								<span class="offer-pill">
-									وفّر 100 درهم
-								</span>
-							</div>
-						</div>
-					</div>
-
-					<!-- Row 2 (Mobile) / End block (Desktop) -->
-					<div class="offer-row-bottom">
-						<!-- Price Block -->
-						<div class="offer-price">
-							<div class="offer-price-current">
-								199 <span class="offer-currency">درهم</span>
-							</div>
-							<div class="offer-price-old">299 درهم</div>
-						</div>
-
-						<!-- Mobile Savings Badge -->
-						<div class="offer-savings-mobile">
-							<span class="offer-pill">
-								وفّر 100 درهم
+				{#each offersList as offer, i (offer.id)}
+					{@const selected = activeOffer.id === offer.id}
+					{@const saving = offerSaving(offer)}
+					{@const perUnit = offerPerUnit(offer)}
+					<label
+						class="offer-card relative cursor-pointer rounded-xl sm:rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark)] {i > 0 ? 'offer-card-tier2 mt-2 sm:mt-3' : ''} {selected ? 'border-[var(--cod-green-dark)] bg-[var(--cod-green-light)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
+					>
+						{#if offer.badge || offer.isPopular}
+							<span class="offer-ribbon absolute -top-2 end-4 bg-[var(--cod-green-dark)] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-md z-10 leading-none">
+								{offer.badge || 'الأوفر'}
 							</span>
-						</div>
-					</div>
-				</label>
+						{/if}
 
-				<!-- ==================== OFFER 2 (TIER 2 - BEST VALUE) ==================== -->
-				<label 
-					class="offer-card offer-card-tier2 relative cursor-pointer rounded-xl sm:rounded-2xl border-2 transition-all select-none focus-within:ring-2 focus-within:ring-[var(--cod-green-dark,#1F5C4A)] mt-2 sm:mt-3 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-light,#E3EFE8)] shadow-sm' : 'border-gray-200 hover:border-gray-300 bg-white'}"
-				>
-					<!-- Top Pill Badge: الأوفر -->
-					<span class="offer-ribbon absolute -top-2 end-4 bg-[var(--cod-green-dark,#1F5C4A)] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full shadow-md z-10 leading-none">
-						الأوفر
-					</span>
+						<input
+							type="radio"
+							name="product-offer-tier"
+							value={offer.id}
+							class="sr-only"
+							checked={selected}
+							onchange={() => (selectedOfferId = offer.id)}
+						/>
 
-					<!-- Hidden native radio -->
-					<input 
-						type="radio" 
-						name="product-offer-tier" 
-						value="tier2" 
-						class="sr-only" 
-						checked={selectedTier?.id === 'tier2'} 
-						onchange={() => selectTier('tier2')} 
-					/>
-
-					<!-- Row 1 (Mobile) / Start & Center (Desktop) -->
-					<div class="offer-row-identity">
-						<!-- Selection Circle & Thumbnail -->
-						<div class="offer-media">
-							<div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selectedTier?.id === 'tier2' ? 'border-[var(--cod-green-dark,#1F5C4A)] bg-[var(--cod-green-dark,#1F5C4A)] text-white' : 'border-gray-300 bg-white'}">
-								{#if selectedTier?.id === 'tier2'}
-									<svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-									</svg>
+						<div class="offer-row-identity">
+							<div class="offer-media">
+								<div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 {selected ? 'border-[var(--cod-green-dark)] bg-[var(--cod-green-dark)] text-white' : 'border-gray-300 bg-white'}">
+									{#if selected}
+										<svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 20 20" fill="currentColor">
+											<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+										</svg>
+									{/if}
+								</div>
+								{#if offer.image}
+									<img
+										src={offer.image}
+										alt={offer.title}
+										width="44"
+										height="44"
+										loading="lazy"
+										class="w-10 h-10 sm:w-14 sm:h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
+									/>
+								{:else}
+									<span class="lz-offer-qty" aria-hidden="true">×{offer.quantity}</span>
 								{/if}
 							</div>
-							<img 
-								src="https://res.cloudinary.com/xqjngk8y/image/upload/v1791113117/ChatGPT_Image_Sep_3_2026_09_28_10_PM.png" 
-								alt="قطعتان + رشاش هدية مجانية" 
-								width="44"
-								height="44"
-								loading="lazy"
-								class="w-10 h-10 sm:w-14 sm:h-14 object-contain rounded-lg border border-gray-100 bg-white shadow-xs shrink-0"
-							/>
+
+							<div class="offer-title-wrap">
+								<div class="offer-title">{offer.title}</div>
+								{#if offer.subtitle}
+									<div class="text-[11.5px] text-gray-500 font-medium leading-snug">{offer.subtitle}</div>
+								{/if}
+								{#if saving}
+									<div class="offer-savings-desktop">
+										<div class="flex items-center gap-1.5">
+											<span class="offer-pill">وفّر {saving} {currency}</span>
+											{#if perUnit}
+												<span class="text-xs font-bold text-gray-700">غير {perUnit} {currency} للوحدة</span>
+											{/if}
+										</div>
+									</div>
+								{/if}
+							</div>
 						</div>
 
-						<!-- Title (Full remaining width on mobile) -->
-						<div class="offer-title-wrap">
-							<div class="offer-title">
-								قطعتان + رشاش هدية مجانية 🎁
-							</div>
-							<!-- Desktop savings under title -->
-							<div class="offer-savings-desktop">
-								<div class="flex items-center gap-1.5">
-									<span class="offer-pill">
-										وفّر 109 درهم
-									</span>
-									<span class="text-xs font-bold text-gray-700">
-										فقط 174 درهم للقطعة
-									</span>
+						<div class="offer-row-bottom">
+							<div class="offer-price">
+								<div class="offer-price-current">
+									{offer.price} <span class="offer-currency">{currency}</span>
 								</div>
+								{#if offer.originalPrice > offer.price}
+									<div class="offer-price-old">{offer.originalPrice} {currency}</div>
+								{/if}
 							</div>
-						</div>
-					</div>
 
-					<!-- Row 2 (Mobile) / End block (Desktop) -->
-					<div class="offer-row-bottom">
-						<!-- Price Block -->
-						<div class="offer-price">
-							<div class="offer-price-current">
-								349 <span class="offer-currency">درهم</span>
-							</div>
-							<div class="offer-price-old">458 درهم</div>
+							{#if saving}
+								<div class="offer-savings-mobile">
+									<div class="flex flex-col items-end gap-0">
+										<span class="offer-pill text-[10px] px-1.5 py-0.5 leading-tight">وفّر {saving} {currency}</span>
+										{#if perUnit}
+											<span class="offer-per-unit text-[10px] leading-tight">غير {perUnit} {currency} للوحدة</span>
+										{/if}
+									</div>
+								</div>
+							{/if}
 						</div>
+					</label>
+				{/each}
 
-						<!-- Mobile Savings Badge -->
-						<div class="offer-savings-mobile">
-							<div class="flex flex-col items-end gap-0">
-								<span class="offer-pill text-[10px] px-1.5 py-0.5 leading-tight">
-									وفّر 109 درهم
-								</span>
-								<span class="offer-per-unit text-[10px] leading-tight">
-									فقط 174 درهم للقطعة
-								</span>
-							</div>
-						</div>
-					</div>
-				</label>
-
-				<!-- ==================== CUSTOMER INPUTS (EXACTLY 2 FIELDS) ==================== -->
+				<!-- CUSTOMER INPUTS (2 FIELDS) -->
 				<form onsubmit={handleSubmitOrder} novalidate class="pt-1 space-y-1 sm:space-y-3.5 text-right">
-					<h3 class="font-black text-gray-900 text-[13.5px] sm:text-lg mt-0.5 mb-0">معلومات التوصيل</h3>
+					<h3 class="font-black text-gray-900 text-[13.5px] sm:text-lg mt-0.5 mb-0">المعلومات ديال التوصيل</h3>
 
-					<!-- 1. Full Name -->
 					<div>
 						<label for="order-fullName" class="block text-[12px] sm:text-sm font-bold text-gray-800 mb-0.5">الاسم</label>
-						<input 
+						<input
 							id="order-fullName"
-							type="text" 
+							type="text"
 							name="fullName"
 							autocomplete="name"
-							bind:value={fullName} 
+							bind:value={fullName}
 							onblur={() => {
-								if (fullName.trim().length > 0 && !validateFullName(fullName)) {
-									nameBlurredInvalid = true;
-								}
+								if (fullName.trim().length > 0 && !validateFullName(fullName)) nameBlurredInvalid = true;
 							}}
-							required 
-							placeholder="اكتب اسمك" 
-							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {nameBlurredInvalid && !isNameValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
+							required
+							placeholder="كتب السمية ديالك"
+							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--cod-green-dark)] focus:ring-2 focus:ring-[var(--cod-green-dark)]/20 transition-all {nameBlurredInvalid && !isNameValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
 						{#if nameBlurredInvalid && !isNameValid}
-							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">المرجو إدخال الاسم (حرفان على الأقل).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">كتب السمية ديالك (حرفين على الأقل).</p>
 						{/if}
 					</div>
 
-					<!-- 2. Phone Number -->
 					<div>
-						<label for="order-phone" class="block text-[12px] sm:text-sm font-bold text-gray-800 mb-0.5">رقم الهاتف (واتساب)</label>
-						<input 
+						<label for="order-phone" class="block text-[12px] sm:text-sm font-bold text-gray-800 mb-0.5">رقم التيليفون (واتساب)</label>
+						<input
 							id="order-phone"
-							type="tel" 
+							type="tel"
 							name="phone"
 							inputmode="tel"
 							autocomplete="tel"
-							bind:value={phone} 
+							bind:value={phone}
 							onblur={() => {
-								if (phone.trim().length > 0 && !validateMoroccanPhone(phone)) {
-									phoneBlurredInvalid = true;
-								}
+								if (phone.trim().length > 0 && !validateMoroccanPhone(phone)) phoneBlurredInvalid = true;
 							}}
-							required 
+							required
 							dir="ltr"
-							placeholder="06XXXXXXXX" 
-							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-[var(--cod-green-dark,#1F5C4A)] focus:ring-2 focus:ring-[var(--cod-green-dark,#1F5C4A)]/20 transition-all {phoneBlurredInvalid && !isPhoneValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
+							placeholder="06XXXXXXXX"
+							class="w-full h-11 min-h-[44px] px-3 py-2 bg-white rounded-[10px] border text-base text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-[var(--cod-green-dark)] focus:ring-2 focus:ring-[var(--cod-green-dark)]/20 transition-all {phoneBlurredInvalid && !isPhoneValid ? 'border-red-500 bg-red-50/20' : 'border-gray-300'}"
 						/>
 						{#if phoneBlurredInvalid && !isPhoneValid}
-							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678).</p>
+							<p class="text-[11px] text-red-600 font-bold mt-0.5 text-right">دخل رقم مغربي صحيح (مثلاً 0612345678).</p>
 						{/if}
 					</div>
 
 					{#if formError}
-						<div class="rounded-lg bg-red-50 border border-red-200 p-2 text-xs sm:text-sm text-red-700 font-bold text-center">
-							{formError}
-						</div>
+						<div class="rounded-lg bg-red-50 border border-red-200 p-2 text-xs sm:text-sm text-red-700 font-bold text-center">{formError}</div>
 					{/if}
 
-					<!-- Submit Button -->
-					<button 
-						type="submit" 
+					<button
+						type="submit"
 						data-confirm-btn
 						disabled={isSubmitting || isSubmittingFinal}
-						class="w-full h-12 min-h-[48px] mt-1.5 sm:mt-2 py-2.5 px-4 bg-[var(--cod-orange-btn,#F28C28)] hover:bg-[#e07d1a] active:scale-[0.99] transition text-white font-black text-base sm:text-xl rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F28C28]"
+						class="w-full h-12 min-h-[48px] mt-1.5 sm:mt-2 py-2.5 px-4 bg-[var(--cod-orange-btn)] hover:bg-[#D98F00] active:scale-[0.99] transition text-[#17232B] font-black text-base sm:text-xl rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#F5A300]"
 					>
 						{#if isSubmitting || isSubmittingFinal}
-							<span class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin me-2"></span>
-							<span>جاري تأكيد طلبك...</span>
+							<span class="inline-block w-5 h-5 border-2 border-[#17232B]/30 border-t-[#17232B] rounded-full animate-spin me-2"></span>
+							<span>كنأكدو الطلب ديالك...</span>
 						{:else}
-							تأكيد الطلب • {selectedTier?.price || 199} درهم
+							أكد الطلب • {activeOffer.price} {currency}
 						{/if}
 					</button>
 
-					<!-- Trust Sub-copy -->
 					<div class="text-[11px] sm:text-xs text-gray-600 text-center font-medium mt-1">
-						سيتصل بك الموزع لتأكيد طلبك • 🔒 معلوماتك محمية
+						غادي نتصلو بيك باش نأكدو الطلب • 🔒 المعلومات ديالك محمية
 					</div>
 				</form>
-
 			</div>
 		</div>
 	</div>
 
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 3–7. PERSUASIVE VISUAL CARDS (IMAGES 2 TO 6 BELOW THE FORM)     -->
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<div class="px-2.5 sm:px-4 max-w-[560px] mx-auto space-y-6 pt-1 pb-4 below-fold-lazy-section" dir="rtl">
-		<!-- Section Transition Header -->
-		<div class="text-center pt-1 mb-2">
-			<span class="inline-block text-[11px] sm:text-xs font-extrabold tracking-wide text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full">
-				اكتشفي تفاصيل الجودة والعملية
-			</span>
-			<h2 class="font-display text-lg sm:text-xl font-black text-stone-900 mt-1.5">
-				لماذا يفضل عملاؤنا هذا المنظم؟
-			</h2>
-		</div>
-
-<!-- ========================================== -->
-<!-- 1. NO-DRILL / FAST SETUP CARD -->
-<!-- ========================================== -->
-<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
-  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    ⚡ تركيب سريع وسهل في 5 دقائق
-  </span>
-  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    تركيب سهل بدون ثقب أو إتلاف لسيراميك حمامك
-  </h2>
-  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    مصمم بتقنية تلسكوبية ذكية قابلة للتعديل بسهولة من 1.10 متر إلى 3.10 أمتار ليناسب أي سقف. نوابض داخلية متينة وقواعد سيليكون تثبت الحامل بإحكام بين الأرض والسقف دون الحاجة لأي براغٍ أو إتلاف للجدران.
-  </p>
-  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
-    <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951490/Screenshot_2026-10-25_180133.png" 
-      alt="تركيب سهل بدون ثقب أو براغي" 
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover block"
-    />
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 2. STABILITY & HEAVY LOAD CARD -->
-<!-- ========================================== -->
-<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
-  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    💪 قدرة تحمّل فائقة وثبات استثنائي
-  </span>
-  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    تحمّل عالي لجميع مستلزمات الحمام بثبات وأمان تام
-  </h2>
-  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    رفوف واسعة وعميقة مصنوعة من مواد مقاومة للماء والرطوبة مع أعمدة صلبة من الفولاذ المقاوم للصدأ. يتحمل عبوات الشامبو ومستحضرات الاستحمام الثقيلة بثبات كامل دون أي انزلاق أو ميلان.
-  </p>
-  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
-    <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951411/Screenshot_2026-10-25_180152.png" 
-      alt="ثبات استثنائي وقدرة تحمل عالية" 
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover block"
-    />
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 3. EXCLUSIVE GIFT (TURBO SHOWER HEAD) CARD -->
-<!-- ========================================== -->
-<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-amber-100 text-center" dir="rtl">
-  <span class="inline-block bg-amber-100 text-amber-900 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    🎁 هدية حصرية بقيمة 99 درهم مجاناً
-  </span>
-  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    رشاش التوربو المزدوج: تدفق ماء قوي وتوزيع متوازن
-  </h2>
-  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    حل مثالي لزيادة تدفق المياه وتوزيعها بانسيابية تامة! يحتوي على 3 أنظمة تدفق مختلفة مع زر إيقاف فوري للتحكم، مما يمنحك تجربة استحمام مريحة مع توفير استهلاك المياه.
-  </p>
-  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
-    <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793122075/Gemini_Generated_Image_aqu0syaqu0syaqu0.jpg" 
-      alt="رشاش التوربو المزدوج هدية مجانية" 
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover block"
-    />
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 4. BEFORE & AFTER COMPARISON CARD -->
-<!-- ========================================== -->
-<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
-  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    ✨ تحوّل حقيقي قبل وبعد
-  </span>
-  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    شاهدي كيف يتحول حمامك إلى مساحة منظمة وأنيقة
-  </h2>
-  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    استغلي زوايا الحمام غير المستغلة وحوّلي الفوضى إلى مساحة مرتبة وواسعة، تسهّل التنظيف اليومي بكل راحة ودون أي عناء.
-  </p>
-  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
-    <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793121027/Gemini_Generated_Image_6o8y9c6o8y9c6o8y.jpg" 
-      alt="مقارنة شكل الحمام قبل وبعد استخدام منظم الزوايا" 
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover block"
-    />
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 5. MODERN BATHROOM AESTHETICS CARD -->
-<!-- ========================================== -->
-<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
-  <span class="inline-block bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black px-3.5 py-1.5 rounded-full mb-3">
-    🏡 تصميم عصري يلائم جميع الديكورات
-  </span>
-  <h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">
-    لمسة راقية تمنح حمامك طابعاً فندقياً أنيقاً
-  </h2>
-  <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">
-    لون أبيض ناصع مع لمسات من الفولاذ المقاوم للصدأ يمنح مظهراً عصرياً فخماً، يتناسق تماماً مع مختلف ألوان السيراميك والرخام.
-  </p>
-  <div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
-    <img 
-      src="https://res.cloudinary.com/xqjngk8y/image/upload/v1792951367/Gemini_Generated_Image_ikt3wpikt3wpikt3.jpg" 
-      alt="منظم حمام عصري بتصميم فندقي راقٍ" 
-      loading="lazy"
-      decoding="async"
-      class="w-full h-auto object-cover block"
-    />
-  </div>
-</div>
-	</div>
-
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<!-- 8. CUSTOMER REVIEWS & FAQ BELOW VISUAL CARDS                    -->
-	<!-- ═══════════════════════════════════════════════════════════════ -->
-	<section id="reviews" class="scroll-mt-14 px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
-		<div class="text-center mb-5">
-			<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
-				<svg aria-hidden="true" class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-				</svg>
-				تجارب حقيقية 100%
-			</span>
-			<h3 class="text-xl sm:text-2xl font-extrabold font-display text-stone-900 tracking-tight">
-				آراء زبنائنا الكرام
-			</h3>
-			<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-				هذا ما يقوله عملاؤنا الكرام بعد تجربة طقم منظم الحمام ورشاش التوربو الهدية
-			</p>
-		</div>
-
-		<div class="space-y-3.5">
-			<!-- Review 1: Fatima Zahra -->
-			<div class="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-xs">
-				<div class="flex items-center justify-between gap-2 mb-2.5">
-					<div class="flex items-center gap-2.5">
-						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
-							ف
-						</div>
-						<div>
-							<h4 class="font-extrabold text-sm text-stone-900 leading-tight">فاطمة الزهراء</h4>
-							<span class="text-[11px] text-stone-500 font-medium">الدار البيضاء</span>
-						</div>
-					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200/70">
-						<svg aria-hidden="true" class="h-3 w-3 text-emerald-700" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-						</svg>
-						مشتري مؤكد
-					</span>
-				</div>
-
-				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
-					{#each Array(5) as _}
-						<svg aria-hidden="true" class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"استلمت الطلب بالأمس وقمت بتركيبه بنفسي بكل سهولة دون الحاجة إلى أدوات أو مساعدة لأنه لا يحتاج لأي ثقب بالجدار. المنتج متين وثابت جداً واتسع لجميع مستلزمات الحمام والشامبو. شكراً لكم على هذا المنتج الرائع".
-				</p>
+	<!-- FEATURE CARDS (killers.benefits + gallery images 2..n) -->
+	{#if features.length}
+		<div class="px-2.5 sm:px-4 max-w-[560px] mx-auto space-y-6 pt-1 pb-4 below-fold-lazy-section w-full" dir="rtl">
+			<div class="text-center pt-1 mb-2">
+				<h2 class="font-display text-lg sm:text-xl font-black text-[#17232B] mt-1.5">علاش هاد المنتج؟</h2>
 			</div>
 
-			<!-- Review 2: Hicham -->
-			<div class="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-xs">
-				<div class="flex items-center justify-between gap-2 mb-2.5">
-					<div class="flex items-center gap-2.5">
-						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
-							هـ
-						</div>
-						<div>
-							<h4 class="font-extrabold text-sm text-stone-900 leading-tight">هشام</h4>
-							<span class="text-[11px] text-stone-500 font-medium">مراكش</span>
-						</div>
+			{#each features as f, i (i)}
+				<div class="my-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 text-center" dir="rtl">
+					<h2 class="text-xl sm:text-2xl font-black text-gray-900 leading-snug mb-2">{f.title}</h2>
+					{#if f.text}
+						<p class="text-[13.5px] sm:text-sm text-gray-600 leading-relaxed max-w-lg mx-auto mb-4 font-medium">{f.text}</p>
+					{/if}
+					<div class="relative w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-inner border border-gray-100">
+						{#if f.image}
+							<img src={f.image} alt={f.alt} loading="lazy" decoding="async" class="w-full h-auto object-cover block" />
+						{:else}
+							<div class="lz-img-empty lz-img-empty-wide" aria-hidden="true">
+								<span class="lz-img-empty-mark">ء</span>
+								<span>صورة {i + 2}</span>
+							</div>
+						{/if}
 					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200/70">
-						<svg aria-hidden="true" class="h-3 w-3 text-emerald-700" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-						</svg>
-						مشتري مؤكد
-					</span>
 				</div>
-
-				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
-					{#each Array(5) as _}
-						<svg aria-hidden="true" class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"بصراحة الرشاش الهدية ممتاز جداً وضاعف قوة تدفق الماء بشكل ملحوظ. كما أن المنظم مصنوع من خامات عالية الجودة ومقاوم للصدأ والرطوبة تماماً. تعامل راقٍ وتوصيل سريع جداً".
-				</p>
-			</div>
-
-			<!-- Review 3: Souad -->
-			<div class="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-xs">
-				<div class="flex items-center justify-between gap-2 mb-2.5">
-					<div class="flex items-center gap-2.5">
-						<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-900">
-							س
-						</div>
-						<div>
-							<h4 class="font-extrabold text-sm text-stone-900 leading-tight">سعاد</h4>
-							<span class="text-[11px] text-stone-500 font-medium">طنجة</span>
-						</div>
-					</div>
-					<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200/70">
-						<svg aria-hidden="true" class="h-3 w-3 text-emerald-700" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-						</svg>
-						مشتري مؤكد
-					</span>
-				</div>
-
-				<div class="flex items-center gap-0.5 mb-2" aria-label="5 نجوم">
-					{#each Array(5) as _}
-						<svg aria-hidden="true" class="h-4 w-4 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-
-				<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
-					"كنت قلقة بشأن المقاس لأن سقف الحمام مرتفع، لكن نظام التعديل التلسكوبي امتد بسلاسة وثبت بإحكام شديد. تخلصت تماماً من فوضى الحمام وأصبح كل شيء مرتباً وأنيقاً".
-				</p>
-			</div>
+			{/each}
 		</div>
-	</section>
+	{/if}
 
-	<!-- FAQ Section -->
-	{#if t.sections.trustBadges.showFAQ && activeFaq && activeFaq.length > 0}
+	<!-- CUSTOMER REVIEWS (only real reviews from the admin) -->
+	{#if reviews.length}
+		<section id="reviews" class="scroll-mt-14 px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
+			<div class="text-center mb-5">
+				<h3 class="text-xl sm:text-2xl font-extrabold font-display text-stone-900 tracking-tight">شنو قالو الكليان</h3>
+			</div>
+			<div class="space-y-3.5">
+				{#each reviews as r, i (i)}
+					<div class="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-xs">
+						<div class="flex items-center gap-2.5 mb-2.5">
+							<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E3ECF0] text-xs font-black text-[#2F4858]">
+								{r.name.trim().charAt(0)}
+							</div>
+							<h4 class="font-extrabold text-sm text-stone-900 leading-tight">{r.name}</h4>
+						</div>
+						<p class="text-xs sm:text-sm text-stone-700 leading-relaxed">{r.text}</p>
+						{#if r.image}
+							<img src={r.image} alt="صورة من {r.name}" loading="lazy" class="mt-3 w-full rounded-xl" />
+						{/if}
+					</div>
+				{/each}
+			</div>
+		</section>
+	{/if}
+
+	<!-- FAQ -->
+	{#if t.sections.trustBadges.showFAQ && activeFaq.length > 0}
 		<section class="px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
 			<div class="text-center mb-5">
-				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-bold mb-2">
-					<svg aria-hidden="true" class="h-3.5 w-3.5 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M12 18h.01" />
-					</svg>
-					كل ما تحتاج معرفته
-				</span>
 				<h3 class="text-xl sm:text-2xl font-extrabold font-display text-stone-900 tracking-tight">
-					{t.sections.trustBadges.faqTitle || 'الأسئلة الشائعة'}
+					{t.sections.trustBadges.faqTitle || 'الأسئلة اللي كتتعاود'}
 				</h3>
-				<p class="text-xs sm:text-sm text-stone-500 mt-1 font-medium">
-					إجابات شاملة ومباشرة على أكثر الأسئلة الشائعة من عملائنا
-				</p>
 			</div>
 
 			<div class="space-y-3">
 				{#each activeFaq as item}
 					<details class="group rounded-2xl border border-stone-200/80 bg-white shadow-xs overflow-hidden transition-all duration-200 hover:border-stone-300">
 						<summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm sm:text-base font-extrabold text-stone-900 select-none [&::-webkit-details-marker]:hidden">
-							<span class="flex items-center gap-2.5">
-								<span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-800 border border-emerald-200/60">
-									؟
-								</span>
-								<span>{item.question}</span>
-							</span>
-							<span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition-transform duration-300 group-open:rotate-180 group-open:bg-emerald-100 group-open:text-emerald-800">
+							<span>{item.question}</span>
+							<span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition-transform duration-300 group-open:rotate-180 group-open:bg-[#E3ECF0] group-open:text-[#2F4858]">
 								<svg aria-hidden="true" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
 								</svg>
 							</span>
 						</summary>
-						<div class="px-4 pb-4 pt-2 text-xs sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/40">
+						<div class="px-4 pb-4 pt-2 text-[13px] sm:text-sm leading-relaxed text-stone-600 border-t border-stone-100 bg-stone-50/40">
 							<p>{item.answer}</p>
 						</div>
 					</details>
@@ -1435,46 +763,36 @@
 		</section>
 	{/if}
 
-	<!-- Google Ads Compliant Transparent Footer -->
-	<footer class="bg-[#0B1F17] pt-8 pb-24 sm:pb-14 text-center text-xs text-emerald-100/75 px-4 mt-auto border-t border-emerald-900/40" dir="rtl">
+	<!-- Footer -->
+	<footer class="bg-[#24394A] pt-8 pb-24 sm:pb-14 text-center text-xs text-[#C3D0D8] px-4 mt-auto" dir="rtl">
 		<div class="max-w-4xl mx-auto space-y-4">
-			<!-- Store Info -->
 			<div class="space-y-1">
 				<p class="font-black text-sm sm:text-base text-white">Lhamza Shop</p>
-				<p class="text-xs text-emerald-100/70 max-w-lg mx-auto">
-					متجر مغربي موثوق متخصص في منتجات التنظيم والراحة المنزلية. توصيل سريع ومجاني لجميع المدن مع الدفع بعد المعاينة عند الاستلام.
+				<p class="text-xs text-[#AFC0CA] max-w-lg mx-auto">
+					إكسسوارات حماية الطوموبيل، مختارة للمغرب. الدفع عند الاستلام والتوصيل لجميع المدن.
 				</p>
 			</div>
 
-			<!-- Policy Links -->
-			<nav aria-label="روابط السياسات القانونية" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-bold text-emerald-300/90 py-2 border-y border-emerald-900/40">
-				<a href="/privacy" class="hover:text-white hover:underline transition-colors">سياسة الخصوصية</a>
-				<span class="text-emerald-700 select-none">•</span>
-				<a href="/terms" class="hover:text-white hover:underline transition-colors">الشروط والأحكام</a>
-				<span class="text-emerald-700 select-none">•</span>
-				<a href="/refund-policy" class="hover:text-white hover:underline transition-colors">سياسة الاسترجاع والاستبدال</a>
-				<span class="text-emerald-700 select-none">•</span>
-				<a href="/shipping-policy" class="hover:text-white hover:underline transition-colors">الشحن والتوصيل</a>
-				<span class="text-emerald-700 select-none">•</span>
-				<a href="/contact" class="hover:text-white hover:underline transition-colors">اتصل بنا</a>
+			<nav aria-label="روابط السياسات" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-bold text-[#DCE6EB] py-2 border-y border-white/10">
+				<a href="/" class="hover:text-white hover:underline">المتجر</a>
+				<a href="/privacy" class="hover:text-white hover:underline">الخصوصية</a>
+				<a href="/terms" class="hover:text-white hover:underline">الشروط</a>
+				<a href="/refund-policy" class="hover:text-white hover:underline">الاستبدال والاسترجاع</a>
+				<a href="/shipping-policy" class="hover:text-white hover:underline">الشحن</a>
+				<a href="/contact" class="hover:text-white hover:underline">تواصل معنا</a>
 			</nav>
 
-			<!-- Contact Info Bar -->
-			<div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] sm:text-xs text-emerald-200/80">
-				<span>📍 الدار البيضاء، المغرب</span>
-				<span>📧 <a href="mailto:contact@lhamza.shop" class="underline hover:text-white">contact@lhamza.shop</a></span>
-				<span>📱 <span dir="ltr">+212 626-558375</span></span>
-				<span>⏰ 9:00 - 22:00</span>
+			<div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] sm:text-xs text-[#AFC0CA]">
+				<a href="mailto:contact@lhamza.shop" class="underline hover:text-white">contact@lhamza.shop</a>
+				<span dir="ltr">+212 626-558375</span>
+				<span>9:00 - 22:00</span>
 			</div>
 
-			<!-- Copyright -->
-			<p class="text-[11px] text-emerald-400/60 pt-1">
-				© {new Date().getFullYear()} Lhamza Shop (lhamza.shop). جميع الحقوق محفوظة.
-			</p>
+			<p class="text-[11px] text-[#8FA3B0] pt-1">© {new Date().getFullYear()} Lhamza Shop (lhamza.shop)</p>
 		</div>
 	</footer>
 
-	<!-- Floating Sticky CTA Button (Smooth-scrolls directly to #order-form under the hero) -->
+	<!-- Floating Sticky CTA (mobile) -->
 	{#if showStickyBtn && (t?.sections?.advanced?.showStickyButton ?? true)}
 		<div
 			class="fixed bottom-0 inset-x-0 z-50 px-3 pt-2 pb-2.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl sm:hidden"
@@ -1484,54 +802,117 @@
 			<div class="max-w-md mx-auto flex flex-col items-center justify-center gap-1.5">
 				<button
 					type="button"
-					onclick={scrollToOrderForm}
-					class="w-full h-[48px] min-h-[48px] py-2 px-4 rounded-xl bg-[#073824] hover:bg-[#052b1b] text-white font-black text-base shadow-md shadow-emerald-950/25 border border-emerald-600/30 active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
+					onclick={scrollToOrderSection}
+					class="w-full h-[48px] min-h-[48px] py-2 px-4 rounded-xl bg-[#2F4858] hover:bg-[#24394A] text-white font-black text-base shadow-md active:scale-[0.98] transition-transform flex items-center justify-center gap-2 cursor-pointer text-center btn-shake"
 				>
-					<span>استفد من العرض الآن</span>
+					<span>اطلب دابا • {activeOffer.price} {currency}</span>
 				</button>
-				<p class="text-center text-[11.5px] font-bold text-stone-600 flex items-center justify-center gap-1.5 leading-normal pt-0.5 pb-0.5">
-					<span>التوصيل بالمجان والدفع عند الاستلام</span>
-					<span class="text-[12px]">🔒</span>
-				</p>
+				<p class="text-center text-[11.5px] font-bold text-stone-600 leading-normal">الدفع عند الاستلام 🔒</p>
 			</div>
 		</div>
 	{/if}
 
 	<CartDrawer
 		others={cartUpsells}
-		currency={settings.commerce.currencySymbol || 'درهم'}
+		currency={currency}
 		salesText={t.sections.hero.salesCountText}
 		offers={offersList}
-		currentSlug={(product as any).slug || 'kit-tandim'}
-		currentTitle={content.title}
-		currentImage={HERO_IMAGE_URL}
+		currentSlug={productSlug}
+		currentTitle={productName}
+		currentImage={heroImage}
 	/>
 	<CheckoutModal
-		currency={settings.commerce.currencySymbol || 'درهم'}
+		currency={currency}
 		sheetsUrl={sheetsUrl}
-		productTitle={content.title}
-		sku={(product as any).published?.order?.sku || (product as any).draft?.order?.sku || 'kit-tandim'}
+		productTitle={productName}
+		sku={productSku}
 		onDone={() => {
 			cartUi.resetAll();
 			window.location.href = preserveTrackingParams('/thank-you');
 		}}
 	/>
 
-	<!-- Post-Purchase Drain Filter Upsell Modal (Consolidated Single-Row Google Sheets Merge) -->
-	<DrainUpsellModal
-		bind:isOpen={showDrainUpsell}
-		orderDetails={{
-			orderId: pendingOrder?.orderId || '',
-			total: pendingOrder?.basePrice || activeOffer?.price || 199,
-			phone: pendingOrder?.phone || '',
-			name: pendingOrder?.customerName || ''
-		}}
-		onAcceptUpsell={handleAcceptDrainUpsell}
-		onDeclineUpsell={handleDeclineDrainUpsell}
-	/>
+	{#if upsell}
+		<PostOrderUpsellModal
+			bind:isOpen={showUpsell}
+			{upsell}
+			{currency}
+			onAcceptUpsell={() => finalizeOrder(true)}
+			onDeclineUpsell={() => finalizeOrder(false)}
+		/>
+	{/if}
 </div>
 
 <style>
+	/* Lhamza brand additions: empty image placeholders, mini logo, offer quantity chip */
+	.lz-img-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		width: 100%;
+		height: 100%;
+		background: repeating-linear-gradient(-45deg, #eef2f3 0 14px, #e6ecee 14px 28px);
+		color: #56687a;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.lz-img-empty-wide {
+		aspect-ratio: 4 / 3;
+		height: auto;
+	}
+
+	.lz-img-empty-mark {
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		border-radius: 13px;
+		background: #f5a300;
+		color: #17232b;
+		font-size: 38px;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.lz-mini-logo {
+		display: inline-grid;
+		place-items: center;
+		flex-shrink: 0;
+		width: 20px;
+		height: 20px;
+		border-radius: 6px;
+		background: #f5a300;
+		color: #17232b;
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.lz-offer-qty {
+		display: grid;
+		place-items: center;
+		flex-shrink: 0;
+		width: 40px;
+		height: 40px;
+		border-radius: 10px;
+		background: #fff;
+		border: 1px solid #d5dee2;
+		color: #2f4858;
+		font-size: 14px;
+		font-weight: 800;
+	}
+
+	@media (min-width: 640px) {
+		.lz-offer-qty {
+			width: 56px;
+			height: 56px;
+			font-size: 16px;
+		}
+	}
+
 	/* Page shell: safe dvh/svh with vh fallback + iOS text-size-adjust & safe-area inset */
 	.kit-page-shell {
 		min-height: 100vh;

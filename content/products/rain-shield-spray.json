@@ -1,0 +1,148 @@
+{
+  "id": "prod_rain_shield_spray",
+  "slug": "rain-shield-spray",
+  "status": "published",
+  "createdAt": "2026-11-16T16:48:34.458Z",
+  "updatedAt": "2026-11-16T16:48:34.458Z",
+  "template": "stacked",
+  "published": {
+    "content": {
+      "heroImage": "",
+      "title": "سبراي ضد الشتا للزاج",
+      "subtitle": "الماء كيتزلق على الزاج بوحدو، والرؤية كتبقى واضحة فالشتا.",
+      "rating": 0,
+      "reviewCount": 0,
+      "gallery": [
+        {
+          "src": "",
+          "alt": "سبراي ضد الشتا للزاج"
+        },
+        {
+          "src": "",
+          "alt": "القطرات كيتزلقو بوحدهم"
+        },
+        {
+          "src": "",
+          "alt": "رؤية أوضح فالشتا"
+        },
+        {
+          "src": "",
+          "alt": "ساهل فالاستعمال"
+        }
+      ],
+      "carousel": [],
+      "faq": [
+        {
+          "question": "فين نقدر نستعملو؟",
+          "answer": "على الزاج القدامي واللوراني والمرايات الجانبية. ما تستعملوش على الضو ولا البلاستيك."
+        },
+        {
+          "question": "شحال كيبقى المفعول؟",
+          "answer": "كيتبدل حسب الاستعمال والماسحات. عاود الرشة ملي تلاحظ بلي الماء ولا كيبقى لاصق."
+        },
+        {
+          "question": "واش نقدر نشوف الطلب قبل ما نخلص؟",
+          "answer": "إيه. كتخلص للموزع ملي يوصلك الطلب وتشوفو. وإلا ما ناسبكش، عندك 7 أيام للاستبدال ولا الاسترجاع."
+        },
+        {
+          "question": "شحال كياخد التوصيل؟",
+          "answer": "بين 24 و72 ساعة حسب المدينة، من بعد ما نتصلو بيك فالتيليفون ونأكدو الطلب."
+        }
+      ],
+      "footerText": "",
+      "announcement": "شوف الطريق مزيان فالشتا",
+      "upsell": {
+        "sku": "nano-scratch-cloth",
+        "title": "ممسحة النانو للخدوش الخفيفة",
+        "headline": "حيد الخدوش الخفيفة من الصباغة بيدك",
+        "text": "جوج ممسحات كيحيدو الخدوش السطحية والآثار ديال الباركينغ بالمسح، بلا ماكينة.",
+        "image": "",
+        "price": 39,
+        "originalPrice": 69
+      },
+      "killers": {
+        "bullets": [],
+        "featuredReview": {
+          "text": "",
+          "image": "",
+          "author": ""
+        },
+        "stories": [],
+        "gridReviews": [],
+        "benefits": [
+          {
+            "title": "القطرات كيتزلقو بوحدهم",
+            "text": "السبراي كيدير طبقة رقيقة على الزاج، والماء كيتجمع قطرات وكيتزلق مع الريح ديال السير."
+          },
+          {
+            "title": "رؤية أوضح فالشتا",
+            "text": "ملي الماء ما كيبقاش لاصق فالزاج، كتشوف الطريق والضو ديال الطوموبيلات مزيان كثر."
+          },
+          {
+            "title": "ساهل فالاستعمال",
+            "text": "نقي الزاج ونشفو، رش، ومسح بشيفون نقي. خمس دقايق وصافي."
+          }
+        ],
+        "usageSteps": [],
+        "footerCta": {
+          "text": "",
+          "image": ""
+        },
+        "guarantees": []
+      }
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "قرعة وحدة",
+          "subtitle": "التوصيل لجميع المدن",
+          "price": 89,
+          "originalPrice": 129,
+          "quantity": 1,
+          "badge": null,
+          "image": "",
+          "isPopular": false
+        },
+        {
+          "id": 2,
+          "title": "جوج قرعات",
+          "subtitle": "وحدة ليك ووحدة هدية",
+          "price": 149,
+          "originalPrice": 258,
+          "quantity": 2,
+          "badge": "الأوفر",
+          "image": "",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "rain-shield-spray",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": "212626558375"
+    },
+    "seo": {
+      "metaTitle": "سبراي ضد الشتا للزاج | Lhamza Shop",
+      "metaDescription": "الماء كيتزلق على الزاج بوحدو، والرؤية كتبقى واضحة فالشتا. الدفع عند الاستلام والتوصيل لجميع المدن المغربية.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": [
+      {
+        "action": "created",
+        "timestamp": "2026-11-16T16:48:34.458Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-11-16T16:48:34.458Z"
+      }
+    ]
+  }
+}

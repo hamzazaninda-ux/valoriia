@@ -36,17 +36,17 @@ export const POST: RequestHandler = async ({ request }) => {
 		).trim();
 
 		const quantity = Number(body.quantity !== undefined ? body.quantity : (body.qte !== undefined ? body.qte : 1)) || 1;
-		const rawPrice = body.totalPrice !== undefined ? body.totalPrice : (body.price !== undefined ? body.price : (body.total !== undefined ? body.total : 229));
-		const price = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 229;
+		const rawPrice = body.totalPrice !== undefined ? body.totalPrice : (body.price !== undefined ? body.price : (body.total !== undefined ? body.total : 0));
+		const price = parseInt(String(rawPrice).replace(/[,.]\d+$/, ''), 10) || 0;
 
-		const product = String(body.product || body.productTitle || body.bundle || 'باك الحمام الذكي').trim();
+		const product = String(body.product || body.productTitle || body.bundle || 'طلب من المتجر').trim();
 		const bundle = String(
 			body.bundle ||
 			body.productTitle ||
 			body.product ||
 			body.selectedOfferTitle ||
 			body.offer ||
-			(quantity === 2 ? 'قطعتان + 2 رشاشات هدية 🎁🎁' : 'قطعة واحدة + رشاش هدية 🎁')
+			`${quantity} قطعة`
 		).trim();
 
 		const casablancaTime = new Date().toLocaleString('fr-FR', { timeZone: 'Africa/Casablanca' });
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			totalPrice: price,
 			quantity,
 			qte: quantity,
-			source: String(body.source || 'kit-tandim'),
+			source: String(body.source || 'store'),
 			date_order,
 			sheetsUrl: body.sheetsUrl
 		};
