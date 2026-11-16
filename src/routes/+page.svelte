@@ -1,709 +1,957 @@
 <script lang="ts">
-	import Header from '$lib/components/shared/Header.svelte';
-	import AnnouncementBar from '$lib/components/shared/AnnouncementBar.svelte';
-	import BottomNav from '$lib/components/shared/BottomNav.svelte';
-	import TrustSection from '$lib/components/sections/TrustSection.svelte';
+	import Logo from '$lib/components/brand/Logo.svelte';
+
 	let { data } = $props();
+
+	// Store name kept as "Lhamza Shop" (required by scripts/verify-store-identity.js).
+	const STORE_NAME = 'Lhamza Shop';
 
 	const brand = $derived(data.settings.brand);
 	const commerce = $derived(data.settings.commerce);
+	const products = $derived(data.products);
 	const cur = $derived(commerce.currencySymbol || 'درهم');
-	const waNumber = $derived((brand.whatsappNumber || '').replace(/\D/g, ''));
-	const waBase = $derived(waNumber ? `https://wa.me/${waNumber}` : 'https://wa.me/');
 
-	type Slot = {
-		slug: string;
-		title: string;
-		subtitle: string;
-		image: string;
-		price: number;
-		oldPrice: number | null;
-		discount: string | null;
-		rating: number;
-		reviews: number;
-		real: boolean;
-		badge?: string;
-	};
+	const waNumber = $derived((brand.whatsappNumber || '212626558375').replace(/\D/g, ''));
+	const wa = (text: string) => `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
 
-	const circularCategories = [
-		{
-			title: 'طقم الحمام الذكي',
-			image: '/images/col_a.png',
-			href: '/kit-tandim'
-		},
-		{
-			title: 'منظمات ومماسح ذكية',
-			image: '/images/col_b.png',
-			href: '/hamil-jidari-makanis'
-		},
-		{
-			title: 'أقفال وحلول الأمان',
-			image: '/images/child-safety-lock.webp',
-			href: '/qofl-al-aman'
-		}
-	];
-
-	// Fallback collection (3 slots) — disappears automatically once real products exist.
-	const placeholders: Slot[] = [
-		{
-			slug: 'kit-tandim',
-			title: 'باك الحمام الذكي + رشاش هدية',
-			subtitle: 'تنظيم شامل بدون ثقب الجدران + رشاش مضاعفة ضغط الماء هدية مجانية',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793011034/Gemini_Generated_Image_ybqshcybqshcybqs.jpg',
-			price: 229,
-			oldPrice: 299,
-			discount: null,
-			rating: 4.9,
-			reviews: 203,
-			real: true
-		},
-		{
-			slug: 'inox-organizer',
-			title: 'منظم الحمام الفاخر (إينوكس 3 طبقات) + رشاش توربو مجاناً',
-			subtitle: 'فولاذ أصلي مقاوم للصدأ بـ 3 رفوف وحامل مناشف مع رشاش مفلتر هدية',
-			image: 'https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg',
-			price: 279,
-			oldPrice: 399,
-			discount: null,
-			rating: 5.0,
-			reviews: 114,
-			real: true,
-			badge: 'توصيل مجاني + هدية 🎁'
-		},
-		{
-			slug: 'monazzim-daki',
-			title: 'المنظم الذكي متعدد الاستعمال',
-			subtitle: 'رتّب المطبخ والحمام في دقائق + رشاش مجاني مع كل طلب',
-			image: 'https://placehold.co/800x800/faf9f6/022c22?text=Lhamza+Shop',
-			price: 149,
-			oldPrice: 249,
-			discount: null,
-			rating: 4.8,
-			reviews: 127,
-			real: false
-		}
-	];
-
-	function toSlot(p: any): Slot {
-		const isOrganizer = p.slug === 'inox-organizer';
-		const price = p.startingPrice || p.price || (isOrganizer ? 279 : 229);
-		const oldPrice = p.oldPrice || (isOrganizer ? 399 : (price === 229 ? 299 : Math.round(price * 1.3)));
-		return {
-			slug: p.slug,
-			title: p.title,
-			subtitle: p.subtitle || '',
-			image: p.heroImage || p.image || '',
-			price,
-			oldPrice,
-			discount: null,
-			rating: isOrganizer ? 5.0 : (p.rating || 4.9),
-			reviews: isOrganizer ? 114 : (p.reviews || p.reviewCount || 203),
-			real: true,
-			badge: isOrganizer ? 'توصيل مجاني + هدية 🎁' : (p.badge || 'توصيل مجاني')
-		};
-	}
-
-	const real = $derived(
-		(data.products || [])
-			.filter(
-				(p: any) =>
-					p.slug !== 'hamil-jidari-makanis' &&
-					p.slug !== 'filter-baloua' &&
-					p.slug !== 'qofl-al-aman' &&
-					!p.heroImage?.includes('79')
-			)
-			.slice(0, 12)
-			.map(toSlot)
-	);
-	const catalog = $derived(
-		real.length >= 3 ? real : [...real, ...placeholders].slice(0, 3)
-	);
-
-	// --- Search (client-side filter over the visible catalog) ---
-	let query = $state('');
-	let searchOpen = $state(false);
-	const results = $derived(
-		query.trim()
-			? catalog.filter(
-					(s) =>
-						s.title.includes(query.trim()) || s.subtitle.includes(query.trim())
-				)
-			: catalog
-	);
-	let showAll = $state(false);
-	const visible = $derived(
-		query.trim() ? results : showAll ? catalog : catalog.slice(0, 3)
-	);
-
-	// --- Mini cart (localStorage, COD flow ends on WhatsApp) ---
-	let cart = $state<Record<string, number>>({});
-	let cartReady = $state(false);
-	let drawerOpen = $state(false);
 	let menuOpen = $state(false);
 
-	$effect(() => {
-		if (!cartReady && typeof localStorage !== 'undefined') {
-			try {
-				cart = JSON.parse(localStorage.getItem('lhamza-cart') || localStorage.getItem('valoriia-cart') || '{}');
-			} catch {
-				cart = {};
-			}
-			cartReady = true;
+	const threats = [
+		{
+			id: 'rain',
+			name: 'الشتا',
+			harm: 'الماء كيتسرب من الجوانات ديال البيبان والكوفر، والرطوبة كتجيب الريحة والصدا.',
+			fix: 'شريط العزل ديال البيبان، غطاء الكوفر'
+		},
+		{
+			id: 'dust',
+			name: 'الغبرة والشركي',
+			harm: 'الغبرة كتدخل للصالون، وصوت الريح كيعيّيك فالطريق السيار.',
+			fix: 'شريط العزل ديال البيبان'
+		},
+		{
+			id: 'sun',
+			name: 'الشمس',
+			harm: 'الصيف ديالنا كيشقق الطابلو وكيبهّت الصباغة ديال الطوموبيل.',
+			fix: 'غطاء الطوموبيل، كاش طابلو'
+		},
+		{
+			id: 'road',
+			name: 'الطريق',
+			harm: 'الطين والحجر كيضربو البودي، وعجلة ناقصة فبلاصة خاوية كتوقفك.',
+			fix: 'الغياسة، منفاخ العجلات المحمول'
 		}
-	});
-	$effect(() => {
-		if (cartReady && typeof localStorage !== 'undefined') {
-			localStorage.setItem('lhamza-cart', JSON.stringify(cart));
-		}
-	});
+	];
 
-	const bySlug = $derived(Object.fromEntries(catalog.map((s) => [s.slug || s.title, s])));
-	const cartCount = $derived(Object.keys(cart).length);
-	const cartTotal = $derived(
-		Object.keys(cart).reduce((sum, k) => sum + (bySlug[k]?.price || 0), 0)
-	);
+	const carMakes = ['Dacia', 'Renault', 'Peugeot', 'Hyundai', 'Kia', 'Toyota', 'Volkswagen', 'Fiat'];
 
-	function keyOf(s: Slot) {
-		return s.slug || s.title;
-	}
-	function addToCart(s: Slot) {
-		const k = keyOf(s);
-		if (!(k in cart)) cart[k] = 1;
-		drawerOpen = true;
-	}
-	function removeItem(k: string) {
-		const { [k]: _, ...rest } = cart;
-		cart = rest;
-	}
-	function orderViaWhatsApp() {
-		const lines = Object.keys(cart).map(
-			(k) => `• ${bySlug[k]?.title || k}`
-		);
-		const text = `السلام، بغيت نطلب من Lhamza Shop:\n${lines.join('\n')}\nالمجموع التقريبي: ${cartTotal} ${cur}\nالاسم الكامل: \nالمدينة: \nالهاتف: `;
-		window.open(`${waBase}?text=${encodeURIComponent(text)}`, '_blank');
-	}
+	const promises = [
+		{ id: 'cod', title: 'الدفع عند الاستلام', body: 'كتخلص للموزع ملي يوصلك الطلب، ماشي قبل.' },
+		{ id: 'ship', title: 'التوصيل فـ 24 حتى 72 ساعة', body: 'لجميع المدن المغربية، ومن بعد التأكيد معاك فالتيليفون.' },
+		{ id: 'swap', title: 'استبدال واسترجاع 7 أيام', body: 'إلا ما ناسبكش المنتج، كنبدلوه ليك ولا كنرجعو ليك فلوسك.' },
+		{ id: 'help', title: 'واتساب من 9:00 حتى 22:00', body: 'سولنا على أي منتج قبل ما تطلب، طيلة أيام الأسبوع.' }
+	];
 
+	const year = new Date().getFullYear();
 </script>
 
 <svelte:head>
-	<title>{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'} | متجر التنظيم والنظافة في المغرب</title>
+	<title>{STORE_NAME} | إكسسوارات حماية الطوموبيل فالمغرب</title>
 	<meta
 		name="description"
-		content="Lhamza Shop — متجر مغربي للتنظيم والنظافة المنزلية. التوصيل لجميع المدن والدفع عند الاستلام."
+		content="Lhamza Shop: إكسسوارات كتحمي طوموبيلتك من الشتا، الغبرة والشمس. الدفع عند الاستلام والتوصيل لجميع المدن المغربية."
 	/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta property="og:title" content="{STORE_NAME} | إكسسوارات حماية الطوموبيل" />
+	<meta name="theme-color" content="#2F4858" />
 </svelte:head>
 
-{#snippet stars(rating: number)}
-	<span class="inline-flex items-center gap-0.5" aria-label={`التقييم ${rating} من 5`}>
-		{#each [1, 2, 3, 4, 5] as i}
-			<svg
-				class={`h-3.5 w-3.5 ${i <= Math.round(rating) ? 'text-[#C99738]' : 'text-stone-200'}`}
-				viewBox="0 0 20 20"
-				fill="currentColor"
-				aria-hidden="true"
-			>
-				<path
-					d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z"
-				/>
-			</svg>
-		{/each}
-	</span>
-{/snippet}
+<div class="lz" id="top">
+	<!-- Service strip -->
+	<p class="strip">
+		<span>الدفع عند الاستلام</span>
+		<span class="strip-sep" aria-hidden="true"></span>
+		<span>التوصيل لجميع المدن</span>
+		<span class="strip-sep strip-wide" aria-hidden="true"></span>
+		<span class="strip-wide">استبدال 7 أيام</span>
+	</p>
 
-{#snippet sectionTitle(title: string, sub: string)}
-	<div class="text-center">
-		<h2 class="font-display text-2xl font-bold text-[#1E293B] md:text-3xl">{title}</h2>
-		{#if sub}
-			<p class="mt-1.5 text-sm text-stone-500">{sub}</p>
-		{/if}
-		<div class="mx-auto mt-3 h-0.5 w-24 rounded-full bg-[#1B4332]"></div>
-	</div>
-{/snippet}
+	<!-- Header -->
+	<header class="head">
+		<div class="wrap head-row">
+			<a href="/" class="head-logo" aria-label={STORE_NAME}>
+				<Logo size={34} tone="light" />
+			</a>
 
-<div id="top" class="relative min-h-screen bg-[#FAF9F6] font-body text-[#1E293B] pb-20 md:pb-0" dir="rtl">
-	<!-- Ambient Moroccan Cultural Geometric Motif (<= 3% opacity, background only) -->
-	<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025]" aria-hidden="true">
-		<svg class="h-full w-full" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-			<defs>
-				<pattern id="moroccan-khatam" width="60" height="60" patternUnits="userSpaceOnUse">
-					<path d="M30 0 L40 20 L60 30 L40 40 L30 60 L20 40 L0 30 L20 20 Z" fill="none" stroke="#1B4332" stroke-width="1.2" />
-					<circle cx="30" cy="30" r="8" fill="none" stroke="#C99738" stroke-width="0.8" />
-				</pattern>
-			</defs>
-			<rect width="100%" height="100%" fill="url(#moroccan-khatam)" />
-		</svg>
-	</div>
+			<nav class="head-nav" aria-label="التنقل الرئيسي">
+				<a href="#products">المنتجات</a>
+				<a href="#threats">علاش الحماية</a>
+				<a href="#advisor">شنو يناسب طوموبيلتك</a>
+				<a href="#promise">الضمانات</a>
+			</nav>
 
-	<!-- 1. Smooth Infinite Marquee Announcement Bar -->
-	<AnnouncementBar isStatic={false} />
-
-
-	<!-- 2. Sticky header -->
-	<Header
-		brandName={brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}
-		cartCount={cartCount}
-		bind:searchOpen
-		bind:menuOpen
-		bind:query
-		onOpenCart={() => (drawerOpen = true)}
-	/>
-
-	<!-- 3. Full-width Visual Branded Hero Banner -->
-	<section class="mx-auto max-w-5xl px-3 sm:px-4 pt-1 md:pt-4">
-		<div class="relative w-full aspect-[2/1] sm:aspect-[21/9] min-h-[180px] max-h-[220px] sm:max-h-none sm:min-h-[380px] overflow-hidden rounded-2xl shadow-[0_12px_40px_-15px_rgba(0,0,0,0.3)] mx-auto mb-3 mt-1 sm:my-2">
-			<!-- Background image with fallback -->
-			<img
-				src={brand.heroImage || '/images/hero-banner.webp'}
-				alt="رتّب دارك بأناقة وراحة بال - Lhamza Shop"
-				class="absolute inset-0 h-full w-full object-cover"
-				loading="eager"
-				onerror={(e) => {
-					(e.currentTarget as HTMLImageElement).src =
-						'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1600&q=80';
-				}}
-			/>
-
-			<!-- Dark Overlay for text contrast -->
-			<div class="absolute inset-0 bg-black/35 bg-gradient-to-t from-black/80 via-black/35 to-black/20" aria-hidden="true"></div>
-
-			<!-- Centered Content -->
-			<div class="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-6 text-center">
-				<div class="mx-auto max-w-2xl space-y-1.5 sm:space-y-3.5 px-2 mt-4 sm:mt-0">
-					<h1 class="font-display text-xl sm:text-4xl md:text-5xl font-extrabold leading-[1.3] text-white drop-shadow-md">
-						رتّب دارك بأناقة وراحة بال
-					</h1>
-					<p class="mx-auto max-w-lg text-[11px] sm:text-base md:text-lg font-medium leading-relaxed text-white/90 drop-shadow">
-						حلول ذكية للتنظيم المنزلي بدون حفر وبدون عناء
-					</p>
-					<div class="pt-1.5 sm:pt-3">
-						<a
-							href="#bestsellers"
-							class="inline-flex min-h-10 sm:min-h-12 items-center justify-center gap-2 rounded-xl bg-[#C99738] hover:bg-[#b88528] active:scale-95 px-6 sm:px-8 text-xs sm:text-sm md:text-base font-bold text-white shadow-xl transition-all duration-300"
-						>
-							<span>اكتشف العروض الحصرية</span>
-							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-							</svg>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- 4. Collections: Circular Category Avatars directly below Hero -->
-	<section id="collections" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-6 pb-2">
-		<div class="text-center mb-5 space-y-1.5">
-			<span class="inline-flex items-center gap-1.5 rounded-full border border-stone-200/80 bg-white/80 px-3 py-0.5 text-[11px] font-bold text-stone-600 shadow-2xs">
-				<svg class="h-3 w-3 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-				</svg>
-				تشكيلة مختارة بعناية
-			</span>
-			<h2 class="font-display text-xl sm:text-2xl font-black text-[#1E293B] tracking-tight">
-				تسوّق حسب المجموعة
-			</h2>
-			<div class="mx-auto h-0.5 w-16 rounded-full bg-[#1B4332]"></div>
-		</div>
-
-		<div class="flex overflow-x-auto justify-start sm:justify-center gap-4 sm:gap-8 px-2 sm:px-4 py-2 scrollbar-none" dir="rtl">
-			{#each circularCategories as cat}
-				<a
-					href={cat.href}
-					class="group flex flex-col items-center gap-2.5 shrink-0 active:scale-95 transition-transform"
-					aria-label={cat.title}
-				>
-					<div
-						class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-stone-200 overflow-hidden shadow-sm bg-white p-1 flex items-center justify-center transition-all duration-300 group-hover:border-[#1B4332] group-hover:shadow-md"
-					>
-						<img
-							src={cat.image}
-							alt={cat.title}
-							class="h-full w-full object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-							loading="lazy"
-						/>
-					</div>
-					<span
-						class="text-xs sm:text-sm font-bold text-[#1E293B] text-center max-w-[100px] sm:max-w-[120px] leading-tight transition-colors group-hover:text-[#1B4332]"
-					>
-						{cat.title}
-					</span>
+			<div class="head-actions">
+				<a class="head-wa" href={wa('سلام، بغيت نسول على منتج')} target="_blank" rel="noopener">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg>
+					<span>واتساب</span>
 				</a>
-			{/each}
-		</div>
-	</section>
-
-	<!-- 5. Bestsellers -->
-	<section id="bestsellers" class="mx-auto max-w-5xl scroll-mt-24 px-4 pt-14">
-		<div class="text-center">
-			<div class="flex items-center justify-center gap-2">
-				<svg class="h-5 w-5 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.7-5.3-3.2-6.9-.4 1.1-1 2.1-2 2.9.1-2.8-1.2-5.3-3.1-6.8C10.4 3.3 9.4 2.5 8.5 2c.2 2.3-.3 4.3-1.3 6C5.9 9.7 4.5 11.9 4.5 14.8 4.5 19 7.6 22 12 22z" />
-				</svg>
-				<h2 class="font-display text-2xl font-bold text-[#1E293B] md:text-3xl">الأكثر مبيعاً</h2>
-				<svg class="h-5 w-5 text-[#C99738]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M12 22c4.4 0 7.5-3 7.5-7.2 0-3.1-1.7-5.3-3.2-6.9-.4 1.1-1 2.1-2 2.9.1-2.8-1.2-5.3-3.1-6.8C10.4 3.3 9.4 2.5 8.5 2c.2 2.3-.3 4.3-1.3 6C5.9 9.7 4.5 11.9 4.5 14.8 4.5 19 7.6 22 12 22z" />
-				</svg>
-			</div>
-			<div class="mx-auto mt-3 h-0.5 w-24 rounded-full bg-[#1B4332]"></div>
-			{#if query.trim()}
-				<p class="mt-2 text-sm text-stone-500">
-					نتائج البحث عن “{query.trim()}”: {visible.length}
-					<button type="button" onclick={() => (query = '')} class="font-bold text-[#1B4332] underline underline-offset-4">مسح البحث</button>
-				</p>
-			{/if}
-		</div>
-
-		{#if visible.length === 0}
-			<div class="mx-auto mt-8 max-w-sm rounded-3xl border border-dashed border-stone-300 bg-white/60 p-10 text-center">
-				<svg viewBox="0 0 120 90" class="mx-auto h-20 w-auto text-stone-300" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
-					<circle cx="52" cy="38" r="24" />
-					<line x1="70" y1="56" x2="96" y2="82" stroke-linecap="round" />
-					<path d="M38 34 l3 6 6 3 -6 3 -3 6 -3 -6 -6 -3 6 -3 z" fill="currentColor" stroke="none" opacity="0.5" />
-				</svg>
-				<p class="mt-4 font-bold text-[#1E293B]">ما لقينا حتى منتج بهاد الاسم</p>
-				<p class="mt-1 text-sm text-stone-400">جرّب كلمة أخرى ولا شوف المجموعة كاملة</p>
 				<button
 					type="button"
-					onclick={() => (query = '')}
-					class="mt-4 inline-flex min-h-11 items-center rounded-xl bg-[#1B4332] px-6 font-bold text-white transition-transform hover:scale-[1.02] hover:bg-[#143326] active:scale-[0.98]"
+					class="head-menu"
+					aria-label="القائمة"
+					aria-expanded={menuOpen}
+					onclick={() => (menuOpen = !menuOpen)}
 				>
-					عرض كل المنتجات
-				</button>
-			</div>
-		{:else}
-			<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-				{#each visible as s}
-					<article
-						class="group relative flex flex-col overflow-hidden rounded-3xl border border-stone-200/70 bg-white p-3.5 sm:p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-[#1B4332]/30 active:scale-[0.99]"
-					>
-						<div class="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden rounded-2xl bg-stone-50 flex items-center justify-center">
-							<!-- Reassurance Floating Pill -->
-							<span class="absolute top-2.5 end-2.5 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-emerald-900 shadow-xs backdrop-blur-xs border border-emerald-100">
-								<svg class="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-									<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-								</svg>
-								<span>{s.badge || 'توصيل مجاني'}</span>
-							</span>
-
-							{#if s.image && !s.image.includes('placehold.co') && !s.image.includes('PLACEHOLDER')}
-								<a href={s.real ? `/${s.slug}` : '#offer'} class="block h-full w-full" aria-label={s.title}>
-									<img
-										src={s.image}
-										alt={s.title}
-										loading="lazy"
-										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-									/>
-								</a>
-							{:else if s.slug === 'inox-organizer' || s.title?.includes('إينوكس')}
-								<a href="/inox-organizer" class="block h-full w-full" aria-label={s.title}>
-									<img
-										src="https://res.cloudinary.com/xqjngk8y/image/upload/v1793288332/Gemini_Generated_Image_laihkwlaihkwlaih.jpg"
-										alt={s.title}
-										loading="lazy"
-										class="h-full w-full object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-									/>
-								</a>
-							{:else}
-								<a href={s.real ? `/${s.slug}` : '#offer'} class="relative block h-full w-full p-4" aria-label={s.title}>
-									<div class="flex h-full w-full items-center justify-center rounded-xl bg-stone-100 text-stone-400">
-										<svg class="h-12 w-12 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-											<path stroke-linecap="round" stroke-linejoin="round" d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4M2 7h20" />
-										</svg>
-									</div>
-								</a>
-							{/if}
-						</div>
-
-						<div class="flex flex-1 flex-col justify-between gap-3 pt-3 sm:pt-4 px-1 pb-1">
-							<div>
-								{#if s.real}
-									<a href={`/${s.slug}`} class="font-display text-base sm:text-lg font-bold leading-snug text-[#1E293B] transition-colors hover:text-[#1B4332]">
-										{s.title}
-									</a>
-								{:else}
-									<h3 class="font-display text-base sm:text-lg font-bold leading-snug text-[#1E293B]">{s.title}</h3>
-								{/if}
-								{#if s.subtitle}
-									<p class="mt-1 line-clamp-2 text-xs leading-relaxed text-stone-500">{s.subtitle}</p>
-								{/if}
-							</div>
-
-							<div class="flex items-baseline gap-2.5">
-								<span class="font-display text-xl sm:text-2xl font-black text-[#1E293B]">{s.price} DH</span>
-								{#if s.oldPrice}
-									<span class="text-xs sm:text-sm text-stone-400 line-through font-semibold">{s.oldPrice} DH</span>
-								{/if}
-							</div>
-
-							{#if s.reviews > 0}
-								<div class="flex items-center gap-1.5 text-xs text-stone-500">
-									{@render stars(s.rating)}
-									<span class="text-[11px] text-stone-400">({s.reviews} تقييم)</span>
-								</div>
-							{/if}
-
-							<div class="mt-auto space-y-2 pt-2">
-								<a
-									href={s.real ? `/${s.slug}` : '#offer'}
-									class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm sm:text-base font-bold text-white shadow-md transition-all duration-300 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98]"
-									style="background-color: #1B4332;"
-								>
-									<span>اطلب الآن • الدفع عند الاستلام 🚚</span>
-									<svg class="h-4 w-4 shrink-0 text-[#C99738]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-									</svg>
-								</a>
-								<div class="flex items-center justify-between text-[11px] text-stone-400 font-medium px-1">
-									<span class="flex items-center gap-1">
-										<svg class="h-3 w-3 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-											<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-										</svg>
-										معاينة قبل الدفع
-									</span>
-									<span class="flex items-center gap-1">
-										<svg class="h-3 w-3 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-											<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-										</svg>
-										ضمان 14 يوم
-									</span>
-								</div>
-							</div>
-						</div>
-					</article>
-				{/each}
-			</div>
-		{/if}
-
-		{#if !query.trim() && catalog.length > 3}
-			<div class="mt-8 text-center">
-				<button
-					type="button"
-					onclick={() => (showAll = !showAll)}
-					class="inline-flex min-h-12 items-center rounded-2xl bg-[#1B4332] px-10 text-sm font-bold text-white transition-all duration-300 hover:bg-[#143326] active:scale-[0.98]"
-				>
-					{showAll ? 'عرض أقل' : 'عرض الكل'}
-				</button>
-			</div>
-		{/if}
-	</section>
-
-	<!-- 6. Trust strip (Rich Moroccan COD guarantees stream) -->
-	<div class="mt-14 overflow-hidden border-y border-stone-200/70 bg-white/80 py-3.5" aria-hidden="true">
-		<div class="animate-store-marquee-fast flex w-max items-center gap-10 pe-10">
-			{#each [0, 1] as dup}
-				<div class="flex items-center gap-8" aria-hidden={dup === 1}>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 20 20" fill="currentColor">
-							<path d="M10 1.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8L10 14.9l-5.3 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z" />
-						</svg>
-						أكثر من 1,000 عميل راضٍ بالمغرب
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-emerald-900">
-						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-						</svg>
-						حق المعاينة والتجربة قبل الدفع
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-[#C99738]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-						</svg>
-						توصيل مجاني وسريع 24h - 48h
-					</span>
-					<span class="text-stone-300">•</span>
-					<span class="flex items-center gap-2 whitespace-nowrap text-xs sm:text-sm font-bold text-[#1E293B]">
-						<svg class="h-4 w-4 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-						</svg>
-						ضمان استبدال رسمي 14 يوماً
-					</span>
-				</div>
-			{/each}
-		</div>
-	</div>
-
-	<!-- 7. Why us & Customer Service -->
-	<TrustSection
-		whatsappNumber={waNumber || '212626558375'}
-		brandName={brand.name || 'Lhamza Shop'}
-		supportHours="طيلة أيام الأسبوع من 9:00 صباحاً إلى 22:00 مساءً"
-	/>
-
-	<!-- 9. Footer -->
-	<footer id="contact" class="mt-14 scroll-mt-24 bg-[#0E261C] text-stone-300">
-		<div class="mx-auto grid max-w-5xl grid-cols-1 gap-9 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
-			<div class="space-y-3">
-				<div class="flex items-center gap-2">
-					<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 font-display text-lg font-bold text-[#C99738]">L</span>
-					<span class="font-display text-xl font-bold text-white">{brand.name && brand.name !== 'Valoriia' ? brand.name : 'Lhamza Shop'}</span>
-				</div>
-				<p class="text-xs leading-loose text-stone-300">
-					Lhamza Shop - متجر مغربي متخصص في منتجات التنظيم والنظافة المنزلية. منتجات مختارة
-					بعناية، توصيل سريع، والدفع عند الاستلام.
-				</p>
-			</div>
-			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">تسوّق</h4>
-				<div class="grid gap-2 text-xs">
-					<a href="#collections" class="transition-colors hover:text-[#C99738]">المجموعات</a>
-					<a href="#bestsellers" class="transition-colors hover:text-[#C99738]">الأكثر مبيعاً</a>
-					<a href="#offer" class="transition-colors hover:text-[#C99738]">العرض الحالي</a>
-					<a href="#why" class="transition-colors hover:text-[#C99738]">علاش حنا</a>
-				</div>
-			</div>
-			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">السياسات والقوانين</h4>
-				<div class="grid gap-2 text-xs">
-					<a href="/privacy" class="transition-colors hover:text-[#C99738]">سياسة الخصوصية</a>
-					<a href="/terms" class="transition-colors hover:text-[#C99738]">الشروط والأحكام</a>
-					<a href="/refund-policy" class="transition-colors hover:text-[#C99738]">سياسة الاسترجاع والاستبدال</a>
-					<a href="/shipping-policy" class="transition-colors hover:text-[#C99738]">الشحن والتوصيل</a>
-					<a href="/contact" class="transition-colors hover:text-[#C99738]">اتصل بنا</a>
-				</div>
-			</div>
-			<div class="space-y-3">
-				<h4 class="text-sm font-bold text-white">تواصل معانا</h4>
-				<a
-					href={`${waBase}?text=${encodeURIComponent('السلام Lhamza Shop، عندي استفسار')}`}
-					target="_blank"
-					rel="noopener"
-					class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 text-xs font-bold text-white transition-colors hover:border-[#C99738] hover:text-[#C99738]"
-				>
-					<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-						<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-					</svg>
-					راسلنا على واتساب
-				</a>
-				<p class="text-[11px] text-stone-400">متاح لخدمتك: {brand.supportHours || 'طيلة أيام الأسبوع'}</p>
-				<p class="text-[11px] text-stone-400">البريد: contact@lhamza.shop</p>
-			</div>
-		</div>
-		<div class="border-t border-white/10 bg-black/30 py-5 text-center text-xs text-stone-400">
-			<p>© {new Date().getFullYear()} Lhamza Shop. جميع الحقوق محفوظة.</p>
-		</div>
-	</footer>
-
-	<!-- 10. Floating WhatsApp Action -->
-	<BottomNav
-		whatsappNumber={waNumber || '212626558375'}
-		{cartCount}
-		onSearch={() => {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			searchOpen = true;
-			setTimeout(() => document.getElementById('store-search-input')?.focus({ preventScroll: true }), 350);
-		}}
-		onOpenCart={() => (drawerOpen = true)}
-	/>
-
-<!-- 11. Cart drawer -->
-{#if drawerOpen}
-	<div class="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="سلة التسوق">
-		<button
-			type="button"
-			class="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
-			onclick={() => (drawerOpen = false)}
-			aria-label="سد السلة"
-		></button>
-		<aside class="absolute bottom-0 left-0 top-0 flex w-[86%] max-w-sm flex-col bg-[#FAF9F6] shadow-2xl">
-			<div class="flex items-center justify-between border-b border-stone-200/70 bg-white px-5 py-4">
-				<h2 class="font-display text-lg font-bold text-[#1E293B]">السلة ({cartCount})</h2>
-				<button
-					type="button"
-					onclick={() => (drawerOpen = false)}
-					class="flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition-colors hover:bg-stone-100"
-					aria-label="سد السلة"
-				>
-					<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-						<path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
-				</button>
-			</div>
-			{#if cartCount === 0}
-				<div class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
-					<svg viewBox="0 0 120 100" class="h-24 w-auto text-stone-300" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M8 30h104l-9 48a10 10 0 01-10 8H27a10 10 0 01-10-8L8 30z" />
-						<path stroke-linecap="round" d="M40 30l6-14h28l6 14" />
-						<circle cx="48" cy="52" r="2.5" fill="currentColor" stroke="none" />
-						<circle cx="72" cy="52" r="2.5" fill="currentColor" stroke="none" />
-						<path stroke-linecap="round" d="M46 68c4 5 8 5 12 0s8-5 12 0" opacity="0.7" />
-					</svg>
-					<p class="font-bold text-[#1E293B]">السلة خاوية</p>
-					<p class="text-sm text-stone-400">أضف منتجاً إلى السلة ليظهر هنا</p>
-					<button
-						type="button"
-						onclick={() => {
-							drawerOpen = false;
-							document.getElementById('bestsellers')?.scrollIntoView({ behavior: 'smooth' });
-						}}
-						class="mt-2 inline-flex min-h-11 items-center rounded-xl bg-[#1B4332] px-6 font-bold text-white transition-all hover:bg-[#143326] active:scale-[0.98]"
-					>
-						تسوّق دابا
-					</button>
-				</div>
-			{:else}
-				<div class="flex-1 space-y-3 overflow-y-auto p-4">
-					{#each Object.keys(cart) as k}
-						{@const item = bySlug[k]}
-						{#if item}
-							<div class="rounded-2xl border border-stone-200/60 bg-white p-3 shadow-2xs">
-								<div class="flex items-start justify-between gap-2">
-									<p class="min-w-0 flex-1 truncate text-sm font-bold text-[#1E293B]">{item.title}</p>
-									<button
-										type="button"
-										onclick={() => removeItem(k)}
-										class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500"
-										aria-label="حيد من السلة"
-									>
-										<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-											<path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916" />
-										</svg>
-									</button>
-								</div>
-								<span class="mt-2 block h-24 w-full overflow-hidden rounded-xl bg-stone-100">
-									{#if item.image}
-										<img src={item.image} alt={item.title} class="h-full w-full object-cover" />
-									{:else}
-										<span class="flex h-full w-full items-center justify-center">
-											<svg class="h-6 w-6 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
-												<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-											</svg>
-										</span>
-									{/if}
-								</span>
-								<div class="mt-2 flex items-center justify-between gap-2">
-									<span class="truncate text-[11px] font-semibold text-stone-400">التوصيل مجاني</span>
-									<span class="shrink-0 text-sm font-black text-[#1E293B]">{item.price} {cur}</span>
-								</div>
-							</div>
+					<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+						{#if menuOpen}
+							<path d="M6 6l12 12M18 6 6 18" />
+						{:else}
+							<path d="M4 7h16M4 12h16M4 17h16" />
 						{/if}
-					{/each}
-				</div>
-				<div class="space-y-3 border-t border-stone-200/70 bg-white p-4">
-					<div class="flex items-center justify-between font-black text-[#1E293B]">
-						<span>المجموع</span>
-						<span>{cartTotal} {cur}</span>
-					</div>
-					<button
-						type="button"
-						onclick={orderViaWhatsApp}
-						class="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] font-bold text-white transition-all hover:bg-[#20ba56] active:scale-[0.98]"
-					>
-						أكّد الطلب عبر واتساب
-					</button>
-					<button
-						type="button"
-						onclick={() => (cart = {})}
-						class="w-full py-2 text-center text-xs text-stone-400 underline underline-offset-4 hover:text-stone-600"
-					>
-						إفراغ السلة
-					</button>
-				</div>
-			{/if}
-		</aside>
+					</svg>
+				</button>
+			</div>
 		</div>
-	{/if}
+
+		{#if menuOpen}
+			<nav class="head-drawer" aria-label="القائمة">
+				{#each [['المنتجات', '#products'], ['علاش الحماية', '#threats'], ['شنو يناسب طوموبيلتك', '#advisor'], ['الضمانات', '#promise'], ['تواصل معنا', '/contact']] as [label, href]}
+					<a {href} onclick={() => (menuOpen = false)}>{label}</a>
+				{/each}
+			</nav>
+		{/if}
+	</header>
+
+	<main>
+		<!-- Hero -->
+		<section class="hero">
+			<div class="wrap hero-grid">
+				<div class="hero-copy">
+					<h1>الشتا، الغبرة والشمس بقاو برا طوموبيلتك.</h1>
+					<p class="hero-sub">
+						إكسسوارات حماية مختارة لطرقان المغرب وللجو ديالو. كتشوف الطلب فيدك قبل ما تخلص.
+					</p>
+					<div class="hero-ctas">
+						<a class="btn btn-amber" href="#products">شوف المنتجات</a>
+						<a class="btn btn-ghost" href="#advisor">شنو يناسب طوموبيلتك؟</a>
+					</div>
+				</div>
+
+				<figure class="hero-art" aria-hidden="true">
+					<svg viewBox="0 0 320 170" role="presentation">
+						<defs>
+							<pattern id="rain" width="14" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
+								<line x1="7" y1="0" x2="7" y2="9" stroke="#9FB6C3" stroke-width="1.4" stroke-linecap="round" />
+							</pattern>
+							<mask id="outside-shield">
+								<rect width="320" height="170" fill="#fff" />
+								<path d="M18 140 Q160 -16 302 140 Z" fill="#000" />
+							</mask>
+						</defs>
+						<rect width="320" height="140" fill="url(#rain)" mask="url(#outside-shield)" opacity="0.75" />
+						<path class="shield" d="M18 140 Q160 -16 302 140" fill="none" stroke="#F5A300" stroke-width="3.5" stroke-linecap="round" />
+						<line x1="0" y1="140.5" x2="320" y2="140.5" stroke="#4E6878" stroke-width="1.5" />
+						<g class="car" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+							<path d="M66 128 H52 Q46 128 46 121 V110 Q46 101 56 99 L96 94 L120 74 Q127 68 138 68 H190 Q200 68 207 75 L228 94 L262 99 Q274 101 274 112 V121 Q274 128 267 128 H254" />
+							<path d="M106 128 H214" />
+							<path d="M108 94 L126 78 Q130 75 136 75 H160 V94 Z M168 75 H188 Q195 75 200 80 L214 94 H168 Z" stroke-width="2" />
+							<circle cx="86" cy="128" r="14" fill="#2F4858" />
+							<circle cx="234" cy="128" r="14" fill="#2F4858" />
+							<circle cx="86" cy="128" r="5" />
+							<circle cx="234" cy="128" r="5" />
+						</g>
+					</svg>
+				</figure>
+			</div>
+		</section>
+
+		<!-- Products -->
+		<section class="products" id="products" aria-labelledby="products-title">
+			<div class="wrap">
+				<div class="sec-head">
+					<h2 id="products-title">المنتجات</h2>
+					<p>كل منتج جربناه وكنعرفو مزيان شنو كيدير. ثمن واحد واضح، بلا مفاجآت.</p>
+				</div>
+
+				{#if products.length}
+					<ul class="grid">
+						{#each products as p (p.slug)}
+							<li>
+								<a class="card" href="/{p.slug}">
+									<span class="card-img">
+										{#if p.heroImage}
+											<img src={p.heroImage} alt={p.title} loading="lazy" decoding="async" />
+										{:else}
+											<Logo size={44} showWord={false} />
+										{/if}
+									</span>
+									<span class="card-body">
+										<span class="card-title">{p.title}</span>
+										{#if p.subtitle}<span class="card-sub">{p.subtitle}</span>{/if}
+										{#if p.startingPrice}
+											<span class="card-price"><b>{p.startingPrice}</b> {cur}</span>
+										{/if}
+									</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<div class="empty">
+						<p class="empty-title">المجموعة الأولى كتوجد دابا.</p>
+						<p>صيفط لينا الموديل ديال طوموبيلتك فواتساب، ونعلموك أول واحد ملي تكون واجدة.</p>
+						<a class="btn btn-ink" href={wa('سلام، بغيت تعلموني ملي تخرج المجموعة الأولى. الطوموبيل ديالي: ')} target="_blank" rel="noopener">علمني فواتساب</a>
+					</div>
+				{/if}
+			</div>
+		</section>
+
+		<!-- Threats -->
+		<section class="threats" id="threats" aria-labelledby="threats-title">
+			<div class="wrap">
+				<div class="sec-head">
+					<h2 id="threats-title">أربعة حوايج كياكلو طوموبيلتك كل نهار</h2>
+					<p>ماشي غير الكيلومترات. الجو والطريق فالمغرب كيخسرو الطوموبيل بشوية بشوية، وكل واحد عندو الحل ديالو.</p>
+				</div>
+
+				<ol class="threat-list">
+					{#each threats as t (t.id)}
+						<li class="threat">
+							<span class="threat-icon" aria-hidden="true">
+								{#if t.id === 'rain'}
+									<svg viewBox="0 0 24 24"><path d="M7 15a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 7.5a3.8 3.8 0 0 1 0 7.5" /><path d="M9 18l-1 2.5M13 18l-1 2.5M17 18l-1 2.5" /></svg>
+								{:else if t.id === 'dust'}
+									<svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3" /><path d="M3 14h15a3 3 0 1 1-3 3" /><path d="M3 19h6" /></svg>
+								{:else if t.id === 'sun'}
+									<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></svg>
+								{:else}
+									<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="3" /><path d="M12 3.5V9M12 15v5.5M3.5 12H9M15 12h5.5" /></svg>
+								{/if}
+							</span>
+							<div class="threat-text">
+								<h3>{t.name}</h3>
+								<p>{t.harm}</p>
+							</div>
+							<p class="threat-fix"><span>الحل:</span> {t.fix}</p>
+						</li>
+					{/each}
+				</ol>
+			</div>
+		</section>
+
+		<!-- Advisor -->
+		<section class="advisor" id="advisor" aria-labelledby="advisor-title">
+			<div class="wrap advisor-box">
+				<div>
+					<h2 id="advisor-title">ما عرفتيش شنو يناسب طوموبيلتك؟</h2>
+					<p>
+						اختار الماركة وصيفط لينا الموديل والعام فواتساب. كنقولو ليك شنو كيدخل ليها بالضبط، باش ما
+						تطلبش شي حاجة ما تجيش على القياس.
+					</p>
+				</div>
+				<ul class="makes">
+					{#each carMakes as make (make)}
+						<li>
+							<a href={wa(`سلام، عندي ${make}. الموديل والعام: `)} target="_blank" rel="noopener">{make}</a>
+						</li>
+					{/each}
+					<li>
+						<a href={wa('سلام، الطوموبيل ديالي: ')} target="_blank" rel="noopener">ماركة أخرى</a>
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<!-- Promise -->
+		<section class="promise" id="promise" aria-labelledby="promise-title">
+			<div class="wrap">
+				<div class="sec-head">
+					<h2 id="promise-title">كيفاش كنخدمو معاك</h2>
+				</div>
+				<dl class="promise-list">
+					{#each promises as item (item.id)}
+						<div class="promise-item">
+							<dt>{item.title}</dt>
+							<dd>{item.body}</dd>
+						</div>
+					{/each}
+				</dl>
+			</div>
+		</section>
+	</main>
+
+	<footer class="foot">
+		<div class="wrap foot-grid">
+			<div class="foot-brand">
+				<Logo size={30} tone="light" />
+				<p>{STORE_NAME}: إكسسوارات حماية الطوموبيل، مختارة للمغرب.</p>
+			</div>
+			<nav class="foot-links" aria-label="روابط المتجر">
+				<a href="/shipping-policy">سياسة الشحن</a>
+				<a href="/refund-policy">الاستبدال والاسترجاع</a>
+				<a href="/privacy">الخصوصية</a>
+				<a href="/terms">الشروط</a>
+				<a href="/contact">تواصل معنا</a>
+			</nav>
+			<div class="foot-contact">
+				<a href={wa('سلام')} target="_blank" rel="noopener" dir="ltr">+212 626-558375</a>
+				<a href="mailto:contact@lhamza.shop" dir="ltr">contact@lhamza.shop</a>
+				<span>كل يوم من 9:00 حتى 22:00</span>
+			</div>
+		</div>
+		<p class="wrap foot-copy">© {year} {STORE_NAME}</p>
+	</footer>
 </div>
+
+<style>
+	.lz {
+		--lz-ink: #17232b;
+		--lz-storm: #2f4858;
+		--lz-storm-deep: #24394a;
+		--lz-rain: #eef2f3;
+		--lz-line: #d5dee2;
+		--lz-mute: #56687a;
+		--lz-amber: #f5a300;
+		--lz-amber-deep: #d98f00;
+
+		background: var(--lz-rain);
+		color: var(--lz-ink);
+		font-family: 'Readex Pro', system-ui, sans-serif;
+		min-height: 100vh;
+		overflow-x: clip;
+	}
+
+	.wrap {
+		width: 100%;
+		max-width: 1120px;
+		margin-inline: auto;
+		padding-inline: 16px;
+	}
+
+	h1,
+	h2,
+	h3 {
+		margin: 0;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	p {
+		margin: 0;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	:focus-visible {
+		outline: 3px solid var(--lz-amber);
+		outline-offset: 2px;
+	}
+
+	/* Strip */
+	.strip {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 12px;
+		padding: 7px 16px;
+		background: var(--lz-ink);
+		color: #dfe7eb;
+		font-size: 12px;
+		font-weight: 500;
+	}
+
+	.strip-sep {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--lz-amber);
+	}
+
+	.strip-wide {
+		display: none;
+	}
+
+	/* Header */
+	.head {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: var(--lz-storm);
+		color: #fff;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.head-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		height: 60px;
+	}
+
+	.head-nav {
+		display: none;
+	}
+
+	.head-actions {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.head-wa {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 38px;
+		padding-inline: 12px;
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.1);
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.head-wa svg {
+		width: 18px;
+		height: 18px;
+	}
+
+	.head-menu {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		border: 0;
+		border-radius: 10px;
+		background: transparent;
+		color: #fff;
+		cursor: pointer;
+	}
+
+	.head-menu svg {
+		width: 24px;
+		height: 24px;
+	}
+
+	.head-drawer {
+		display: grid;
+		padding: 8px 16px 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.head-drawer a {
+		padding: 12px 4px;
+		font-size: 15px;
+		font-weight: 500;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	/* Buttons */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 50px;
+		padding-inline: 22px;
+		border-radius: 12px;
+		font-size: 16px;
+		font-weight: 700;
+		transition: background-color 0.15s ease, transform 0.1s ease;
+	}
+
+	.btn:active {
+		transform: scale(0.98);
+	}
+
+	.btn-amber {
+		background: var(--lz-amber);
+		color: var(--lz-ink);
+	}
+
+	.btn-amber:hover {
+		background: var(--lz-amber-deep);
+	}
+
+	.btn-ghost {
+		color: #fff;
+		box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
+	}
+
+	.btn-ghost:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.btn-ink {
+		background: var(--lz-ink);
+		color: #fff;
+	}
+
+	.btn-ink:hover {
+		background: var(--lz-storm);
+	}
+
+	/* Hero */
+	.hero {
+		background: var(--lz-storm);
+		color: #fff;
+		padding-block: 36px 0;
+	}
+
+	.hero-grid {
+		display: grid;
+		gap: 28px;
+	}
+
+	.hero h1 {
+		font-size: clamp(34px, 9vw, 60px);
+		line-height: 1.15;
+		max-width: 14ch;
+	}
+
+	.hero-sub {
+		margin-top: 16px;
+		max-width: 38ch;
+		font-size: 17px;
+		line-height: 1.7;
+		color: #cfdbe2;
+	}
+
+	.hero-ctas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 26px;
+	}
+
+	.hero-art {
+		margin: 0;
+		align-self: end;
+	}
+
+	.hero-art svg {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.shield {
+		stroke-dasharray: 360;
+		stroke-dashoffset: 360;
+		animation: draw-shield 1.4s 0.3s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+	}
+
+	@keyframes draw-shield {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.shield {
+			animation: none;
+			stroke-dashoffset: 0;
+		}
+	}
+
+	/* Section heads */
+	.sec-head {
+		max-width: 60ch;
+		margin-bottom: 26px;
+	}
+
+	.sec-head h2 {
+		font-size: clamp(26px, 6vw, 38px);
+		line-height: 1.25;
+	}
+
+	.sec-head p {
+		margin-top: 10px;
+		font-size: 16px;
+		line-height: 1.75;
+		color: var(--lz-mute);
+	}
+
+	/* Products */
+	.products {
+		padding-block: 56px;
+	}
+
+	.grid {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 12px;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+		border-radius: 14px;
+		overflow: hidden;
+		border: 1px solid var(--lz-line);
+		transition: border-color 0.15s ease;
+	}
+
+	.card:hover {
+		border-color: var(--lz-storm);
+	}
+
+	.card-img {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		background: #f6f8f9;
+	}
+
+	.card-img img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.card-body {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 12px;
+		flex: 1;
+	}
+
+	.card-title {
+		font-size: 14px;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.card-sub {
+		font-size: 12.5px;
+		line-height: 1.6;
+		color: var(--lz-mute);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.card-price {
+		margin-top: auto;
+		font-size: 13px;
+		color: var(--lz-mute);
+	}
+
+	.card-price b {
+		font-size: 19px;
+		color: var(--lz-ink);
+	}
+
+	.empty {
+		display: grid;
+		justify-items: start;
+		gap: 10px;
+		padding: 26px 22px;
+		border-radius: 14px;
+		border: 1.5px dashed #b7c6ce;
+		background: #fff;
+		font-size: 15.5px;
+		line-height: 1.75;
+		color: var(--lz-mute);
+	}
+
+	.empty-title {
+		font-size: 19px;
+		font-weight: 700;
+		color: var(--lz-ink);
+	}
+
+	.empty .btn {
+		margin-top: 6px;
+	}
+
+	/* Threats */
+	.threats {
+		padding-block: 56px;
+		background: #fff;
+		border-block: 1px solid var(--lz-line);
+	}
+
+	.threat-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: 2px solid var(--lz-ink);
+	}
+
+	.threat {
+		display: grid;
+		grid-template-columns: 44px 1fr;
+		gap: 4px 14px;
+		padding-block: 20px;
+		border-bottom: 1px solid var(--lz-line);
+	}
+
+	.threat-icon {
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		background: var(--lz-rain);
+		color: var(--lz-storm);
+	}
+
+	.threat-icon svg {
+		width: 24px;
+		height: 24px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.threat h3 {
+		font-size: 19px;
+		line-height: 1.4;
+	}
+
+	.threat-text p {
+		margin-top: 4px;
+		font-size: 15px;
+		line-height: 1.7;
+		color: var(--lz-mute);
+	}
+
+	.threat-fix {
+		grid-column: 2;
+		margin-top: 8px;
+		font-size: 14.5px;
+		font-weight: 600;
+		line-height: 1.6;
+	}
+
+	.threat-fix span {
+		color: var(--lz-amber-deep);
+	}
+
+	/* Advisor */
+	.advisor {
+		padding-block: 56px;
+	}
+
+	.advisor-box {
+		display: grid;
+		gap: 22px;
+	}
+
+	.advisor h2 {
+		font-size: clamp(24px, 5.5vw, 34px);
+		line-height: 1.3;
+	}
+
+	.advisor p {
+		margin-top: 10px;
+		max-width: 52ch;
+		font-size: 16px;
+		line-height: 1.75;
+		color: var(--lz-mute);
+	}
+
+	.makes {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-content: start;
+	}
+
+	.makes a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding-inline: 16px;
+		border-radius: 999px;
+		background: #fff;
+		border: 1px solid var(--lz-line);
+		font-size: 15px;
+		font-weight: 600;
+		transition: border-color 0.15s ease, background-color 0.15s ease;
+	}
+
+	.makes a:hover {
+		border-color: var(--lz-storm);
+		background: var(--lz-storm);
+		color: #fff;
+	}
+
+	/* Promise */
+	.promise {
+		padding-block: 56px;
+		background: var(--lz-ink);
+		color: #fff;
+	}
+
+	.promise .sec-head h2 {
+		color: #fff;
+	}
+
+	.promise-list {
+		margin: 0;
+		display: grid;
+		gap: 0;
+	}
+
+	.promise-item {
+		padding-block: 18px;
+		border-top: 1px solid rgba(255, 255, 255, 0.14);
+	}
+
+	.promise-item dt {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--lz-amber);
+	}
+
+	.promise-item dd {
+		margin: 6px 0 0;
+		font-size: 15px;
+		line-height: 1.7;
+		color: #c3d0d8;
+	}
+
+	/* Footer */
+	.foot {
+		background: var(--lz-storm-deep);
+		color: #c3d0d8;
+		padding-block: 40px 24px;
+		font-size: 14px;
+	}
+
+	.foot-grid {
+		display: grid;
+		gap: 28px;
+	}
+
+	.foot-brand p {
+		margin-top: 12px;
+		max-width: 34ch;
+		line-height: 1.7;
+	}
+
+	.foot-links,
+	.foot-contact {
+		display: grid;
+		gap: 10px;
+		align-content: start;
+	}
+
+	.foot a:hover {
+		color: #fff;
+	}
+
+	.foot-contact a {
+		justify-self: start;
+	}
+
+	.foot-copy {
+		margin-top: 32px;
+		padding-top: 18px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		font-size: 12.5px;
+		color: #8fa3b0;
+	}
+
+	/* Larger screens */
+	@media (min-width: 640px) {
+		.strip-wide {
+			display: inline;
+		}
+
+		.grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 16px;
+		}
+
+		.threat {
+			grid-template-columns: 52px 1fr 1fr;
+			align-items: start;
+			gap: 0 24px;
+			padding-block: 24px;
+		}
+
+		.threat-icon {
+			width: 52px;
+			height: 52px;
+		}
+
+		.threat-fix {
+			grid-column: 3;
+			margin-top: 0;
+			padding-top: 4px;
+		}
+
+		.promise-list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: 40px;
+		}
+	}
+
+	@media (min-width: 960px) {
+		.head-nav {
+			display: flex;
+			gap: 26px;
+			font-size: 14.5px;
+			font-weight: 500;
+			color: #d7e2e8;
+		}
+
+		.head-nav a:hover {
+			color: #fff;
+		}
+
+		.head-menu {
+			display: none;
+		}
+
+		.hero {
+			padding-top: 64px;
+		}
+
+		.hero-grid {
+			grid-template-columns: 1.05fr 1fr;
+			align-items: end;
+			gap: 48px;
+		}
+
+		.hero-copy {
+			padding-bottom: 64px;
+		}
+
+		.grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
+		.advisor-box {
+			grid-template-columns: 1fr 1fr;
+			gap: 48px;
+			align-items: center;
+		}
+
+		.promise-list {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			column-gap: 28px;
+		}
+
+		.foot-grid {
+			grid-template-columns: 1.4fr 1fr 1fr;
+		}
+	}
+</style>

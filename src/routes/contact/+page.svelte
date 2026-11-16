@@ -11,7 +11,7 @@
 		<!-- Back link -->
 		<div class="mb-4">
 			<a
-				href="/kit-tandim"
+				href="/"
 				class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-800 hover:text-emerald-950 transition-colors"
 			>
 				<span>←</span>

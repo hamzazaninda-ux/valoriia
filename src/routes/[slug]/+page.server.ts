@@ -14,19 +14,16 @@ export const load: PageServerLoad = async ({ params }) => {
   const settings = await readSettings();
   const theme = await readTemplateTheme(product.template || 'classic');
 
-  // Other published products for cart cross-sell / post-purchase upsell:
-  // Active upsell sequence strictly contains ONLY:
-  // قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒 — 49 DH
-  let others: Array<{ slug: string; title: string; subtitle?: string; heroImage?: string; startingPrice?: number }> = [];
-	others = [
-		{
-			slug: 'qofl-al-aman',
-			title: 'قفل أمان ذكي: تهنى من حلان التلاجة والبلاكارات 🔒',
-			subtitle: 'قفل بسيط وفعّال للخزانات والأدراج',
-			heroImage: '/images/child-safety-lock.webp',
-			startingPrice: 49
-		}
-	].filter(p => p.slug !== product.slug);
+  // Other published products, used by templates for cart cross-sell / post-purchase upsell.
+  const others = (await listProducts())
+    .filter((p) => p.status === 'published' && p.slug !== product.slug)
+    .map(({ slug, title, subtitle, heroImage, startingPrice }) => ({
+      slug,
+      title,
+      subtitle,
+      heroImage,
+      startingPrice
+    }));
 
   return {
     product,
