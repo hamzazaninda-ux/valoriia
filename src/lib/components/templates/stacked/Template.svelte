@@ -480,15 +480,15 @@
 	</aside>
 
 	<!-- 2. HERO SECTION (IMAGE FIRST -> TITLE -> RATINGS) -->
-	<header id="hero-section" class="pt-2 sm:pt-3 pb-6 sm:pb-8 px-3 sm:px-4 max-w-xl mx-auto mb-1 w-full">
-		<div class="w-full max-w-[335px] sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden rounded-2xl shadow-md border border-stone-200/80 bg-white my-1.5 relative">
+	<header id="hero-section" class="pt-0 sm:pt-3 pb-6 sm:pb-8 px-0 sm:px-4 max-w-xl mx-auto mb-1 w-full">
+		<div class="w-full sm:max-w-lg mx-auto aspect-[3/4] overflow-hidden sm:rounded-2xl sm:shadow-md sm:border border-stone-200/80 bg-white sm:my-1.5 relative">
 			{#if heroImage}
 				<img
 					src={heroImage}
 					alt={productName}
 					loading="eager"
 					fetchpriority="high"
-					class="w-full h-full object-cover object-center rounded-2xl"
+					class="w-full h-full object-cover object-center sm:rounded-2xl"
 				/>
 			{:else}
 				<div class="lz-img-empty" aria-hidden="true">
@@ -498,7 +498,7 @@
 			{/if}
 		</div>
 
-		<div class="text-center pt-2 pb-1 space-y-1.5">
+		<div class="text-center pt-3 pb-1 px-3 sm:px-0 space-y-1.5">
 			<h1 class="font-display text-[18px] sm:text-2xl font-black text-[#17232B] leading-snug tracking-tight px-1 max-w-sm mx-auto">
 				{cleanTitle}
 			</h1>
