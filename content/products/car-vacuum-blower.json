@@ -2,8 +2,8 @@
   "id": "prod_car_vacuum_blower",
   "slug": "car-vacuum-blower",
   "status": "published",
-  "createdAt": "2026-11-17T12:56:23.466Z",
-  "updatedAt": "2026-11-17T12:56:23.466Z",
+  "createdAt": "2026-11-17T15:30:52.608Z",
+  "updatedAt": "2026-11-17T15:30:52.608Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -72,7 +72,7 @@
         "title": "شاحن الطوموبيل 4 فـ 1 بضو النجوم",
         "headline": "زيد الشاحن اللي كيشارج 4 تيليفونات فنفس الوقت",
         "text": "جوج خيوط كيتمدو وكيرجعو بوحدهم، وجوج بورات، وضو ديال النجوم فالسقف. كيوصلك فنفس الكولية، بلا توصيل زايد.",
-        "image": "/images/products/retractable-car-charger/hero.webp",
+        "image": "/images/products/upsell/charger.webp",
         "price": 99,
         "originalPrice": 169
       },
@@ -194,11 +194,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:56:23.466Z"
+        "timestamp": "2026-11-17T15:30:52.608Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:56:23.466Z"
+        "timestamp": "2026-11-17T15:30:52.608Z"
       }
     ]
   }

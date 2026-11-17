@@ -181,7 +181,10 @@
 		position: relative;
 		display: grid;
 		place-items: center;
-		height: 180px;
+		width: 100%;
+		max-width: min(260px, 34vh);
+		aspect-ratio: 1 / 1;
+		margin: 0 auto;
 		border-radius: 14px;
 		background: #eef2f3;
 		overflow: hidden;
