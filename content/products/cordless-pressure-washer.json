@@ -2,19 +2,19 @@
   "id": "prod_cordless_pressure_washer",
   "slug": "cordless-pressure-washer",
   "status": "published",
-  "createdAt": "2026-11-17T12:14:18.794Z",
-  "updatedAt": "2026-11-17T12:14:18.794Z",
+  "createdAt": "2026-11-17T12:21:20.880Z",
+  "updatedAt": "2026-11-17T12:21:20.880Z",
   "template": "stacked",
   "published": {
     "content": {
-      "heroImage": "/images/products/cordless-pressure-washer/hero.webp",
+      "heroImage": "/images/products/cordless-pressure-washer/full-kit.webp",
       "title": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات",
       "subtitle": "اللافاج ولا عندك قدام الدار. 3 بطاريات 48V ماشي وحدة ولا جوج، بلا بريز، بلا روبيني، وكلشي مرتب فصاك صلب.",
       "rating": 0,
       "reviewCount": 0,
       "gallery": [
         {
-          "src": "/images/products/cordless-pressure-washer/hero.webp",
+          "src": "/images/products/cordless-pressure-washer/full-kit.webp",
           "alt": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات"
         },
         {
@@ -34,7 +34,7 @@
           "alt": "3 بطاريات: الغسلة كاملة بلا ما تحبس"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/case.webp",
           "alt": "ماشي جهاز فكارطونة"
         },
         {
@@ -202,11 +202,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:14:18.794Z"
+        "timestamp": "2026-11-17T12:21:20.880Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:14:18.794Z"
+        "timestamp": "2026-11-17T12:21:20.880Z"
       }
     ]
   }
