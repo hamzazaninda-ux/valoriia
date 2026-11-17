@@ -63,6 +63,8 @@ export interface ProductPricing {
     badge: string | null;
     image?: string;
     isPopular: boolean;
+    /** Pack of different products: hides the per-unit price. */
+    isBundle?: boolean;
   }>;
 }
 

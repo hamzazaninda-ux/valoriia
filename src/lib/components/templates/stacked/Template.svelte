@@ -98,7 +98,8 @@
 	}
 
 	function offerPerUnit(o: ProductOffer): number | null {
-		return o.quantity > 1 ? Math.round(o.price / o.quantity) : null;
+		// Packs mix different products, so a per-unit price would mislead.
+		return o.quantity > 1 && !o.isBundle ? Math.round(o.price / o.quantity) : null;
 	}
 
 	const sheetsUrl = $derived(
@@ -769,7 +770,7 @@
 			<div class="space-y-1">
 				<p class="font-black text-sm sm:text-base text-white">Lhamza Shop</p>
 				<p class="text-xs text-[#AFC0CA] max-w-lg mx-auto">
-					إكسسوارات حماية الطوموبيل، مختارة للمغرب. الدفع عند الاستلام والتوصيل لجميع المدن.
+					إكسسوارات الطوموبيل، مختارة للمغرب. الدفع عند الاستلام والتوصيل لجميع المدن.
 				</p>
 			</div>
 

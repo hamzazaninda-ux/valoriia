@@ -1,50 +1,38 @@
 [
   {
-    "id": "prod_door_seal_strip",
-    "slug": "door-seal-strip",
-    "title": "شريط العزل المطاطي للبيبان",
-    "subtitle": "كيسد الطريق على الماء، الغبرة وصوت الريح. كيتركب بيدك بلا مسامر.",
+    "id": "prod_cordless_pressure_washer",
+    "slug": "cordless-pressure-washer",
+    "title": "رشاش غسيل الطوموبيل بالبطارية 48V",
+    "subtitle": "غسل طوموبيلتك قدام دارك، بلا لافاج وبلا كهرباء. جوج بطاريات وصاك صلب كيجمع كلشي.",
     "heroImage": "",
-    "startingPrice": 199,
-    "originalPrice": 279,
+    "startingPrice": 349,
+    "originalPrice": 499,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-16T16:48:34.458Z"
+    "updatedAt": "2026-11-17T10:44:27.627Z"
   },
   {
-    "id": "prod_rain_shield_spray",
-    "slug": "rain-shield-spray",
-    "title": "سبراي ضد الشتا للزاج",
-    "subtitle": "الماء كيتزلق على الزاج بوحدو، والرؤية كتبقى واضحة فالشتا.",
+    "id": "prod_car_vacuum_blower",
+    "slug": "car-vacuum-blower",
+    "title": "مكنسة الطوموبيل اللاسلكية 3 فـ 1",
+    "subtitle": "كتشفط الرملة والفتات، كتنفخ الغبرة من الزوايا، وكتنفخ الماطلات. بالبطارية، بلا خيط.",
     "heroImage": "",
-    "startingPrice": 89,
-    "originalPrice": 129,
+    "startingPrice": 229,
+    "originalPrice": 349,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-16T16:48:34.458Z"
+    "updatedAt": "2026-11-17T10:44:27.627Z"
   },
   {
-    "id": "prod_nano_scratch_cloth",
-    "slug": "nano-scratch-cloth",
-    "title": "ممسحة النانو للخدوش الخفيفة",
-    "subtitle": "كتحيد الخدوش السطحية والآثار الخفيفة من الصباغة بالمسح باليد.",
+    "id": "prod_retractable_car_charger",
+    "slug": "retractable-car-charger",
+    "title": "شاحن الطوموبيل 4 فـ 1",
+    "subtitle": "جوج خيوط كيتمدو وكيرجعو (Type-C وiPhone) وجوج بورات، مع ضو ديال النجوم فالسقف.",
     "heroImage": "",
-    "startingPrice": 69,
-    "originalPrice": 99,
+    "startingPrice": 169,
+    "originalPrice": 249,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-16T16:48:34.458Z"
-  },
-  {
-    "id": "prod_door_edge_guard",
-    "slug": "door-edge-guard",
-    "title": "حامي حواشي البيبان",
-    "subtitle": "كيحمي الحاشية ديال الباب من الضربات والخدوش ملي كتحل فالباركينغ.",
-    "heroImage": "",
-    "startingPrice": 79,
-    "originalPrice": 119,
-    "status": "published",
-    "template": "stacked",
-    "updatedAt": "2026-11-16T16:48:34.458Z"
+    "updatedAt": "2026-11-17T10:44:27.627Z"
   }
 ]

@@ -1,0 +1,156 @@
+{
+  "id": "prod_retractable_car_charger",
+  "slug": "retractable-car-charger",
+  "status": "published",
+  "createdAt": "2026-11-17T10:44:27.627Z",
+  "updatedAt": "2026-11-17T10:44:27.627Z",
+  "template": "stacked",
+  "published": {
+    "content": {
+      "heroImage": "",
+      "title": "شاحن الطوموبيل 4 فـ 1",
+      "subtitle": "جوج خيوط كيتمدو وكيرجعو (Type-C وiPhone) وجوج بورات، مع ضو ديال النجوم فالسقف.",
+      "rating": 0,
+      "reviewCount": 0,
+      "gallery": [
+        {
+          "src": "",
+          "alt": "شاحن الطوموبيل 4 فـ 1"
+        },
+        {
+          "src": "",
+          "alt": "الخيوط مدمجين فيه"
+        },
+        {
+          "src": "",
+          "alt": "4 تيليفونات فنفس الوقت"
+        },
+        {
+          "src": "",
+          "alt": "ضو النجوم فالسقف"
+        },
+        {
+          "src": "",
+          "alt": "كيدخل فأي طوموبيل"
+        }
+      ],
+      "carousel": [],
+      "faq": [
+        {
+          "question": "واش كيصلح لطوموبيلتي؟",
+          "answer": "إيه، أي طوموبيل فيها البريز ديال الولاعة (12V). كتحطو وكيخدم."
+        },
+        {
+          "question": "واش كيشارج iPhone وAndroid؟",
+          "answer": "إيه. فيه خيط iPhone وخيط Type-C، وجوج بورات لأي كابل آخر."
+        },
+        {
+          "question": "واش نقدر نشوف الطلب قبل ما نخلص؟",
+          "answer": "إيه. كتخلص للموزع ملي يوصلك الطلب وتشوفو. وإلا ما ناسبكش، عندك 7 أيام للاستبدال ولا الاسترجاع."
+        },
+        {
+          "question": "شحال كياخد التوصيل؟",
+          "answer": "بين 24 و72 ساعة حسب المدينة، من بعد ما نتصلو بيك فالتيليفون ونأكدو الطلب."
+        }
+      ],
+      "footerText": "",
+      "announcement": "تيليفونك وتيليفون اللي حداك: كيتشارجو فنفس الوقت",
+      "upsell": {
+        "sku": "car-vacuum-blower",
+        "title": "مكنسة الطوموبيل اللاسلكية 3 فـ 1",
+        "headline": "كمل النقاوة من الداخل بالمكنسة اللاسلكية",
+        "text": "كتشفط الرملة والفتات من بين الكراسي، وكتنفخ الغبرة من الطابلو. بالبطارية، بلا خيط. كتوصلك فنفس الكولية.",
+        "image": "",
+        "price": 179,
+        "originalPrice": 349
+      },
+      "killers": {
+        "bullets": [],
+        "featuredReview": {
+          "text": "",
+          "image": "",
+          "author": ""
+        },
+        "stories": [],
+        "gridReviews": [],
+        "benefits": [
+          {
+            "title": "الخيوط مدمجين فيه",
+            "text": "جوج خيوط كيتمدو حتى للكرسي اللوراني وكيرجعو بوحدهم. ما بقاش كابل طايح ولا ضايع فالطوموبيل."
+          },
+          {
+            "title": "4 تيليفونات فنفس الوقت",
+            "text": "Type-C وiPhone فالخيوط، وجوج بورات (USB وType-C) لأي كابل آخر."
+          },
+          {
+            "title": "ضو النجوم فالسقف",
+            "text": "فالليل كيرسم نجوم فالسقف ديال الطوموبيل. لوك مختلف وجو زوين للعائلة والصحاب."
+          },
+          {
+            "title": "كيدخل فأي طوموبيل",
+            "text": "كيتركب فالبريز ديال الولاعة (12V)، بلا تركيب وبلا أدوات."
+          }
+        ],
+        "usageSteps": [],
+        "footerCta": {
+          "text": "",
+          "image": ""
+        },
+        "guarantees": []
+      }
+    },
+    "pricing": {
+      "currency": "MAD",
+      "offers": [
+        {
+          "id": 1,
+          "title": "شاحن واحد",
+          "subtitle": "التوصيل لجميع المدن",
+          "price": 169,
+          "originalPrice": 249,
+          "quantity": 1,
+          "badge": null,
+          "image": "",
+          "isPopular": false
+        },
+        {
+          "id": 2,
+          "title": "جوج شواحن",
+          "subtitle": "واحد ليك وواحد للطوموبيل الأخرى",
+          "price": 289,
+          "originalPrice": 498,
+          "quantity": 2,
+          "badge": "الأوفر",
+          "image": "",
+          "isPopular": true
+        }
+      ]
+    },
+    "order": {
+      "sku": "retractable-car-charger",
+      "googleSheetsUrl": "",
+      "phoneConfirmation": true,
+      "whatsappNumber": "212626558375"
+    },
+    "seo": {
+      "metaTitle": "شاحن الطوموبيل 4 فـ 1 | Lhamza Shop",
+      "metaDescription": "جوج خيوط كيتمدو وكيرجعو (Type-C وiPhone) وجوج بورات، مع ضو ديال النجوم فالسقف. الدفع عند الاستلام والتوصيل لجميع المدن المغربية.",
+      "noindex": false
+    }
+  },
+  "draft": null,
+  "meta": {
+    "tracking": {},
+    "advanced": {},
+    "changelog": [
+      {
+        "action": "created",
+        "timestamp": "2026-11-17T10:44:27.627Z"
+      },
+      {
+        "action": "published",
+        "timestamp": "2026-11-17T10:44:27.627Z"
+      }
+    ]
+  }
+}

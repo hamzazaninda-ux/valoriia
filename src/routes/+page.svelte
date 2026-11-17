@@ -42,28 +42,28 @@
 
 	const threats = [
 		{
-			id: 'rain',
-			name: 'الشتا',
-			harm: 'الماء كيتسرب من الجوانات ديال البيبان والكوفر، والرطوبة كتجيب الريحة والصدا.',
-			fix: 'شريط العزل ديال البيبان، غطاء الكوفر'
+			id: 'mud',
+			name: 'الطين والغبرة على البودي',
+			harm: 'من بعد كل شتا ولا طريق ديال التراب، الطوموبيل كتعمر طين وكتبان قديمة.',
+			fix: 'رشاش الغسيل بالبطارية: غسلها قدام دارك'
 		},
 		{
 			id: 'dust',
-			name: 'الغبرة والشركي',
-			harm: 'الغبرة كتدخل للصالون، وصوت الريح كيعيّيك فالطريق السيار.',
-			fix: 'شريط العزل ديال البيبان'
+			name: 'الرملة والفتات فالصالون',
+			harm: 'الرملة ديال البحر والفتات ديال الدراري كيدخلو بين الكراسي، والمكنسة ديال الدار ما كتوصلش.',
+			fix: 'المكنسة اللاسلكية 3 فـ 1'
 		},
 		{
-			id: 'sun',
-			name: 'الشمس',
-			harm: 'الصيف ديالنا كيشقق الطابلو وكيبهّت الصباغة ديال الطوموبيل.',
-			fix: 'غطاء الطوموبيل، كاش طابلو'
+			id: 'phone',
+			name: 'التيليفون اللي كيطفى فالطريق',
+			harm: 'GPS خدام، الموسيقى، والكابل واحد للطوموبيل كاملة. البطارية كتسالي فوسط الطريق.',
+			fix: 'الشاحن 4 فـ 1: 4 تيليفونات فنفس الوقت'
 		},
 		{
-			id: 'road',
-			name: 'الطريق',
-			harm: 'الطين والحجر كيضربو البودي، وعجلة ناقصة فبلاصة خاوية كتوقفك.',
-			fix: 'الغياسة، منفاخ العجلات المحمول'
+			id: 'cost',
+			name: 'اللافاج كل سيمانة',
+			harm: '40 درهم ونص ساعة ديال الصف كل سيمانة كيوليو قريب 2000 درهم فالعام.',
+			fix: 'باك النقاوة: الرشاش + المكنسة'
 		}
 	];
 
@@ -80,12 +80,12 @@
 </script>
 
 <svelte:head>
-	<title>{STORE_NAME} | إكسسوارات حماية الطوموبيل فالمغرب</title>
+	<title>{STORE_NAME} | إكسسوارات الطوموبيل فالمغرب</title>
 	<meta
 		name="description"
-		content="Lhamza Shop: إكسسوارات كتحمي طوموبيلتك من الشتا، الغبرة والشمس. الدفع عند الاستلام والتوصيل لجميع المدن المغربية."
+		content="Lhamza Shop: إكسسوارات الطوموبيل المختارة للمغرب. رشاش الغسيل بالبطارية، المكنسة اللاسلكية والشاحن 4 فـ 1. الدفع عند الاستلام والتوصيل لجميع المدن."
 	/>
-	<meta property="og:title" content="{STORE_NAME} | إكسسوارات حماية الطوموبيل" />
+	<meta property="og:title" content="{STORE_NAME} | إكسسوارات الطوموبيل فالمغرب" />
 	<meta name="theme-color" content="#2F4858" />
 </svelte:head>
 
@@ -108,8 +108,8 @@
 
 			<nav class="head-nav" aria-label="التنقل الرئيسي">
 				<a href="#products">المنتجات</a>
-				<a href="#threats">علاش الحماية</a>
-				<a href="#advisor">شنو يناسب طوموبيلتك</a>
+				<a href="#threats">الحلول</a>
+				<a href="#advisor">سولنا</a>
 				<a href="#promise">الضمانات</a>
 			</nav>
 
@@ -138,7 +138,7 @@
 
 		{#if menuOpen}
 			<nav class="head-drawer" aria-label="القائمة">
-				{#each [['المنتجات', '#products'], ['علاش الحماية', '#threats'], ['شنو يناسب طوموبيلتك', '#advisor'], ['الضمانات', '#promise'], ['تواصل معنا', '/contact']] as [label, href]}
+				{#each [['المنتجات', '#products'], ['الحلول', '#threats'], ['سولنا', '#advisor'], ['الضمانات', '#promise'], ['تواصل معنا', '/contact']] as [label, href]}
 					<a {href} onclick={() => (menuOpen = false)}>{label}</a>
 				{/each}
 			</nav>
@@ -150,13 +150,13 @@
 		<section class="hero">
 			<div class="wrap hero-grid">
 				<div class="hero-copy">
-					<h1>الشتا، الغبرة والشمس بقاو برا طوموبيلتك.</h1>
+					<h1>طوموبيلتك ديما نقية، وتيليفونك ديما مشارج.</h1>
 					<p class="hero-sub">
-						إكسسوارات حماية مختارة لطرقان المغرب وللجو ديالو. كتشوف الطلب فيدك قبل ما تخلص.
+						إكسسوارات مجربة ومختارة لسواقة المغاربة. كتشوف الطلب فيدك قبل ما تخلص.
 					</p>
 					<div class="hero-ctas">
 						<a class="btn btn-amber" href="#products">شوف المنتجات</a>
-						<a class="btn btn-ghost" href="#advisor">شنو يناسب طوموبيلتك؟</a>
+						<a class="btn btn-ghost" href="#threats">شنو كيحل كل منتج؟</a>
 					</div>
 				</div>
 
@@ -253,22 +253,22 @@
 		<section class="threats" id="threats" aria-labelledby="threats-title">
 			<div class="wrap">
 				<div class="sec-head">
-					<h2 id="threats-title">أربعة حوايج كياكلو طوموبيلتك كل نهار</h2>
-					<p>ماشي غير الكيلومترات. الجو والطريق فالمغرب كيخسرو الطوموبيل بشوية بشوية، وكل واحد عندو الحل ديالو.</p>
+					<h2 id="threats-title">أربعة صداعات ديال الطوموبيل، وكل واحد عندو الحل</h2>
+					<p>اخترنا كل منتج على حساب مشكل حقيقي كيعيشو اللي كيسوق فالمغرب كل نهار.</p>
 				</div>
 
 				<ol class="threat-list">
 					{#each threats as t (t.id)}
 						<li class="threat">
 							<span class="threat-icon" aria-hidden="true">
-								{#if t.id === 'rain'}
-									<svg viewBox="0 0 24 24"><path d="M7 15a4 4 0 0 1-.6-8A5.5 5.5 0 0 1 17 7.5a3.8 3.8 0 0 1 0 7.5" /><path d="M9 18l-1 2.5M13 18l-1 2.5M17 18l-1 2.5" /></svg>
+								{#if t.id === 'mud'}
+									<svg viewBox="0 0 24 24"><path d="M12 3.5c3 3.6 5 6.4 5 9a5 5 0 0 1-10 0c0-2.6 2-5.4 5-9Z" /><path d="M9.5 13.5a2.5 2.5 0 0 0 2.5 2.5" /></svg>
 								{:else if t.id === 'dust'}
 									<svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3" /><path d="M3 14h15a3 3 0 1 1-3 3" /><path d="M3 19h6" /></svg>
-								{:else if t.id === 'sun'}
-									<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></svg>
+								{:else if t.id === 'phone'}
+									<svg viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" /><path d="M12.8 7.5 10.5 12h3l-2.3 4.5" /></svg>
 								{:else}
-									<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="3" /><path d="M12 3.5V9M12 15v5.5M3.5 12H9M15 12h5.5" /></svg>
+									<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>
 								{/if}
 							</span>
 							<div class="threat-text">
@@ -286,10 +286,10 @@
 		<section class="advisor" id="advisor" aria-labelledby="advisor-title">
 			<div class="wrap advisor-box">
 				<div>
-					<h2 id="advisor-title">ما عرفتيش شنو يناسب طوموبيلتك؟</h2>
+					<h2 id="advisor-title">عندك سؤال قبل ما تطلب؟</h2>
 					<p>
-						اختار الماركة وصيفط لينا الموديل والعام فواتساب. كنقولو ليك شنو كيدخل ليها بالضبط، باش ما
-						تطلبش شي حاجة ما تجيش على القياس.
+						المنتجات ديالنا كيصلحو لأي طوموبيل. إلا بغيتي تتأكد، اختار الماركة وسولنا فواتساب، كنجاوبوك
+						فنفس النهار.
 					</p>
 				</div>
 				<ul class="makes">
@@ -327,7 +327,7 @@
 		<div class="wrap foot-grid">
 			<div class="foot-brand">
 				<Logo size={30} tone="light" />
-				<p>{STORE_NAME}: إكسسوارات حماية الطوموبيل، مختارة للمغرب.</p>
+				<p>{STORE_NAME}: إكسسوارات الطوموبيل، مختارة للمغرب.</p>
 			</div>
 			<nav class="foot-links" aria-label="روابط المتجر">
 				<a href="/shipping-policy">سياسة الشحن</a>
