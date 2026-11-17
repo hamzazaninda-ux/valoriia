@@ -201,6 +201,7 @@
 					quantity: current.quantity,
 					note,
 					hasUpsell: Boolean(addOn),
+					upsellPrice: addOn ? Number(addOn.price) : 0,
 					sku: productSku,
 					source: productSlug
 				})

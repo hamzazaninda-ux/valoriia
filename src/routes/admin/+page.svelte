@@ -3,6 +3,15 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const metricCards = $derived([
+		{ label: 'متوسط السلة (AOV)', value: data.metrics.aov, unit: data.currencySymbol, hint: 'شحال كيخلص الكليان فالطلب', strong: true },
+		{ label: 'نسبة الأبسيل', value: data.metrics.upsellRate, unit: '%', hint: `${data.metrics.upsellOrders} طلب • +${data.metrics.upsellRevenue} ${data.currencySymbol}`, strong: false },
+		{ label: 'نسبة الباك', value: data.metrics.bundleRate, unit: '%', hint: 'باك ولا أكثر من قطعة', strong: false },
+		{ label: 'نسبة التأكيد', value: data.metrics.confirmationRate, unit: '%', hint: 'من الطلبات اللي تعيط ليهم', strong: false },
+		{ label: 'نسبة التسليم', value: data.metrics.deliveryRate, unit: '%', hint: `${data.metrics.deliveredOrders} تسلمو من المؤكدة`, strong: false },
+		{ label: 'طلبات اليوم', value: data.metrics.ordersToday, unit: '', hint: `${data.metrics.revenueToday} ${data.currencySymbol}`, strong: false }
+	]);
+
 	const today = new Date().toLocaleDateString('ar-MA', {
 		weekday: 'long',
 		year: 'numeric',
@@ -212,6 +221,29 @@
 			<p class="mt-0.5 text-sm font-semibold text-neutral-500 transition-colors group-hover:text-emerald-700">القوالب المتوفرة</p>
 		</a>
 	</div>
+
+	<!-- Sales metrics -->
+	<section aria-labelledby="metrics-title">
+		<div class="mb-3 flex items-end justify-between">
+			<h2 id="metrics-title" class="text-lg font-black text-neutral-900">مؤشرات البيع</h2>
+			<p class="text-xs font-semibold text-neutral-400">بلا الطلبات الملغية</p>
+		</div>
+		<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+			{#each metricCards as m (m.label)}
+				<div class="rounded-2xl border p-4 {m.strong ? 'border-amber-300 bg-amber-50' : 'border-neutral-200/70 bg-white'}">
+					<p class="text-xs font-bold text-neutral-500">{m.label}</p>
+					<p class="mt-1.5 text-2xl font-black text-neutral-900">
+						{#if m.value === null}
+							<span class="text-neutral-300">—</span>
+						{:else}
+							{m.value}<span class="ms-1 text-sm font-bold text-neutral-500">{m.unit}</span>
+						{/if}
+					</p>
+					<p class="mt-1 text-[11px] font-semibold text-neutral-400">{m.hint}</p>
+				</div>
+			{/each}
+		</div>
+	</section>
 
 	<!-- Main Grid: Recent Orders & Recent Products -->
 	<div class="grid gap-6 lg:grid-cols-2">

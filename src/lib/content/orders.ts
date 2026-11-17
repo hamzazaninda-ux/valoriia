@@ -79,7 +79,10 @@ export async function saveOrder(input: CreateOrderInput): Promise<StoredOrder> {
     pageUrl: input.pageUrl || '',
     orderType: input.orderType || 'direct',
     items: input.items || '',
-    notes: input.notes || ''
+    notes: input.notes || input.note || '',
+    offer: String(input.offer || '').trim(),
+    hasUpsell: Boolean(input.hasUpsell),
+    upsellPrice: Number(input.upsellPrice) || 0
   };
 
   const updatedList = [newOrder, ...currentOrders];
@@ -238,15 +241,37 @@ export async function deleteOrder(orderId: string): Promise<boolean> {
   }
 }
 
+/** Older orders have no hasUpsell flag; fall back to the note text. */
+function orderHasUpsell(o: StoredOrder): boolean {
+  return Boolean(o.hasUpsell) || o.orderType === 'upsell' || /العرض الإضافي|أبسيل/.test(o.notes || '');
+}
+
+function orderIsBundle(o: StoredOrder): boolean {
+  return /باك/.test(o.offer || o.product || '') || Number(o.quantity) > 1;
+}
+
+const pct = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 1000) / 10 : 0);
+
 export async function getOrderStats(): Promise<OrderStats> {
   const orders = await readOrders();
 
   let confirmedOrders = 0;
+  let shippingOrders = 0;
   let pendingOrders = 0;
   let deliveredOrders = 0;
   let cancelledOrders = 0;
   let totalRevenue = 0;
   let confirmedRevenue = 0;
+  let activeRevenue = 0;
+  let activeOrders = 0;
+  let upsellOrders = 0;
+  let upsellRevenue = 0;
+  let bundleOrders = 0;
+  let ordersToday = 0;
+  let revenueToday = 0;
+
+  const dayKey = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Africa/Casablanca' });
+  const today = dayKey(new Date());
 
   for (const o of orders) {
     const price = Number(o.totalPrice) || 0;
@@ -259,22 +284,49 @@ export async function getOrderStats(): Promise<OrderStats> {
       deliveredOrders++;
       confirmedRevenue += price;
     } else if (o.status === 'جاري الشحن') {
-      confirmedOrders++;
+      shippingOrders++;
       confirmedRevenue += price;
     } else if (o.status === 'ملغي') {
       cancelledOrders++;
     } else {
       pendingOrders++;
     }
+
+    if (o.status !== 'ملغي') {
+      activeOrders++;
+      activeRevenue += price;
+      if (orderHasUpsell(o)) {
+        upsellOrders++;
+        upsellRevenue += Number(o.upsellPrice) || 0;
+      }
+      if (orderIsBundle(o)) bundleOrders++;
+    }
+
+    if (o.createdAt && dayKey(new Date(o.createdAt)) === today) {
+      ordersToday++;
+      revenueToday += price;
+    }
   }
+
+  const accepted = confirmedOrders + shippingOrders + deliveredOrders;
+  const decided = accepted + cancelledOrders;
 
   return {
     totalOrders: orders.length,
-    confirmedOrders,
+    confirmedOrders: accepted,
     pendingOrders,
     deliveredOrders,
     cancelledOrders,
     totalRevenue,
-    confirmedRevenue
+    confirmedRevenue,
+    aov: activeOrders ? Math.round(activeRevenue / activeOrders) : 0,
+    upsellRate: pct(upsellOrders, activeOrders),
+    upsellOrders,
+    upsellRevenue,
+    bundleRate: pct(bundleOrders, activeOrders),
+    confirmationRate: decided ? pct(accepted, decided) : null,
+    deliveryRate: accepted ? pct(deliveredOrders, accepted) : null,
+    ordersToday,
+    revenueToday
   };
 }

@@ -17,7 +17,16 @@ export const load: PageServerLoad = async () => {
       deliveredOrders: 0,
       cancelledOrders: 0,
       totalRevenue: 0,
-      confirmedRevenue: 0
+      confirmedRevenue: 0,
+      aov: 0,
+      upsellRate: 0,
+      upsellOrders: 0,
+      upsellRevenue: 0,
+      bundleRate: 0,
+      confirmationRate: null,
+      deliveryRate: null,
+      ordersToday: 0,
+      revenueToday: 0
     }))
   ]);
 
@@ -40,6 +49,19 @@ export const load: PageServerLoad = async () => {
       totalOrders: orderStats.totalOrders,
       confirmedRevenue: orderStats.confirmedRevenue,
       pendingOrders: orderStats.pendingOrders
+    },
+    metrics: {
+      aov: orderStats.aov,
+      upsellRate: orderStats.upsellRate,
+      upsellOrders: orderStats.upsellOrders,
+      upsellRevenue: orderStats.upsellRevenue,
+      bundleRate: orderStats.bundleRate,
+      confirmationRate: orderStats.confirmationRate,
+      deliveryRate: orderStats.deliveryRate,
+      ordersToday: orderStats.ordersToday,
+      revenueToday: orderStats.revenueToday,
+      cancelledOrders: orderStats.cancelledOrders,
+      deliveredOrders: orderStats.deliveredOrders
     },
     recentProducts,
     recentOrders,
