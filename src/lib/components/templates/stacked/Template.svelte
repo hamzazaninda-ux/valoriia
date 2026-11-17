@@ -61,6 +61,13 @@
 
 	const activeFaq = $derived((content?.faq ?? []).filter((f) => f && f.question && f.answer));
 
+	/** "What you get" checklist under the title (killers.bullets). */
+	const inBox = $derived((content?.killers?.bullets ?? []).filter((b) => b && b.trim()));
+	/** "How it works" steps (killers.usageSteps). */
+	const steps = $derived((content?.killers?.usageSteps ?? []).filter((st) => st && st.trim()));
+	/** "Why order from Lhamza" promises (killers.guarantees). */
+	const promises = $derived((content?.killers?.guarantees ?? []).filter((g) => g && g.title));
+
 	const upsell = $derived.by((): ProductUpsell | null => {
 		const u = (content as any)?.upsell as ProductUpsell | undefined;
 		return u && u.title && Number(u.price) > 0 ? u : null;
@@ -498,6 +505,16 @@
 			{#if content?.subtitle}
 				<p class="text-[13.5px] sm:text-base text-[#56687A] leading-relaxed max-w-sm mx-auto">{content.subtitle}</p>
 			{/if}
+			{#if inBox.length}
+				<div class="lz-inbox">
+					<p class="lz-inbox-title">شنو كيوصلك</p>
+					<ul>
+						{#each inBox as item, i (i)}
+							<li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10.5l3.2 3L15 7" /></svg><span>{item}</span></li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
 			{#if productReviewCount > 0 && reviews.length > 0}
 				<a href="#reviews" onclick={scrollToReviews} class="flex items-center justify-center gap-1.5 pt-0.5">
 					<span class="text-amber-500 font-extrabold text-xs sm:text-sm">
@@ -710,6 +727,34 @@
 		</div>
 	{/if}
 
+	<!-- HOW IT WORKS (killers.usageSteps) -->
+	{#if steps.length}
+		<section class="lz-steps below-fold-lazy-section" aria-labelledby="lz-steps-title" dir="rtl">
+			<h2 id="lz-steps-title">كيفاش كيخدم</h2>
+			<ol>
+				{#each steps as step, i (i)}
+					<li><span class="lz-step-n" aria-hidden="true">{i + 1}</span><p>{step}</p></li>
+				{/each}
+			</ol>
+		</section>
+	{/if}
+
+	<!-- WHY LHAMZA (killers.guarantees) -->
+	{#if promises.length}
+		<section class="lz-why below-fold-lazy-section" aria-labelledby="lz-why-title" dir="rtl">
+			<h2 id="lz-why-title">علاش تطلب من Lhamza</h2>
+			<ul>
+				{#each promises as g, i (i)}
+					<li>
+						<h3>{g.title}</h3>
+						{#if g.text}<p>{g.text}</p>{/if}
+					</li>
+				{/each}
+			</ul>
+			<a href="#order-form" class="lz-why-cta">اطلب دابا • {activeOffer.price} {currency}</a>
+		</section>
+	{/if}
+
 	<!-- CUSTOMER REVIEWS (only real reviews from the admin) -->
 	{#if reviews.length}
 		<section id="reviews" class="scroll-mt-14 px-2.5 sm:px-4 py-5 below-fold-lazy-section" dir="rtl">
@@ -845,6 +890,153 @@
 </div>
 
 <style>
+	/* What you get / How it works / Why Lhamza */
+	.lz-inbox {
+		max-width: 22rem;
+		margin: 0.6rem auto 0;
+		padding: 0.6rem 0.8rem 0.7rem;
+		background: #fff;
+		border: 1px solid #d5dee2;
+		border-radius: 14px;
+		text-align: right;
+	}
+	.lz-inbox-title {
+		margin: 0 0 0.4rem;
+		font-size: 12px;
+		font-weight: 900;
+		color: #2f4858;
+	}
+	.lz-inbox ul {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.35rem 0.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lz-inbox li {
+		display: flex;
+		gap: 0.35rem;
+		align-items: flex-start;
+		font-size: 12.5px;
+		font-weight: 700;
+		line-height: 1.4;
+		color: #17232b;
+	}
+	.lz-inbox svg {
+		flex: none;
+		width: 14px;
+		height: 14px;
+		margin-top: 2px;
+		fill: none;
+		stroke: #d98f00;
+		stroke-width: 2.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.lz-steps,
+	.lz-why {
+		width: 100%;
+		max-width: 560px;
+		margin: 0.5rem auto 1.5rem;
+		padding: 0 0.625rem;
+	}
+	.lz-steps h2,
+	.lz-why h2 {
+		margin: 0 0 0.9rem;
+		font-size: 1.25rem;
+		font-weight: 900;
+		text-align: center;
+		color: #17232b;
+	}
+	.lz-steps ol {
+		display: grid;
+		gap: 0.6rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lz-steps li {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+		padding: 0.8rem 0.9rem;
+		background: #fff;
+		border: 1px solid #e5ebee;
+		border-radius: 16px;
+	}
+	.lz-steps p {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 700;
+		line-height: 1.5;
+		color: #17232b;
+	}
+	.lz-step-n {
+		display: grid;
+		flex: none;
+		place-items: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 10px;
+		background: #f5a300;
+		font-weight: 900;
+		color: #17232b;
+	}
+	.lz-why {
+		padding: 1.4rem 1rem 1.2rem;
+		background: #2f4858;
+		border-radius: 24px;
+	}
+	.lz-why h2 {
+		color: #fff;
+	}
+	.lz-why ul {
+		display: grid;
+		gap: 0.7rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lz-why li {
+		padding: 0.75rem 0.9rem;
+		background: rgb(255 255 255 / 0.07);
+		border-inline-start: 3px solid #f5a300;
+		border-radius: 12px;
+	}
+	.lz-why h3 {
+		margin: 0 0 0.2rem;
+		font-size: 15px;
+		font-weight: 900;
+		color: #fff;
+	}
+	.lz-why p {
+		margin: 0;
+		font-size: 13px;
+		line-height: 1.6;
+		color: #cfdbe2;
+	}
+	.lz-why-cta {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 48px;
+		margin-top: 1rem;
+		border-radius: 14px;
+		background: #f5a300;
+		font-weight: 900;
+		color: #17232b;
+		text-decoration: none;
+	}
+	.lz-why-cta:hover {
+		background: #d98f00;
+	}
+	@media (min-width: 640px) {
+		.lz-why ul {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
 	/* Lhamza brand additions: empty image placeholders, mini logo, offer quantity chip */
 	.lz-img-empty {
 		display: flex;
