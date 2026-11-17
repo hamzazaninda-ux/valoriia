@@ -2,35 +2,35 @@
   "id": "prod_retractable_car_charger",
   "slug": "retractable-car-charger",
   "status": "published",
-  "createdAt": "2026-11-17T12:33:30.042Z",
-  "updatedAt": "2026-11-17T12:33:30.042Z",
+  "createdAt": "2026-11-17T12:49:16.540Z",
+  "updatedAt": "2026-11-17T12:49:16.540Z",
   "template": "stacked",
   "published": {
     "content": {
-      "heroImage": "",
+      "heroImage": "/images/products/retractable-car-charger/hero.webp",
       "title": "شاحن الطوموبيل 4 فـ 1 بضو النجوم",
       "subtitle": "جوج خيوط كيتمدو وكيرجعو بوحدهم، وجوج بورات. 4 تيليفونات كيتشارجو فنفس الوقت، والسقف كيولي سما ديال النجوم.",
       "rating": 0,
       "reviewCount": 0,
       "gallery": [
         {
-          "src": "",
+          "src": "/images/products/retractable-car-charger/hero.webp",
           "alt": "شاحن الطوموبيل 4 فـ 1 بضو النجوم"
         },
         {
-          "src": "",
+          "src": "/images/products/retractable-car-charger/retractable.webp",
           "alt": "ما بقاش الكابل اللي ضايع"
         },
         {
-          "src": "",
+          "src": "/images/products/retractable-car-charger/four-phones.webp",
           "alt": "4 تيليفونات فنفس الوقت"
         },
         {
-          "src": "",
+          "src": "/images/products/retractable-car-charger/starry.webp",
           "alt": "السقف كيولي سما ديال النجوم"
         },
         {
-          "src": "",
+          "src": "/images/products/retractable-car-charger/plug.webp",
           "alt": "كيتركب فثانية"
         }
       ],
@@ -64,7 +64,7 @@
         "title": "مكنسة الطوموبيل اللاسلكية 3 فـ 1",
         "headline": "كمل النقاوة من الداخل بالمكنسة اللاسلكية",
         "text": "كتشفط الرملة والفتات من بين الكراسي، وكتنفخ الغبرة من الطابلو. كتوصلك فنفس الكولية، بلا توصيل زايد.",
-        "image": "",
+        "image": "/images/products/car-vacuum-blower/full-kit.webp",
         "price": 179,
         "originalPrice": 349
       },
@@ -175,11 +175,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:33:30.042Z"
+        "timestamp": "2026-11-17T12:49:16.540Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:33:30.042Z"
+        "timestamp": "2026-11-17T12:49:16.540Z"
       }
     ]
   }

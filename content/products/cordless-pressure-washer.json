@@ -2,8 +2,8 @@
   "id": "prod_cordless_pressure_washer",
   "slug": "cordless-pressure-washer",
   "status": "published",
-  "createdAt": "2026-11-17T12:33:30.042Z",
-  "updatedAt": "2026-11-17T12:33:30.042Z",
+  "createdAt": "2026-11-17T12:49:16.540Z",
+  "updatedAt": "2026-11-17T12:49:16.540Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -18,11 +18,11 @@
           "alt": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/value.webp",
           "alt": "كيخلص راسو فشهرين"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/no-plug.webp",
           "alt": "بلا بريز، بلا روبيني"
         },
         {
@@ -30,7 +30,7 @@
           "alt": "الرغوة قبل الماء، باش ما تخدشش الصباغة"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/batteries.webp",
           "alt": "3 بطاريات: الغسلة كاملة بلا ما تحبس"
         },
         {
@@ -38,7 +38,7 @@
           "alt": "ماشي جهاز فكارطونة"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/multi-use.webp",
           "alt": "ماشي غير للطوموبيل"
         }
       ],
@@ -76,7 +76,7 @@
         "title": "شاحن الطوموبيل 4 فـ 1 بضو النجوم",
         "headline": "زيد الشاحن اللي كيشارج 4 تيليفونات فنفس الوقت",
         "text": "جوج خيوط كيتمدو وكيرجعو بوحدهم، وجوج بورات، وضو ديال النجوم فالسقف. كيوصلك فنفس الكولية، بلا توصيل زايد.",
-        "image": "",
+        "image": "/images/products/retractable-car-charger/hero.webp",
         "price": 99,
         "originalPrice": 169
       },
@@ -202,11 +202,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:33:30.042Z"
+        "timestamp": "2026-11-17T12:49:16.540Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:33:30.042Z"
+        "timestamp": "2026-11-17T12:49:16.540Z"
       }
     ]
   }
