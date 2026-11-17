@@ -5,6 +5,7 @@
 	import CartDrawer from '$lib/components/shared/CartDrawer.svelte';
 	import CheckoutModal from '$lib/components/shared/CheckoutModal.svelte';
 	import PostOrderUpsellModal from '$lib/components/PostOrderUpsellModal.svelte';
+	import Logo from '$lib/components/brand/Logo.svelte';
 	import { cartUi } from '$lib/stores/cart.svelte';
 	import { getDefaultTheme, buildThemeCssVars } from '$lib/types/theme';
 	import { trackSnapPurchase, preserveTrackingParams, normalizePhone, sha256 } from '$lib/utils/tracking';
@@ -60,6 +61,28 @@
 	);
 
 	const activeFaq = $derived((content?.faq ?? []).filter((f) => f && f.question && f.answer));
+
+	/** Messages that scroll in the top bar. The product announcement comes first. */
+	const tickerItems = $derived([
+		announcement,
+		'التوصيل لجميع المدن فـ 24 حتى 72 ساعة',
+		'استبدال 7 أيام',
+		'كنجربو كل جهاز قبل ما يخرج',
+		'سولنا فواتساب من 9:00 حتى 22:00'
+	]);
+
+	/** Delivery window (24 to 72h), computed in the browser so it uses the visitor's date. */
+	let deliveryWindow = $state('');
+	$effect(() => {
+		try {
+			const fmt = new Intl.DateTimeFormat('ar-MA', { weekday: 'long', day: 'numeric', month: 'long' });
+			const day = 24 * 60 * 60 * 1000;
+			const now = Date.now();
+			deliveryWindow = `بين ${fmt.format(new Date(now + day))} و${fmt.format(new Date(now + 3 * day))}`;
+		} catch {
+			deliveryWindow = '';
+		}
+	});
 
 	/** "What you get" checklist under the title (killers.bullets). */
 	const inBox = $derived((content?.killers?.bullets ?? []).filter((b) => b && b.trim()));
@@ -466,16 +489,36 @@
 	style="{buildThemeCssVars(t)}; background-color: #EEF2F3; color: #17232B;"
 	dir="rtl"
 >
-	<!-- 1. Top Announcement Bar -->
+	<!-- Brand header -->
+	<header class="lz-brandbar" dir="rtl">
+		<a href="/" class="lz-brandbar-logo" aria-label="Lhamza Shop"><Logo size={28} tone="light" /></a>
+		<a
+			class="lz-brandbar-wa"
+			href={`https://wa.me/${((order as any)?.whatsappNumber || '212626558375').replace(/D/g, '')}?text=${encodeURIComponent('سلام، عندي سؤال على ' + productName)}`}
+			target="_blank"
+			rel="noopener"
+		>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+			<span>سولنا</span>
+		</a>
+	</header>
+
+	<!-- 1. Top bar: scrolling trust messages -->
 	<aside
 		id="top-announcement-bar"
-		class="sticky top-0 z-40 w-full max-w-full bg-[#17232B] text-white py-1.5 px-2 text-[12px] sm:text-[13px] font-bold text-center border-b border-white/10 shadow-sm select-none leading-snug"
-		aria-label="شريط الإعلانات"
-		dir="rtl"
+		class="sticky top-0 z-40 w-full max-w-full bg-[#F5A300] text-[#17232B] py-1.5 text-[12px] sm:text-[13px] font-extrabold border-b border-black/10 select-none leading-snug overflow-hidden"
+		aria-label="معلومات الطلب"
 	>
-		<div class="max-w-4xl mx-auto flex items-center justify-center gap-2">
-			<a href="/" class="lz-mini-logo" aria-label="Lhamza Shop">ء</a>
-			<span>{announcement}</span>
+		<div class="lz-ticker" dir="ltr">
+			<div class="lz-ticker-track">
+				{#each [0, 1] as copy (copy)}
+					<ul class="lz-ticker-list" dir="rtl" aria-hidden={copy === 1}>
+						{#each tickerItems as item, i (i)}
+							<li>{item}</li>
+						{/each}
+					</ul>
+				{/each}
+			</div>
 		</div>
 	</aside>
 
@@ -694,6 +737,28 @@
 					<div class="text-[11px] sm:text-xs text-gray-600 text-center font-medium mt-1">
 						غادي نتصلو بيك باش نأكدو الطلب • 🔒 المعلومات ديالك محمية
 					</div>
+
+						{#if deliveryWindow}
+							<p class="lz-eta">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="17.5" r="1.8" /><circle cx="17.5" cy="17.5" r="1.8" /></svg>
+								<span>اطلب دابا ويوصلك <b>{deliveryWindow}</b></span>
+							</p>
+						{/if}
+
+						<ul class="lz-trust" aria-label="الضمانات">
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2" /><circle cx="12" cy="12" r="2.6" /><path d="M6 9.5v5M18 9.5v5" /></svg>
+								<span>الدفع عند الاستلام</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z" /><path d="M8.5 12l2.4 2.4L15.5 9.8" /></svg>
+								<span>مجرب قبل ما يخرج</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7M20 4v4.7h-4.7M20 12a8 8 0 0 1-13.7 5.6L4 15.3M4 20v-4.7h4.7" /></svg>
+								<span>استبدال 7 أيام</span>
+							</li>
+						</ul>
 				</form>
 			</div>
 		</div>
@@ -890,6 +955,137 @@
 </div>
 
 <style>
+	/* Brand header + scrolling bar + delivery/trust under the form */
+	.lz-brandbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 48px;
+		padding: 0 14px;
+		background: #2f4858;
+	}
+	.lz-brandbar-logo {
+		display: inline-flex;
+		text-decoration: none;
+	}
+	.lz-brandbar-wa {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		min-height: 34px;
+		padding: 0 12px;
+		border: 1px solid rgb(255 255 255 / 0.25);
+		border-radius: 999px;
+		font-size: 13px;
+		font-weight: 800;
+		color: #fff;
+		text-decoration: none;
+	}
+	.lz-brandbar-wa svg {
+		width: 16px;
+		height: 16px;
+	}
+	.lz-ticker {
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+	}
+	.lz-ticker-track {
+		display: flex;
+		width: max-content;
+		animation: lz-ticker 28s linear infinite;
+	}
+	.lz-ticker-list {
+		display: flex;
+		flex: none;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lz-ticker-list li {
+		display: flex;
+		align-items: center;
+		white-space: nowrap;
+		padding: 0 14px;
+	}
+	.lz-ticker-list li::after {
+		content: '';
+		width: 5px;
+		height: 5px;
+		margin-inline-start: 28px;
+		border-radius: 50%;
+		background: #17232b;
+		opacity: 0.55;
+	}
+	@keyframes lz-ticker {
+		from {
+			transform: translateX(-50%);
+		}
+		to {
+			transform: translateX(0);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.lz-ticker-track {
+			animation: none;
+		}
+	}
+	.lz-eta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin: 8px 0 0;
+		padding: 8px 10px;
+		border-radius: 10px;
+		background: #e3ecf0;
+		font-size: 12.5px;
+		font-weight: 700;
+		color: #2f4858;
+		text-align: center;
+	}
+	.lz-eta b {
+		color: #17232b;
+	}
+	.lz-eta svg,
+	.lz-trust svg {
+		flex: none;
+		width: 20px;
+		height: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.lz-trust {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 6px;
+		margin: 8px 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lz-trust li {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+		padding: 8px 4px;
+		border: 1px solid #e5ebee;
+		border-radius: 10px;
+		background: #fff;
+		font-size: 11px;
+		font-weight: 800;
+		line-height: 1.3;
+		text-align: center;
+		color: #17232b;
+	}
+	.lz-trust svg {
+		width: 22px;
+		height: 22px;
+		color: #d98f00;
+	}
+
 	/* What you get / How it works / Why Lhamza */
 	.lz-inbox {
 		max-width: 22rem;
