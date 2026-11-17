@@ -2,8 +2,8 @@
   "id": "prod_car_vacuum_blower",
   "slug": "car-vacuum-blower",
   "status": "published",
-  "createdAt": "2026-11-17T11:01:42.880Z",
-  "updatedAt": "2026-11-17T11:01:42.880Z",
+  "createdAt": "2026-11-17T11:55:19.580Z",
+  "updatedAt": "2026-11-17T11:55:19.580Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -192,11 +192,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T11:01:42.880Z"
+        "timestamp": "2026-11-17T11:55:19.580Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T11:01:42.880Z"
+        "timestamp": "2026-11-17T11:55:19.580Z"
       }
     ]
   }

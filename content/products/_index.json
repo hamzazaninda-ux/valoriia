@@ -2,14 +2,14 @@
   {
     "id": "prod_cordless_pressure_washer",
     "slug": "cordless-pressure-washer",
-    "title": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل",
-    "subtitle": "اللافاج ولا عندك قدام الدار. بلا بريز، بلا روبيني، وكلشي مرتب فصاك صلب كيدخل للكوفر.",
+    "title": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات",
+    "subtitle": "اللافاج ولا عندك قدام الدار. 3 بطاريات 48V ماشي وحدة ولا جوج، بلا بريز، بلا روبيني، وكلشي مرتب فصاك صلب.",
     "heroImage": "",
     "startingPrice": 299,
     "originalPrice": 399,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T11:01:42.880Z"
+    "updatedAt": "2026-11-17T11:55:19.580Z"
   },
   {
     "id": "prod_car_vacuum_blower",
@@ -21,7 +21,7 @@
     "originalPrice": 349,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T11:01:42.880Z"
+    "updatedAt": "2026-11-17T11:55:19.580Z"
   },
   {
     "id": "prod_retractable_car_charger",
@@ -33,6 +33,6 @@
     "originalPrice": 249,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T11:01:42.880Z"
+    "updatedAt": "2026-11-17T11:55:19.580Z"
   }
 ]
