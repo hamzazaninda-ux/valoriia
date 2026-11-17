@@ -2,8 +2,8 @@
   "id": "prod_cordless_pressure_washer",
   "slug": "cordless-pressure-washer",
   "status": "published",
-  "createdAt": "2026-11-17T12:21:20.880Z",
-  "updatedAt": "2026-11-17T12:21:20.880Z",
+  "createdAt": "2026-11-17T12:33:30.042Z",
+  "updatedAt": "2026-11-17T12:33:30.042Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -26,7 +26,7 @@
           "alt": "بلا بريز، بلا روبيني"
         },
         {
-          "src": "",
+          "src": "/images/products/cordless-pressure-washer/foam.webp",
           "alt": "الرغوة قبل الماء، باش ما تخدشش الصباغة"
         },
         {
@@ -202,11 +202,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:21:20.880Z"
+        "timestamp": "2026-11-17T12:33:30.042Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:21:20.880Z"
+        "timestamp": "2026-11-17T12:33:30.042Z"
       }
     ]
   }

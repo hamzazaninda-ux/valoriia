@@ -2,8 +2,8 @@
   "id": "prod_retractable_car_charger",
   "slug": "retractable-car-charger",
   "status": "published",
-  "createdAt": "2026-11-17T12:21:20.880Z",
-  "updatedAt": "2026-11-17T12:21:20.880Z",
+  "createdAt": "2026-11-17T12:33:30.042Z",
+  "updatedAt": "2026-11-17T12:33:30.042Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -175,11 +175,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:21:20.880Z"
+        "timestamp": "2026-11-17T12:33:30.042Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:21:20.880Z"
+        "timestamp": "2026-11-17T12:33:30.042Z"
       }
     ]
   }
