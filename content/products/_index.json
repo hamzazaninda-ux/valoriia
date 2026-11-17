@@ -9,7 +9,7 @@
     "originalPrice": 449,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T12:49:16.540Z"
+    "updatedAt": "2026-11-17T12:56:23.466Z"
   },
   {
     "id": "prod_car_vacuum_blower",
@@ -21,7 +21,7 @@
     "originalPrice": 349,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T12:49:16.540Z"
+    "updatedAt": "2026-11-17T12:56:23.466Z"
   },
   {
     "id": "prod_retractable_car_charger",
@@ -33,6 +33,6 @@
     "originalPrice": 249,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-17T12:49:16.540Z"
+    "updatedAt": "2026-11-17T12:56:23.466Z"
   }
 ]

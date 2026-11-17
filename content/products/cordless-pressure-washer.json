@@ -2,8 +2,8 @@
   "id": "prod_cordless_pressure_washer",
   "slug": "cordless-pressure-washer",
   "status": "published",
-  "createdAt": "2026-11-17T12:49:16.540Z",
-  "updatedAt": "2026-11-17T12:49:16.540Z",
+  "createdAt": "2026-11-17T12:56:23.466Z",
+  "updatedAt": "2026-11-17T12:56:23.466Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -166,7 +166,7 @@
           "originalPrice": 449,
           "quantity": 1,
           "badge": null,
-          "image": "",
+          "image": "/images/products/offers/washer.webp",
           "isPopular": false
         },
         {
@@ -177,7 +177,7 @@
           "originalPrice": 798,
           "quantity": 2,
           "badge": "الأوفر",
-          "image": "",
+          "image": "/images/products/offers/cleaning-pack.webp",
           "isPopular": true,
           "isBundle": true
         }
@@ -202,11 +202,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:49:16.540Z"
+        "timestamp": "2026-11-17T12:56:23.466Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:49:16.540Z"
+        "timestamp": "2026-11-17T12:56:23.466Z"
       }
     ]
   }

@@ -2,8 +2,8 @@
   "id": "prod_retractable_car_charger",
   "slug": "retractable-car-charger",
   "status": "published",
-  "createdAt": "2026-11-17T12:49:16.540Z",
-  "updatedAt": "2026-11-17T12:49:16.540Z",
+  "createdAt": "2026-11-17T12:56:23.466Z",
+  "updatedAt": "2026-11-17T12:56:23.466Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -140,7 +140,7 @@
           "originalPrice": 249,
           "quantity": 1,
           "badge": null,
-          "image": "",
+          "image": "/images/products/offers/charger-1.webp",
           "isPopular": false
         },
         {
@@ -151,7 +151,7 @@
           "originalPrice": 498,
           "quantity": 2,
           "badge": "الأوفر",
-          "image": "",
+          "image": "/images/products/offers/charger-2.webp",
           "isPopular": true
         }
       ]
@@ -175,11 +175,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T12:49:16.540Z"
+        "timestamp": "2026-11-17T12:56:23.466Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T12:49:16.540Z"
+        "timestamp": "2026-11-17T12:56:23.466Z"
       }
     ]
   }
