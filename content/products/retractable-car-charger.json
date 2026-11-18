@@ -2,8 +2,8 @@
   "id": "prod_retractable_car_charger",
   "slug": "retractable-car-charger",
   "status": "published",
-  "createdAt": "2026-11-17T15:30:52.608Z",
-  "updatedAt": "2026-11-17T15:30:52.608Z",
+  "createdAt": "2026-11-18T12:16:10.681Z",
+  "updatedAt": "2026-11-18T12:16:10.681Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -59,15 +59,7 @@
       ],
       "footerText": "",
       "announcement": "الدفع عند الاستلام • كنجربو كل جهاز قبل ما يخرج",
-      "upsell": {
-        "sku": "car-vacuum-blower",
-        "title": "مكنسة الطوموبيل اللاسلكية 3 فـ 1",
-        "headline": "كمل النقاوة من الداخل بالمكنسة اللاسلكية",
-        "text": "كتشفط الرملة والفتات من بين الكراسي، وكتنفخ الغبرة من الطابلو. كتوصلك فنفس الكولية، بلا توصيل زايد.",
-        "image": "/images/products/upsell/vacuum.webp",
-        "price": 179,
-        "originalPrice": 349
-      },
+      "upsell": null,
       "killers": {
         "bullets": [
           "خيط Type-C كيتمد",
@@ -175,11 +167,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-17T15:30:52.608Z"
+        "timestamp": "2026-11-18T12:16:10.681Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-17T15:30:52.608Z"
+        "timestamp": "2026-11-18T12:16:10.681Z"
       }
     ]
   }
