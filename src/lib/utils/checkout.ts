@@ -273,13 +273,21 @@ export function trackPurchase(price: number, productTitle: string, transactionId
 
 	// 3. Meta / Facebook Pixel
 	try {
-		if (typeof (window as any).fbq === 'function') {
-			(window as any).fbq('track', 'Purchase', {
-				value: numPrice,
-				currency: 'MAD',
-				content_name: title,
-				order_id: txnId
-			});
+		const metaKey = `meta_purchase_${txnId}`;
+		if (!sessionStorage.getItem(metaKey) && typeof (window as any).fbq === 'function') {
+			sessionStorage.setItem(metaKey, 'true');
+			(window as any).fbq(
+				'track',
+				'Purchase',
+				{
+					value: numPrice,
+					currency: 'MAD',
+					content_name: title,
+					content_type: 'product',
+					order_id: txnId
+				},
+				{ eventID: txnId }
+			);
 		}
 	} catch (err) {
 		console.warn('[Pixel] Meta Purchase error:', err);

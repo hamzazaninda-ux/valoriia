@@ -43,6 +43,7 @@
 	let submitError = $state('');
 	let shouldShakePhone = $state(false);
 	let showStickyBtn = $state(true);
+	let metaPurchaseFired = false;
 
 	function scrollToForm() {
 		try {
@@ -167,6 +168,31 @@
 				});
 			} catch (err) {
 				console.warn('[Pixel] snap PURCHASE error:', err);
+			}
+			try {
+				const metaKey = 'meta_purchase_' + orderId;
+				if (
+					!metaPurchaseFired &&
+					!sessionStorage.getItem(metaKey) &&
+					typeof (window as any).fbq === 'function'
+				) {
+					metaPurchaseFired = true;
+					sessionStorage.setItem(metaKey, 'true');
+					(window as any).fbq(
+						'track',
+						'Purchase',
+						{
+							value: Number(orderTotal),
+							currency: 'MAD',
+							content_name: orderProductName,
+							content_type: 'product',
+							num_items: orderQuantity
+						},
+						{ eventID: orderId }
+					);
+				}
+			} catch (err) {
+				console.warn('[Pixel] Meta Purchase error:', err);
 			}
 			const gadsKey = 'gads_tracked_' + orderId;
 			if (!sessionStorage.getItem(gadsKey) && typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {

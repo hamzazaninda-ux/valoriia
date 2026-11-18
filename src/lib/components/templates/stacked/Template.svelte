@@ -149,6 +149,7 @@
 	let formError = $state('');
 	let isSubmitting = $state(false);
 	let isSubmittingFinal = $state(false);
+	let metaPurchaseFired = false;
 	let showStickyBtn = $state(true);
 	let showUpsell = $state(false);
 
@@ -286,6 +287,33 @@
 			}
 		} catch (ttErr) {
 			console.warn('TikTok CompletePayment error:', ttErr);
+		}
+
+		try {
+			const metaKey = `meta_purchase_${current.orderId}`;
+			if (
+				!metaPurchaseFired &&
+				!sessionStorage.getItem(metaKey) &&
+				typeof (window as any).fbq === 'function'
+			) {
+				metaPurchaseFired = true;
+				sessionStorage.setItem(metaKey, 'true');
+				(window as any).fbq(
+					'track',
+					'Purchase',
+					{
+						value: Number(finalPrice),
+						currency: 'MAD',
+						content_name: productLabel,
+						content_type: 'product',
+						content_ids: [productSku],
+						num_items: current.quantity
+					},
+					{ eventID: current.orderId }
+				);
+			}
+		} catch (fbErr) {
+			console.warn('Meta Purchase tracking non-fatal error:', fbErr);
 		}
 
 		showUpsell = false;
