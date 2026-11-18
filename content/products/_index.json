@@ -9,7 +9,7 @@
     "originalPrice": 449,
     "status": "published",
     "template": "stacked",
-    "updatedAt": "2026-11-18T12:16:10.681Z"
+    "updatedAt": "2026-11-18T13:06:38.980Z"
   },
   {
     "id": "prod_car_vacuum_blower",
@@ -19,9 +19,9 @@
     "heroImage": "/images/products/car-vacuum-blower/full-kit.webp",
     "startingPrice": 229,
     "originalPrice": 349,
-    "status": "published",
+    "status": "draft",
     "template": "stacked",
-    "updatedAt": "2026-11-18T12:16:10.681Z"
+    "updatedAt": "2026-11-18T13:06:38.980Z"
   },
   {
     "id": "prod_retractable_car_charger",
@@ -31,8 +31,8 @@
     "heroImage": "/images/products/retractable-car-charger/hero.webp",
     "startingPrice": 169,
     "originalPrice": 249,
-    "status": "published",
+    "status": "draft",
     "template": "stacked",
-    "updatedAt": "2026-11-18T12:16:10.681Z"
+    "updatedAt": "2026-11-18T13:06:38.980Z"
   }
 ]

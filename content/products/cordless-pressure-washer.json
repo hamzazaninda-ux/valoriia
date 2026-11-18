@@ -2,8 +2,8 @@
   "id": "prod_cordless_pressure_washer",
   "slug": "cordless-pressure-washer",
   "status": "published",
-  "createdAt": "2026-11-18T12:16:10.681Z",
-  "updatedAt": "2026-11-18T12:16:10.681Z",
+  "createdAt": "2026-11-18T13:06:38.980Z",
+  "updatedAt": "2026-11-18T13:06:38.980Z",
   "template": "stacked",
   "published": {
     "content": {
@@ -163,15 +163,14 @@
         },
         {
           "id": 2,
-          "title": "باك النقاوة: الرشاش + المكنسة",
-          "subtitle": "البرا بالرشاش، والداخل بالمكنسة",
-          "price": 499,
-          "originalPrice": 798,
+          "title": "جوج طقمات كاملين",
+          "subtitle": "واحد ليك وواحد للعائلة • 6 بطاريات",
+          "price": 599,
+          "originalPrice": 898,
           "quantity": 2,
           "badge": "الأوفر",
-          "image": "/images/products/offers/cleaning-pack.webp",
-          "isPopular": true,
-          "isBundle": true
+          "image": "/images/products/offers/washer-2.webp",
+          "isPopular": true
         }
       ]
     },
@@ -194,11 +193,11 @@
     "changelog": [
       {
         "action": "created",
-        "timestamp": "2026-11-18T12:16:10.681Z"
+        "timestamp": "2026-11-18T13:06:38.980Z"
       },
       {
         "action": "published",
-        "timestamp": "2026-11-18T12:16:10.681Z"
+        "timestamp": "2026-11-18T13:06:38.980Z"
       }
     ]
   }
