@@ -4,7 +4,7 @@ import { listProducts, readProduct } from '$lib/content/products';
 import { readSettings } from '$lib/content/settings';
 import { readTemplateTheme } from '$lib/content/templateTheme';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, setHeaders }) => {
   const product = await readProduct(params.slug);
 
   if (!product || product.status !== 'published') {
@@ -24,6 +24,9 @@ export const load: PageServerLoad = async ({ params }) => {
       heroImage,
       startingPrice
     }));
+
+  // Cache on Vercel's CDN: pages open instantly; content edits show within ~1 minute.
+  setHeaders({ 'cache-control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400' });
 
   return {
     product,

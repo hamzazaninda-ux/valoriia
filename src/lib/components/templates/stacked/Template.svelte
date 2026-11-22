@@ -123,6 +123,27 @@
 		offersList.find((o) => o.id === selectedOfferId) ?? offersList[0]
 	);
 
+	// Meta funnel events: ViewContent (page open) → AddToCart (starts the form) → InitiateCheckout (valid submit) → Purchase.
+	const firedMeta = new Set<string>();
+	function metaTrack(event: string, once = true) {
+		try {
+			if (once && firedMeta.has(event)) return;
+			const fbq = (window as any).fbq;
+			if (typeof fbq !== 'function') return;
+			firedMeta.add(event);
+			fbq('track', event, {
+				value: Number(activeOffer?.price) || 0,
+				currency: 'MAD',
+				content_name: productName,
+				content_type: 'product',
+				content_ids: [productSku],
+				num_items: Number(activeOffer?.quantity) || 1
+			});
+		} catch (err) {
+			console.warn(`Meta ${event} tracking non-fatal error:`, err);
+		}
+	}
+
 	function offerSaving(o: ProductOffer): number {
 		return o.originalPrice > o.price ? o.originalPrice - o.price : 0;
 	}
@@ -388,6 +409,7 @@
 		const orderPrice = Number(offer.price) || 0;
 		const quantity = Number(offer.quantity) || 1;
 
+		metaTrack('InitiateCheckout');
 		try {
 			if ((window as any).ttq) {
 				(window as any).ttq.identify({ phone_number: internationalPhone });
@@ -487,6 +509,10 @@
 	onMount(() => {
 		const formElement = document.getElementById('order-form');
 		let formVisible = false;
+
+		metaTrack('ViewContent');
+		const onFormEngaged = () => metaTrack('AddToCart');
+		formElement?.addEventListener('focusin', onFormEngaged, { once: true });
 
 		function updateStickyState() {
 			showStickyBtn = window.scrollY < 100 ? true : !formVisible;
