@@ -1,4 +1,4 @@
-# Alpha Vital CMS — Architecture & Technical Specification
+# Novavita CMS — Architecture & Technical Specification
 
 **Version:** 2.0  
 **Date:** July 2026  

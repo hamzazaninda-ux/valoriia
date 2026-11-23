@@ -1,42 +1,21 @@
-# sv
+# Novavita
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Moroccan COD landing-page store: SvelteKit 2 + Svelte 5 (runes) + Tailwind CSS 4, deployed on Vercel (`novavita.store`).
+Arabic-first, RTL, mobile-first.
 
-## Creating a project
+## Content
+Products, settings, templates and orders live in `content/` (Git as database) and are read/written at runtime
+through the GitHub API (`src/lib/content/`). See `ARCHITECTURE.md`.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
+## Develop
 ```sh
-# create a new project
-npx sv create my-app
+npm install
+npm run dev      # local dev server
+npm run check    # svelte-check
+npm run build    # production build (runs scripts/verify-store-identity.js first)
 ```
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types ts --add tailwindcss="plugins:none" --install npm ./
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Notes
+- Secrets go in `.env.local` (gitignored). See `.env.example`.
+- Auto-deploy from Git is disabled in `vercel.json` on purpose; deploy manually with the Vercel CLI.
+- Legacy product URLs (`/products/gummies-biotine`, `gummies_biotine`, ...) are kept as aliases to avoid 404s.
