@@ -1,25 +1,5 @@
 [
   {
-    "id": "ORD-900593",
-    "createdAt": "2026-11-19T00:31:38.581Z",
-    "fullName": "BEN YAJEYA",
-    "phone": "212610266507",
-    "city": "تأكيد هاتفي",
-    "address": "تأكيد هاتفي",
-    "product": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات",
-    "quantity": 1,
-    "totalPrice": 329,
-    "status": "جديد",
-    "sku": "الطقم الكامل فالصاك",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "",
-    "notes": "",
-    "offer": "الطقم الكامل فالصاك",
-    "hasUpsell": false,
-    "upsellPrice": 0
-  },
-  {
     "id": "ORD-920174",
     "createdAt": "2026-11-18T21:56:21.510Z",
     "fullName": "محمددهبي.المقم.في.طنجة.اسكن.العزب.طرق.تطون",
