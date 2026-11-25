@@ -144,6 +144,29 @@
 		}
 	}
 
+	// TikTok funnel events, same moments as Meta. Each event fires at most once per page view.
+	const firedTikTok = new Set<string>();
+	function tiktokTrack(event: string) {
+		try {
+			if (firedTikTok.has(event)) return;
+			const ttq = (window as any).ttq;
+			if (!ttq || typeof ttq.track !== 'function') return;
+			firedTikTok.add(event);
+			const price = Number(activeOffer?.price) || 0;
+			const quantity = Number(activeOffer?.quantity) || 1;
+			ttq.track(event, {
+				contents: [
+					{ content_id: productSku, content_type: 'product', content_name: productName, quantity, price }
+				],
+				content_type: 'product',
+				value: price,
+				currency: 'MAD'
+			});
+		} catch (err) {
+			console.warn(`TikTok ${event} tracking non-fatal error:`, err);
+		}
+	}
+
 	function offerSaving(o: ProductOffer): number {
 		return o.originalPrice > o.price ? o.originalPrice - o.price : 0;
 	}
@@ -260,8 +283,18 @@
 			console.warn('Storage save error:', e);
 		}
 
+		// One lock for every purchase pixel: an order is counted once, even after a reload or a back-button return.
+		const purchaseKey = `purchase_fired_${current.orderId}`;
+		let purchaseLocked = false;
 		try {
-			if (typeof (window as any).gtag === 'function') {
+			purchaseLocked =
+				localStorage.getItem(purchaseKey) === '1' || sessionStorage.getItem(purchaseKey) === '1';
+			localStorage.setItem(purchaseKey, '1');
+			sessionStorage.setItem(purchaseKey, '1');
+		} catch {}
+
+		try {
+			if (!purchaseLocked && typeof (window as any).gtag === 'function') {
 				(window as any).gtag('event', 'conversion', {
 					send_to: 'AW-18405009405',
 					value: finalPrice,
@@ -272,7 +305,7 @@
 		} catch {}
 
 		try {
-			trackSnapPurchase({
+			if (!purchaseLocked) trackSnapPurchase({
 				orderId: current.orderId,
 				price: finalPrice,
 				currency: 'MAD',
@@ -286,7 +319,7 @@
 		}
 
 		try {
-			if ((window as any).ttq) {
+			if (!purchaseLocked && (window as any).ttq) {
 				const phoneObj = normalizePhone(current.phone);
 				if (phoneObj.digits) {
 					(window as any).ttq.identify({
@@ -296,10 +329,16 @@
 				(window as any).ttq.track(
 					'CompletePayment',
 					{
-						content_id: productSku,
-						content_name: productLabel,
+						contents: [
+							{
+								content_id: productSku,
+								content_type: 'product',
+								content_name: productLabel,
+								quantity: current.quantity,
+								price: finalPrice
+							}
+						],
 						content_type: 'product',
-						quantity: current.quantity,
 						currency: 'MAD',
 						value: finalPrice
 					},
@@ -313,6 +352,7 @@
 		try {
 			const metaKey = `meta_purchase_${current.orderId}`;
 			if (
+				!purchaseLocked &&
 				!metaPurchaseFired &&
 				!sessionStorage.getItem(metaKey) &&
 				typeof (window as any).fbq === 'function'
@@ -411,17 +451,10 @@
 
 		metaTrack('InitiateCheckout');
 		try {
-			if ((window as any).ttq) {
+			if ((window as any).ttq && !firedTikTok.has('InitiateCheckout')) {
 				(window as any).ttq.identify({ phone_number: internationalPhone });
-				(window as any).ttq.track('InitiateCheckout', {
-					content_id: productSku,
-					content_type: 'product',
-					content_name: productName,
-					quantity,
-					value: orderPrice,
-					currency: 'MAD'
-				});
 			}
+			tiktokTrack('InitiateCheckout');
 		} catch (err) {
 			console.warn('InitiateCheckout tracking non-fatal error:', err);
 		}
@@ -511,7 +544,11 @@
 		let formVisible = false;
 
 		metaTrack('ViewContent');
-		const onFormEngaged = () => metaTrack('AddToCart');
+		tiktokTrack('ViewContent');
+		const onFormEngaged = () => {
+			metaTrack('AddToCart');
+			tiktokTrack('AddToCart');
+		};
 		formElement?.addEventListener('focusin', onFormEngaged, { once: true });
 
 		function updateStickyState() {
