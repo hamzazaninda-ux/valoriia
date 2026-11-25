@@ -1,25 +1,5 @@
 [
   {
-    "id": "ORD-551656",
-    "createdAt": "2026-11-19T14:41:39.665Z",
-    "fullName": "BEN YAHEYA",
-    "phone": "212610266507",
-    "city": "تأكيد هاتفي",
-    "address": "تأكيد هاتفي",
-    "product": "رشاش الغسيل اللاسلكي 48V: الطقم الكامل بـ 3 بطاريات",
-    "quantity": 1,
-    "totalPrice": 329,
-    "status": "جديد",
-    "sku": "الطقم الكامل فالصاك",
-    "pageUrl": "",
-    "orderType": "direct",
-    "items": "",
-    "notes": "",
-    "offer": "الطقم الكامل فالصاك",
-    "hasUpsell": false,
-    "upsellPrice": 0
-  },
-  {
     "id": "ORD-946229",
     "createdAt": "2026-11-19T08:20:23.440Z",
     "fullName": "Hassan",
